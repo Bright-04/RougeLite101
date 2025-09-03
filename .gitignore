@@ -97,3 +97,57 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# ---- Additional common ignores for Unity projects / IDEs ----
+
+# VS Code workspace
+/.vscode/
+
+# Rider
+/.idea/
+*.sln.iml
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Local history (IDE)
+.localhistory/
+
+# Packed Player data
+*.pack
+
+# Gradle and Android Studio
+/.gradle/
+/.idea/
+
+# Unity Cache Server
+/Library/Cache/
+
+# Crashlytics
+crashlytics-build.properties
+
+# JetBrains Rider personal-layer settings
+*.DotSettings.user
+
+# User-specific files
+*.user
+*.userprefs
+
+# NuGet
+*.nupkg
+
+# C# build outputs
+/[Oo]bj/
+/[Bb]in/
+
+# Compiled DLLs
+*.dll
+
+# Packages lock (generated)
+packages-lock.json
+
+# Ignore large auto-generated Addressables folders (kept from upstream rules)
+/[Aa]ssets/AddressableAssetsData/*/addressables_content_state.bin
+
+# Keep ProjectSettings and Assets tracked; ignore only generated files above
