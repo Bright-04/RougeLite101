@@ -1,11 +1,6 @@
 # ROUGE LITE 101
 
-A Unity multiplayer game demo using AWS GameLift.
-
-## Features
-- Top-down movement and collectibles
-- Multiplayer with Unity Netcode
-- AWS GameLift server integration
+A Unity multiplayer game. Coming soon
 
 ## Getting Started
 
@@ -17,14 +12,12 @@ A Unity multiplayer game demo using AWS GameLift.
 
 ## Build & Multiplayer (To Be Added)
 
-- See `/Docs/BUILD.md` for server/client build steps
-- Follow AWS GameLift setup in `/Docs/GAMELIFT.md`
+-   See `/Docs/BUILD.md` for server/client build steps
 
 ## Resources
 
-- [Kenney.nl](https://kenney.nl/)
-- [Unity Learn](https://learn.unity.com/)
-- [AWS GameLift Docs](https://docs.aws.amazon.com/gamelift/)
+-   [Kenney.nl](https://kenney.nl/)
+-   [Unity Learn](https://learn.unity.com/)
 
 ## License
 
