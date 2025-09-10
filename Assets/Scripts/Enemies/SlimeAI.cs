@@ -12,9 +12,11 @@
         private State state;
         private SlimePathFinding slimePathFinding;
         private Transform playerTransform;
+        private float spawnTime;
 
-    [SerializeField] private float detectionRange = 10f; // roughly 50 pixels assuming 100 px/unit
+    [SerializeField] private float detectionRange = 1f; // reduced scan radius for testing
     [SerializeField] private float roamRadius = 2f; // maximum distance from current position when roaming
+    [SerializeField] private float spawnGracePeriod = 2f; // seconds after spawn to force roaming
 
         private void Awake()
         {
@@ -24,6 +26,7 @@
 
         private void Start()
         {
+            spawnTime = Time.time;
             GameObject playerObj = GameObject.FindWithTag("Player");
             if (playerObj != null)
             {
@@ -89,29 +92,45 @@
         {
             while (true)
             {
+                // During the grace period after spawn, force roaming so slimes don't immediately chase the player.
+                if (Time.time - spawnTime < spawnGracePeriod)
+                {
+                    if (state != State.Roaming)
+                        state = State.Roaming;
+                    Vector2 roamPosition = GetRoamingPosition();
+                    slimePathFinding.MoveTo(roamPosition);
+                    yield return new WaitForSeconds(0.2f);
+                    continue;
+                }
+
                 if (playerTransform != null)
                 {
                     float distance = Vector2.Distance(transform.position, playerTransform.position);
-                     //Debug.Log($"DetectionRange: {detectionRange}, DistanceToPlayer: {distance}");
-                        if (distance < detectionRange)
-                        {
-                            //Debug.Log("KTR");
-                            state = State.Chasing;
-                            slimePathFinding.MoveTo(playerTransform.position);
-                        }
-
-
-                else
-                {
+                    // If player is within detection, chase; otherwise roam.
+                    if (distance < detectionRange)
+                    {
+                        state = State.Chasing;
+                        slimePathFinding.MoveTo(playerTransform.position);
+                    }
+                    else
+                    {
                         if (state != State.Roaming)
                         {
                             state = State.Roaming;
                         }
                         Vector2 roamPosition = GetRoamingPosition();
                         slimePathFinding.MoveTo(roamPosition);
-                        yield return new WaitForSeconds(0.2f);
                     }
                 }
+                else
+                {
+                    // no player found, just roam
+                    if (state != State.Roaming)
+                        state = State.Roaming;
+                    Vector2 roamPosition = GetRoamingPosition();
+                    slimePathFinding.MoveTo(roamPosition);
+                }
+
                 yield return new WaitForSeconds(0.2f);
             }
         }
