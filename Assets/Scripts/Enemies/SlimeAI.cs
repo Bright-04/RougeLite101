@@ -13,7 +13,8 @@
         private SlimePathFinding slimePathFinding;
         private Transform playerTransform;
 
-        [SerializeField] private float detectionRange = 10f; // roughly 50 pixels assuming 100 px/unit
+    [SerializeField] private float detectionRange = 10f; // roughly 50 pixels assuming 100 px/unit
+    [SerializeField] private float roamRadius = 2f; // maximum distance from current position when roaming
 
         private void Awake()
         {
@@ -78,7 +79,10 @@
 
         private Vector2 GetRoamingPosition()
         {
-            return new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
+            // Return a world-space roaming target near the slime's current position.
+            // Use insideUnitCircle so roaming positions are distributed within a radius.
+            Vector2 randomOffset = Random.insideUnitCircle * roamRadius;
+            return (Vector2)transform.position + randomOffset;
         }
 
         private IEnumerator AIBehaviour()
