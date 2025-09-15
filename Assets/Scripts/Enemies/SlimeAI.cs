@@ -146,31 +146,21 @@ public class SlimeAI : EventBehaviour
         return randomDirection.normalized;
     }
 
-    private void OnDestroy()
-    {
-        // Clean up any running coroutines
-        StopAllCoroutines();
-    }
-
     /// <summary>
     /// Call this method when the slime dies to broadcast the death event
     /// </summary>
     public void Die()
     {
         // Broadcast enemy death event
-        var enemyData = new EnemyData
-        {
-            enemy = gameObject,
-            enemyType = "Slime",
-            position = transform.position,
-            wasDefeated = true
-        };
+        var enemyData = new EnemyData(
+            enemy: gameObject,
+            type: "Slime",
+            health: 0f, // Dead
+            maxHealth: 100f, // You can make this configurable
+            position: transform.position
+        );
         
-        var deathEvent = new EnemyDeathEvent
-        {
-            Data = enemyData,
-            Timestamp = System.DateTime.Now
-        };
+        var deathEvent = new EnemyDeathEvent(enemyData, gameObject);
         
         BroadcastEvent(deathEvent);
         

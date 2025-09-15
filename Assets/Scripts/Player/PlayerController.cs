@@ -59,7 +59,7 @@ public class PlayerController : EventBehaviour
         playerControls?.Disable();
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         // Clean up singleton instance
         if (Instance == this)
@@ -118,19 +118,14 @@ public class PlayerController : EventBehaviour
         // Broadcast movement event if the player is actually moving
         if (movement.magnitude > 0.1f)
         {
-            var movementData = new PlayerMovementData
-            {
-                player = gameObject,
-                velocity = movement * moveSpeed,
-                position = transform.position,
-                previousPosition = previousPosition
-            };
+            var movementData = new PlayerMovementData(
+                player: gameObject,
+                velocity: movement * moveSpeed,
+                position: transform.position,
+                previousPosition: previousPosition
+            );
             
-            var movementEvent = new PlayerMovementEvent
-            {
-                Data = movementData,
-                Timestamp = System.DateTime.Now
-            };
+            var movementEvent = new PlayerMovementEvent(movementData, gameObject);
             
             BroadcastEvent(movementEvent);
         }

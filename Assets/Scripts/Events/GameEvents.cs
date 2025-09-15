@@ -112,6 +112,34 @@ namespace RougeLite.Events
         }
     }
 
+    /// <summary>
+    /// Data structure for player movement events
+    /// </summary>
+    [System.Serializable]
+    public struct PlayerMovementData
+    {
+        public GameObject player;
+        public Vector2 velocity;
+        public Vector3 position;
+        public Vector3 previousPosition;
+
+        public PlayerMovementData(GameObject player, Vector2 velocity, Vector3 position, Vector3 previousPosition)
+        {
+            this.player = player;
+            this.velocity = velocity;
+            this.position = position;
+            this.previousPosition = previousPosition;
+        }
+    }
+
+    /// <summary>
+    /// Fired when player moves
+    /// </summary>
+    public class PlayerMovementEvent : GameEvent<PlayerMovementData>
+    {
+        public PlayerMovementEvent(PlayerMovementData data, GameObject source = null) : base(data, source) { }
+    }
+
     // =========================
     // COMBAT EVENTS
     // =========================

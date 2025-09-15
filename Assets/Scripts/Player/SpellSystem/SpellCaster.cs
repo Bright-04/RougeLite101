@@ -190,20 +190,15 @@ public class SpellCaster : EventBehaviour
         }
 
         // Broadcast spell cast event
-        var spellData = new SpellData
-        {
-            caster = gameObject,
-            spellName = spell.spellName,
-            manaCost = spell.manaCost,
-            targetPosition = mouseWorldPos,
-            spellProjectile = spellProjectile
-        };
+        var spellData = new SpellCastData(
+            caster: gameObject,
+            spellName: spell.spellName,
+            castPos: transform.position,
+            targetPos: mouseWorldPos,
+            cost: spell.manaCost
+        );
         
-        var spellEvent = new SpellCastEvent
-        {
-            Data = spellData,
-            Timestamp = System.DateTime.Now
-        };
+        var spellEvent = new SpellCastEvent(spellData, gameObject);
         
         BroadcastEvent(spellEvent);
 

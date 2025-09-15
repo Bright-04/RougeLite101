@@ -21,7 +21,7 @@ namespace RougeLite.Events
             // If EventManager doesn't exist, try to find it
             if (eventManager == null)
             {
-                eventManager = FindObjectOfType<EventManager>();
+                eventManager = FindFirstObjectByType<EventManager>();
                 
                 if (eventManager == null)
                 {

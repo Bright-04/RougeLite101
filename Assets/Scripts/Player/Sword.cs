@@ -120,20 +120,16 @@ public class Sword : EventBehaviour
         }
         
         // Broadcast attack event
-        var attackData = new AttackData
-        {
-            attacker = playerController != null ? playerController.gameObject : gameObject,
-            weapon = gameObject,
-            attackPosition = slashAnimSpawnPoint != null ? slashAnimSpawnPoint.position : transform.position,
-            attackType = "Sword",
-            damage = 1f // You can make this configurable
-        };
+        var attackData = new AttackData(
+            attacker: playerController != null ? playerController.gameObject : gameObject,
+            target: null, // No specific target for sword swing
+            damage: 1f, // You can make this configurable
+            position: slashAnimSpawnPoint != null ? slashAnimSpawnPoint.position : transform.position,
+            type: "Sword",
+            critical: false
+        );
         
-        var attackEvent = new AttackPerformedEvent
-        {
-            Data = attackData,
-            Timestamp = System.DateTime.Now
-        };
+        var attackEvent = new AttackPerformedEvent(attackData, gameObject);
         
         BroadcastEvent(attackEvent);
     }
