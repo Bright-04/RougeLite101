@@ -85,6 +85,16 @@ namespace RougeLite.Managers
 
         #endregion
 
+        #region Properties
+
+        public float InputBufferTime 
+        { 
+            get => inputBufferTime; 
+            set => inputBufferTime = Mathf.Max(0f, value); 
+        }
+
+        #endregion
+
         #region Unity Lifecycle
 
         private void Awake()
@@ -161,7 +171,7 @@ namespace RougeLite.Managers
 
             foreach (string action in inputActions)
             {
-                inputBuffers[action] = new InputBuffer();
+                inputBuffers[action] = new InputBuffer(inputBufferTime);
                 inputStates[action] = false;
                 inputValues[action] = 0f;
             }
