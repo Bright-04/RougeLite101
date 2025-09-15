@@ -594,6 +594,170 @@ namespace RougeLite.Events
     }
 
     // =========================
+    // PROJECTILE AND POOLING EVENTS
+    // =========================
+
+    /// <summary>
+    /// Data structure for projectile events
+    /// </summary>
+    [System.Serializable]
+    public struct ProjectileData
+    {
+        public string projectileType;
+        public Vector3 position;
+        public Vector2 direction;
+        public float speed;
+        public float damage;
+        public GameObject shooter;
+        public GameObject target;
+        public int targetsHit;
+        public float remainingLifetime;
+    }
+
+    /// <summary>
+    /// Fired when projectile is launched
+    /// </summary>
+    public class ProjectileLaunchedEvent : GameEvent
+    {
+        public RougeLite.Combat.Projectile Projectile { get; private set; }
+        public GameObject Shooter { get; private set; }
+
+        public ProjectileLaunchedEvent(RougeLite.Combat.Projectile projectile, GameObject shooter, GameObject source = null) : base(source)
+        {
+            Projectile = projectile;
+            Shooter = shooter;
+        }
+
+        public override string GetDebugInfo()
+        {
+            string shooterName = Shooter != null ? Shooter.name : "Unknown";
+            string projectileType = Projectile != null ? Projectile.ProjectileType : "Unknown";
+            return base.GetDebugInfo() + $" - {projectileType} fired by {shooterName}";
+        }
+    }
+
+    /// <summary>
+    /// Fired when projectile hits a target
+    /// </summary>
+    public class ProjectileHitEvent : GameEvent
+    {
+        public RougeLite.Combat.Projectile Projectile { get; private set; }
+        public GameObject Target { get; private set; }
+        public float Damage { get; private set; }
+
+        public ProjectileHitEvent(RougeLite.Combat.Projectile projectile, GameObject target, float damage, GameObject source = null) : base(source)
+        {
+            Projectile = projectile;
+            Target = target;
+            Damage = damage;
+        }
+
+        public override string GetDebugInfo()
+        {
+            string targetName = Target != null ? Target.name : "Unknown";
+            string projectileType = Projectile != null ? Projectile.ProjectileType : "Unknown";
+            return base.GetDebugInfo() + $" - {projectileType} hit {targetName} for {Damage} damage";
+        }
+    }
+
+    /// <summary>
+    /// Fired when projectile is destroyed/returned to pool
+    /// </summary>
+    public class ProjectileDestroyedEvent : GameEvent
+    {
+        public RougeLite.Combat.Projectile Projectile { get; private set; }
+        public int TargetsHit { get; private set; }
+        public float LifetimeRemaining { get; private set; }
+
+        public ProjectileDestroyedEvent(RougeLite.Combat.Projectile projectile, int targetsHit, float lifetimeRemaining, GameObject source = null) : base(source)
+        {
+            Projectile = projectile;
+            TargetsHit = targetsHit;
+            LifetimeRemaining = lifetimeRemaining;
+        }
+
+        public override string GetDebugInfo()
+        {
+            string projectileType = Projectile != null ? Projectile.ProjectileType : "Unknown";
+            return base.GetDebugInfo() + $" - {projectileType} destroyed (Hits: {TargetsHit}, Lifetime: {LifetimeRemaining:F2}s)";
+        }
+    }
+
+    /// <summary>
+    /// Data structure for object pool events
+    /// </summary>
+    [System.Serializable]
+    public struct PoolEventData
+    {
+        public string poolName;
+        public int availableCount;
+        public int activeCount;
+        public int totalCount;
+        public int maxPoolSize;
+        public bool allowsGrowth;
+    }
+
+    /// <summary>
+    /// Fired when object pool is created
+    /// </summary>
+    public class PoolCreatedEvent : GameEvent<PoolEventData>
+    {
+        public PoolCreatedEvent(PoolEventData data, GameObject source = null) : base(data, source) { }
+    }
+
+    /// <summary>
+    /// Fired when object is retrieved from pool
+    /// </summary>
+    public class ObjectRetrievedFromPoolEvent : GameEvent<PoolEventData>
+    {
+        public System.Type ObjectType { get; private set; }
+
+        public ObjectRetrievedFromPoolEvent(PoolEventData data, System.Type objectType, GameObject source = null) : base(data, source)
+        {
+            ObjectType = objectType;
+        }
+
+        public override string GetDebugInfo()
+        {
+            return base.GetDebugInfo() + $" - {ObjectType?.Name ?? "Unknown"} retrieved from {Data.poolName}";
+        }
+    }
+
+    /// <summary>
+    /// Fired when object is returned to pool
+    /// </summary>
+    public class ObjectReturnedToPoolEvent : GameEvent<PoolEventData>
+    {
+        public System.Type ObjectType { get; private set; }
+
+        public ObjectReturnedToPoolEvent(PoolEventData data, System.Type objectType, GameObject source = null) : base(data, source)
+        {
+            ObjectType = objectType;
+        }
+
+        public override string GetDebugInfo()
+        {
+            return base.GetDebugInfo() + $" - {ObjectType?.Name ?? "Unknown"} returned to {Data.poolName}";
+        }
+    }
+
+    /// <summary>
+    /// Fired when pool reaches capacity and starts rejecting objects
+    /// </summary>
+    public class PoolCapacityReachedEvent : GameEvent<PoolEventData>
+    {
+        public PoolCapacityReachedEvent(PoolEventData data, GameObject source = null) : base(data, source) { }
+    }
+
+    /// <summary>
+    /// Fired when pool is cleared/destroyed
+    /// </summary>
+    public class PoolClearedEvent : GameEvent<PoolEventData>
+    {
+        public PoolClearedEvent(PoolEventData data, GameObject source = null) : base(data, source) { }
+    }
+
+    // =========================
     // PROGRESSION AND UPGRADE EVENTS
     // =========================
 
