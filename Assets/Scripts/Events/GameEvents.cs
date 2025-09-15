@@ -377,4 +377,54 @@ namespace RougeLite.Events
     {
         public ItemUsedEvent(ItemData data, GameObject source = null) : base(data, source) { }
     }
+
+    // =========================
+    // LEVEL/GAME PROGRESSION EVENTS
+    // =========================
+
+    /// <summary>
+    /// Data structure for level information
+    /// </summary>
+    [System.Serializable]
+    public struct LevelData
+    {
+        public int levelNumber;
+        public string levelName;
+        public float timeLimit;
+        public int enemyCount;
+        public Vector3 playerStartPosition;
+        
+        // Game statistics
+        public int enemiesKilled;
+        public float totalDamageDealt;
+        public float timeCompleted;
+    }
+
+    /// <summary>
+    /// Fired when the game starts
+    /// </summary>
+    public class GameStartEvent : GameEvent
+    {
+        public GameStartEvent(GameObject source = null) : base(source) { }
+    }
+
+    /// <summary>
+    /// Fired when a level is completed
+    /// </summary>
+    public class LevelCompleteEvent : GameEvent<LevelData>
+    {
+        public float CompletionTime { get; private set; }
+        public int Score { get; private set; }
+
+        public LevelCompleteEvent(LevelData levelData, float completionTime, int score, GameObject source = null) : base(levelData, source)
+        {
+            CompletionTime = completionTime;
+            Score = score;
+        }
+
+        public override string GetDebugInfo()
+        {
+            return base.GetDebugInfo() + $" - Level: {Data.levelName}, Time: {CompletionTime:F2}s, Score: {Score}";
+        }
+    }
 }
