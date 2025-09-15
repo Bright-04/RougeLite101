@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem; // important for the new Input System
+using RougeLite.Events;
 
-public class Sword : MonoBehaviour
+public class Sword : EventBehaviour
 {
     [SerializeField] private float attackCooldown = 0.5f; // seconds
     private float nextAttackTime = 0f;
@@ -18,8 +19,11 @@ public class Sword : MonoBehaviour
 
     private GameObject slashAnim;
 
-    private void Awake()
+    protected override void Awake()
     {
+        // Call base class Awake to initialize event system
+        base.Awake();
+        
         // Get and validate critical components
         playerController = GetComponentInParent<PlayerController>();
         if (playerController == null)
@@ -53,7 +57,7 @@ public class Sword : MonoBehaviour
         playerControls?.Disable();
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         // Unsubscribe from events to prevent memory leaks
         if (playerControls != null)
@@ -62,6 +66,9 @@ public class Sword : MonoBehaviour
             playerControls.Disable();
             playerControls.Dispose();
         }
+        
+        // Call base class OnDestroy for event system cleanup
+        base.OnDestroy();
     }
 
     void Start()
@@ -111,6 +118,24 @@ public class Sword : MonoBehaviour
         {
             Debug.LogWarning("Sword: SlashAnimPrefab or SlashAnimSpawnPoint is null, slash animation will not appear.");
         }
+        
+        // Broadcast attack event
+        var attackData = new AttackData
+        {
+            attacker = playerController != null ? playerController.gameObject : gameObject,
+            weapon = gameObject,
+            attackPosition = slashAnimSpawnPoint != null ? slashAnimSpawnPoint.position : transform.position,
+            attackType = "Sword",
+            damage = 1f // You can make this configurable
+        };
+        
+        var attackEvent = new AttackPerformedEvent
+        {
+            Data = attackData,
+            Timestamp = System.DateTime.Now
+        };
+        
+        BroadcastEvent(attackEvent);
     }
 
     public void DoneAttackingAnimEvent()

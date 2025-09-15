@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using RougeLite.Events;
 
-public class SpellCaster : MonoBehaviour
+public class SpellCaster : EventBehaviour
 {
     public Spell[] spellSlots; // drag your 3 spells here in inspector
 
@@ -10,8 +11,11 @@ public class SpellCaster : MonoBehaviour
     private PlayerControls playerControls;
     private float[] cooldownTimers;
 
-    private void Awake()
+    protected override void Awake()
     {
+        // Call base class Awake to initialize event system
+        base.Awake();
+        
         // Get and validate critical components
         stats = GetComponent<PlayerStats>();
         if (stats == null)
@@ -49,7 +53,7 @@ public class SpellCaster : MonoBehaviour
     private void OnEnable() => playerControls?.Enable();
     private void OnDisable() => playerControls?.Disable();
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         // Unsubscribe from events to prevent memory leaks
         if (playerControls != null)
@@ -58,6 +62,9 @@ public class SpellCaster : MonoBehaviour
             playerControls.Disable();
             playerControls.Dispose();
         }
+        
+        // Call base class OnDestroy for event system cleanup
+        base.OnDestroy();
     }
 
     private void Update()
@@ -159,18 +166,19 @@ public class SpellCaster : MonoBehaviour
         }
 
         // Spawn spell prefab if available
+        GameObject spellProjectile = null;
         if (spell.spellPrefab != null)
         {
             Vector2 spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
-            GameObject proj = Instantiate(spell.spellPrefab, spawnPos, Quaternion.identity);
+            spellProjectile = Instantiate(spell.spellPrefab, spawnPos, Quaternion.identity);
 
-            if (proj != null)
+            if (spellProjectile != null)
             {
-                var fireball = proj.GetComponent<FireballSpell>();
+                var fireball = spellProjectile.GetComponent<FireballSpell>();
                 if (fireball != null)
                 {
                     Vector2 dir = (mouseWorldPos - spawnPos).normalized;
-                    proj.transform.right = dir;
+                    spellProjectile.transform.right = dir;
                 }
 
                 Debug.Log($"Spawned {spell.spellName} at {spawnPos} toward {mouseWorldPos}");
@@ -180,6 +188,24 @@ public class SpellCaster : MonoBehaviour
         {
             Debug.LogWarning("Spell prefab is NULL on cast!");
         }
+
+        // Broadcast spell cast event
+        var spellData = new SpellData
+        {
+            caster = gameObject,
+            spellName = spell.spellName,
+            manaCost = spell.manaCost,
+            targetPosition = mouseWorldPos,
+            spellProjectile = spellProjectile
+        };
+        
+        var spellEvent = new SpellCastEvent
+        {
+            Data = spellData,
+            Timestamp = System.DateTime.Now
+        };
+        
+        BroadcastEvent(spellEvent);
 
         Debug.Log($"Cast {spell.spellName} toward {mouseWorldPos}");
     }

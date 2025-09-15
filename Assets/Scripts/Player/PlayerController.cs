@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using RougeLite.Events;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : EventBehaviour
 {   
     public bool FacingLeft { get { return facingLeft; } set { facingLeft = value; } }
     public static PlayerController Instance;
@@ -17,8 +18,11 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer mySpriteRender;
 
     private bool facingLeft =false;
-    private void Awake()
+    protected override void Awake()
     {   
+        // Call base class Awake to initialize event system
+        base.Awake();
+        
         // Initialize singleton
         Instance = this;
         
@@ -66,6 +70,9 @@ public class PlayerController : MonoBehaviour
         // Dispose of input system resources
         playerControls?.Disable();
         playerControls?.Dispose();
+        
+        // Call base class OnDestroy for event system cleanup
+        base.OnDestroy();
     }
 
     private void Update()
@@ -105,7 +112,28 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        Vector2 previousPosition = rb.position;
         rb.MovePosition(rb.position + movement * (moveSpeed * Time.fixedDeltaTime));
+        
+        // Broadcast movement event if the player is actually moving
+        if (movement.magnitude > 0.1f)
+        {
+            var movementData = new PlayerMovementData
+            {
+                player = gameObject,
+                velocity = movement * moveSpeed,
+                position = transform.position,
+                previousPosition = previousPosition
+            };
+            
+            var movementEvent = new PlayerMovementEvent
+            {
+                Data = movementData,
+                Timestamp = System.DateTime.Now
+            };
+            
+            BroadcastEvent(movementEvent);
+        }
     }
 
     private void AdjustPlayerFacingDirection()

@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
+using RougeLite.Events;
 
-public class SlimeAI : MonoBehaviour
+public class SlimeAI : EventBehaviour
 {
     private enum State
     {
@@ -25,8 +26,11 @@ public class SlimeAI : MonoBehaviour
     private WaitForSeconds updateWait;
     private WaitForSeconds roamingWait;
 
-    private void Awake()
+    protected override void Awake()
     {
+        // Call base class Awake to initialize event system
+        base.Awake();
+        
         // Validate and cache components
         slimePathFinding = GetComponent<SlimePathFinding>();
         if (slimePathFinding == null)
@@ -146,6 +150,41 @@ public class SlimeAI : MonoBehaviour
     {
         // Clean up any running coroutines
         StopAllCoroutines();
+    }
+
+    /// <summary>
+    /// Call this method when the slime dies to broadcast the death event
+    /// </summary>
+    public void Die()
+    {
+        // Broadcast enemy death event
+        var enemyData = new EnemyData
+        {
+            enemy = gameObject,
+            enemyType = "Slime",
+            position = transform.position,
+            wasDefeated = true
+        };
+        
+        var deathEvent = new EnemyDeathEvent
+        {
+            Data = enemyData,
+            Timestamp = System.DateTime.Now
+        };
+        
+        BroadcastEvent(deathEvent);
+        
+        // Destroy the game object
+        Destroy(gameObject);
+    }
+
+    protected override void OnDestroy()
+    {
+        // Clean up any running coroutines
+        StopAllCoroutines();
+        
+        // Call base class OnDestroy for event system cleanup
+        base.OnDestroy();
     }
 
     // Debug visualization in Scene view

@@ -8,6 +8,10 @@ Welcome to the RougeLite101 developer documentation! This folder contains compre
 - **[Null Checks Implementation Guide](NULL_CHECKS_GUIDE.md)** - Comprehensive guide to null checks implementation
 - **[Null Checks Quick Reference](NULL_CHECKS_QUICK_REFERENCE.md)** - Quick patterns and templates
 
+### 🔄 Event System Architecture
+- **[Event System Guide](EVENT_SYSTEM_GUIDE.md)** - Complete event-driven architecture documentation
+- **[Event System Quick Reference](EVENT_SYSTEM_QUICK_REFERENCE.md)** - Quick setup and usage patterns
+
 ### 🎮 Game Systems *(Coming Soon)*
 - **Input System Guide** - Player controls and input handling
 - **Combat System Guide** - Weapon and spell systems
@@ -29,7 +33,8 @@ For immediate help with common issues:
 
 1. **Game Crashing?** → Check [Null Checks Guide](NULL_CHECKS_GUIDE.md#troubleshooting)
 2. **Missing Components?** → See [Quick Reference](NULL_CHECKS_QUICK_REFERENCE.md)
-3. **New to Project?** → Read the comprehensive guides starting with Null Checks
+3. **Need Event System?** → Start with [Event System Quick Reference](EVENT_SYSTEM_QUICK_REFERENCE.md)
+4. **New to Project?** → Read the comprehensive guides starting with Null Checks
 
 ## 📝 Contributing to Documentation
 
