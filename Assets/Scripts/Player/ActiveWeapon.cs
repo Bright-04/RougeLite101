@@ -1,18 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ActiveWeapon : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    // TODO: Implement active weapon switching functionality
+    // This script is currently a placeholder for future weapon management features
+    
+    private void Start()
     {
-
+        // Initialize weapon system when implemented
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-
+        // Handle weapon updates when implemented
     }
 }

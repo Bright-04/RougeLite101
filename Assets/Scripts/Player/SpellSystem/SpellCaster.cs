@@ -25,6 +25,17 @@ public class SpellCaster : MonoBehaviour
     private void OnEnable() => playerControls.Enable();
     private void OnDisable() => playerControls.Disable();
 
+    private void OnDestroy()
+    {
+        // Unsubscribe from events to prevent memory leaks
+        if (playerControls != null)
+        {
+            playerControls.Combat.SpellCasting.performed -= OnSpellCastingPerformed;
+            playerControls.Disable();
+            playerControls.Dispose();
+        }
+    }
+
     private void Update()
     {
         for (int i = 0; i < cooldownTimers.Length; i++)
@@ -34,22 +45,11 @@ public class SpellCaster : MonoBehaviour
         }
     }
 
-    //private void OnSpellCastingPerformed(InputAction.CallbackContext context)
-    //{
-    //    var controlPath = context.control.path;
-    //    Debug.Log($"SpellCasting triggered by control: {controlPath}");
-
-    //    if (controlPath == "<Keyboard>/1")
-    //        TryCastSpell(0);
-    //    else if (controlPath == "<Keyboard>/2")
-    //        TryCastSpell(1);
-    //    else if (controlPath == "<Keyboard>/3")
-    //        TryCastSpell(2);
-    //}
     private void OnSpellCastingPerformed(InputAction.CallbackContext context)
     {
         Debug.Log("SpellCasting input received");
 
+        // Check which spell key was pressed and cast the corresponding spell
         if (Keyboard.current.digit1Key.wasPressedThisFrame)
             TryCastSpell(0);
         else if (Keyboard.current.digit2Key.wasPressedThisFrame)

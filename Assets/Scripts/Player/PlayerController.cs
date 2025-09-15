@@ -31,6 +31,24 @@ public class PlayerController : MonoBehaviour
         playerControls.Enable();
     }
 
+    private void OnDisable()
+    {
+        playerControls?.Disable();
+    }
+
+    private void OnDestroy()
+    {
+        // Clean up singleton instance
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+
+        // Dispose of input system resources
+        playerControls?.Disable();
+        playerControls?.Dispose();
+    }
+
     private void Update()
     {
         PlayerInput();

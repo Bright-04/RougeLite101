@@ -36,6 +36,17 @@ public class Sword : MonoBehaviour
         playerControls.Disable();
     }
 
+    private void OnDestroy()
+    {
+        // Unsubscribe from events to prevent memory leaks
+        if (playerControls != null)
+        {
+            playerControls.Combat.Attack.started -= _ => Attack();
+            playerControls.Disable();
+            playerControls.Dispose();
+        }
+    }
+
     void Start()
     {
         playerControls.Combat.Attack.started += _ => Attack();
@@ -46,14 +57,6 @@ public class Sword : MonoBehaviour
         FollowPlayerDirection();
     }
 
-
-    //private void Attack()
-    //{
-    //    myAnimator.SetTrigger("Attack");
-    //    weaponCollider.gameObject.SetActive(true);
-    //    slashAnim = Instantiate(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
-    //    slashAnim.transform.parent = this.transform.parent;
-    //}
     private void Attack()
     {
         if (Time.time < nextAttackTime)
