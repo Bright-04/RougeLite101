@@ -20,20 +20,37 @@ public class Sword : MonoBehaviour
 
     private void Awake()
     {
+        // Get and validate critical components
         playerController = GetComponentInParent<PlayerController>();
+        if (playerController == null)
+        {
+            Debug.LogError($"Sword: PlayerController component missing in parent of {gameObject.name}! Sword functionality will not work.", this);
+        }
+        
         activeWeapon = GetComponentInParent<ActiveWeapon>();
+        if (activeWeapon == null)
+        {
+            Debug.LogError($"Sword: ActiveWeapon component missing in parent of {gameObject.name}! Weapon positioning will not work.", this);
+        }
+        
         myAnimator = GetComponent<Animator>();
+        if (myAnimator == null)
+        {
+            Debug.LogError($"Sword: Animator component missing on {gameObject.name}! Attack animations will not work.", this);
+        }
+        
+        // Initialize input system
         playerControls = new PlayerControls();
     }
 
     private void OnEnable()
     {
-        playerControls.Enable();
+        playerControls?.Enable();
     }
 
     private void OnDisable()
     {
-        playerControls.Disable();
+        playerControls?.Disable();
     }
 
     private void OnDestroy()
@@ -49,7 +66,14 @@ public class Sword : MonoBehaviour
 
     void Start()
     {
-        playerControls.Combat.Attack.started += _ => Attack();
+        if (playerControls != null)
+        {
+            playerControls.Combat.Attack.started += _ => Attack();
+        }
+        else
+        {
+            Debug.LogError("Sword: PlayerControls is null, attack input will not work.");
+        }
     }
 
     private void Update()
@@ -64,32 +88,68 @@ public class Sword : MonoBehaviour
 
         nextAttackTime = Time.time + attackCooldown;
 
-        myAnimator.SetTrigger("Attack");
-        weaponCollider.gameObject.SetActive(true);
-        slashAnim = Instantiate(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
-        slashAnim.transform.parent = this.transform.parent;
+        // Validate components before using them
+        if (myAnimator != null)
+        {
+            myAnimator.SetTrigger("Attack");
+        }
+        
+        if (weaponCollider != null)
+        {
+            weaponCollider.gameObject.SetActive(true);
+        }
+        
+        if (slashAnimPrefab != null && slashAnimSpawnPoint != null)
+        {
+            slashAnim = Instantiate(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
+            if (slashAnim != null && this.transform.parent != null)
+            {
+                slashAnim.transform.parent = this.transform.parent;
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Sword: SlashAnimPrefab or SlashAnimSpawnPoint is null, slash animation will not appear.");
+        }
     }
 
     public void DoneAttackingAnimEvent()
     {
-        weaponCollider.gameObject.SetActive(false);
+        if (weaponCollider != null)
+        {
+            weaponCollider.gameObject.SetActive(false);
+        }
     }
 
     public void SwingUpFlipAnimEvent()
     {
-        slashAnim.gameObject.transform.rotation = Quaternion.Euler(-180, 0, 0);
-        if (playerController.FacingLeft)
+        if (slashAnim != null && playerController != null)
         {
-            slashAnim.GetComponent<SpriteRenderer>().flipX = true;
+            slashAnim.gameObject.transform.rotation = Quaternion.Euler(-180, 0, 0);
+            if (playerController.FacingLeft)
+            {
+                var spriteRenderer = slashAnim.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.flipX = true;
+                }
+            }
         }
     }
 
     public void SwingDownFlipAnimEvent()
     {
-        slashAnim.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-        if (playerController.FacingLeft)
+        if (slashAnim != null && playerController != null)
         {
-            slashAnim.GetComponent<SpriteRenderer>().flipX = true;
+            slashAnim.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+            if (playerController.FacingLeft)
+            {
+                var spriteRenderer = slashAnim.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.flipX = true;
+                }
+            }
         }
     }
 
@@ -116,6 +176,11 @@ public class Sword : MonoBehaviour
     }
     private void FollowPlayerDirection()
     {
+        if (playerController == null || activeWeapon == null || weaponCollider == null)
+        {
+            return; // Skip if critical components are missing
+        }
+
         if (playerController.FacingLeft)
         {
             activeWeapon.transform.rotation = Quaternion.Euler(0, -180, 0);

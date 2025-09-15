@@ -12,18 +12,42 @@ public class SpellCaster : MonoBehaviour
 
     private void Awake()
     {
+        // Get and validate critical components
         stats = GetComponent<PlayerStats>();
+        if (stats == null)
+        {
+            Debug.LogError($"SpellCaster: PlayerStats component missing on {gameObject.name}! Spell damage calculations will not work.", this);
+        }
+        
         animator = GetComponent<Animator>();
-        cooldownTimers = new float[spellSlots.Length];
+        if (animator == null)
+        {
+            Debug.LogError($"SpellCaster: Animator component missing on {gameObject.name}! Spell animations will not work.", this);
+        }
+        
+        // Validate spell slots array
+        if (spellSlots == null || spellSlots.Length == 0)
+        {
+            Debug.LogWarning($"SpellCaster: No spells assigned to spell slots on {gameObject.name}. Configure spells in the inspector.", this);
+            cooldownTimers = new float[0];
+        }
+        else
+        {
+            cooldownTimers = new float[spellSlots.Length];
+        }
 
+        // Initialize input system
         playerControls = new PlayerControls();
-        playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
+        if (playerControls != null)
+        {
+            playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
+        }
 
         Debug.Log("SpellCaster initialized.");
     }
 
-    private void OnEnable() => playerControls.Enable();
-    private void OnDisable() => playerControls.Disable();
+    private void OnEnable() => playerControls?.Enable();
+    private void OnDisable() => playerControls?.Disable();
 
     private void OnDestroy()
     {
@@ -63,7 +87,12 @@ public class SpellCaster : MonoBehaviour
     {
         Debug.Log($"Trying to cast spell in slot {index}");
 
-        if (index >= spellSlots.Length) return;
+        // Validate array bounds and spell slot
+        if (spellSlots == null || index >= spellSlots.Length || index < 0)
+        {
+            Debug.LogWarning($"SpellCaster: Invalid spell slot index {index} or spellSlots array is null.");
+            return;
+        }
 
         Spell spell = spellSlots[index];
         if (spell == null)
@@ -72,9 +101,17 @@ public class SpellCaster : MonoBehaviour
             return;
         }
 
-        if (cooldownTimers[index] > 0)
+        // Check cooldown (with bounds checking)
+        if (cooldownTimers != null && index < cooldownTimers.Length && cooldownTimers[index] > 0)
         {
             Debug.Log($"{spell.spellName} is on cooldown.");
+            return;
+        }
+
+        // Validate player stats for mana check
+        if (stats == null)
+        {
+            Debug.LogError("SpellCaster: PlayerStats is null, cannot check mana.");
             return;
         }
 
@@ -86,30 +123,58 @@ public class SpellCaster : MonoBehaviour
 
         CastSpell(spell);
         stats.UseMana(spell.manaCost);
-        cooldownTimers[index] = spell.cooldown;
+        
+        // Set cooldown (with bounds checking)
+        if (cooldownTimers != null && index < cooldownTimers.Length)
+        {
+            cooldownTimers[index] = spell.cooldown;
+        }
     }
 
 
     private void CastSpell(Spell spell)
     {
-        Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        if (spell == null)
+        {
+            Debug.LogError("SpellCaster: Cannot cast null spell.");
+            return;
+        }
 
-        if (!string.IsNullOrEmpty(spell.castAnimation))
+        Vector2 mouseWorldPos = Vector2.zero;
+        
+        // Safely get mouse position
+        if (Camera.main != null && Mouse.current != null)
+        {
+            mouseWorldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+        }
+        else
+        {
+            Debug.LogWarning("SpellCaster: Main camera or mouse input is null, using default position.");
+        }
+
+        // Play animation if available
+        if (animator != null && !string.IsNullOrEmpty(spell.castAnimation))
+        {
             animator.SetTrigger(spell.castAnimation);
+        }
 
+        // Spawn spell prefab if available
         if (spell.spellPrefab != null)
         {
             Vector2 spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
             GameObject proj = Instantiate(spell.spellPrefab, spawnPos, Quaternion.identity);
 
-            var fireball = proj.GetComponent<FireballSpell>();
-            if (fireball != null)
+            if (proj != null)
             {
-                Vector2 dir = (mouseWorldPos - spawnPos).normalized;
-                proj.transform.right = dir;
-            }
+                var fireball = proj.GetComponent<FireballSpell>();
+                if (fireball != null)
+                {
+                    Vector2 dir = (mouseWorldPos - spawnPos).normalized;
+                    proj.transform.right = dir;
+                }
 
-            Debug.Log($"Spawned {spell.spellName} at {spawnPos} toward {mouseWorldPos}");
+                Debug.Log($"Spawned {spell.spellName} at {spawnPos} toward {mouseWorldPos}");
+            }
         }
         else
         {
