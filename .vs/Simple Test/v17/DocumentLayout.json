@@ -1,0 +1,235 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\AnKhang\\Simple Test\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|C:\\Users\\AnKhang\\Simple Test\\assets\\scripts\\player\\playerstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\playerstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|C:\\Users\\AnKhang\\Simple Test\\assets\\scripts\\player\\damagesource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\damagesource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|c:\\users\\ankhang\\simple test\\assets\\scripts\\player\\spellsystem\\fireballspell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\spellsystem\\fireballspell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|c:\\users\\ankhang\\simple test\\assets\\scripts\\player\\spellsystem\\lightningspell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\spellsystem\\lightningspell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|c:\\users\\ankhang\\simple test\\assets\\scripts\\player\\spellsystem\\spell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\spellsystem\\spell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|c:\\users\\ankhang\\simple test\\assets\\scripts\\player\\spellsystem\\spellcaster.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\spellsystem\\spellcaster.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|C:\\Users\\AnKhang\\Simple Test\\assets\\scripts\\player\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|C:\\Users\\AnKhang\\Simple Test\\assets\\scripts\\enemies\\enemydamagesource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemies\\enemydamagesource.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|C:\\Users\\AnKhang\\Simple Test\\assets\\scripts\\enemies\\slimepathfinding.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemies\\slimepathfinding.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|C:\\Users\\AnKhang\\Simple Test\\assets\\scripts\\enemies\\slimeai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemies\\slimeai.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|C:\\Users\\AnKhang\\Simple Test\\assets\\scripts\\enemies\\slimehealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\enemies\\slimehealth.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|C:\\Users\\AnKhang\\Simple Test\\assets\\scripts\\misc\\flash.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\misc\\flash.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|C:\\Users\\AnKhang\\Simple Test\\assets\\scripts\\misc\\knockback.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4BCEFA67-A656-85B9-DDFC-679F4D28D406}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\misc\\knockback.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "SpellCaster.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\SpellSystem\\SpellCaster.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\SpellSystem\\SpellCaster.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\SpellSystem\\SpellCaster.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\SpellSystem\\SpellCaster.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAwwDsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T14:44:26.496Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Spell.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\SpellSystem\\Spell.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\SpellSystem\\Spell.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\SpellSystem\\Spell.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\SpellSystem\\Spell.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T14:44:14.836Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "LightningSpell.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\SpellSystem\\LightningSpell.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\SpellSystem\\LightningSpell.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\SpellSystem\\LightningSpell.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\SpellSystem\\LightningSpell.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T14:43:38.353Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FireballSpell.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\SpellSystem\\FireballSpell.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\SpellSystem\\FireballSpell.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\SpellSystem\\FireballSpell.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\SpellSystem\\FireballSpell.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T14:42:53.112Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DamageSource.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\DamageSource.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\DamageSource.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\DamageSource.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\DamageSource.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T13:55:15.162Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "PlayerStats.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\PlayerStats.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\PlayerStats.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\PlayerStats.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\PlayerStats.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEkAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T13:54:27.711Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PlayerController.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\PlayerController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\PlayerController.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Player\\PlayerController.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\PlayerController.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAiwEgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T12:42:04.119Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "EnemyDamageSource.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Enemies\\EnemyDamageSource.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemies\\EnemyDamageSource.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Enemies\\EnemyDamageSource.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Enemies\\EnemyDamageSource.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T14:10:37.684Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "SlimePathFinding.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Enemies\\SlimePathFinding.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemies\\SlimePathFinding.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Enemies\\SlimePathFinding.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Enemies\\SlimePathFinding.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAwB4AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T12:45:11.969Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "SlimeAI.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Enemies\\SlimeAI.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemies\\SlimeAI.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Enemies\\SlimeAI.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Enemies\\SlimeAI.cs",
+              "ViewState": "AgIAAFEAAAAAAAAAAAAnwCAAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-12T12:14:02.455Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "SlimeHealth.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Enemies\\SlimeHealth.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Enemies\\SlimeHealth.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Enemies\\SlimeHealth.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Enemies\\SlimeHealth.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-09T03:12:14.384Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Knockback.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Misc\\Knockback.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Misc\\Knockback.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Misc\\Knockback.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Misc\\Knockback.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-09T03:12:08.745Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Flash.cs",
+              "DocumentMoniker": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Misc\\Flash.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Misc\\Flash.cs",
+              "ToolTip": "C:\\Users\\AnKhang\\Simple Test\\Assets\\Scripts\\Misc\\Flash.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Misc\\Flash.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAADwvxAAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-09T03:04:58.052Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
