@@ -105,6 +105,37 @@ namespace RougeLite.Events
         }
 
         /// <summary>
+        /// Convenience method to register for events using Action delegates
+        /// This provides a simpler way to listen for events without implementing interfaces
+        /// </summary>
+        /// <typeparam name="T">Type of event to listen for</typeparam>
+        /// <param name="callback">Action to call when event is received</param>
+        protected void RegisterForEvent<T>(System.Action<T> callback) where T : GameEvent
+        {
+            if (eventManager != null)
+            {
+                eventManager.RegisterAction(callback);
+            }
+            else
+            {
+                Debug.LogError($"{GetType().Name}: Cannot register for event - EventManager is null!", this);
+            }
+        }
+
+        /// <summary>
+        /// Convenience method to unregister from events using Action delegates
+        /// </summary>
+        /// <typeparam name="T">Type of event to stop listening for</typeparam>
+        /// <param name="callback">Action to unregister</param>
+        protected void UnregisterFromEvent<T>(System.Action<T> callback) where T : GameEvent
+        {
+            if (eventManager != null)
+            {
+                eventManager.UnregisterAction(callback);
+            }
+        }
+
+        /// <summary>
         /// Called when this object is destroyed - override to handle cleanup
         /// </summary>
         protected virtual void OnDestroy()

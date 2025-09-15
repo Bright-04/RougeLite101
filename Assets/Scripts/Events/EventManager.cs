@@ -106,6 +106,58 @@ namespace RougeLite.Events
         }
 
         /// <summary>
+        /// Register an Action delegate to listen for events (simpler than implementing interfaces)
+        /// </summary>
+        /// <typeparam name="T">Type of event to listen for</typeparam>
+        /// <param name="callback">Action to call when event is received</param>
+        public void RegisterAction<T>(System.Action<T> callback) where T : GameEvent
+        {
+            if (callback == null)
+            {
+                Debug.LogError("EventManager: Cannot register null callback!", this);
+                return;
+            }
+
+            // Create a wrapper that implements IEventListener
+            var wrapper = new ActionEventListener<T>(callback);
+            Subscribe<T>(wrapper);
+        }
+
+        /// <summary>
+        /// Unregister an Action delegate from listening for events
+        /// </summary>
+        /// <typeparam name="T">Type of event to stop listening for</typeparam>
+        /// <param name="callback">Action to unregister</param>
+        public void UnregisterAction<T>(System.Action<T> callback) where T : GameEvent
+        {
+            if (callback == null) return;
+
+            var eventType = typeof(T);
+            if (!eventListeners.ContainsKey(eventType)) return;
+
+            // Find and remove the wrapper for this callback
+            var listenersToRemove = new List<IEventListener>();
+            foreach (var listener in eventListeners[eventType])
+            {
+                if (listener is ActionEventListener<T> wrapper && wrapper.Callback == callback)
+                {
+                    listenersToRemove.Add(listener);
+                }
+            }
+
+            foreach (var listener in listenersToRemove)
+            {
+                eventListeners[eventType].Remove(listener);
+            }
+
+            // Clean up empty lists
+            if (eventListeners[eventType].Count == 0)
+            {
+                eventListeners.Remove(eventType);
+            }
+        }
+
+        /// <summary>
         /// Immediately broadcast an event to all registered listeners
         /// </summary>
         /// <typeparam name="T">Type of event to broadcast</typeparam>
@@ -246,6 +298,24 @@ namespace RougeLite.Events
                     Debug.Log($"  - {listener.GetType().Name}", this);
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Internal wrapper class to allow Action delegates to work with the event system
+    /// </summary>
+    internal class ActionEventListener<T> : IEventListener<T> where T : GameEvent
+    {
+        public System.Action<T> Callback { get; private set; }
+
+        public ActionEventListener(System.Action<T> callback)
+        {
+            Callback = callback;
+        }
+
+        public void OnEventReceived(T eventData)
+        {
+            Callback?.Invoke(eventData);
         }
     }
 }
