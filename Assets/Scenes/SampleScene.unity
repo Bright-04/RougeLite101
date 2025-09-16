@@ -196,6 +196,70 @@ Transform:
   m_Children: []
   m_Father: {fileID: 49503759}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -23.581}
+--- !u!1 &423499212
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 423499214}
+  - component: {fileID: 423499213}
+  m_Layer: 0
+  m_Name: WorldGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &423499213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423499212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a92775296f84ec43a48db747e074f8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chunkSize: 50
+  chunksAroundPlayer: 3
+  player: {fileID: 1693237139}
+  autoFindPlayer: 1
+  terrainPrefabs: []
+  enemyPrefabs: []
+  itemPrefabs: []
+  structurePrefabs: []
+  decorationPrefabs: []
+  enemySpawnChance: 0.3
+  itemSpawnChance: 0.1
+  structureSpawnChance: 0.05
+  decorationSpawnChance: 0.2
+  biomes: []
+  biomeScale: 0.01
+  useBiomes: 1
+  maxObjectsPerChunk: 20
+  enableObjectPooling: 1
+  enableLOD: 1
+  lodDistance: 100
+--- !u!4 &423499214
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423499212}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.47, y: 0.09, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,6 +272,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -333,6 +398,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88ef62e2b3b68fc478f1f2d94ea516dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1693237139}
+  followSpeed: 2
+  offset: {x: 0, y: 0, z: -10}
+  smoothFollow: 1
+  useBounds: 0
+  minX: -50
+  maxX: 50
+  minY: -30
+  maxY: 30
+  shakeDuration: 0
+  shakeIntensity: 0
+  cam: {fileID: 0}
+  defaultSize: 5
+  minZoom: 3
+  maxZoom: 10
+  zoomSpeed: 2
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -700,6 +793,7 @@ GameObject:
   - component: {fileID: 1693237143}
   - component: {fileID: 1693237144}
   - component: {fileID: 1693237145}
+  - component: {fileID: 1693237146}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -813,7 +907,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1693237137}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 18a609612324908469e60e62fed14b37, type: 3}
   m_Name: 
@@ -921,6 +1015,26 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1d46500fa33843c498a3b4c49f710b5d, type: 2}
   - {fileID: 0}
   - {fileID: 0}
+--- !u!114 &1693237146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693237137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aae5928e88f92444ba71cc5e14beee1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 10
+  fastMoveSpeed: 50
+  useRigidbody: 1
+  fastMoveKey: 304
+  useArrowKeys: 1
+  useWASD: 1
+  showPosition: 1
+  showChunkInfo: 1
 --- !u!1001 &1825525214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1785,3 +1899,4 @@ SceneRoots:
   - {fileID: 9136410852518430463}
   - {fileID: 1987930715}
   - {fileID: 1825525214}
+  - {fileID: 423499214}

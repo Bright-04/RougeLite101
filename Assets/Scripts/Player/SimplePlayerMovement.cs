@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace RougeLite.Player
 {
@@ -14,7 +15,9 @@ namespace RougeLite.Player
         [SerializeField] private bool useRigidbody = true;
 
         [Header("Input Settings")]
-        [SerializeField] private KeyCode fastMoveKey = KeyCode.LeftShift;
+        [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private InputActionReference fastMoveAction;
+        [SerializeField] private KeyCode fastMoveKey = KeyCode.LeftShift; // Fallback
         [SerializeField] private bool useArrowKeys = true;
         [SerializeField] private bool useWASD = true;
 
@@ -28,6 +31,22 @@ namespace RougeLite.Player
 
         #region Unity Lifecycle
 
+        private void Awake()
+        {
+            // Enable input actions
+            EnableInputActions();
+        }
+
+        private void OnEnable()
+        {
+            EnableInputActions();
+        }
+
+        private void OnDisable()
+        {
+            DisableInputActions();
+        }
+
         private void Start()
         {
             // Get or add Rigidbody2D if using physics movement
@@ -38,7 +57,7 @@ namespace RougeLite.Player
                 {
                     rb = gameObject.AddComponent<Rigidbody2D>();
                     rb.gravityScale = 0f; // No gravity for top-down movement
-                    rb.drag = 2f; // Some drag to make movement feel better
+                    rb.linearDamping = 2f; // Some drag to make movement feel better
                 }
             }
 
@@ -64,6 +83,36 @@ namespace RougeLite.Player
 
         #endregion
 
+        #region Input System Management
+
+        private void EnableInputActions()
+        {
+            if (moveAction?.action != null)
+            {
+                moveAction.action.Enable();
+            }
+            
+            if (fastMoveAction?.action != null)
+            {
+                fastMoveAction.action.Enable();
+            }
+        }
+
+        private void DisableInputActions()
+        {
+            if (moveAction?.action != null)
+            {
+                moveAction.action.Disable();
+            }
+            
+            if (fastMoveAction?.action != null)
+            {
+                fastMoveAction.action.Disable();
+            }
+        }
+
+        #endregion
+
         #region Movement
 
         private void HandleMovementInput()
@@ -72,12 +121,12 @@ namespace RougeLite.Player
             
             if (moveInput.magnitude > 0)
             {
-                float currentSpeed = Input.GetKey(fastMoveKey) ? fastMoveSpeed : moveSpeed;
+                float currentSpeed = IsFastMovePressed() ? fastMoveSpeed : moveSpeed;
                 
                 if (useRigidbody && rb != null)
                 {
                     // Physics-based movement
-                    rb.velocity = moveInput * currentSpeed;
+                    rb.linearVelocity = moveInput * currentSpeed;
                 }
                 else
                 {
@@ -89,27 +138,59 @@ namespace RougeLite.Player
             else if (useRigidbody && rb != null)
             {
                 // Stop smoothly when no input
-                rb.velocity = Vector2.Lerp(rb.velocity, Vector2.zero, Time.deltaTime * 5f);
+                rb.linearVelocity = Vector2.Lerp(rb.linearVelocity, Vector2.zero, Time.deltaTime * 5f);
             }
+        }
+
+        private bool IsFastMovePressed()
+        {
+            // Try to use New Input System first
+            if (fastMoveAction != null && fastMoveAction.action != null)
+            {
+                return fastMoveAction.action.IsPressed();
+            }
+            
+            // Fallback to keyboard check
+            if (Keyboard.current != null)
+            {
+                return Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed;
+            }
+            
+            return false;
         }
 
         private Vector2 GetMovementInput()
         {
             Vector2 input = Vector2.zero;
 
-            // WASD Input
-            if (useWASD)
+            // Try to use New Input System first
+            if (moveAction != null && moveAction.action != null)
             {
-                if (Input.GetKey(KeyCode.W)) input.y += 1f;
-                if (Input.GetKey(KeyCode.S)) input.y -= 1f;
-                if (Input.GetKey(KeyCode.A)) input.x -= 1f;
-                if (Input.GetKey(KeyCode.D)) input.x += 1f;
+                input = moveAction.action.ReadValue<Vector2>();
             }
-
-            // Arrow Keys Input
-            if (useArrowKeys)
+            else
             {
-                input += new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+                // Fallback to old input system for backward compatibility
+                // WASD Input
+                if (useWASD)
+                {
+                    if (Keyboard.current != null)
+                    {
+                        if (Keyboard.current.wKey.isPressed) input.y += 1f;
+                        if (Keyboard.current.sKey.isPressed) input.y -= 1f;
+                        if (Keyboard.current.aKey.isPressed) input.x -= 1f;
+                        if (Keyboard.current.dKey.isPressed) input.x += 1f;
+                    }
+                }
+
+                // Arrow Keys Input using new Input System
+                if (useArrowKeys && Keyboard.current != null)
+                {
+                    if (Keyboard.current.upArrowKey.isPressed) input.y += 1f;
+                    if (Keyboard.current.downArrowKey.isPressed) input.y -= 1f;
+                    if (Keyboard.current.leftArrowKey.isPressed) input.x -= 1f;
+                    if (Keyboard.current.rightArrowKey.isPressed) input.x += 1f;
+                }
             }
 
             // Normalize to prevent faster diagonal movement
@@ -178,7 +259,7 @@ namespace RougeLite.Player
             transform.position = position;
             if (useRigidbody && rb != null)
             {
-                rb.velocity = Vector2.zero;
+                rb.linearVelocity = Vector2.zero;
             }
             Debug.Log($"🚀 Teleported to: {position}");
         }
@@ -202,7 +283,7 @@ namespace RougeLite.Player
         /// </summary>
         public float GetCurrentSpeed()
         {
-            return Input.GetKey(fastMoveKey) ? fastMoveSpeed : moveSpeed;
+            return IsFastMovePressed() ? fastMoveSpeed : moveSpeed;
         }
 
         /// <summary>
