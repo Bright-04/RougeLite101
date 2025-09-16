@@ -178,7 +178,14 @@ public class SpellCaster : EventBehaviour
                 if (fireball != null)
                 {
                     Vector2 dir = (mouseWorldPos - spawnPos).normalized;
-                    spellProjectile.transform.right = dir;
+                    
+                    // Calculate the angle to face the target direction
+                    // Add 180 degrees to show the back of the fireball as it flies away
+                    float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 180f;
+                    spellProjectile.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+                    
+                    // Set the direction for the fireball to use
+                    fireball.SetDirection(dir);
                 }
 
                 Debug.Log($"Spawned {spell.spellName} at {spawnPos} toward {mouseWorldPos}");

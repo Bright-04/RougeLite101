@@ -45,6 +45,12 @@ Fast movement supports multiple input methods:
 - Attack animations appear in the correct direction relative to mouse position
 - Slash effects rotate and flip appropriately based on mouse direction
 
+### 🔥 **Spell System Integration**
+- **Fireball spells** (Key: 1) fire toward mouse cursor position
+- **Correct sprite orientation** - fireball shows proper back/tail as it travels
+- **World space movement** ensures spells travel in intended direction
+- **Rotation calculation** with 180-degree offset for proper visual appearance
+
 ### 🔧 **Robust Input System Support**
 - Primary support for Unity's new Input System (InputSystem package)
 - Automatic fallback to legacy Input system if new system unavailable
@@ -87,6 +93,13 @@ private bool TryFaceMouseDirection()
 ## Troubleshooting Guide
 
 ### Common Issues and Solutions
+
+#### ❌ **Spell Visual Orientation Issues**
+**Symptoms:** Spells travel correctly but sprite faces wrong direction
+**Solutions:**
+1. **Rotation Offset:** Add 180-degree offset if sprite faces toward player instead of target
+2. **Sprite Design:** Check if sprite asset is designed facing left/right by default
+3. **Movement vs Visual:** Ensure movement direction and visual rotation are properly synchronized
 
 #### ❌ **Fast Movement Not Working**
 **Symptoms:** Shift key detected but speed doesn't increase
