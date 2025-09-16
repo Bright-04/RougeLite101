@@ -30,7 +30,8 @@ namespace RougeLite.World
         [Range(0f, 1f)] [SerializeField] private float decorationSpawnChance = 0.2f;
 
         [Header("Biome Settings")]
-        [SerializeField] private BiomeData[] biomes;
+        [SerializeField] private BiomeDataSO[] biomeDataSOs; // ScriptableObject approach
+        [SerializeField] private BiomeData[] biomes; // Fallback struct approach
         [SerializeField] private float biomeScale = 0.01f; // Controls biome size
         [SerializeField] private bool useBiomes = true;
 
@@ -320,21 +321,55 @@ namespace RougeLite.World
 
         private BiomeData GetBiomeForChunk(Vector2Int chunkPosition)
         {
-            if (!useBiomes || biomes == null || biomes.Length == 0)
+            // Try ScriptableObject approach first
+            if (useBiomes && biomeDataSOs != null && biomeDataSOs.Length > 0)
             {
-                return new BiomeData(); // Default biome
+                // Use Perlin noise to determine biome
+                float noiseValue = Mathf.PerlinNoise(
+                    chunkPosition.x * biomeScale,
+                    chunkPosition.y * biomeScale
+                );
+
+                int biomeIndex = Mathf.FloorToInt(noiseValue * biomeDataSOs.Length);
+                biomeIndex = Mathf.Clamp(biomeIndex, 0, biomeDataSOs.Length - 1);
+
+                return biomeDataSOs[biomeIndex].ToBiomeData();
             }
+            
+            // Fallback to struct approach
+            if (useBiomes && biomes != null && biomes.Length > 0)
+            {
+                // Use Perlin noise to determine biome
+                float noiseValue = Mathf.PerlinNoise(
+                    chunkPosition.x * biomeScale,
+                    chunkPosition.y * biomeScale
+                );
 
-            // Use Perlin noise to determine biome
-            float noiseValue = Mathf.PerlinNoise(
-                chunkPosition.x * biomeScale,
-                chunkPosition.y * biomeScale
-            );
+                int biomeIndex = Mathf.FloorToInt(noiseValue * biomes.Length);
+                biomeIndex = Mathf.Clamp(biomeIndex, 0, biomes.Length - 1);
 
-            int biomeIndex = Mathf.FloorToInt(noiseValue * biomes.Length);
-            biomeIndex = Mathf.Clamp(biomeIndex, 0, biomes.Length - 1);
+                return biomes[biomeIndex];
+            }
+            
+            // Create default biome with basic prefabs from inspector
+            return CreateDefaultBiome();
+        }
 
-            return biomes[biomeIndex];
+        private BiomeData CreateDefaultBiome()
+        {
+            return new BiomeData
+            {
+                biomeName = "Default",
+                biomeColor = Color.white,
+                enemySpawnRate = enemySpawnChance,
+                itemSpawnRate = itemSpawnChance,
+                decorationDensity = decorationSpawnChance,
+                terrainPrefabs = terrainPrefabs,
+                enemyPrefabs = enemyPrefabs,
+                itemPrefabs = itemPrefabs,
+                structurePrefabs = structurePrefabs,
+                decorationPrefabs = decorationPrefabs
+            };
         }
 
         #endregion

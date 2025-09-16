@@ -10,7 +10,7 @@ namespace RougeLite.Camera
     {
         [Header("Follow Settings")]
         [SerializeField] private Transform target; // Player transform
-        [SerializeField] private float followSpeed = 2f;
+        [SerializeField] private float followSpeed = 5f; // Increased default speed
         [SerializeField] private Vector3 offset = new Vector3(0, 0, -10);
         [SerializeField] private bool smoothFollow = true;
 
@@ -27,9 +27,9 @@ namespace RougeLite.Camera
         
         [Header("Zoom Settings")]
         [SerializeField] private UnityEngine.Camera cam;
-        [SerializeField] private float defaultSize = 5f;
-        [SerializeField] private float minZoom = 3f;
-        [SerializeField] private float maxZoom = 10f;
+        [SerializeField] private float defaultSize = 8f; // Increased for wider FOV
+        [SerializeField] private float minZoom = 5f; // Increased minimum
+        [SerializeField] private float maxZoom = 15f; // Increased maximum
         [SerializeField] private float zoomSpeed = 2f;
 
         private Vector3 velocity = Vector3.zero;
@@ -66,7 +66,7 @@ namespace RougeLite.Camera
 
             HandleCameraFollow();
             HandleCameraShake();
-            HandleZoom();
+            // HandleZoom(); // Temporarily disabled to allow manual orthographic size
         }
 
         #endregion
@@ -79,8 +79,22 @@ namespace RougeLite.Camera
 
             if (smoothFollow)
             {
-                // Smooth follow using Vector3.SmoothDamp
-                transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, 1f / followSpeed);
+                // Calculate distance to target for adaptive speed
+                float distance = Vector3.Distance(transform.position, targetPosition);
+                
+                // Use adaptive follow speed - faster when further away
+                float adaptiveSpeed = followSpeed;
+                if (distance > 10f) // If player is moving very fast and camera is far behind
+                {
+                    adaptiveSpeed = followSpeed * 2f; // Double speed for catch-up
+                }
+                else if (distance > 5f)
+                {
+                    adaptiveSpeed = followSpeed * 1.5f; // 50% faster for medium distances
+                }
+
+                // Smooth follow using Vector3.SmoothDamp with adaptive speed
+                transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, 1f / adaptiveSpeed);
             }
             else
             {
