@@ -8,8 +8,41 @@ Welcome to the RougeLite101 developer documentation! This folder contains compre
 - **[Null Checks Implementation Guide](NULL_CHECKS_GUIDE.md)** - Comprehensive guide to null checks implementation
 - **[Null Checks Quick Reference](NULL_CHECKS_QUICK_REFERENCE.md)** - Quick patterns and templates
 
+### 🔄 Event System Architecture
+- **[Event System Guide](EVENT_SYSTEM_GUIDE.md)** - Complete event-driven architecture documentation
+- **[Event System Quick Reference](EVENT_SYSTEM_QUICK_REFERENCE.md)** - Quick setup and usage patterns
+
 ### 🎮 Game Systems *(Coming Soon)*
 - **Input System Guide** - Player controls and input handling
+
+#### How to Set Up the Input System and Create an Input Action Asset
+
+1. **Enable the Input System Package**
+	- Go to `Edit > Project Settings > Player > Other Settings`.
+	- Under **Active Input Handling**, select **Input System Package (New)** or **Both**.
+
+2. **Create the Input Actions Asset**
+	- In the **Project** window, right-click in your desired folder (e.g., `Assets/Input`).
+	- Select **Create > Input Actions**.
+	- Name the asset (e.g., `PlayerInputActions`).
+
+3. **Open and Configure the Asset**
+	- Double-click the new asset to open the Input Actions editor.
+	- Click the **"+"** button to add an **Action Map** (e.g., "Player").
+	- Inside the Action Map, click **"+"** to add actions:
+	  - **Move**: Set type to **Value**, Control Type to **Vector2**.
+	  - **FastMove**: Set type to **Button**.
+
+4. **Add Bindings**
+	- For **Move**: Add a binding, set Path to `<Keyboard>/wasd` or `<Keyboard>/arrow keys` (or use the composite "2D Vector" for WASD/Arrows).
+	- For **FastMove**: Add a binding, set Path to `<Keyboard>/leftShift`.
+
+5. **Save the Asset**
+
+6. **Assign in Inspector**
+	- In your script component (e.g., `SimplePlayerMovement`), assign the created actions to the `moveAction` and `fastMoveAction` fields.
+
+**Tip:** You can also use the `PlayerInput` component for automatic event handling.
 - **Combat System Guide** - Weapon and spell systems
 - **AI System Guide** - Enemy behavior and pathfinding
 
@@ -29,7 +62,8 @@ For immediate help with common issues:
 
 1. **Game Crashing?** → Check [Null Checks Guide](NULL_CHECKS_GUIDE.md#troubleshooting)
 2. **Missing Components?** → See [Quick Reference](NULL_CHECKS_QUICK_REFERENCE.md)
-3. **New to Project?** → Read the comprehensive guides starting with Null Checks
+3. **Need Event System?** → Start with [Event System Quick Reference](EVENT_SYSTEM_QUICK_REFERENCE.md)
+4. **New to Project?** → Read the comprehensive guides starting with Null Checks
 
 ## 📝 Contributing to Documentation
 

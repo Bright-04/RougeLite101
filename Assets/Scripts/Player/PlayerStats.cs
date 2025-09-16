@@ -1,6 +1,7 @@
 using UnityEngine;
+using RougeLite.Events;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : EventBehaviour
 {
     public float maxHP = 100;
     public float currentHP;
@@ -25,6 +26,11 @@ public class PlayerStats : MonoBehaviour
     private float damageCooldown = 1.0f; // seconds of invulnerability after taking damage
     private float damageTimer = 0;
 
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
     private void Start()
     {
         currentHP = maxHP;
@@ -43,9 +49,28 @@ public class PlayerStats : MonoBehaviour
 
     private void Regenerate()
     {
+        float previousHP = currentHP;
+        float previousMana = currentMana;
+        
         currentHP = Mathf.Min(maxHP, currentHP + hpRegen * Time.deltaTime);
         currentMana = Mathf.Min(maxMana, currentMana + manaRegen * Time.deltaTime);
         currentStamina = Mathf.Min(maxStamina, currentStamina + staminaRegen * Time.deltaTime);
+        
+        // Broadcast healing event if health was restored
+        if (currentHP > previousHP)
+        {
+            var healData = new PlayerHealthData(currentHP, maxHP, currentHP - previousHP, gameObject);
+            var healEvent = new PlayerHealedEvent(healData, gameObject);
+            BroadcastEvent(healEvent);
+        }
+        
+        // Broadcast mana restoration event if mana was restored
+        if (currentMana > previousMana)
+        {
+            var manaData = new PlayerManaData(currentMana, maxMana, 0f, "Regeneration");
+            var manaEvent = new PlayerManaRestoredEvent(manaData, gameObject);
+            BroadcastEvent(manaEvent);
+        }
     }
 
     public void TakeDamage(float damage)
@@ -59,6 +84,11 @@ public class PlayerStats : MonoBehaviour
 
         damageTimer = damageCooldown;
 
+        // Broadcast damage event
+        var damageData = new PlayerHealthData(currentHP, maxHP, reducedDamage, null);
+        var damageEvent = new PlayerDamagedEvent(damageData, gameObject);
+        BroadcastEvent(damageEvent);
+
         if (currentHP <= 0)
             Die();
     }
@@ -67,6 +97,11 @@ public class PlayerStats : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player died!");
+        
+        // Broadcast death event
+        var deathData = new PlayerHealthData(0f, maxHP, 0f, null);
+        var deathEvent = new PlayerDeathEvent(deathData, gameObject);
+        BroadcastEvent(deathEvent);
     }
 
     public bool TryCrit()
@@ -81,6 +116,55 @@ public class PlayerStats : MonoBehaviour
 
     public void UseMana(float amount)
     {
+        float previousMana = currentMana;
         currentMana = Mathf.Max(0, currentMana - amount);
+        
+        // Broadcast mana used event
+        if (amount > 0)
+        {
+            var manaData = new PlayerManaData(currentMana, maxMana, amount, "Spell");
+            var manaEvent = new PlayerManaUsedEvent(manaData, gameObject);
+            BroadcastEvent(manaEvent);
+        }
+    }
+
+    /// <summary>
+    /// Heal the player by a specific amount
+    /// </summary>
+    public void Heal(float amount)
+    {
+        if (amount <= 0) return;
+        
+        float previousHP = currentHP;
+        currentHP = Mathf.Min(maxHP, currentHP + amount);
+        
+        if (currentHP > previousHP)
+        {
+            var healData = new PlayerHealthData(currentHP, maxHP, currentHP - previousHP, gameObject);
+            var healEvent = new PlayerHealedEvent(healData, gameObject);
+            BroadcastEvent(healEvent);
+            
+            Debug.Log($"Player healed for {currentHP - previousHP} HP. Current HP: {currentHP}");
+        }
+    }
+
+    /// <summary>
+    /// Restore mana by a specific amount
+    /// </summary>
+    public void RestoreMana(float amount)
+    {
+        if (amount <= 0) return;
+        
+        float previousMana = currentMana;
+        currentMana = Mathf.Min(maxMana, currentMana + amount);
+        
+        if (currentMana > previousMana)
+        {
+            var manaData = new PlayerManaData(currentMana, maxMana, 0f, "Potion");
+            var manaEvent = new PlayerManaRestoredEvent(manaData, gameObject);
+            BroadcastEvent(manaEvent);
+            
+            Debug.Log($"Player restored {currentMana - previousMana} mana. Current mana: {currentMana}");
+        }
     }
 }

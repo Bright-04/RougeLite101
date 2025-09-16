@@ -15,6 +15,8 @@ A Unity multiplayer game. Coming soon
 📚 **[Developer Docs](Docs/README.md)** - Comprehensive development guides and references
 
 Key documentation:
+- **[Event System Guide](Docs/EVENT_SYSTEM_GUIDE.md)** - Complete event-driven architecture documentation
+- **[Event System Quick Reference](Docs/EVENT_SYSTEM_QUICK_REFERENCE.md)** - Quick setup and usage patterns
 - **[Null Checks Guide](Docs/NULL_CHECKS_GUIDE.md)** - Robust error handling implementation
 - **[Quick Reference](Docs/NULL_CHECKS_QUICK_REFERENCE.md)** - Code patterns and templates
 

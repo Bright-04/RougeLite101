@@ -196,6 +196,73 @@ Transform:
   m_Children: []
   m_Father: {fileID: 49503759}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -23.581}
+--- !u!1 &423499212
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 423499214}
+  - component: {fileID: 423499213}
+  m_Layer: 0
+  m_Name: WorldGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &423499213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423499212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a92775296f84ec43a48db747e074f8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chunkSize: 50
+  chunksAroundPlayer: 3
+  player: {fileID: 1693237139}
+  autoFindPlayer: 1
+  terrainPrefabs: []
+  enemyPrefabs: []
+  itemPrefabs: []
+  structurePrefabs: []
+  decorationPrefabs: []
+  enemySpawnChance: 0.3
+  itemSpawnChance: 0.1
+  structureSpawnChance: 0.05
+  decorationSpawnChance: 0.2
+  biomeDataSOs:
+  - {fileID: 11400000, guid: 9ddb2594b7a14ab42a584910c372cc64, type: 2}
+  - {fileID: 11400000, guid: 2f48aab24d874ac46a3bd2f5c0e72897, type: 2}
+  biomes: []
+  biomeScale: 0.01
+  useBiomes: 1
+  maxObjectsPerChunk: 20
+  enableObjectPooling: 1
+  enableLOD: 1
+  lodDistance: 100
+--- !u!4 &423499214
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 423499212}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.47, y: 0.09, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,6 +275,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -302,7 +370,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -333,6 +401,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88ef62e2b3b68fc478f1f2d94ea516dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1693237139}
+  followSpeed: 7
+  offset: {x: 0, y: 0, z: -10}
+  smoothFollow: 1
+  useBounds: 0
+  minX: -50
+  maxX: 50
+  minY: -30
+  maxY: 30
+  shakeDuration: 0
+  shakeIntensity: 0
+  cam: {fileID: 0}
+  defaultSize: 8
+  minZoom: 5
+  maxZoom: 15
+  zoomSpeed: 2
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -422,6 +518,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7087834469214438885, guid: 61d004395e52e674fb5001b04eb89999, type: 3}
   m_PrefabInstance: {fileID: 6330972058900720233}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &915518659
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7749328774932847106, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_Name
+      value: SimplePlayerUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.53065
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 11.17455
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7749328774932847107, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
 --- !u!1 &1330927804
 GameObject:
   m_ObjectHideFlags: 0
@@ -700,6 +853,7 @@ GameObject:
   - component: {fileID: 1693237143}
   - component: {fileID: 1693237144}
   - component: {fileID: 1693237145}
+  - component: {fileID: 1693237146}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -891,13 +1045,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 100
-  currentHP: 0
+  currentHP: 100
   hpRegen: 1
   maxMana: 50
-  currentMana: 0
+  currentMana: 50
   manaRegen: 1
   maxStamina: 50
-  currentStamina: 0
+  currentStamina: 50
   staminaRegen: 2
   attackDamage: 10
   abilityPower: 5
@@ -919,8 +1073,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellSlots:
   - {fileID: 11400000, guid: 1d46500fa33843c498a3b4c49f710b5d, type: 2}
+  - {fileID: 11400000, guid: 9f8e7d6c5b4a3928172635abcdef4567, type: 2}
   - {fileID: 0}
-  - {fileID: 0}
+--- !u!114 &1693237146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693237137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aae5928e88f92444ba71cc5e14beee1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 10
+  fastMoveSpeed: 50
+  useRigidbody: 1
+  moveAction: {fileID: 0}
+  fastMoveAction: {fileID: 0}
+  fastMoveKey: 304
+  useArrowKeys: 1
+  useWASD: 1
+  showPosition: 1
+  showChunkInfo: 1
 --- !u!1001 &1825525214
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1785,3 +1961,5 @@ SceneRoots:
   - {fileID: 9136410852518430463}
   - {fileID: 1987930715}
   - {fileID: 1825525214}
+  - {fileID: 423499214}
+  - {fileID: 915518659}

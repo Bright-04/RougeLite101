@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using RougeLite.Events;
 
-public class SpellCaster : MonoBehaviour
+public class SpellCaster : EventBehaviour
 {
     public Spell[] spellSlots; // drag your 3 spells here in inspector
 
@@ -9,9 +10,15 @@ public class SpellCaster : MonoBehaviour
     private Animator animator;
     private PlayerControls playerControls;
     private float[] cooldownTimers;
+    
+    // Public property for UI access
+    public float[] CooldownTimers => cooldownTimers;
 
-    private void Awake()
+    protected override void Awake()
     {
+        // Call base class Awake to initialize event system
+        base.Awake();
+        
         // Get and validate critical components
         stats = GetComponent<PlayerStats>();
         if (stats == null)
@@ -49,7 +56,7 @@ public class SpellCaster : MonoBehaviour
     private void OnEnable() => playerControls?.Enable();
     private void OnDisable() => playerControls?.Disable();
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         // Unsubscribe from events to prevent memory leaks
         if (playerControls != null)
@@ -58,6 +65,9 @@ public class SpellCaster : MonoBehaviour
             playerControls.Disable();
             playerControls.Dispose();
         }
+        
+        // Call base class OnDestroy for event system cleanup
+        base.OnDestroy();
     }
 
     private void Update()
@@ -117,10 +127,11 @@ public class SpellCaster : MonoBehaviour
 
         if (stats.currentMana < spell.manaCost)
         {
-            Debug.Log("Not enough mana!");
+            Debug.Log($"Not enough mana! Need {spell.manaCost}, have {stats.currentMana}");
             return;
         }
 
+        Debug.Log($"Casting {spell.spellName} for {spell.manaCost} mana. Remaining: {stats.currentMana - spell.manaCost}");
         CastSpell(spell);
         stats.UseMana(spell.manaCost);
         
@@ -159,18 +170,39 @@ public class SpellCaster : MonoBehaviour
         }
 
         // Spawn spell prefab if available
+        GameObject spellProjectile = null;
         if (spell.spellPrefab != null)
         {
-            Vector2 spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
-            GameObject proj = Instantiate(spell.spellPrefab, spawnPos, Quaternion.identity);
-
-            if (proj != null)
+            Vector2 spawnPos;
+            
+            // Different spawn positions for different spell types
+            if (spell.spellName == "Lightning")
             {
-                var fireball = proj.GetComponent<FireballSpell>();
+                // Lightning spawns at mouse position
+                spawnPos = mouseWorldPos;
+            }
+            else
+            {
+                // Other spells (like Fireball) spawn at player position
+                spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
+            }
+            
+            spellProjectile = Instantiate(spell.spellPrefab, spawnPos, Quaternion.identity);
+
+            if (spellProjectile != null)
+            {
+                var fireball = spellProjectile.GetComponent<FireballSpell>();
                 if (fireball != null)
                 {
                     Vector2 dir = (mouseWorldPos - spawnPos).normalized;
-                    proj.transform.right = dir;
+                    
+                    // Calculate the angle to face the target direction
+                    // Add 180 degrees to show the back of the fireball as it flies away
+                    float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 180f;
+                    spellProjectile.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+                    
+                    // Set the direction for the fireball to use
+                    fireball.SetDirection(dir);
                 }
 
                 Debug.Log($"Spawned {spell.spellName} at {spawnPos} toward {mouseWorldPos}");
@@ -180,6 +212,19 @@ public class SpellCaster : MonoBehaviour
         {
             Debug.LogWarning("Spell prefab is NULL on cast!");
         }
+
+        // Broadcast spell cast event
+        var spellData = new SpellCastData(
+            caster: gameObject,
+            spellName: spell.spellName,
+            castPos: transform.position,
+            targetPos: mouseWorldPos,
+            cost: spell.manaCost
+        );
+        
+        var spellEvent = new SpellCastEvent(spellData, gameObject);
+        
+        BroadcastEvent(spellEvent);
 
         Debug.Log($"Cast {spell.spellName} toward {mouseWorldPos}");
     }

@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using RougeLite.Events;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : EventBehaviour
 {   
     public bool FacingLeft { get { return facingLeft; } set { facingLeft = value; } }
     public static PlayerController Instance;
@@ -17,8 +18,11 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer mySpriteRender;
 
     private bool facingLeft =false;
-    private void Awake()
+    protected override void Awake()
     {   
+        // Call base class Awake to initialize event system
+        base.Awake();
+        
         // Initialize singleton
         Instance = this;
         
@@ -55,7 +59,7 @@ public class PlayerController : MonoBehaviour
         playerControls?.Disable();
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         // Clean up singleton instance
         if (Instance == this)
@@ -66,6 +70,9 @@ public class PlayerController : MonoBehaviour
         // Dispose of input system resources
         playerControls?.Disable();
         playerControls?.Dispose();
+        
+        // Call base class OnDestroy for event system cleanup
+        base.OnDestroy();
     }
 
     private void Update()
@@ -76,7 +83,11 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         AdjustPlayerFacingDirection();
-        Move();
+        
+        // NOTE: Move() is disabled to prevent conflict with SimplePlayerMovement.cs
+        // SimplePlayerMovement handles physics-based movement with fast movement support
+        // PlayerController focuses on character facing and combat interactions
+        // Move();
     }
 
     private void PlayerInput()
@@ -89,12 +100,16 @@ public class PlayerController : MonoBehaviour
 
         movement = playerControls.Movement.Move.ReadValue<Vector2>();
 
+        // NOTE: Animation parameters are now handled by SimplePlayerMovement.cs
+        // This prevents conflicts since SimplePlayerMovement handles the actual movement
+        // and should also control the animation state
+        
         // Update animator parameters if animator exists
-        if (myAnimator != null)
-        {
-            myAnimator.SetFloat("moveX", movement.x);
-            myAnimator.SetFloat("moveY", movement.y);
-        }
+        // if (myAnimator != null)
+        // {
+        //     myAnimator.SetFloat("moveX", movement.x);
+        //     myAnimator.SetFloat("moveY", movement.y);
+        // }
     }
 
     private void Move()
@@ -105,7 +120,23 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
+        Vector2 previousPosition = rb.position;
         rb.MovePosition(rb.position + movement * (moveSpeed * Time.fixedDeltaTime));
+        
+        // Broadcast movement event if the player is actually moving
+        if (movement.magnitude > 0.1f)
+        {
+            var movementData = new PlayerMovementData(
+                player: gameObject,
+                velocity: movement * moveSpeed,
+                position: transform.position,
+                previousPosition: previousPosition
+            );
+            
+            var movementEvent = new PlayerMovementEvent(movementData, gameObject);
+            
+            BroadcastEvent(movementEvent);
+        }
     }
 
     private void AdjustPlayerFacingDirection()
@@ -116,15 +147,59 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        if (movement.x < 0)
+        // Use mouse-based facing for responsive combat controls
+        TryFaceMouseDirection();
+    }
+
+    private bool TryFaceMouseDirection()
+    {
+        try
         {
-            mySpriteRender.flipX = true;
-            FacingLeft = true;
+            Vector3 mouseWorldPos = Vector3.zero;
+            
+            // Try new Input System first
+            if (Mouse.current != null && Camera.main != null)
+            {
+                Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
+                mouseScreenPos.z = Camera.main.nearClipPlane;
+                mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+            }
+            // Fallback to legacy input
+            else if (Camera.main != null)
+            {
+                Vector3 mouseScreenPos = Input.mousePosition;
+                mouseScreenPos.z = Camera.main.nearClipPlane;
+                mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+            }
+            else
+            {
+                return false; // No camera available
+            }
+
+            // Calculate if mouse is to the left or right of player
+            float mouseX = mouseWorldPos.x;
+            float playerX = transform.position.x;
+
+            // Update character facing based on mouse position
+            if (mouseX < playerX)
+            {
+                // Mouse is to the left - face left
+                mySpriteRender.flipX = true;
+                FacingLeft = true;
+            }
+            else if (mouseX > playerX)
+            {
+                // Mouse is to the right - face right  
+                mySpriteRender.flipX = false;
+                FacingLeft = false;
+            }
+            
+            return true;
         }
-        else if (movement.x > 0)
+        catch (System.Exception e)
         {
-            mySpriteRender.flipX = false;
-            FacingLeft = false;
+            Debug.LogWarning($"TryFaceMouseDirection failed: {e.Message}");
+            return false;
         }
     }
 
