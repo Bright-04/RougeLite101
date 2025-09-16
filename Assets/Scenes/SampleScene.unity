@@ -238,6 +238,9 @@ MonoBehaviour:
   itemSpawnChance: 0.1
   structureSpawnChance: 0.05
   decorationSpawnChance: 0.2
+  biomeDataSOs:
+  - {fileID: 11400000, guid: 9ddb2594b7a14ab42a584910c372cc64, type: 2}
+  - {fileID: 11400000, guid: 2f48aab24d874ac46a3bd2f5c0e72897, type: 2}
   biomes: []
   biomeScale: 0.01
   useBiomes: 1
@@ -367,7 +370,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 8
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -411,7 +414,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1693237139}
-  followSpeed: 2
+  followSpeed: 7
   offset: {x: 0, y: 0, z: -10}
   smoothFollow: 1
   useBounds: 0
@@ -422,9 +425,9 @@ MonoBehaviour:
   shakeDuration: 0
   shakeIntensity: 0
   cam: {fileID: 0}
-  defaultSize: 5
-  minZoom: 3
-  maxZoom: 10
+  defaultSize: 8
+  minZoom: 5
+  maxZoom: 15
   zoomSpeed: 2
 --- !u!1 &619394800
 GameObject:
@@ -907,7 +910,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1693237137}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 18a609612324908469e60e62fed14b37, type: 3}
   m_Name: 
@@ -1030,6 +1033,8 @@ MonoBehaviour:
   moveSpeed: 10
   fastMoveSpeed: 50
   useRigidbody: 1
+  moveAction: {fileID: 0}
+  fastMoveAction: {fileID: 0}
   fastMoveKey: 304
   useArrowKeys: 1
   useWASD: 1
