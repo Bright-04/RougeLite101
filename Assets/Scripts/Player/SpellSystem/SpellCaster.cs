@@ -169,7 +169,20 @@ public class SpellCaster : EventBehaviour
         GameObject spellProjectile = null;
         if (spell.spellPrefab != null)
         {
-            Vector2 spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
+            Vector2 spawnPos;
+            
+            // Different spawn positions for different spell types
+            if (spell.spellName == "Lightning")
+            {
+                // Lightning spawns at mouse position
+                spawnPos = mouseWorldPos;
+            }
+            else
+            {
+                // Other spells (like Fireball) spawn at player position
+                spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
+            }
+            
             spellProjectile = Instantiate(spell.spellPrefab, spawnPos, Quaternion.identity);
 
             if (spellProjectile != null)

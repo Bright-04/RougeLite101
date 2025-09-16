@@ -26,6 +26,7 @@ namespace RougeLite.Player
         [SerializeField] private bool showChunkInfo = true;
 
         private Rigidbody2D rb;
+        private Animator animator;
         private Vector3 lastPosition;
         private float distanceTraveled = 0f;
 
@@ -59,6 +60,13 @@ namespace RougeLite.Player
                     rb.gravityScale = 0f; // No gravity for top-down movement
                     rb.linearDamping = 2f; // Some drag to make movement feel better
                 }
+            }
+
+            // Get Animator component for animation updates
+            animator = GetComponent<Animator>();
+            if (animator == null)
+            {
+                Debug.LogWarning($"SimplePlayerMovement: No Animator component found on {gameObject.name}. Character animations will not work.");
             }
 
             lastPosition = transform.position;
@@ -118,6 +126,13 @@ namespace RougeLite.Player
         private void HandleMovementInput()
         {
             Vector2 moveInput = GetMovementInput();
+            
+            // Update animator parameters if animator exists
+            if (animator != null)
+            {
+                animator.SetFloat("moveX", moveInput.x);
+                animator.SetFloat("moveY", moveInput.y);
+            }
             
             if (moveInput.magnitude > 0)
             {

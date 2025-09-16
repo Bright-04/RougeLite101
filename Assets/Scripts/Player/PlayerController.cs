@@ -100,12 +100,16 @@ public class PlayerController : EventBehaviour
 
         movement = playerControls.Movement.Move.ReadValue<Vector2>();
 
+        // NOTE: Animation parameters are now handled by SimplePlayerMovement.cs
+        // This prevents conflicts since SimplePlayerMovement handles the actual movement
+        // and should also control the animation state
+        
         // Update animator parameters if animator exists
-        if (myAnimator != null)
-        {
-            myAnimator.SetFloat("moveX", movement.x);
-            myAnimator.SetFloat("moveY", movement.y);
-        }
+        // if (myAnimator != null)
+        // {
+        //     myAnimator.SetFloat("moveX", movement.x);
+        //     myAnimator.SetFloat("moveY", movement.y);
+        // }
     }
 
     private void Move()
