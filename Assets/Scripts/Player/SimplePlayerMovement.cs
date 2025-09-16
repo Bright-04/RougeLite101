@@ -121,7 +121,8 @@ namespace RougeLite.Player
             
             if (moveInput.magnitude > 0)
             {
-                float currentSpeed = IsFastMovePressed() ? fastMoveSpeed : moveSpeed;
+                bool isFastMove = IsFastMovePressed();
+                float currentSpeed = isFastMove ? fastMoveSpeed : moveSpeed;
                 
                 if (useRigidbody && rb != null)
                 {
@@ -150,13 +151,14 @@ namespace RougeLite.Player
                 return fastMoveAction.action.IsPressed();
             }
             
-            // Fallback to keyboard check
+            // Fallback to new Input System keyboard check
             if (Keyboard.current != null)
             {
                 return Keyboard.current.leftShiftKey.isPressed || Keyboard.current.rightShiftKey.isPressed;
             }
             
-            return false;
+            // Final fallback to legacy Input system using configured key
+            return Input.GetKey(fastMoveKey);
         }
 
         private Vector2 GetMovementInput()

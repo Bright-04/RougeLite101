@@ -3,7 +3,36 @@
 ## Overview
 The character combat system has been enhanced to provide responsive mouse-based controls where the player character and attacks follow the mouse cursor direction for more intuitive combat.
 
+## Movement System Architecture
+
+### **Dual Script Setup**
+The project uses two complementary movement scripts:
+
+1. **`SimplePlayerMovement.cs`** - Primary movement controller
+   - Physics-based movement using `Rigidbody2D.linearVelocity`
+   - **Fast movement support** with Shift key (10 → 50 speed)
+   - Input System compatibility with fallbacks
+   - Infinite world exploration features
+
+2. **`PlayerController.cs`** - Combat and interaction controller  
+   - **Character facing direction** (mouse-based)
+   - Combat system integration
+   - Event broadcasting for game systems
+   - **Movement disabled** to prevent conflicts
+
+### **Input System Integration**
+Fast movement supports multiple input methods:
+- **Primary:** InputActionReference (fastMoveAction)
+- **Secondary:** New Input System keyboard (Shift keys)
+- **Fallback:** Legacy Input system (configurable key)
+
 ## Features Implemented
+
+### ⚡ **Fast Movement System**
+- Hold **Left Shift** for 5x faster movement (10 → 50 speed)
+- Works with WASD, Arrow Keys, or Input System actions
+- Supports both new Input System and legacy input
+- Smooth physics-based acceleration and deceleration
 
 ### 🎯 **Mouse-Based Character Facing**
 - Player character sprite automatically flips to face the mouse cursor
@@ -58,6 +87,15 @@ private bool TryFaceMouseDirection()
 ## Troubleshooting Guide
 
 ### Common Issues and Solutions
+
+#### ❌ **Fast Movement Not Working**
+**Symptoms:** Shift key detected but speed doesn't increase
+**Solutions:**
+1. **Movement Script Conflicts:** Ensure only one script controls Rigidbody2D movement
+   - `SimplePlayerMovement.cs` should handle physics movement
+   - `PlayerController.cs` Move() method should be disabled to prevent conflicts
+2. **Input System Priority:** Check that Input System fallbacks are working correctly
+3. **Inspector Values:** Verify `fastMoveSpeed` is set higher than `moveSpeed` (e.g., 50 vs 10)
 
 #### ❌ **Character Not Flipping**
 **Symptoms:** Character sprite doesn't change direction with mouse movement

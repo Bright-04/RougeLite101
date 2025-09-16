@@ -83,7 +83,11 @@ public class PlayerController : EventBehaviour
     private void FixedUpdate()
     {
         AdjustPlayerFacingDirection();
-        Move();
+        
+        // NOTE: Move() is disabled to prevent conflict with SimplePlayerMovement.cs
+        // SimplePlayerMovement handles physics-based movement with fast movement support
+        // PlayerController focuses on character facing and combat interactions
+        // Move();
     }
 
     private void PlayerInput()
