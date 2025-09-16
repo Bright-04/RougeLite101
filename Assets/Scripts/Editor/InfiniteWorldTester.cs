@@ -29,9 +29,9 @@ namespace RougeLite.Editor
 
             // Find components if not already found
             if (player == null)
-                player = FindObjectOfType<SimplePlayerMovement>();
+                player = FindFirstObjectByType<SimplePlayerMovement>();
             if (worldGenerator == null)
-                worldGenerator = FindObjectOfType<InfiniteWorldGenerator>();
+                worldGenerator = FindFirstObjectByType<InfiniteWorldGenerator>();
 
             // Component status
             EditorGUILayout.BeginVertical("box");

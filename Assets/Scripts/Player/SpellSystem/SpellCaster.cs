@@ -10,6 +10,9 @@ public class SpellCaster : EventBehaviour
     private Animator animator;
     private PlayerControls playerControls;
     private float[] cooldownTimers;
+    
+    // Public property for UI access
+    public float[] CooldownTimers => cooldownTimers;
 
     protected override void Awake()
     {
