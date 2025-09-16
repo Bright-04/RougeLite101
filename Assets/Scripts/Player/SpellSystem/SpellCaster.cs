@@ -124,10 +124,11 @@ public class SpellCaster : EventBehaviour
 
         if (stats.currentMana < spell.manaCost)
         {
-            Debug.Log("Not enough mana!");
+            Debug.Log($"Not enough mana! Need {spell.manaCost}, have {stats.currentMana}");
             return;
         }
 
+        Debug.Log($"Casting {spell.spellName} for {spell.manaCost} mana. Remaining: {stats.currentMana - spell.manaCost}");
         CastSpell(spell);
         stats.UseMana(spell.manaCost);
         

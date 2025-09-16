@@ -988,13 +988,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHP: 100
-  currentHP: 0
+  currentHP: 100
   hpRegen: 1
   maxMana: 50
-  currentMana: 0
+  currentMana: 50
   manaRegen: 1
   maxStamina: 50
-  currentStamina: 0
+  currentStamina: 50
   staminaRegen: 2
   attackDamage: 10
   abilityPower: 5
@@ -1016,7 +1016,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spellSlots:
   - {fileID: 11400000, guid: 1d46500fa33843c498a3b4c49f710b5d, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 9f8e7d6c5b4a3928172635abcdef4567, type: 2}
   - {fileID: 0}
 --- !u!114 &1693237146
 MonoBehaviour:

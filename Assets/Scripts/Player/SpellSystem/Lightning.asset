@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Lightning
   m_EditorClassIdentifier: 
   spellName: Lightning
-  manaCost: 15
+  manaCost: 5
   damage: 30
   cooldown: 2
   spellPrefab: {fileID: 8745693027482958344, guid: 1a2b3c4d5e6f7890abcdef1234567890, type: 3}
