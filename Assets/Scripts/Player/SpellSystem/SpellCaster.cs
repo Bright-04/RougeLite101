@@ -10,6 +10,9 @@ public class SpellCaster : EventBehaviour
     private Animator animator;
     private PlayerControls playerControls;
     private float[] cooldownTimers;
+    
+    // Public property for UI access
+    public float[] CooldownTimers => cooldownTimers;
 
     protected override void Awake()
     {
@@ -124,10 +127,11 @@ public class SpellCaster : EventBehaviour
 
         if (stats.currentMana < spell.manaCost)
         {
-            Debug.Log("Not enough mana!");
+            Debug.Log($"Not enough mana! Need {spell.manaCost}, have {stats.currentMana}");
             return;
         }
 
+        Debug.Log($"Casting {spell.spellName} for {spell.manaCost} mana. Remaining: {stats.currentMana - spell.manaCost}");
         CastSpell(spell);
         stats.UseMana(spell.manaCost);
         
@@ -169,7 +173,20 @@ public class SpellCaster : EventBehaviour
         GameObject spellProjectile = null;
         if (spell.spellPrefab != null)
         {
-            Vector2 spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
+            Vector2 spawnPos;
+            
+            // Different spawn positions for different spell types
+            if (spell.spellName == "Lightning")
+            {
+                // Lightning spawns at mouse position
+                spawnPos = mouseWorldPos;
+            }
+            else
+            {
+                // Other spells (like Fireball) spawn at player position
+                spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
+            }
+            
             spellProjectile = Instantiate(spell.spellPrefab, spawnPos, Quaternion.identity);
 
             if (spellProjectile != null)
@@ -178,7 +195,14 @@ public class SpellCaster : EventBehaviour
                 if (fireball != null)
                 {
                     Vector2 dir = (mouseWorldPos - spawnPos).normalized;
-                    spellProjectile.transform.right = dir;
+                    
+                    // Calculate the angle to face the target direction
+                    // Add 180 degrees to show the back of the fireball as it flies away
+                    float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 180f;
+                    spellProjectile.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+                    
+                    // Set the direction for the fireball to use
+                    fireball.SetDirection(dir);
                 }
 
                 Debug.Log($"Spawned {spell.spellName} at {spawnPos} toward {mouseWorldPos}");

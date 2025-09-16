@@ -6,6 +6,8 @@ public class FireballSpell : EventBehaviour
     [SerializeField] private float speed = 5f;
     [SerializeField] private float lifetime = 2f;
     [SerializeField] private float damage = 10f;
+    
+    private Vector2 direction = Vector2.right; // Default direction
 
     protected override void Awake()
     {
@@ -20,7 +22,17 @@ public class FireballSpell : EventBehaviour
 
     private void Update()
     {
-        transform.Translate(Vector2.right * speed * Time.deltaTime);
+        // Move in world space using the set direction
+        transform.Translate(direction * speed * Time.deltaTime, Space.World);
+    }
+    
+    /// <summary>
+    /// Set the direction for the fireball to travel
+    /// </summary>
+    /// <param name="dir">Normalized direction vector</param>
+    public void SetDirection(Vector2 dir)
+    {
+        direction = dir.normalized;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

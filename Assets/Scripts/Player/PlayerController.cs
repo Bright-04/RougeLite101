@@ -83,7 +83,11 @@ public class PlayerController : EventBehaviour
     private void FixedUpdate()
     {
         AdjustPlayerFacingDirection();
-        Move();
+        
+        // NOTE: Move() is disabled to prevent conflict with SimplePlayerMovement.cs
+        // SimplePlayerMovement handles physics-based movement with fast movement support
+        // PlayerController focuses on character facing and combat interactions
+        // Move();
     }
 
     private void PlayerInput()
@@ -96,12 +100,16 @@ public class PlayerController : EventBehaviour
 
         movement = playerControls.Movement.Move.ReadValue<Vector2>();
 
+        // NOTE: Animation parameters are now handled by SimplePlayerMovement.cs
+        // This prevents conflicts since SimplePlayerMovement handles the actual movement
+        // and should also control the animation state
+        
         // Update animator parameters if animator exists
-        if (myAnimator != null)
-        {
-            myAnimator.SetFloat("moveX", movement.x);
-            myAnimator.SetFloat("moveY", movement.y);
-        }
+        // if (myAnimator != null)
+        // {
+        //     myAnimator.SetFloat("moveX", movement.x);
+        //     myAnimator.SetFloat("moveY", movement.y);
+        // }
     }
 
     private void Move()
@@ -139,15 +147,59 @@ public class PlayerController : EventBehaviour
             return;
         }
 
-        if (movement.x < 0)
+        // Use mouse-based facing for responsive combat controls
+        TryFaceMouseDirection();
+    }
+
+    private bool TryFaceMouseDirection()
+    {
+        try
         {
-            mySpriteRender.flipX = true;
-            FacingLeft = true;
+            Vector3 mouseWorldPos = Vector3.zero;
+            
+            // Try new Input System first
+            if (Mouse.current != null && Camera.main != null)
+            {
+                Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
+                mouseScreenPos.z = Camera.main.nearClipPlane;
+                mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+            }
+            // Fallback to legacy input
+            else if (Camera.main != null)
+            {
+                Vector3 mouseScreenPos = Input.mousePosition;
+                mouseScreenPos.z = Camera.main.nearClipPlane;
+                mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+            }
+            else
+            {
+                return false; // No camera available
+            }
+
+            // Calculate if mouse is to the left or right of player
+            float mouseX = mouseWorldPos.x;
+            float playerX = transform.position.x;
+
+            // Update character facing based on mouse position
+            if (mouseX < playerX)
+            {
+                // Mouse is to the left - face left
+                mySpriteRender.flipX = true;
+                FacingLeft = true;
+            }
+            else if (mouseX > playerX)
+            {
+                // Mouse is to the right - face right  
+                mySpriteRender.flipX = false;
+                FacingLeft = false;
+            }
+            
+            return true;
         }
-        else if (movement.x > 0)
+        catch (System.Exception e)
         {
-            mySpriteRender.flipX = false;
-            FacingLeft = false;
+            Debug.LogWarning($"TryFaceMouseDirection failed: {e.Message}");
+            return false;
         }
     }
 

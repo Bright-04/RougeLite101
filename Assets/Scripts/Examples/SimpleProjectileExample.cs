@@ -69,7 +69,7 @@ namespace RougeLite.Examples
             // Method 2: Fire towards mouse position (for player control)
             if (Input.GetKey(KeyCode.LeftControl))
             {
-                Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                Vector3 mousePos = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
                 direction = (mousePos - transform.position).normalized;
             }
 
@@ -148,7 +148,7 @@ namespace RougeLite.Examples
         [SerializeField] private float shootRate = 3f;
 
         private ProjectileLauncher launcher;
-        private Camera playerCamera;
+        private UnityEngine.Camera playerCamera;
 
         private void Start()
         {
@@ -158,7 +158,7 @@ namespace RougeLite.Examples
                 launcher = gameObject.AddComponent<ProjectileLauncher>();
             }
 
-            playerCamera = Camera.main;
+            playerCamera = UnityEngine.Camera.main;
             
             // Configure launcher
             launcher.SetSpeed(shootSpeed);

@@ -85,7 +85,13 @@ public class Sword : EventBehaviour
 
     private void Update()
     {
-        FollowPlayerDirection();
+        // Debug: Verify this is being called
+        if (Time.frameCount % 60 == 0) // Log every 60 frames (roughly once per second)
+        {
+            Debug.Log("Sword Update: MouseFollowWithOffset being called");
+        }
+        
+        MouseFollowWithOffset(); // Use mouse direction instead of player direction
     }
 
     private void Attack()
@@ -112,6 +118,9 @@ public class Sword : EventBehaviour
             if (slashAnim != null && this.transform.parent != null)
             {
                 slashAnim.transform.parent = this.transform.parent;
+                
+                // Immediately position slash animation towards mouse
+                PositionSlashAnimationTowardsMouse();
             }
         }
         else
@@ -162,37 +171,221 @@ public class Sword : EventBehaviour
     {
         if (slashAnim != null && playerController != null)
         {
-            slashAnim.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
-            if (playerController.FacingLeft)
+            // Position and orient slash animation based on mouse direction
+            PositionSlashAnimationTowardsMouse();
+        }
+    }
+
+    private void PositionSlashAnimationTowardsMouse()
+    {
+        if (slashAnim == null) return;
+
+        try
+        {
+            Vector3 mouseWorldPos = GetMouseWorldPosition();
+            Vector3 playerPos = playerController.transform.position;
+            
+            // Calculate direction from player to mouse
+            Vector2 direction = (mouseWorldPos - playerPos).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+            // Position slash animation slightly offset from player towards mouse
+            Vector3 slashOffset = direction * 1.5f; // Adjust distance as needed
+            slashAnim.transform.position = playerPos + slashOffset;
+
+            // Rotate slash animation to face mouse direction
+            if (direction.x < 0)
             {
+                // Mouse is to the left - flip the slash
+                slashAnim.transform.rotation = Quaternion.Euler(0, 180, -angle);
                 var spriteRenderer = slashAnim.GetComponent<SpriteRenderer>();
                 if (spriteRenderer != null)
                 {
                     spriteRenderer.flipX = true;
                 }
             }
+            else
+            {
+                // Mouse is to the right - normal orientation
+                slashAnim.transform.rotation = Quaternion.Euler(0, 0, angle);
+                var spriteRenderer = slashAnim.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
+                {
+                    spriteRenderer.flipX = false;
+                }
+            }
         }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"Sword: Failed to position slash animation: {e.Message}");
+            // Fallback to old behavior
+            FallbackSlashPositioning();
+        }
+    }
+
+    private void FallbackSlashPositioning()
+    {
+        // Original behavior as fallback
+        slashAnim.gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
+        if (playerController.FacingLeft)
+        {
+            var spriteRenderer = slashAnim.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.flipX = true;
+            }
+        }
+    }
+
+    private Vector3 GetMouseWorldPosition()
+    {
+        // Try new Input System first
+        if (Mouse.current != null && Camera.main != null)
+        {
+            Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
+            mouseScreenPos.z = Camera.main.nearClipPlane;
+            return Camera.main.ScreenToWorldPoint(mouseScreenPos);
+        }
+        
+        // Fallback to legacy input
+        if (Camera.main != null)
+        {
+            Vector3 mouseScreenPos = Input.mousePosition;
+            mouseScreenPos.z = Camera.main.nearClipPlane;
+            return Camera.main.ScreenToWorldPoint(mouseScreenPos);
+        }
+
+        // Last resort - return player position
+        return playerController.transform.position;
     }
 
     private void MouseFollowWithOffset()
     {
-        // Using new Input System
-        Vector3 mousePos = Mouse.current.position.ReadValue();
-        Vector3 playerScreenPoint = Camera.main.WorldToScreenPoint(playerController.transform.position);
+        // Try world space approach first
+        if (TryMouseFollowWorldSpace())
+            return;
 
+        // Fallback to screen space approach
+        MouseFollowScreenSpace();
+    }
 
-        float angle = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg;
-
-        if (mousePos.x < playerScreenPoint.x)
+    private bool TryMouseFollowWorldSpace()
+    {
+        // Try new Input System first
+        if (Mouse.current != null && Camera.main != null && playerController != null && activeWeapon != null)
         {
-            activeWeapon.transform.rotation = Quaternion.Euler(0, -180, angle);
-            weaponCollider.transform.rotation = Quaternion.Euler(0, -180, 0);
+            try
+            {
+                // Get mouse position in world space using new Input System
+                Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
+                mouseScreenPos.z = Camera.main.nearClipPlane;
+                Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+
+                ApplyMouseDirection(mouseWorldPos);
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"Sword: New Input System failed: {e.Message}, trying legacy input");
+            }
+        }
+
+        // Fallback to legacy Input system
+        if (Camera.main != null && playerController != null && activeWeapon != null)
+        {
+            try
+            {
+                // Get mouse position using legacy Input system
+                Vector3 mouseScreenPos = Input.mousePosition;
+                mouseScreenPos.z = Camera.main.nearClipPlane;
+                Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+
+                ApplyMouseDirection(mouseWorldPos);
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"Sword: Legacy input also failed: {e.Message}");
+            }
+        }
+
+        return false;
+    }
+
+    private void ApplyMouseDirection(Vector3 mouseWorldPos)
+    {
+        // Calculate direction from player to mouse in world space
+        Vector2 direction = (mouseWorldPos - playerController.transform.position).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        // Debug log occasionally
+        if (Time.frameCount % 120 == 0)
+        {
+            Debug.Log($"Mouse World: {mouseWorldPos}, Player: {playerController.transform.position}, Direction: {direction}, Angle: {angle}");
+        }
+
+        // Apply rotation to weapon
+        if (direction.x < 0)
+        {
+            // Mouse is on the left side of player
+            activeWeapon.transform.rotation = Quaternion.Euler(0, 180, -angle);
+            if (weaponCollider != null)
+                weaponCollider.transform.rotation = Quaternion.Euler(0, 180, 0);
         }
         else
         {
+            // Mouse is on the right side of player
             activeWeapon.transform.rotation = Quaternion.Euler(0, 0, angle);
-            weaponCollider.transform.rotation = Quaternion.Euler(0, 0, 0);
+            if (weaponCollider != null)
+                weaponCollider.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+    }
 
+    private void MouseFollowScreenSpace()
+    {
+        // Check if mouse input is available
+        if (Mouse.current == null)
+        {
+            Debug.LogWarning("Sword: Mouse.current is null, falling back to player direction");
+            FollowPlayerDirection();
+            return;
+        }
+
+        // Check if camera is available
+        if (Camera.main == null)
+        {
+            Debug.LogWarning("Sword: Camera.main is null, falling back to player direction");
+            FollowPlayerDirection();
+            return;
+        }
+
+        // Check if critical components exist
+        if (playerController == null || activeWeapon == null)
+        {
+            return;
+        }
+
+        // Get mouse position and convert player position to screen space
+        Vector3 mousePos = Mouse.current.position.ReadValue();
+        Vector3 playerScreenPoint = Camera.main.WorldToScreenPoint(playerController.transform.position);
+
+        // Calculate direction from player to mouse in screen space
+        Vector2 direction = (mousePos - playerScreenPoint).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        if (mousePos.x < playerScreenPoint.x)
+        {
+            // Mouse is on the left side of player
+            activeWeapon.transform.rotation = Quaternion.Euler(0, -180, -angle);
+            if (weaponCollider != null)
+                weaponCollider.transform.rotation = Quaternion.Euler(0, -180, 0);
+        }
+        else
+        {
+            // Mouse is on the right side of player
+            activeWeapon.transform.rotation = Quaternion.Euler(0, 0, angle);
+            if (weaponCollider != null)
+                weaponCollider.transform.rotation = Quaternion.Euler(0, 0, 0);
         }
     }
     private void FollowPlayerDirection()
