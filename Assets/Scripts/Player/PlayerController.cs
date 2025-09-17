@@ -4,15 +4,20 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using RougeLite.Events;
 
+/// <summary>
+/// PlayerController handles character facing direction and combat interactions
+/// Movement is handled by SimplePlayerMovement.cs to prevent conflicts
+/// This script focuses on mouse-based facing direction for combat systems
+/// </summary>
 public class PlayerController : EventBehaviour
 {   
     public bool FacingLeft { get { return facingLeft; } set { facingLeft = value; } }
     public static PlayerController Instance;
 
-    [SerializeField] private float moveSpeed = 1f;
+    // Movement speed removed - movement handled by SimplePlayerMovement.cs
     
     private PlayerControls playerControls;
-    private Vector2 movement;
+    private Vector2 movement; // Legacy - kept for potential future combat input
     private Rigidbody2D rb;
     private Animator myAnimator;
     private SpriteRenderer mySpriteRender;
@@ -77,21 +82,29 @@ public class PlayerController : EventBehaviour
 
     private void Update()
     {
-        PlayerInput();
+        // Focus only on mouse-based facing direction and combat
+        // Movement input is handled by SimplePlayerMovement.cs to prevent conflicts
+        
+        // Note: Input reading disabled to prevent conflicts with SimplePlayerMovement
+        // PlayerInput();
     }
 
     private void FixedUpdate()
     {
+        // Only handle character facing direction based on mouse position
+        // SimplePlayerMovement.cs handles all movement and animation
         AdjustPlayerFacingDirection();
         
-        // NOTE: Move() is disabled to prevent conflict with SimplePlayerMovement.cs
-        // SimplePlayerMovement handles physics-based movement with fast movement support
-        // PlayerController focuses on character facing and combat interactions
+        // Movement disabled to prevent conflict with SimplePlayerMovement.cs
         // Move();
     }
 
     private void PlayerInput()
     {
+        // DISABLED: Input handling moved to SimplePlayerMovement.cs to prevent conflicts
+        // This method kept for potential future combat input handling
+        
+        /*
         if (playerControls == null)
         {
             Debug.LogWarning("PlayerController: PlayerControls is null, cannot read input.");
@@ -100,20 +113,18 @@ public class PlayerController : EventBehaviour
 
         movement = playerControls.Movement.Move.ReadValue<Vector2>();
 
-        // NOTE: Animation parameters are now handled by SimplePlayerMovement.cs
-        // This prevents conflicts since SimplePlayerMovement handles the actual movement
-        // and should also control the animation state
-        
-        // Update animator parameters if animator exists
-        // if (myAnimator != null)
-        // {
-        //     myAnimator.SetFloat("moveX", movement.x);
-        //     myAnimator.SetFloat("moveY", movement.y);
-        // }
+        // Animation parameters are handled by SimplePlayerMovement.cs
+        // to prevent conflicts and ensure single source of truth
+        */
     }
 
     private void Move()
     {
+        // DISABLED: Movement completely handled by SimplePlayerMovement.cs
+        // This prevents conflicts and ensures single source of truth for player movement
+        // SimplePlayerMovement provides physics-based movement with fast movement support
+        
+        /*
         if (rb == null)
         {
             Debug.LogWarning("PlayerController: Rigidbody2D is null, cannot move player.");
@@ -123,7 +134,7 @@ public class PlayerController : EventBehaviour
         Vector2 previousPosition = rb.position;
         rb.MovePosition(rb.position + movement * (moveSpeed * Time.fixedDeltaTime));
         
-        // Broadcast movement event if the player is actually moving
+        // Movement events are now broadcasted by SimplePlayerMovement.cs
         if (movement.magnitude > 0.1f)
         {
             var movementData = new PlayerMovementData(
@@ -137,6 +148,7 @@ public class PlayerController : EventBehaviour
             
             BroadcastEvent(movementEvent);
         }
+        */
     }
 
     private void AdjustPlayerFacingDirection()
