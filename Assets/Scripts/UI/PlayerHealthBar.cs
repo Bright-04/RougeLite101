@@ -69,7 +69,7 @@ public class PlayerHealthBar : EventBehaviour,
             StartCoroutine(FlashDamage());
         }
         
-        Debug.Log($"Health UI: Player took {eventData.Data.damage} damage!");
+        // Player damaged - logging disabled for cleaner console
     }
 
     public void OnEventReceived(PlayerHealedEvent eventData)
@@ -82,7 +82,7 @@ public class PlayerHealthBar : EventBehaviour,
             StartCoroutine(FlashHeal());
         }
         
-        Debug.Log($"Health UI: Player healed for {eventData.Data.damage} HP!");
+        // Player healed - logging disabled for cleaner console
     }
 
     public void OnEventReceived(PlayerDeathEvent eventData)
@@ -95,7 +95,7 @@ public class PlayerHealthBar : EventBehaviour,
             fillImage.color = Color.black;
         }
         
-        Debug.Log("Health UI: Player has died!");
+        // Player died - logging disabled for cleaner console
     }
 
     private void UpdateHealthBar(float currentHealth, float maxHealth)

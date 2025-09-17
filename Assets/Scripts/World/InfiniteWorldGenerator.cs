@@ -493,7 +493,8 @@ namespace RougeLite.World
 
         private void OnDrawGizmos()
         {
-            if (player == null) return;
+            // Don't draw gizmos if component is disabled
+            if (!enabled || player == null) return;
 
             // Draw loaded chunks
             Gizmos.color = Color.green;

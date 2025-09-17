@@ -27,9 +27,9 @@ namespace RougeLite.Camera
         
         [Header("Zoom Settings")]
         [SerializeField] private UnityEngine.Camera cam;
-        [SerializeField] private float defaultSize = 8f; // Increased for wider FOV
-        [SerializeField] private float minZoom = 5f; // Increased minimum
-        [SerializeField] private float maxZoom = 15f; // Increased maximum
+        [SerializeField] private float defaultSize = 12f; // Increased for much wider FOV
+        [SerializeField] private float minZoom = 8f; // Increased minimum
+        [SerializeField] private float maxZoom = 20f; // Increased maximum
         [SerializeField] private float zoomSpeed = 2f;
 
         private Vector3 velocity = Vector3.zero;
@@ -77,6 +77,12 @@ namespace RougeLite.Camera
         {
             Vector3 targetPosition = target.position + offset;
 
+            // Apply bounds to target position BEFORE smooth movement to prevent oscillation
+            if (useBounds)
+            {
+                targetPosition = ApplyBoundsToPosition(targetPosition);
+            }
+
             if (smoothFollow)
             {
                 // Calculate distance to target for adaptive speed
@@ -101,27 +107,100 @@ namespace RougeLite.Camera
                 // Instant follow
                 transform.position = targetPosition;
             }
-
-            // Apply bounds if enabled
-            if (useBounds)
-            {
-                ApplyBounds();
-            }
         }
 
         private void ApplyBounds()
         {
+            // Safety check - make sure camera component is available
+            if (cam == null)
+            {
+                cam = GetComponent<UnityEngine.Camera>();
+                if (cam == null) return;
+            }
+
             Vector3 pos = transform.position;
             
             // Calculate camera viewport boundaries
             float camHeight = cam.orthographicSize;
             float camWidth = camHeight * cam.aspect;
             
-            // Clamp position to bounds
-            pos.x = Mathf.Clamp(pos.x, minX + camWidth, maxX - camWidth);
-            pos.y = Mathf.Clamp(pos.y, minY + camHeight, maxY - camHeight);
+            // Calculate effective movement bounds
+            float effectiveMinX = minX + camWidth;
+            float effectiveMaxX = maxX - camWidth;
+            float effectiveMinY = minY + camHeight;
+            float effectiveMaxY = maxY - camHeight;
+            
+            // Safety check: ensure bounds are valid (min < max)
+            if (effectiveMinX >= effectiveMaxX)
+            {
+                // Room is too small for camera, center the camera
+                float centerX = (minX + maxX) / 2f;
+                pos.x = centerX;
+                Debug.LogWarning($"Room too narrow for camera! CamWidth: {camWidth:F2}, Room width: {maxX - minX:F2}");
+            }
+            else
+            {
+                // Clamp X position to valid bounds
+                pos.x = Mathf.Clamp(pos.x, effectiveMinX, effectiveMaxX);
+            }
+            
+            if (effectiveMinY >= effectiveMaxY)
+            {
+                // Room is too small for camera, center the camera
+                float centerY = (minY + maxY) / 2f;
+                pos.y = centerY;
+                Debug.LogWarning($"Room too short for camera! CamHeight: {camHeight:F2}, Room height: {maxY - minY:F2}");
+            }
+            else
+            {
+                // Clamp Y position to valid bounds
+                pos.y = Mathf.Clamp(pos.y, effectiveMinY, effectiveMaxY);
+            }
             
             transform.position = pos;
+        }
+
+        private Vector3 ApplyBoundsToPosition(Vector3 position)
+        {
+            // Safety check - make sure camera component is available
+            if (cam == null)
+            {
+                cam = GetComponent<UnityEngine.Camera>();
+                if (cam == null) return position;
+            }
+            
+            // Calculate camera viewport boundaries
+            float camHeight = cam.orthographicSize;
+            float camWidth = camHeight * cam.aspect;
+            
+            // Calculate effective movement bounds
+            float effectiveMinX = minX + camWidth;
+            float effectiveMaxX = maxX - camWidth;
+            float effectiveMinY = minY + camHeight;
+            float effectiveMaxY = maxY - camHeight;
+            
+            // Apply bounds to the position
+            if (effectiveMinX < effectiveMaxX)
+            {
+                position.x = Mathf.Clamp(position.x, effectiveMinX, effectiveMaxX);
+            }
+            else
+            {
+                // Room too small, center camera
+                position.x = (minX + maxX) / 2f;
+            }
+            
+            if (effectiveMinY < effectiveMaxY)
+            {
+                position.y = Mathf.Clamp(position.y, effectiveMinY, effectiveMaxY);
+            }
+            else
+            {
+                // Room too small, center camera
+                position.y = (minY + maxY) / 2f;
+            }
+            
+            return position;
         }
 
         #endregion
@@ -195,6 +274,8 @@ namespace RougeLite.Camera
             this.maxX = maxX;
             this.minY = minY;
             this.maxY = maxY;
+            
+            // Camera bounds set - logging disabled for cleaner console
         }
 
         public void SetFollowSpeed(float speed)

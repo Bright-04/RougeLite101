@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 public class DungeonManager : MonoBehaviour
 {
-    [Header("Run Settings")]
     [Min(1)] public int totalRooms = 10;
     [Min(1)] public int roomsPerTheme = 5;   // 2 blocks of 5 for 10 rooms
     public int seed = 0;                     // 0 => random each play
@@ -23,10 +22,11 @@ public class DungeonManager : MonoBehaviour
     {
         int finalSeed = seed != 0 ? seed : Random.Range(int.MinValue, int.MaxValue);
         _rng = new System.Random(finalSeed);
+        
         BuildPlan();
         LoadNextRoom();
     }
-
+    
     void BuildPlan()
     {
         _planPrefabs = new List<GameObject>(totalRooms);
@@ -43,7 +43,10 @@ public class DungeonManager : MonoBehaviour
 
     public void LoadNextRoom()
     {
-        if (_activeRoom) Destroy(_activeRoom);
+        if (_activeRoom) 
+        {
+            Destroy(_activeRoom);
+        }
 
         _index++;
         if (_index >= _planPrefabs.Count)
@@ -61,7 +64,37 @@ public class DungeonManager : MonoBehaviour
         if (rt && rt.playerSpawn)
         {
             var player = GameObject.FindGameObjectWithTag("Player");
-            if (player) player.transform.position = rt.playerSpawn.position;
+            if (player) 
+            {
+                player.transform.position = rt.playerSpawn.position;
+                SetCameraBoundsImmediately(rt);
+            }
+        }
+    }
+    
+    private void SetCameraBoundsImmediately(RoomTemplate rt)
+    {
+        var cameraController = FindFirstObjectByType<RougeLite.Camera.CameraController>();
+        if (cameraController != null && rt != null)
+        {
+            var bounds = rt.GetCameraBounds();
+            float halfWidth = bounds.size.x / 2f;
+            float halfHeight = bounds.size.y / 2f;
+            
+            cameraController.SetBounds(
+                bounds.center.x - halfWidth,  // minX
+                bounds.center.x + halfWidth,  // maxX
+                bounds.center.y - halfHeight, // minY
+                bounds.center.y + halfHeight  // maxY
+            );
+            cameraController.EnableBounds(true);
+            
+            // Set camera to larger zoom for better POV
+            Camera mainCam = Camera.main;
+            if (mainCam != null && mainCam.orthographicSize < 12f)
+            {
+                mainCam.orthographicSize = 12f; // Match the defaultSize from CameraController
+            }
         }
     }
 }
