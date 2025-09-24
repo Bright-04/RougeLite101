@@ -1,13 +1,15 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using RougeLite.Events;
 
 namespace RougeLite.Player
 {
     /// <summary>
     /// Simple player movement controller for testing infinite world generation
     /// Use WASD or Arrow Keys to move around and explore the infinite world
+    /// Now handles all player movement, animation, and movement event broadcasting
     /// </summary>
-    public class SimplePlayerMovement : MonoBehaviour
+    public class SimplePlayerMovement : EventBehaviour
     {
         [Header("Movement Settings")]
         [SerializeField] private float moveSpeed = 10f;
@@ -32,8 +34,11 @@ namespace RougeLite.Player
 
         #region Unity Lifecycle
 
-        private void Awake()
+        protected override void Awake()
         {
+            // Call base class Awake to initialize event system
+            base.Awake();
+            
             // Enable input actions
             EnableInputActions();
         }
@@ -139,6 +144,8 @@ namespace RougeLite.Player
                 bool isFastMove = IsFastMovePressed();
                 float currentSpeed = isFastMove ? fastMoveSpeed : moveSpeed;
                 
+                Vector2 previousPosition = transform.position;
+                
                 if (useRigidbody && rb != null)
                 {
                     // Physics-based movement
@@ -150,6 +157,9 @@ namespace RougeLite.Player
                     Vector3 movement = moveInput * currentSpeed * Time.deltaTime;
                     transform.Translate(movement);
                 }
+                
+                // Broadcast movement event for game systems that need to know about player movement
+                BroadcastMovementEvent(moveInput, currentSpeed, previousPosition);
             }
             else if (useRigidbody && rb != null)
             {
@@ -310,6 +320,22 @@ namespace RougeLite.Player
         {
             moveSpeed = normal;
             fastMoveSpeed = fast;
+        }
+
+        /// <summary>
+        /// Broadcast movement event to game systems
+        /// </summary>
+        private void BroadcastMovementEvent(Vector2 moveInput, float currentSpeed, Vector2 previousPosition)
+        {
+            var movementData = new PlayerMovementData(
+                player: gameObject,
+                velocity: moveInput * currentSpeed,
+                position: transform.position,
+                previousPosition: previousPosition
+            );
+            
+            var movementEvent = new PlayerMovementEvent(movementData, gameObject);
+            BroadcastEvent(movementEvent);
         }
 
         #endregion

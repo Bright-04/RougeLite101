@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &30930925
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 30930926}
+  m_Layer: 0
+  m_Name: RoomsParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &30930926
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30930925}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1124548234}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &49503758
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,7 +243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &423499213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -220,7 +251,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 423499212}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a92775296f84ec43a48db747e074f8e, type: 3}
   m_Name: 
@@ -417,11 +448,11 @@ MonoBehaviour:
   followSpeed: 7
   offset: {x: 0, y: 0, z: -10}
   smoothFollow: 1
-  useBounds: 0
-  minX: -50
-  maxX: 50
-  minY: -30
-  maxY: 30
+  useBounds: 1
+  minX: -20
+  maxX: 20
+  minY: -12
+  maxY: 12
   shakeDuration: 0
   shakeIntensity: 0
   cam: {fileID: 0}
@@ -575,6 +606,58 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b30b61ddc8bf6b40a48f6e5620758d3, type: 3}
+--- !u!1 &1124548232
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1124548234}
+  - component: {fileID: 1124548233}
+  m_Layer: 0
+  m_Name: Dungeon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1124548233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124548232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66c691643e366f145b275ecd6ffa6a72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  totalRooms: 10
+  roomsPerTheme: 5
+  seed: 0
+  themes:
+  - {fileID: 11400000, guid: 0b8da0dda55225848b064027e75b7195, type: 2}
+  - {fileID: 11400000, guid: 0b8da0dda55225848b064027e75b7195, type: 2}
+  roomsParent: {fileID: 30930926}
+--- !u!4 &1124548234
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124548232}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 30930926}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1330927804
 GameObject:
   m_ObjectHideFlags: 0
@@ -1963,3 +2046,4 @@ SceneRoots:
   - {fileID: 1825525214}
   - {fileID: 423499214}
   - {fileID: 915518659}
+  - {fileID: 1124548234}
