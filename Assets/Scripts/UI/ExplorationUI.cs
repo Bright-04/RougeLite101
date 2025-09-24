@@ -469,8 +469,7 @@ namespace RougeLite.UI
 
         private void OnNewDiscovery(Discovery discovery)
         {
-            // Show notification or update UI
-            Debug.Log($"New discovery: {discovery.name}");
+            // Show notification or update UI - logging disabled for cleaner console
             
             // Refresh log if visible
             if (discoveryLogVisible)
@@ -502,8 +501,7 @@ namespace RougeLite.UI
 
         public void ShowNotification(string message)
         {
-            // Could implement a notification system here
-            Debug.Log($"Exploration Notification: {message}");
+            // Could implement a notification system here - logging disabled for cleaner console
         }
 
         #endregion

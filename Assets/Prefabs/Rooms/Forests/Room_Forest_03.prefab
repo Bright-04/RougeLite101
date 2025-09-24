@@ -41,6 +41,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5753235903726347941}
+  - component: {fileID: 5551893689476621016}
   m_Layer: 0
   m_Name: Room_Forest_03
   m_TagString: Untagged
@@ -66,6 +67,20 @@ Transform:
   - {fileID: 8008917967569369265}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5551893689476621016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5551893689476621015}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d82c2d3f428da5947aa245759592ae9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerSpawn: {fileID: 7542565006112714832}
+  exitAnchor: {fileID: 8008917967569369265}
 --- !u!1 &6552270237856108009
 GameObject:
   m_ObjectHideFlags: 0

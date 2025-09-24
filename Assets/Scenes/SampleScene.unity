@@ -243,7 +243,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &423499213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 423499212}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a92775296f84ec43a48db747e074f8e, type: 3}
   m_Name: 
@@ -448,11 +448,11 @@ MonoBehaviour:
   followSpeed: 7
   offset: {x: 0, y: 0, z: -10}
   smoothFollow: 1
-  useBounds: 0
-  minX: -50
-  maxX: 50
-  minY: -30
-  maxY: 30
+  useBounds: 1
+  minX: -20
+  maxX: 20
+  minY: -12
+  maxY: 12
   shakeDuration: 0
   shakeIntensity: 0
   cam: {fileID: 0}
