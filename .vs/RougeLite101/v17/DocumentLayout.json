@@ -1,22 +1,14 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "E:\\Repo\\RougeLite101\\",
+  "WorkspaceRootPath": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|e:\\repo\\rougelite101\\assets\\scripts\\dungeon\\dungeonmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\dungeon\\dungeonmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|d:\\important\\semester 7\\pose\\rougelite101\\assets\\scripts\\player\\playerstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\playerstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|e:\\repo\\rougelite101\\assets\\scripts\\events\\eventbehaviour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\events\\eventbehaviour.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|e:\\repo\\rougelite101\\assets\\scripts\\dungeon\\themeso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\dungeon\\themeso.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|e:\\repo\\rougelite101\\assets\\scripts\\player\\spellsystem\\lightningspell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\spellsystem\\lightningspell.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|d:\\important\\semester 7\\pose\\rougelite101\\assets\\scripts\\mainmenu\\mainmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\mainmenu\\mainmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -31,53 +23,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "DungeonManager.cs",
-              "DocumentMoniker": "E:\\Repo\\RougeLite101\\Assets\\Scripts\\Dungeon\\DungeonManager.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Dungeon\\DungeonManager.cs",
-              "ToolTip": "E:\\Repo\\RougeLite101\\Assets\\Scripts\\Dungeon\\DungeonManager.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Dungeon\\DungeonManager.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAewCYAAABTAAAAAAAAAA==",
+              "Title": "PlayerStats.cs",
+              "DocumentMoniker": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\Assets\\Scripts\\Player\\PlayerStats.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\PlayerStats.cs",
+              "ToolTip": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\Assets\\Scripts\\Player\\PlayerStats.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Player\\PlayerStats.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAwHgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T06:23:26.333Z",
+              "WhenOpened": "2025-10-24T15:48:50.296Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "EventBehaviour.cs",
-              "DocumentMoniker": "E:\\Repo\\RougeLite101\\Assets\\Scripts\\Events\\EventBehaviour.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Events\\EventBehaviour.cs",
-              "ToolTip": "E:\\Repo\\RougeLite101\\Assets\\Scripts\\Events\\EventBehaviour.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Events\\EventBehaviour.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABsAAAB1AAAAAAAAAA==",
+              "Title": "MainMenu.cs",
+              "DocumentMoniker": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\Assets\\Scripts\\MainMenu\\MainMenu.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\MainMenu\\MainMenu.cs",
+              "ToolTip": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\Assets\\Scripts\\MainMenu\\MainMenu.cs",
+              "RelativeToolTip": "Assets\\Scripts\\MainMenu\\MainMenu.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T06:23:20.569Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "ThemeSO.cs",
-              "DocumentMoniker": "E:\\Repo\\RougeLite101\\Assets\\Scripts\\Dungeon\\ThemeSO.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Dungeon\\ThemeSO.cs",
-              "ToolTip": "E:\\Repo\\RougeLite101\\Assets\\Scripts\\Dungeon\\ThemeSO.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Dungeon\\ThemeSO.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T06:17:32.298Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "LightningSpell.cs",
-              "DocumentMoniker": "E:\\Repo\\RougeLite101\\Assets\\Scripts\\Player\\SpellSystem\\LightningSpell.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\SpellSystem\\LightningSpell.cs",
-              "ToolTip": "E:\\Repo\\RougeLite101\\Assets\\Scripts\\Player\\SpellSystem\\LightningSpell.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Player\\SpellSystem\\LightningSpell.cs",
-              "ViewState": "AgIAAIkAAAAAAAAAAAAqwKEAAABTAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T06:08:48.967Z",
+              "WhenOpened": "2025-10-24T15:42:38.866Z",
               "EditorCaption": ""
             }
           ]
