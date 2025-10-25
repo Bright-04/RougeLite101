@@ -1,14 +1,10 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\",
+  "WorkspaceRootPath": "D:\\IT - Year 4\\POSE\\RougeLite101\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|d:\\important\\semester 7\\pose\\rougelite101\\assets\\scripts\\player\\playerstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\player\\playerstats.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|d:\\important\\semester 7\\pose\\rougelite101\\assets\\scripts\\mainmenu\\mainmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CFB62DA2-ECD3-5C2A-5314-4A8B5DC6F41B}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\mainmenu\\mainmenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\IT - Year 4\\POSE\\RougeLite101\\Assets\\Scripts\\Camera\\CameraController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Assets\\Scripts\\Camera\\CameraController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -23,27 +19,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "PlayerStats.cs",
-              "DocumentMoniker": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\Assets\\Scripts\\Player\\PlayerStats.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Player\\PlayerStats.cs",
-              "ToolTip": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\Assets\\Scripts\\Player\\PlayerStats.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Player\\PlayerStats.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAAAAwHgAAAAAAAAAAAAAAA==",
+              "Title": "CameraController.cs",
+              "DocumentMoniker": "D:\\IT - Year 4\\POSE\\RougeLite101\\Assets\\Scripts\\Camera\\CameraController.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Camera\\CameraController.cs",
+              "ToolTip": "D:\\IT - Year 4\\POSE\\RougeLite101\\Assets\\Scripts\\Camera\\CameraController.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Camera\\CameraController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-24T15:48:50.296Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MainMenu.cs",
-              "DocumentMoniker": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\Assets\\Scripts\\MainMenu\\MainMenu.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\MainMenu\\MainMenu.cs",
-              "ToolTip": "D:\\Important\\Semester 7\\POSE\\RougeLite101\\Assets\\Scripts\\MainMenu\\MainMenu.cs",
-              "RelativeToolTip": "Assets\\Scripts\\MainMenu\\MainMenu.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-24T15:42:38.866Z",
+              "WhenOpened": "2025-10-25T08:45:24.818Z",
               "EditorCaption": ""
             }
           ]

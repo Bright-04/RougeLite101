@@ -65,9 +65,7 @@ public class PlayerUIManager : EventBehaviour
     
     private void Update()
     {
-        // Update UI every frame (could be optimized to only update when values change)
-        UpdateHealthUI();
-        UpdateManaUI();
+        // Only update spell cooldown visuals per frame; health/mana are event-driven
         UpdateSpellCooldowns();
     }
     

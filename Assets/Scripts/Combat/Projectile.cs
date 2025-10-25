@@ -57,6 +57,14 @@ namespace RougeLite.Combat
             
             // Set up physics
             rb.gravityScale = useGravity ? gravityScale : 0f;
+            if (col != null)
+            {
+                col.isTrigger = true;
+            }
+            if (col != null)
+            {
+                col.isTrigger = true; // use trigger-based collisions by default for projectiles
+            }
         }
 
         private void Update()
@@ -107,11 +115,7 @@ namespace RougeLite.Combat
             HandleCollision(other.gameObject);
         }
 
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            HandleCollision(collision.gameObject);
-            OnProjectileHit?.Invoke(this, collision);
-        }
+        // Prefer trigger-based collisions for projectiles to avoid double-processing
 
         private void HandleCollision(GameObject target)
         {
@@ -165,15 +169,19 @@ namespace RougeLite.Combat
                 return;
             }
 
+            #if RL_DEBUG_UI
             Debug.Log($"Projectile hit {target.name} but no damage component found");
+            #endif
         }
 
         private void SpawnHitEffect(Vector3 position)
         {
             if (hitEffect != null)
             {
-                var effect = Instantiate(hitEffect, position, Quaternion.identity);
-                Destroy(effect, 2f); // Auto-cleanup effect
+                var effect = RougeLite.ObjectPooling.EffectPool.Get(hitEffect, position, Quaternion.identity);
+                var auto = effect.GetComponent<RougeLite.ObjectPooling.EffectAutoReturn>();
+                if (auto == null) auto = effect.AddComponent<RougeLite.ObjectPooling.EffectAutoReturn>();
+                auto.Init(hitEffect, 2f);
             }
         }
 
@@ -287,3 +295,5 @@ namespace RougeLite.Combat
     // - IceProjectile.cs
     // - LightningProjectile.cs
 }
+
+

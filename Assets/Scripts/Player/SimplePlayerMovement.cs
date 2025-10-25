@@ -24,8 +24,10 @@ namespace RougeLite.Player
         [SerializeField] private bool useWASD = true;
 
         [Header("Debug Info")]
+#if RL_DEBUG_UI
         [SerializeField] private bool showPosition = true;
         [SerializeField] private bool showChunkInfo = true;
+#endif
 
         private Rigidbody2D rb;
         private Animator animator;
@@ -235,6 +237,7 @@ namespace RougeLite.Player
             distanceTraveled += frameDistance;
             lastPosition = transform.position;
         }
+#if RL_DEBUG_UI
 
         private void OnGUI()
         {
@@ -274,6 +277,7 @@ namespace RougeLite.Player
             return new Vector2Int(chunkX, chunkY);
         }
 
+        #endif
         #endregion
 
         #region Public Methods

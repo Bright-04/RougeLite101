@@ -46,7 +46,9 @@ namespace RougeLite.Combat
         };
 
         [Header("Debug Settings")]
+#if RL_DEBUG_UI
         [SerializeField] private bool showDebugInfo = false;
+#endif
         [SerializeField] private bool logProjectileLaunches = false;
 
         // Pool storage
@@ -301,6 +303,7 @@ namespace RougeLite.Combat
             // This is called when projectile's lifetime expires or hits target
             // The projectile will call ReturnProjectile on itself
         }
+#if RL_DEBUG_UI
 
         private void OnGUI()
         {
@@ -338,6 +341,7 @@ namespace RougeLite.Combat
 
             GUILayout.EndArea();
         }
+#endif
 
         private void OnDestroy()
         {

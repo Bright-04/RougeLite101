@@ -118,10 +118,15 @@ public class DamageNumberManager : EventBehaviour,
         );
         
         // Convert world position to canvas position
-        Vector3 screenPosition = Camera.main.WorldToScreenPoint(randomizedPosition);
+        Vector3 screenPosition = UnityEngine.Camera.main.WorldToScreenPoint(randomizedPosition);
         
-        // Spawn damage number
-        GameObject damageNumberObj = Instantiate(damageNumberPrefab, worldCanvas.transform);
+        // Spawn damage number (pooled)
+        GameObject damageNumberObj = RougeLite.ObjectPooling.EffectPool.Get(damageNumberPrefab, screenPosition, Quaternion.identity);
+        // Reparent under the world canvas so it renders correctly
+        if (damageNumberObj.transform is RectTransform)
+            damageNumberObj.transform.SetParent(worldCanvas.transform, false);
+        else
+            damageNumberObj.transform.SetParent(worldCanvas.transform, true);
         damageNumberObj.transform.position = screenPosition;
         
         // Setup the damage number

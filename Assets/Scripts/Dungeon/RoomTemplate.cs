@@ -63,7 +63,7 @@ public class RoomTemplate : MonoBehaviour
                 Debug.DrawLine(player.transform.position + Vector3.left, player.transform.position + Vector3.right, Color.cyan, 0.1f);
             }
             
-            Camera mainCam = Camera.main;
+            UnityEngine.Camera mainCam = UnityEngine.Camera.main;
             if (mainCam != null)
             {
                 // Draw camera viewport bounds
@@ -104,7 +104,7 @@ public class RoomTemplate : MonoBehaviour
         }
         
         // Create bounds that allow camera to follow player with minimal restrictions
-        Camera mainCam = Camera.main;
+        UnityEngine.Camera mainCam = UnityEngine.Camera.main;
         float cameraHeight = mainCam ? mainCam.orthographicSize : 12f;
         float cameraWidth = cameraHeight * (mainCam ? mainCam.aspect : 1.78f); // Full HD 16:9 aspect
         

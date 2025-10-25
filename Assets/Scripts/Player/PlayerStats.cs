@@ -30,8 +30,10 @@ public class PlayerStats : MonoBehaviour, IDamageable
     private float damageCooldown = 1.0f; // seconds of invulnerability after taking damage
     private float damageTimer = 0;
 
-    private Slider healthSlider;
-    private Slider manaSlider;
+    [SerializeField] private Slider healthSlider;
+    [SerializeField] private Slider manaSlider;
+    private bool warnedHealthSliderMissing = false;
+    private bool warnedManaSliderMissing = false;
 
     private void Start()
     {
@@ -104,7 +106,12 @@ public class PlayerStats : MonoBehaviour, IDamageable
     {
         if (healthSlider == null)
         {
-            healthSlider = GameObject.Find("Health_Slider").GetComponent<Slider>();
+            if (!warnedHealthSliderMissing)
+            {
+                Debug.LogWarning("PlayerStats: Health slider not assigned.");
+                warnedHealthSliderMissing = true;
+            }
+            return;
         }
 
         healthSlider.maxValue = maxHP;
@@ -115,7 +122,12 @@ public class PlayerStats : MonoBehaviour, IDamageable
     {
         if (manaSlider == null)
         {
-            manaSlider = GameObject.Find("Mana_Slider").GetComponent<Slider>();
+            if (!warnedManaSliderMissing)
+            {
+                Debug.LogWarning("PlayerStats: Mana slider not assigned.");
+                warnedManaSliderMissing = true;
+            }
+            return;
         }
 
         manaSlider.maxValue = maxMana;

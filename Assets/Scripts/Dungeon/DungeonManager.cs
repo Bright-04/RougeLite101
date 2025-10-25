@@ -90,7 +90,7 @@ public class DungeonManager : MonoBehaviour
             cameraController.EnableBounds(true);
             
             // Set camera to larger zoom for better POV
-            Camera mainCam = Camera.main;
+            UnityEngine.Camera mainCam = UnityEngine.Camera.main;
             if (mainCam != null && mainCam.orthographicSize < 12f)
             {
                 mainCam.orthographicSize = 12f; // Match the defaultSize from CameraController

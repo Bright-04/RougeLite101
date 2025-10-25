@@ -20,6 +20,10 @@ namespace RougeLite.Events
         // Uses typed dispatch wrappers to avoid reflection overhead
         private readonly Queue<IQueuedEvent> eventQueue = new Queue<IQueuedEvent>();
 
+        [Header("Event Queue Settings")]
+        [SerializeField] private int maxQueuedEvents = 1024;
+        [SerializeField] private bool dropOldestWhenFull = true;
+
         [Header("Debug Settings")]
         [SerializeField] private bool logEvents = false;
         [SerializeField] private bool logSubscriptions = false;
@@ -48,6 +52,11 @@ namespace RougeLite.Events
         {
             // Process queued events (if using buffered events)
             ProcessQueuedEvents();
+        }
+
+        private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+        {
+            eventQueue.Clear();
         }
 
         /// <summary>
@@ -220,12 +229,31 @@ namespace RougeLite.Events
                 return;
             }
 
+            if (eventQueue.Count >= maxQueuedEvents)
+            {
+                if (dropOldestWhenFull)
+                {
+                    eventQueue.Dequeue();
+                    if (logEvents)
+                        Debug.LogWarning("EventManager: Queue full, dropping oldest event", this);
+                }
+                else
+                {
+                    if (logEvents)
+                        Debug.LogWarning("EventManager: Queue full, dropping new event", this);
+                    return;
+                }
+            }
+
             eventQueue.Enqueue(new QueuedEvent<T>(eventInstance));
             
             if (logEvents)
             {
                 Debug.Log($"EventManager: Queued {eventInstance.GetDebugInfo()}", this);
             }
+
+            // Clear event queue on scene load to avoid cross-scene leaks
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
         /// <summary>
@@ -271,6 +299,8 @@ namespace RougeLite.Events
             {
                 Instance = null;
             }
+
+            UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         /// <summary>

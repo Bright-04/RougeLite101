@@ -481,8 +481,11 @@ namespace RougeLite.Managers
 
         #region Debug
 
+#if RL_DEBUG_UI
         [Header("Debug")]
         [SerializeField] private bool showDebugInfo = false;
+#endif
+#if RL_DEBUG_UI
 
         private void OnGUI()
         {
@@ -514,6 +517,7 @@ namespace RougeLite.Managers
                 }
             }
         }
+#endif
 
         #endregion
     }

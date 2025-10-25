@@ -8,6 +8,8 @@ namespace RougeLite.Events
     /// </summary>
     public abstract class EventBehaviour : MonoBehaviour
     {
+        [Header("Event System")]
+        [SerializeField] private bool autoCreateEventManager = true;
         /// <summary>
         /// Reference to the event manager (cached for performance)
         /// </summary>
@@ -15,6 +17,10 @@ namespace RougeLite.Events
 
         protected virtual void Awake()
         {
+            if (!Debug.isDebugBuild)
+            {
+                autoCreateEventManager = false;
+            }
             // Cache the event manager reference
             eventManager = EventManager.Instance;
             
@@ -25,8 +31,15 @@ namespace RougeLite.Events
                 
                 if (eventManager == null)
                 {
-                    Debug.LogWarning($"{GetType().Name}: EventManager not found! Creating one automatically.", this);
-                    CreateEventManager();
+                    if (autoCreateEventManager)
+                    {
+                        Debug.LogWarning($"{GetType().Name}: EventManager not found! Creating one automatically.", this);
+                        CreateEventManager();
+                    }
+                    else
+                    {
+                        Debug.LogError($"{GetType().Name}: EventManager not found and auto-create is disabled. Please add an EventManager to the scene.", this);
+                    }
                 }
             }
         }

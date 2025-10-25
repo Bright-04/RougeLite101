@@ -210,8 +210,11 @@ namespace RougeLite.Combat
 
         private void ShowMuzzleFlash()
         {
-            var flash = Instantiate(muzzleFlash, FirePoint.position, FirePoint.rotation);
-            Destroy(flash, muzzleFlashDuration);
+            if (muzzleFlash == null) return;
+            var flash = RougeLite.ObjectPooling.EffectPool.Get(muzzleFlash, FirePoint.position, FirePoint.rotation);
+            var auto = flash.GetComponent<RougeLite.ObjectPooling.EffectAutoReturn>();
+            if (auto == null) auto = flash.AddComponent<RougeLite.ObjectPooling.EffectAutoReturn>();
+            auto.Init(muzzleFlash, muzzleFlashDuration);
         }
 
         /// <summary>

@@ -1,6 +1,7 @@
 using UnityEngine;
 using RougeLite.Player;
 using UnityEngine.UI;
+using RougeLite.Events;
 using TMPro;
 
 public class SimplePlayerUI : MonoBehaviour
@@ -37,20 +38,23 @@ public class SimplePlayerUI : MonoBehaviour
         
         // Setup UI elements if they don't exist
         SetupUI();
+
+        // Subscribe to player events (event-driven health/mana UI)
+        var eventManager = FindFirstObjectByType<EventManager>();
+        if (eventManager != null)
+        {
+            eventManager.RegisterAction<PlayerDamagedEvent>(OnPlayerDamaged);
+            eventManager.RegisterAction<PlayerHealedEvent>(OnPlayerHealed);
+            eventManager.RegisterAction<PlayerManaUsedEvent>(OnPlayerManaUsed);
+            eventManager.RegisterAction<PlayerManaRestoredEvent>(OnPlayerManaRestored);
+        }
     }
     
     void Update()
     {
-        if (playerStats != null)
-        {
-            UpdateHealthUI();
-            UpdateManaUI();
-        }
-        
+        // Only update spell cooldown visuals per frame; health/mana are event-driven
         if (spellCaster != null)
-        {
             UpdateSpellUI();
-        }
     }
     
     void SetupUI()
@@ -249,6 +253,24 @@ public class SimplePlayerUI : MonoBehaviour
                 manaText.color = Color.blue;
             else
                 manaText.color = new Color(0.5f, 0.5f, 1f); // Light blue when low
+        }
+    }
+
+    // Event handlers for event-driven updates
+    void OnPlayerDamaged(PlayerDamagedEvent e) { UpdateHealthUI(); }
+    void OnPlayerHealed(PlayerHealedEvent e) { UpdateHealthUI(); }
+    void OnPlayerManaUsed(PlayerManaUsedEvent e) { UpdateManaUI(); }
+    void OnPlayerManaRestored(PlayerManaRestoredEvent e) { UpdateManaUI(); }
+
+    void OnDestroy()
+    {
+        var eventManager = FindFirstObjectByType<EventManager>();
+        if (eventManager != null)
+        {
+            eventManager.UnregisterAction<PlayerDamagedEvent>(OnPlayerDamaged);
+            eventManager.UnregisterAction<PlayerHealedEvent>(OnPlayerHealed);
+            eventManager.UnregisterAction<PlayerManaUsedEvent>(OnPlayerManaUsed);
+            eventManager.UnregisterAction<PlayerManaRestoredEvent>(OnPlayerManaRestored);
         }
     }
     

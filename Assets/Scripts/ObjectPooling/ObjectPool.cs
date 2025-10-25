@@ -253,8 +253,10 @@ namespace RougeLite.ObjectPooling
 
         private readonly Dictionary<System.Type, object> pools = new Dictionary<System.Type, object>();
 
+#if RL_DEBUG_UI
         [Header("Debug")]
         [SerializeField] private bool showDebugInfo = false;
+#endif
 
         private void Awake()
         {
@@ -340,6 +342,7 @@ namespace RougeLite.ObjectPooling
             }
             return stats;
         }
+#if RL_DEBUG_UI
 
         private void OnGUI()
         {
@@ -355,5 +358,7 @@ namespace RougeLite.ObjectPooling
             
             GUILayout.EndArea();
         }
+#endif
     }
 }
+

@@ -447,8 +447,11 @@ namespace RougeLite.Managers
 
         #region Debug
 
+#if RL_DEBUG_UI
         [Header("Debug")]
         [SerializeField] private bool showDebugInfo = false;
+#endif
+#if RL_DEBUG_UI
 
         private void OnGUI()
         {
@@ -459,7 +462,9 @@ namespace RougeLite.Managers
             GUI.Label(new Rect(20, 240, 180, 20), $"Canvas: {(mainCanvas != null ? "OK" : "Missing")}");
             GUI.Label(new Rect(20, 260, 180, 20), $"Player Stats: {(playerStats != null ? "Found" : "Missing")}");
         }
+#endif
 
         #endregion
     }
 }
+

@@ -89,12 +89,6 @@ public class Sword : EventBehaviour
 
     private void Update()
     {
-        // Debug: Verify this is being called
-        if (Time.frameCount % 60 == 0) // Log every 60 frames (roughly once per second)
-        {
-            Debug.Log("Sword Update: MouseFollowWithOffset being called");
-        }
-        
         MouseFollowWithOffset(); // Use mouse direction instead of player direction
     }
 
@@ -118,11 +112,21 @@ public class Sword : EventBehaviour
         
         if (slashAnimPrefab != null && slashAnimSpawnPoint != null)
         {
-            slashAnim = Instantiate(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
-            if (slashAnim != null && this.transform.parent != null)
+            // Use pooled slash animation for lower allocation churn
+            slashAnim = RougeLite.ObjectPooling.EffectPool.Get(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
+            if (slashAnim != null)
             {
-                slashAnim.transform.parent = this.transform.parent;
-                
+                // Parent under same parent as before to preserve layering
+                if (this.transform.parent != null)
+                {
+                    slashAnim.transform.SetParent(this.transform.parent, true);
+                }
+
+                // Auto-return the effect after a short duration
+                var auto = slashAnim.GetComponent<RougeLite.ObjectPooling.EffectAutoReturn>();
+                if (auto == null) auto = slashAnim.AddComponent<RougeLite.ObjectPooling.EffectAutoReturn>();
+                auto.Init(slashAnimPrefab, 0.6f);
+
                 // Immediately position slash animation towards mouse
                 PositionSlashAnimationTowardsMouse();
             }
