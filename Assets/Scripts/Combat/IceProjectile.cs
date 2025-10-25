@@ -1,4 +1,5 @@
 using UnityEngine;
+using RougeLite.Enemies;
 
 namespace RougeLite.Combat
 {
@@ -22,4 +23,3 @@ namespace RougeLite.Combat
         }
     }
 }
-

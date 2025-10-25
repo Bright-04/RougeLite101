@@ -1,6 +1,7 @@
 using UnityEngine;
 using RougeLite.Events;
 using RougeLite.Combat;
+using RougeLite.Player;
 
 namespace RougeLite.Combat
 {

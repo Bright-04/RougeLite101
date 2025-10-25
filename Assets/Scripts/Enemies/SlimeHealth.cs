@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using RougeLite.Events;
 using RougeLite.Combat;
+using RougeLite.Misc;
+using RougeLite.Player;
 
+namespace RougeLite.Enemies
+{
 public class SlimeHealth : EventBehaviour, IDamageable
 {
     [SerializeField] private int startingHealth = 3;
@@ -66,4 +70,5 @@ public class SlimeHealth : EventBehaviour, IDamageable
             Destroy(gameObject);
         }
     }
+}
 }

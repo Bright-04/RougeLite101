@@ -2,6 +2,8 @@
 using UnityEngine;
 using RougeLite.Events;
 
+namespace RougeLite.Enemies
+{
 public class SlimeAI : EventBehaviour
 {
     private enum State
@@ -194,4 +196,5 @@ public class SlimeAI : EventBehaviour
             }
         }
     }
+}
 }

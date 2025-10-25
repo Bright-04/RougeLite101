@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using RougeLite.Events;
+using RougeLite.Player;
 
 namespace RougeLite.Managers
 {

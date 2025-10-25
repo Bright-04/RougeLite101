@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using RougeLite.Combat;
 
+namespace RougeLite.Player
+{
+
 public class PlayerStats : MonoBehaviour, IDamageable
 {
     public float maxHP = 100;
@@ -118,4 +121,5 @@ public class PlayerStats : MonoBehaviour, IDamageable
         manaSlider.maxValue = maxMana;
         manaSlider.value = currentMana;
     }
+}
 }

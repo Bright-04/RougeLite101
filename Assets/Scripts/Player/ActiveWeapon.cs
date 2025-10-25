@@ -1,5 +1,7 @@
 using UnityEngine;
 
+namespace RougeLite.Player
+{
 public class ActiveWeapon : MonoBehaviour
 {
     // TODO: Implement active weapon switching functionality
@@ -14,4 +16,5 @@ public class ActiveWeapon : MonoBehaviour
     {
         // Handle weapon updates when implemented
     }
+}
 }

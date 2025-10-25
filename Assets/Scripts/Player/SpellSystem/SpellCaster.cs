@@ -1,4 +1,5 @@
 using UnityEngine;
+using RougeLite.Player;
 using UnityEngine.InputSystem;
 using RougeLite.Events;
 
@@ -154,9 +155,9 @@ public class SpellCaster : EventBehaviour
         Vector2 mouseWorldPos = Vector2.zero;
         
         // Safely get mouse position
-        if (Camera.main != null && Mouse.current != null)
+        if (UnityEngine.Camera.main != null && Mouse.current != null)
         {
-            mouseWorldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            mouseWorldPos = UnityEngine.Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         }
         else
         {

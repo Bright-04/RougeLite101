@@ -4,13 +4,16 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using RougeLite.Events;
 
+namespace RougeLite.Player
+{
+
 /// <summary>
 /// PlayerController handles character facing direction and combat interactions
 /// Movement is handled by SimplePlayerMovement.cs to prevent conflicts
 /// This script focuses on mouse-based facing direction for combat systems
 /// </summary>
 public class PlayerController : EventBehaviour
-{   
+{
     public bool FacingLeft { get { return facingLeft; } set { facingLeft = value; } }
     public static PlayerController Instance;
 
@@ -170,18 +173,18 @@ public class PlayerController : EventBehaviour
             Vector3 mouseWorldPos = Vector3.zero;
             
             // Try new Input System first
-            if (Mouse.current != null && Camera.main != null)
+            if (Mouse.current != null && UnityEngine.Camera.main != null)
             {
                 Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
-                mouseScreenPos.z = Camera.main.nearClipPlane;
-                mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+                mouseScreenPos.z = UnityEngine.Camera.main.nearClipPlane;
+                mouseWorldPos = UnityEngine.Camera.main.ScreenToWorldPoint(mouseScreenPos);
             }
             // Fallback to legacy input
-            else if (Camera.main != null)
+            else if (UnityEngine.Camera.main != null)
             {
                 Vector3 mouseScreenPos = Input.mousePosition;
-                mouseScreenPos.z = Camera.main.nearClipPlane;
-                mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+                mouseScreenPos.z = UnityEngine.Camera.main.nearClipPlane;
+                mouseWorldPos = UnityEngine.Camera.main.ScreenToWorldPoint(mouseScreenPos);
             }
             else
             {
@@ -215,4 +218,5 @@ public class PlayerController : EventBehaviour
         }
     }
 
+}
 }

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RougeLite.Events;
+using RougeLite.Enemies;
+using RougeLite.Player;
 
 public class DamageSource : EventBehaviour
 {

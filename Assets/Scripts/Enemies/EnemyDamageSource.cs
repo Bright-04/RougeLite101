@@ -1,5 +1,6 @@
 using UnityEngine;
 using RougeLite.Events;
+using RougeLite.Player;
 
 public class EnemyDamageSource : EventBehaviour
 {

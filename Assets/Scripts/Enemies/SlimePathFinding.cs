@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RougeLite.Misc;
 
+namespace RougeLite.Enemies
+{
 public class SlimePathFinding : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 2f;
@@ -37,4 +40,5 @@ public class SlimePathFinding : MonoBehaviour
     {
         hasTarget = false;
     }
+}
 }

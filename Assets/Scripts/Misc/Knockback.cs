@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
+namespace RougeLite.Misc
+{
 public class Knockback : MonoBehaviour
 {
     public bool gettingKnockedBack { get; private set; }
@@ -28,4 +30,5 @@ public class Knockback : MonoBehaviour
 
 
     }
+}
 }

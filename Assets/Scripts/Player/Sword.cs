@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem; // important for the new Input System
 using RougeLite.Events;
+using RougeLite.Player;
+
+namespace RougeLite.Player
+{
 
 public class Sword : EventBehaviour
 {
@@ -240,19 +244,19 @@ public class Sword : EventBehaviour
     private Vector3 GetMouseWorldPosition()
     {
         // Try new Input System first
-        if (Mouse.current != null && Camera.main != null)
+        if (Mouse.current != null && UnityEngine.Camera.main != null)
         {
             Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
-            mouseScreenPos.z = Camera.main.nearClipPlane;
-            return Camera.main.ScreenToWorldPoint(mouseScreenPos);
+            mouseScreenPos.z = UnityEngine.Camera.main.nearClipPlane;
+            return UnityEngine.Camera.main.ScreenToWorldPoint(mouseScreenPos);
         }
         
         // Fallback to legacy input
-        if (Camera.main != null)
+        if (UnityEngine.Camera.main != null)
         {
             Vector3 mouseScreenPos = Input.mousePosition;
-            mouseScreenPos.z = Camera.main.nearClipPlane;
-            return Camera.main.ScreenToWorldPoint(mouseScreenPos);
+            mouseScreenPos.z = UnityEngine.Camera.main.nearClipPlane;
+            return UnityEngine.Camera.main.ScreenToWorldPoint(mouseScreenPos);
         }
 
         // Last resort - return player position
@@ -272,14 +276,14 @@ public class Sword : EventBehaviour
     private bool TryMouseFollowWorldSpace()
     {
         // Try new Input System first
-        if (Mouse.current != null && Camera.main != null && playerController != null && activeWeapon != null)
+        if (Mouse.current != null && UnityEngine.Camera.main != null && playerController != null && activeWeapon != null)
         {
             try
             {
                 // Get mouse position in world space using new Input System
                 Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
-                mouseScreenPos.z = Camera.main.nearClipPlane;
-                Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+                mouseScreenPos.z = UnityEngine.Camera.main.nearClipPlane;
+                Vector3 mouseWorldPos = UnityEngine.Camera.main.ScreenToWorldPoint(mouseScreenPos);
 
                 ApplyMouseDirection(mouseWorldPos);
                 return true;
@@ -291,14 +295,14 @@ public class Sword : EventBehaviour
         }
 
         // Fallback to legacy Input system
-        if (Camera.main != null && playerController != null && activeWeapon != null)
+        if (UnityEngine.Camera.main != null && playerController != null && activeWeapon != null)
         {
             try
             {
                 // Get mouse position using legacy Input system
                 Vector3 mouseScreenPos = Input.mousePosition;
-                mouseScreenPos.z = Camera.main.nearClipPlane;
-                Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+                mouseScreenPos.z = UnityEngine.Camera.main.nearClipPlane;
+                Vector3 mouseWorldPos = UnityEngine.Camera.main.ScreenToWorldPoint(mouseScreenPos);
 
                 ApplyMouseDirection(mouseWorldPos);
                 return true;
@@ -352,9 +356,9 @@ public class Sword : EventBehaviour
         }
 
         // Check if camera is available
-        if (Camera.main == null)
+        if (UnityEngine.Camera.main == null)
         {
-            Debug.LogWarning("Sword: Camera.main is null, falling back to player direction");
+            Debug.LogWarning("Sword: UnityEngine.Camera.main is null, falling back to player direction");
             FollowPlayerDirection();
             return;
         }
@@ -367,7 +371,7 @@ public class Sword : EventBehaviour
 
         // Get mouse position and convert player position to screen space
         Vector3 mousePos = Mouse.current.position.ReadValue();
-        Vector3 playerScreenPoint = Camera.main.WorldToScreenPoint(playerController.transform.position);
+        Vector3 playerScreenPoint = UnityEngine.Camera.main.WorldToScreenPoint(playerController.transform.position);
 
         // Calculate direction from player to mouse in screen space
         Vector2 direction = (mousePos - playerScreenPoint).normalized;
@@ -407,4 +411,5 @@ public class Sword : EventBehaviour
         }
     }
 
+}
 }

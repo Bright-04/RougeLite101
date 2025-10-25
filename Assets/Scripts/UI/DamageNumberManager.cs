@@ -1,4 +1,5 @@
 using UnityEngine;
+using RougeLite.Player;
 using RougeLite.Events;
 
 /// <summary>

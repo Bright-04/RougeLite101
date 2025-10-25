@@ -1,5 +1,7 @@
 using UnityEngine;
 using RougeLite.Events;
+using RougeLite.Player;
+using RougeLite.Enemies;
 
 public class FireballSpell : EventBehaviour
 {

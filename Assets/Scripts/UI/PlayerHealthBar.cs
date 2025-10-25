@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using RougeLite.Events;
+using RougeLite.Player;
 
 /// <summary>
 /// Simple UI health bar that listens to player health events

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using RougeLite.Events;
+using RougeLite.Player;
 
 namespace RougeLite.Managers
 {

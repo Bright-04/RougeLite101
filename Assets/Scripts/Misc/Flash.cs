@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
+using RougeLite.Enemies;
 
+namespace RougeLite.Misc
+{
 public class Flash : MonoBehaviour
 {
     [SerializeField] private Material whiteFlashMat;
@@ -25,4 +28,5 @@ public class Flash : MonoBehaviour
         spriteRenderer.material = defaultMat;
         health.DetectDeath();
     }
+}
 }

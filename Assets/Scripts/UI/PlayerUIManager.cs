@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using RougeLite.Events;
+using RougeLite.Player;
 
 public class PlayerUIManager : EventBehaviour
 {

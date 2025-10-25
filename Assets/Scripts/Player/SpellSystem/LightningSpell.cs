@@ -2,6 +2,8 @@ using UnityEngine;
 using RougeLite.Events;
 using System.Collections.Generic;
 using System.Linq;
+using RougeLite.Enemies;
+using RougeLite.Player;
 
 public class LightningSpell : EventBehaviour
 {

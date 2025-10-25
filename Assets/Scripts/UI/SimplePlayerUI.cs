@@ -1,4 +1,5 @@
 using UnityEngine;
+using RougeLite.Player;
 using UnityEngine.UI;
 using TMPro;
 
