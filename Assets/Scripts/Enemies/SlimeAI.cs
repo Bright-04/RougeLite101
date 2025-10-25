@@ -139,11 +139,13 @@ public class SlimeAI : EventBehaviour
         }
     }
 
+    [SerializeField] private float roamRadius = 3f;
+
     private Vector2 GetRoamingPosition()
     {
-        // Generate a random direction for roaming
-        Vector2 randomDirection = new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-        return randomDirection.normalized;
+        // Pick a random point within a radius around the current position
+        Vector2 offset = Random.insideUnitCircle * Mathf.Max(0.1f, roamRadius);
+        return (Vector2)transform.position + offset;
     }
 
     /// <summary>

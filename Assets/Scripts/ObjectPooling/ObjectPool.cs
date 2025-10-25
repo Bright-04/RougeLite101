@@ -83,30 +83,33 @@ namespace RougeLite.ObjectPooling
         public T Get()
         {
             T obj;
-            
+
             if (availableObjects.Count > 0)
             {
                 obj = availableObjects.Dequeue();
             }
             else
             {
-                // Pool is empty, create new object if allowed
-                if (allowGrowth || TotalCount < maxPoolSize)
+                // Pool is empty
+                bool unlimited = maxPoolSize <= 0; // 0 or less implies no hard cap
+                bool underCap = TotalCount < maxPoolSize;
+
+                if (allowGrowth && (unlimited || underCap))
                 {
                     obj = CreateNewObject();
                 }
                 else
                 {
-                    Debug.LogWarning($"ObjectPool<{typeof(T).Name}>: Pool exhausted and growth not allowed!");
+                    Debug.LogWarning($"ObjectPool<{typeof(T).Name}>: Pool exhausted (allowGrowth={allowGrowth}, total={TotalCount}, max={maxPoolSize}).");
                     return null;
                 }
             }
-            
+
             // Activate and track object
             activeObjects.Add(obj);
             obj.GameObject.SetActive(true);
             obj.OnGetFromPool();
-            
+
             return obj;
         }
 
