@@ -86,3 +86,11 @@ For questions about the documentation or implementation:
 **Last Updated**: September 2025  
 **Project**: RougeLite101  
 **Unity Version**: 6000.1.9f1
+ 
+### ??? Architecture
+- **[Architecture Overview](ARCHITECTURE.md)** - Systems, patterns, and data flow
+- **[Code Map](CODEMAP.md)** - File‑by‑file responsibilities and where things live
+- **[Runtime Flow](RUNTIME_FLOW.md)** - What happens at boot and during play
+- **[Extending the Project](EXTENDING.md)** - How to add content the “project way”
+- **[Diagrams](DIAGRAMS.md)** - Mermaid diagrams of key systems and flows
+- **[Structure](STRUCTURE.md)** - Detailed codebase structure and file roles
