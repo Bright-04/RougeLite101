@@ -72,6 +72,10 @@ public class PlayerStats : MonoBehaviour, IDamageable
         currentHP -= reducedDamage;
         Debug.Log($"Player took {reducedDamage} damage, current HP: {currentHP}");
 
+        // Broadcast PlayerDamagedEvent for UI update
+        var healthData = new RougeLite.Events.PlayerHealthData(currentHP, maxHP, reducedDamage, source);
+        RougeLite.Events.EventManager.Instance?.Broadcast(new RougeLite.Events.PlayerDamagedEvent(healthData, gameObject));
+
         damageTimer = damageCooldown;
 
         if (currentHP <= 0)
@@ -98,8 +102,11 @@ public class PlayerStats : MonoBehaviour, IDamageable
 
     public void UseMana(float amount)
     {
-        currentMana = Mathf.Max(0, currentMana - amount);
-        UpdateManaSlider();
+    currentMana = Mathf.Max(0, currentMana - amount);
+    // Broadcast PlayerManaUsedEvent for UI update
+    var manaData = new RougeLite.Events.PlayerManaData(currentMana, maxMana, amount, "");
+    RougeLite.Events.EventManager.Instance?.Broadcast(new RougeLite.Events.PlayerManaUsedEvent(manaData, gameObject));
+    UpdateManaSlider();
     }
 
     private void UpdateHealthSlider()
