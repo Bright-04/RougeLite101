@@ -157,27 +157,11 @@ namespace RougeLite.Combat
 
         private void ApplyDamage(GameObject target)
         {
-            // Try different damage interfaces/components
+            // Use generic damage interface for loose coupling
             var damageable = target.GetComponent<IDamageable>();
             if (damageable != null)
             {
                 damageable.TakeDamage(damage, shooter);
-                return;
-            }
-
-            // Check for player stats
-            var playerStats = target.GetComponent<PlayerStats>();
-            if (playerStats != null)
-            {
-                playerStats.TakeDamage(damage);
-                return;
-            }
-
-            // Check for enemy health
-            var enemyHealth = target.GetComponent<SlimeHealth>();
-            if (enemyHealth != null)
-            {
-                enemyHealth.TakeDamage(Mathf.RoundToInt(damage));
                 return;
             }
 
@@ -296,14 +280,6 @@ namespace RougeLite.Combat
         }
 
         #endregion
-    }
-
-    /// <summary>
-    /// Interface for objects that can take damage from projectiles
-    /// </summary>
-    public interface IDamageable
-    {
-        void TakeDamage(float damage, GameObject source = null);
     }
 
     /// <summary>

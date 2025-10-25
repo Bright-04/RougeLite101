@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using RougeLite.Events;
+using RougeLite.Combat;
 
-public class SlimeHealth : EventBehaviour
+public class SlimeHealth : EventBehaviour, IDamageable
 {
     [SerializeField] private int startingHealth = 3;
 
@@ -37,6 +38,12 @@ public class SlimeHealth : EventBehaviour
         {
             StartCoroutine(flash.FlashRoutine());
         }
+    }
+
+    // IDamageable implementation
+    public void TakeDamage(float damage, GameObject source = null)
+    {
+        TakeDamage(Mathf.RoundToInt(damage));
     }
 
     public void DetectDeath()

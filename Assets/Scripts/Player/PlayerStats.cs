@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
+using RougeLite.Combat;
 
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : MonoBehaviour, IDamageable
 {
     public float maxHP = 100;
     public float currentHP;
@@ -57,7 +58,7 @@ public class PlayerStats : MonoBehaviour
         UpdateManaSlider();
     }
 
-    public void TakeDamage(float damage)
+    public void TakeDamage(float damage, GameObject source = null)
     {
         if (damageTimer > 0)
             return;
