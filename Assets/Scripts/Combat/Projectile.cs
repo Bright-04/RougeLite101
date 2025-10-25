@@ -282,82 +282,8 @@ namespace RougeLite.Combat
         #endregion
     }
 
-    /// <summary>
-    /// Specialized projectile types
-    /// </summary>
-    public class FireProjectile : Projectile
-    {
-        [Header("Fire Properties")]
-        [SerializeField] private float burnDuration = 3f;
-        [SerializeField] private float burnDamagePerSecond = 5f;
-
-        protected override void HandleHit(GameObject target)
-        {
-            base.HandleHit(target);
-            
-            // Apply burn effect if target has a health component
-            var enemyHealth = target.GetComponent<SlimeHealth>();
-            if (enemyHealth != null)
-            {
-                Debug.Log($"Applied burn effect to {target.name} for {burnDuration}s dealing {burnDamagePerSecond} dps");
-                // Note: Burn effect implementation would require a status effect system
-            }
-        }
-    }
-
-    public class IceProjectile : Projectile
-    {
-        [Header("Ice Properties")]
-        [SerializeField] private float slowDuration = 2f;
-        [SerializeField] private float slowAmount = 0.5f;
-
-        protected override void HandleHit(GameObject target)
-        {
-            base.HandleHit(target);
-            
-            // Apply slow effect if target has movement
-            var pathfinding = target.GetComponent<SlimePathFinding>();
-            if (pathfinding != null)
-            {
-                Debug.Log($"Applied slow effect to {target.name} for {slowDuration}s reducing speed by {slowAmount * 100}%");
-                // Note: Slow effect implementation would require modifying movement components
-            }
-        }
-    }
-
-    public class LightningProjectile : Projectile
-    {
-        [Header("Lightning Properties")]
-        [SerializeField] private float chainRange = 5f;
-        [SerializeField] private int maxChainTargets = 3;
-
-        protected override void HandleHit(GameObject target)
-        {
-            base.HandleHit(target);
-            
-            // Chain lightning to nearby enemies
-            ChainToNearbyTargets(target.transform.position);
-        }
-
-        private void ChainToNearbyTargets(Vector3 hitPosition)
-        {
-            Collider2D[] nearbyTargets = Physics2D.OverlapCircleAll(hitPosition, chainRange);
-            int chainedTargets = 0;
-            
-            foreach (var collider in nearbyTargets)
-            {
-                if (chainedTargets >= maxChainTargets) break;
-                
-                var enemyHealth = collider.GetComponent<SlimeHealth>();
-                if (enemyHealth != null && collider.gameObject != transform.gameObject)
-                {
-                    // Deal reduced damage to chained targets
-                    float chainDamage = damage * 0.5f;
-                    enemyHealth.TakeDamage(Mathf.RoundToInt(chainDamage));
-                    Debug.Log($"Lightning chained to {collider.name} for {chainDamage} damage");
-                    chainedTargets++;
-                }
-            }
-        }
-    }
+    // Specialized projectile types moved to separate files:
+    // - FireProjectile.cs
+    // - IceProjectile.cs
+    // - LightningProjectile.cs
 }
