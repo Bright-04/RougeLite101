@@ -17,7 +17,8 @@ namespace RougeLite.Events
             new Dictionary<Type, List<IEventListener>>();
 
         // Queue for events that should be processed next frame (optional buffering)
-        private readonly Queue<GameEvent> eventQueue = new Queue<GameEvent>();
+        // Uses typed dispatch wrappers to avoid reflection overhead
+        private readonly Queue<IQueuedEvent> eventQueue = new Queue<IQueuedEvent>();
 
         [Header("Debug Settings")]
         [SerializeField] private bool logEvents = false;
@@ -219,7 +220,7 @@ namespace RougeLite.Events
                 return;
             }
 
-            eventQueue.Enqueue(eventInstance);
+            eventQueue.Enqueue(new QueuedEvent<T>(eventInstance));
             
             if (logEvents)
             {
@@ -234,12 +235,8 @@ namespace RougeLite.Events
         {
             while (eventQueue.Count > 0)
             {
-                var gameEvent = eventQueue.Dequeue();
-                
-                // Use reflection to call the generic Broadcast method
-                var broadcastMethod = typeof(EventManager).GetMethod(nameof(Broadcast));
-                var genericMethod = broadcastMethod.MakeGenericMethod(gameEvent.GetType());
-                genericMethod.Invoke(this, new object[] { gameEvent });
+                var queued = eventQueue.Dequeue();
+                queued?.Dispatch(this);
             }
         }
 
@@ -301,6 +298,32 @@ namespace RougeLite.Events
         }
     }
 
+    /// <summary>
+    /// Internal interface for queued events to enable non-reflection dispatch
+    /// </summary>
+    internal interface IQueuedEvent
+    {
+        void Dispatch(EventManager manager);
+    }
+
+    /// <summary>
+    /// Generic queued event wrapper that calls the strongly-typed Broadcast
+    /// </summary>
+    internal class QueuedEvent<T> : IQueuedEvent where T : GameEvent
+    {
+        private readonly T _event;
+
+        public QueuedEvent(T gameEvent)
+        {
+            _event = gameEvent;
+        }
+
+        public void Dispatch(EventManager manager)
+        {
+            manager.Broadcast(_event);
+        }
+    }
+ 
     /// <summary>
     /// Internal wrapper class to allow Action delegates to work with the event system
     /// </summary>
