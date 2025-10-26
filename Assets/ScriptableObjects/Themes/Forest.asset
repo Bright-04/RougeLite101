@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5382e6a434761446974a86f4712d5cb, type: 3}
+  m_Name: Forest
+  m_EditorClassIdentifier: 
+  themeName: Forest
+  roomPrefabs:
+  - {fileID: 4495700257502947901, guid: 488e3f82e7434b946b6e2c9dd333c537, type: 3}
+  - {fileID: 2630498160803011870, guid: e7070dfb5ba61e2468829b93d792548a, type: 3}
+  - {fileID: 5551893689476621015, guid: 1dfc196bc7cc8e44ca57bafe98c66814, type: 3}
+  mapColor: {r: 0, g: 1, b: 0, a: 1}

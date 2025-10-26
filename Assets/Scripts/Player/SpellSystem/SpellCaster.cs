@@ -99,21 +99,19 @@ public class SpellCaster : MonoBehaviour
 
         if (spell.spellPrefab != null)
         {
-            Vector2 spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
-            GameObject proj = Instantiate(spell.spellPrefab, spawnPos, Quaternion.identity);
-
-            var fireball = proj.GetComponent<FireballSpell>();
-            if (fireball != null)
+            if (spell.spellPrefab.GetComponent<FireballSpell>())
             {
+                Vector2 spawnPos = (Vector2)transform.position + Vector2.up * 0.5f;
                 Vector2 dir = (mouseWorldPos - spawnPos).normalized;
-                proj.transform.right = dir;
-            }
+                GameObject proj = Instantiate(spell.spellPrefab, spawnPos, Quaternion.identity);
 
-            Debug.Log($"Spawned {spell.spellName} at {spawnPos} toward {mouseWorldPos}");
-        }
-        else
-        {
-            Debug.LogWarning("Spell prefab is NULL on cast!");
+                float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                proj.transform.rotation = Quaternion.Euler(0, 0, angle + 180);
+            }
+            else if (spell.spellPrefab.GetComponent<LightningSpell>())
+            {
+                Instantiate(spell.spellPrefab, mouseWorldPos, Quaternion.identity);
+            }
         }
 
         Debug.Log($"Cast {spell.spellName} toward {mouseWorldPos}");

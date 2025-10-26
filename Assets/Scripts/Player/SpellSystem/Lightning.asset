@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e0e90e090a73a74887531c5672da0fc, type: 3}
+  m_Name: Lightning
+  m_EditorClassIdentifier: 
+  spellName: Lightning
+  manaCost: 20
+  damage: 10
+  cooldown: 5
+  spellPrefab: {fileID: 4843287629104531257, guid: 2fcbf79fd782f4e41a504c88c14b9c8d, type: 3}
+  castAnimation: 
+  castRange: 5
