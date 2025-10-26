@@ -6,7 +6,7 @@ public class PlayerStats : MonoBehaviour
     public float currentHP;
     public float hpRegen = 1;
 
-    public float maxMana = 500;
+    public float maxMana = 50;
     public float currentMana;
     public float manaRegen = 1;
 
