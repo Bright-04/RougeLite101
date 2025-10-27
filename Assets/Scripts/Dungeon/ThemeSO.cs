@@ -8,4 +8,6 @@ public class ThemeSO : ScriptableObject
     public GameObject[] roomPrefabs;
     [Header("Optional map color")]
     public Color mapColor = Color.green;
+    public SpawnPackSO[] spawnPacks;  // assign 2–4 packs per theme in Inspector
+
 }

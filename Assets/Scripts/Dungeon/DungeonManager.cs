@@ -1,30 +1,36 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class DungeonManager : MonoBehaviour
 {
     [Header("Run Settings")]
     [Min(1)] public int totalRooms = 10;
-    [Min(1)] public int roomsPerTheme = 5;   // 2 blocks of 5 for 10 rooms
-    public int seed = 0;                     // 0 => random each play
+    [Min(1)] public int roomsPerTheme = 5;
+    public int seed = 0;
 
-    [Header("Themes (order is used by blocks)")]
-    public ThemeSO[] themes;                 // e.g., [Forest, Forest] for now
+    [Header("Themes (order by block)")]
+    public ThemeSO[] themes;  // still used to pick room prefabs
 
     [Header("Scene References")]
-    public Transform roomsParent;            // empty object to hold rooms
+    public Transform roomsParent;
+    public GameObject exitDoorPrefab;   // optional if your room already has a door
 
     private System.Random _rng;
-    private List<GameObject> _planPrefabs;   // chosen room prefab per index
+    private List<GameObject> _planPrefabs;
     private int _index = -1;
     private GameObject _activeRoom;
+
+    private ExitDoor _exitDoor;
+    private int _aliveEnemies;
+    private bool _transitioning;
 
     void Start()
     {
         int finalSeed = seed != 0 ? seed : Random.Range(int.MinValue, int.MaxValue);
         _rng = new System.Random(finalSeed);
         BuildPlan();
-        LoadNextRoom();
+        LoadNextRoomInternal();
     }
 
     void BuildPlan()
@@ -35,33 +41,164 @@ public class DungeonManager : MonoBehaviour
         {
             int block = i / roomsPerTheme;
             var theme = themes[Mathf.Clamp(block, 0, themes.Length - 1)];
+            var rooms = theme.roomPrefabs;
+            if (rooms == null || rooms.Length == 0)
+            {
+                Debug.LogError($"Theme '{theme.themeName}' has no roomPrefabs assigned!");
+                continue;
+            }
 
-            var choice = theme.roomPrefabs[_rng.Next(0, theme.roomPrefabs.Length)];
+            var choice = rooms[_rng.Next(0, rooms.Length)];
             _planPrefabs.Add(choice);
         }
     }
 
-    public void LoadNextRoom()
+    public void TryLoadNextRoom()
+    {
+        if (_transitioning) return;
+        StartCoroutine(GuardedTransition());
+    }
+
+    private IEnumerator GuardedTransition()
+    {
+        _transitioning = true;
+        yield return null; // wait one frame to swallow duplicate triggers
+        LoadNextRoomInternal();
+        _transitioning = false;
+    }
+
+    private void LoadNextRoomInternal()
     {
         if (_activeRoom) Destroy(_activeRoom);
+        _exitDoor = null;
+        _aliveEnemies = 0;
 
         _index++;
         if (_index >= _planPrefabs.Count)
         {
             Debug.Log("Run complete!");
-            // TODO: show victory screen
             return;
         }
 
+        // Instantiate room
         var prefab = _planPrefabs[_index];
         _activeRoom = Instantiate(prefab, Vector3.zero, Quaternion.identity, roomsParent);
-
-        // Move player to this room's spawn
         var rt = _activeRoom.GetComponent<RoomTemplate>();
+
+        // Ensure ExitDoor exists, is initialized, and starts locked
+        _exitDoor = FindOrCreateExitDoor(rt);
+        if (_exitDoor != null) { _exitDoor.Init(this); _exitDoor.Lock(); }
+
+        // Move player
         if (rt && rt.playerSpawn)
         {
             var player = GameObject.FindGameObjectWithTag("Player");
             if (player) player.transform.position = rt.playerSpawn.position;
         }
+
+        // Spawn using per-room profile
+        if (rt == null)
+        {
+            Debug.LogWarning("RoomTemplate missing on room; unlocking door.");
+            _exitDoor?.Unlock();
+            return;
+        }
+
+        if (rt.spawnProfile == null)
+        {
+            Debug.Log("No spawn profile on this room — unlocking door immediately.");
+            _exitDoor?.Unlock();                    // <<— will actually enable collider
+            return;
+        }
+
+        // If there are no spawn points, also unlock
+        if (rt.enemySpawns == null || rt.enemySpawns.Length == 0)
+        {
+            Debug.Log("No enemy spawns in this room — unlocking door immediately.");
+            _exitDoor?.Unlock();
+            return;
+        }
+
+        StartCoroutine(SpawnFromProfile(rt, rt.spawnProfile));
+    }
+
+    private ExitDoor FindOrCreateExitDoor(RoomTemplate rt)
+    {
+        // 1) Prefer an ExitDoor already inside the room prefab
+        var existing = _activeRoom.GetComponentInChildren<ExitDoor>(true);
+        if (existing) return existing;
+
+        // 2) Spawn a door if we have a prefab and anchor
+        if (exitDoorPrefab && rt && rt.exitAnchor)
+        {
+            var doorGO = Instantiate(exitDoorPrefab, rt.exitAnchor.position, Quaternion.identity, _activeRoom.transform);
+            return doorGO.GetComponent<ExitDoor>();
+        }
+
+        Debug.LogWarning("No ExitDoor found or created (missing prefab or exitAnchor). Room will have no exit.");
+        return null;
+    }
+
+    private IEnumerator SpawnFromProfile(RoomTemplate rt, RoomSpawnProfileSO profile)
+    {
+        if (profile.spawnGradually && profile.initialDelay > 0)
+            yield return new WaitForSeconds(profile.initialDelay);
+
+        // Decide total count per entry up front
+        var toSpawn = new List<GameObject>();
+        foreach (var e in profile.entries)
+        {
+            if (e.prefab == null) continue;
+            int count = Mathf.Max(0, _rng.Next(e.minCount, e.maxCount + 1));
+            for (int i = 0; i < count; i++) toSpawn.Add(e.prefab);
+        }
+
+        if (toSpawn.Count == 0)
+        {
+            Debug.Log("Spawn profile produced 0 enemies — unlocking door.");
+            _exitDoor?.Unlock();
+            yield break;
+        }
+
+        _aliveEnemies = 0;
+
+        if (!profile.spawnGradually)
+        {
+            // spawn all instantly
+            foreach (var prefab in toSpawn) SpawnOne(rt, prefab);
+        }
+        else
+        {
+            // spawn over time
+            foreach (var prefab in toSpawn)
+            {
+                SpawnOne(rt, prefab);
+                float delay = Random.Range(profile.perSpawnDelayRange.x, profile.perSpawnDelayRange.y);
+                yield return new WaitForSeconds(Mathf.Max(0f, delay));
+            }
+        }
+
+        // wait for clear
+        while (_aliveEnemies > 0) yield return null;
+
+        _exitDoor?.Unlock();
+    }
+
+    private void SpawnOne(RoomTemplate rt, GameObject prefab)
+    {
+        var sp = rt.enemySpawns[_rng.Next(0, rt.enemySpawns.Length)];
+        var enemy = Instantiate(prefab, sp.position, Quaternion.identity, _activeRoom.transform);
+
+        var notifier = enemy.GetComponent<EnemyDeathNotifier>();
+        if (!notifier) notifier = enemy.AddComponent<EnemyDeathNotifier>();
+        notifier.Died += OnEnemyDied;
+
+        _aliveEnemies++;
+    }
+
+    private void OnEnemyDied(EnemyDeathNotifier n)
+    {
+        if (n) n.Died -= OnEnemyDied;
+        _aliveEnemies = Mathf.Max(0, _aliveEnemies - 1);
     }
 }
