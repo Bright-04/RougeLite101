@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class SpellCaster : MonoBehaviour
@@ -32,6 +32,14 @@ public class SpellCaster : MonoBehaviour
             if (cooldownTimers[i] > 0)
                 cooldownTimers[i] -= Time.deltaTime;
         }
+    }
+
+    // Method để SpellCasterUI có thể truy cập cooldown
+    public float GetCooldownRemaining(int index)
+    {
+        if (index >= 0 && index < cooldownTimers.Length)
+            return Mathf.Max(0, cooldownTimers[index]);
+        return 0;
     }
 
     //private void OnSpellCastingPerformed(InputAction.CallbackContext context)
