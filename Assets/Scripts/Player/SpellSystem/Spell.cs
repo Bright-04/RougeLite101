@@ -7,7 +7,7 @@ public class Spell : ScriptableObject
     public float manaCost;
     public float damage;
     public float cooldown;
-
+    public Sprite icon;
     public GameObject spellPrefab;
     public string castAnimation;
 
