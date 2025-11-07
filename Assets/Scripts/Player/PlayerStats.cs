@@ -55,7 +55,6 @@ public class PlayerStats : MonoBehaviour
 
         float reducedDamage = Mathf.Max(0, damage - defense);
         currentHP -= reducedDamage;
-        Debug.Log($"Player took {reducedDamage} damage, current HP: {currentHP}");
 
         damageTimer = damageCooldown;
 
@@ -66,7 +65,7 @@ public class PlayerStats : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("Player died!");
+        // TODO: Implement proper death handling (game over screen, restart, etc.)
     }
 
     public bool TryCrit()

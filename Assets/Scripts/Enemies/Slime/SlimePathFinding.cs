@@ -20,7 +20,7 @@ public class SlimePathFinding : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (knockback.gettingKnockedBack || !hasTarget)
+        if ((knockback != null && knockback.gettingKnockedBack) || !hasTarget)
             return;
 
         Vector2 direction = (currentTargetPosition - rb.position).normalized;

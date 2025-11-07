@@ -35,8 +35,6 @@ public class SpellCasterUI : MonoBehaviour
 
     private void InitializeUI()
     {
-        Debug.Log("spellSlotUIs.Length = " + spellSlotUIs.Length);
-        Debug.Log("spellCaster.spellSlots.Length = " + spellCaster.spellSlots.Length);
         // Setup initial UI state
         for (int i = 0; i < spellSlotUIs.Length; i++)
         {

@@ -8,14 +8,16 @@ public class Flash : MonoBehaviour
 
     private Material defaultMat;
     private SpriteRenderer spriteRenderer;
-    private SlimeHealth health;
+    private MonoBehaviour healthComponent;
 
     private void Awake()
     {
-        health = GetComponent<SlimeHealth>();
+        // Try to find any health component that has a DetectDeath method
+        healthComponent = GetComponent<SlimeHealth>();
+        // Could be extended to search for other health components in the future
+        
         spriteRenderer = GetComponent<SpriteRenderer>();
         defaultMat = spriteRenderer.material;
-
     }
 
     public IEnumerator FlashRoutine()
@@ -23,6 +25,12 @@ public class Flash : MonoBehaviour
         spriteRenderer.material = whiteFlashMat;
         yield return new WaitForSeconds(restoreDefaultMatTime);
         spriteRenderer.material = defaultMat;
-        health.DetectDeath();
+        
+        // Call DetectDeath if health component exists and has the method
+        if (healthComponent is SlimeHealth slimeHealth)
+        {
+            slimeHealth.DetectDeath();
+        }
+        // Can be extended for other health component types
     }
 }

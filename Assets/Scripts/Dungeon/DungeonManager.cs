@@ -49,7 +49,46 @@ public class DungeonManager : MonoBehaviour
             }
 
             var choice = rooms[_rng.Next(0, rooms.Length)];
+            
+            // Validate the chosen room prefab
+            ValidateRoomPrefab(choice, theme.themeName);
+            
             _planPrefabs.Add(choice);
+        }
+    }
+
+    /// <summary>
+    /// Validates a room prefab and logs warnings about potential issues
+    /// </summary>
+    private void ValidateRoomPrefab(GameObject roomPrefab, string themeName)
+    {
+        if (roomPrefab == null)
+        {
+            Debug.LogError($"Null room prefab found in theme '{themeName}'!");
+            return;
+        }
+
+        var roomTemplate = roomPrefab.GetComponent<RoomTemplate>();
+        if (roomTemplate == null)
+        {
+            Debug.LogWarning($"Room prefab '{roomPrefab.name}' in theme '{themeName}' is missing RoomTemplate component. It will be added automatically at runtime.");
+            return;
+        }
+
+        // Validate room template configuration
+        if (roomTemplate.playerSpawn == null)
+        {
+            Debug.LogWarning($"Room '{roomPrefab.name}' has no player spawn point set.");
+        }
+
+        if (roomTemplate.exitAnchor == null)
+        {
+            Debug.LogWarning($"Room '{roomPrefab.name}' has no exit anchor set.");
+        }
+
+        if (roomTemplate.enemySpawns == null || roomTemplate.enemySpawns.Length == 0)
+        {
+            Debug.LogWarning($"Room '{roomPrefab.name}' has no enemy spawn points set.");
         }
     }
 
@@ -85,6 +124,16 @@ public class DungeonManager : MonoBehaviour
         _activeRoom = Instantiate(prefab, Vector3.zero, Quaternion.identity, roomsParent);
         var rt = _activeRoom.GetComponent<RoomTemplate>();
 
+        // Handle missing RoomTemplate component
+        if (rt == null)
+        {
+            Debug.LogWarning($"RoomTemplate missing on room '{prefab.name}'. This can cause issues with spawn points and door positioning. Adding component automatically and creating basic configuration.");
+            rt = _activeRoom.AddComponent<RoomTemplate>();
+            
+            // Try to find basic spawn points automatically
+            TryAutoConfigureRoomTemplate(rt);
+        }
+
         // Ensure ExitDoor exists, is initialized, and starts locked
         _exitDoor = FindOrCreateExitDoor(rt);
         if (_exitDoor != null) { _exitDoor.Init(this); _exitDoor.Lock(); }
@@ -95,26 +144,36 @@ public class DungeonManager : MonoBehaviour
             var player = GameObject.FindGameObjectWithTag("Player");
             if (player) player.transform.position = rt.playerSpawn.position;
         }
+        else
+        {
+            // If no player spawn is set, try to find a reasonable position
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player) 
+            {
+                player.transform.position = _activeRoom.transform.position;
+                Debug.LogWarning($"No player spawn set for room '{prefab.name}'. Placing player at room center.");
+            }
+        }
 
         // Spawn using per-room profile
         if (rt == null)
         {
-            Debug.LogWarning("RoomTemplate missing on room; unlocking door.");  
+            Debug.LogError("Failed to create RoomTemplate component. Unlocking door immediately.");  
             _exitDoor?.Unlock();
             return;
         }
 
         if (rt.spawnProfile == null)
         {
-            Debug.Log("No spawn profile on this room — unlocking door immediately.");
-            _exitDoor?.Unlock();                    // <<— will actually enable collider
+            Debug.Log("No spawn profile on this room ï¿½ unlocking door immediately.");
+            _exitDoor?.Unlock();                    // <<ï¿½ will actually enable collider
             return;
         }
 
         // If there are no spawn points, also unlock
         if (rt.enemySpawns == null || rt.enemySpawns.Length == 0)
         {
-            Debug.Log("No enemy spawns in this room — unlocking door immediately.");
+            Debug.Log("No enemy spawns in this room ï¿½ unlocking door immediately.");
             _exitDoor?.Unlock();
             return;
         }
@@ -155,7 +214,7 @@ public class DungeonManager : MonoBehaviour
 
         if (toSpawn.Count == 0)
         {
-            Debug.Log("Spawn profile produced 0 enemies — unlocking door.");
+            Debug.Log("Spawn profile produced 0 enemies ï¿½ unlocking door.");
             _exitDoor?.Unlock();
             yield break;
         }
@@ -200,5 +259,70 @@ public class DungeonManager : MonoBehaviour
     {
         if (n) n.Died -= OnEnemyDied;
         _aliveEnemies = Mathf.Max(0, _aliveEnemies - 1);
+    }
+
+    /// <summary>
+    /// Attempts to automatically configure a RoomTemplate component with basic settings
+    /// </summary>
+    private void TryAutoConfigureRoomTemplate(RoomTemplate rt)
+    {
+        if (rt == null) return;
+
+        // Try to find or create player spawn point
+        var playerSpawnTransform = _activeRoom.transform.Find("PlayerSpawn");
+        if (playerSpawnTransform == null)
+        {
+            // Create a basic player spawn at room center
+            var playerSpawnGO = new GameObject("PlayerSpawn");
+            playerSpawnGO.transform.SetParent(_activeRoom.transform);
+            playerSpawnGO.transform.localPosition = Vector3.zero;
+            playerSpawnTransform = playerSpawnGO.transform;
+        }
+        rt.playerSpawn = playerSpawnTransform;
+
+        // Try to find or create exit anchor
+        var exitAnchorTransform = _activeRoom.transform.Find("ExitAnchor");
+        if (exitAnchorTransform == null)
+        {
+            // Create a basic exit anchor
+            var exitAnchorGO = new GameObject("ExitAnchor");
+            exitAnchorGO.transform.SetParent(_activeRoom.transform);
+            exitAnchorGO.transform.localPosition = new Vector3(5f, 0f, 0f); // Offset to the right
+            exitAnchorTransform = exitAnchorGO.transform;
+        }
+        rt.exitAnchor = exitAnchorTransform;
+
+        // Try to find enemy spawn points
+        var enemySpawnsList = new List<Transform>();
+        for (int i = 0; i < _activeRoom.transform.childCount; i++)
+        {
+            var child = _activeRoom.transform.GetChild(i);
+            if (child.name.ToLower().Contains("spawn") && child.name.ToLower().Contains("enemy"))
+            {
+                enemySpawnsList.Add(child);
+            }
+        }
+
+        // If no enemy spawns found, create a few basic ones
+        if (enemySpawnsList.Count == 0)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                var spawnGO = new GameObject($"EnemySpawn_{i}");
+                spawnGO.transform.SetParent(_activeRoom.transform);
+                // Spread spawns around the room
+                float angle = (i * 120f) * Mathf.Deg2Rad;
+                spawnGO.transform.localPosition = new Vector3(
+                    Mathf.Cos(angle) * 3f,
+                    Mathf.Sin(angle) * 3f,
+                    0f
+                );
+                enemySpawnsList.Add(spawnGO.transform);
+            }
+        }
+
+        rt.enemySpawns = enemySpawnsList.ToArray();
+
+        Debug.LogWarning($"Auto-configured RoomTemplate for '{_activeRoom.name}' with {rt.enemySpawns.Length} enemy spawns.");
     }
 }
