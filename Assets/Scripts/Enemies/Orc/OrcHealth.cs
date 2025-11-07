@@ -1,10 +1,12 @@
 using UnityEngine;
-using System.Collections;
 
+/// <summary>
+/// Orc Health: Very high health tank enemy
+/// </summary>
 [RequireComponent(typeof(EnemyDeathNotifier))]
-public class SlimeHealth : MonoBehaviour, IEnemy
+public class OrcHealth : MonoBehaviour, IEnemy
 {
-    [SerializeField] private int startingHealth = 3;
+    [SerializeField] private int startingHealth = 8;
 
     private int currentHealth;
     private Knockback knockback;
@@ -29,7 +31,7 @@ public class SlimeHealth : MonoBehaviour, IEnemy
         if (dead) return;
 
         currentHealth -= damage;
-        if (knockback) knockback.GetKnockedBack(PlayerController.Instance.transform, 15f);
+        if (knockback) knockback.GetKnockedBack(PlayerController.Instance.transform, 8f); // Less knockback (heavy)
         if (flash) StartCoroutine(flash.FlashRoutine());
 
         if (currentHealth <= 0)
@@ -43,19 +45,7 @@ public class SlimeHealth : MonoBehaviour, IEnemy
         if (dead) return;
         dead = true;
 
-        // Inform the DungeonManager
         notifier?.NotifyDied();
-
-        // Destroy the enemy
         Destroy(gameObject);
     }
-
-    public void DetectDeath()
-    {
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
 }

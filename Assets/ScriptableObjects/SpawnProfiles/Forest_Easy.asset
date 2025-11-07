@@ -15,7 +15,10 @@ MonoBehaviour:
   entries:
   - prefab: {fileID: 875806337206470879, guid: 180bb1070612454438b120a3ea20107d, type: 3}
     minCount: 1
-    maxCount: 3
+    maxCount: 2
+  - prefab: {fileID: 875806337206470879, guid: 7e810de90c270614687bae88222eb488, type: 3}
+    minCount: 1
+    maxCount: 2
   spawnGradually: 1
   initialDelay: 0.5
   perSpawnDelayRange: {x: 0.4, y: 1}

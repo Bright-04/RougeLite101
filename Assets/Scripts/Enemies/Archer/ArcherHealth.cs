@@ -1,8 +1,10 @@
 using UnityEngine;
-using System.Collections;
 
+/// <summary>
+/// Archer Health: Lower health since it's a ranged enemy
+/// </summary>
 [RequireComponent(typeof(EnemyDeathNotifier))]
-public class SlimeHealth : MonoBehaviour, IEnemy
+public class ArcherHealth : MonoBehaviour, IEnemy
 {
     [SerializeField] private int startingHealth = 3;
 
@@ -29,7 +31,7 @@ public class SlimeHealth : MonoBehaviour, IEnemy
         if (dead) return;
 
         currentHealth -= damage;
-        if (knockback) knockback.GetKnockedBack(PlayerController.Instance.transform, 15f);
+        if (knockback) knockback.GetKnockedBack(PlayerController.Instance.transform, 20f); // More knockback
         if (flash) StartCoroutine(flash.FlashRoutine());
 
         if (currentHealth <= 0)
@@ -43,19 +45,7 @@ public class SlimeHealth : MonoBehaviour, IEnemy
         if (dead) return;
         dead = true;
 
-        // Inform the DungeonManager
         notifier?.NotifyDied();
-
-        // Destroy the enemy
         Destroy(gameObject);
     }
-
-    public void DetectDeath()
-    {
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
 }

@@ -20,9 +20,12 @@ public class FireballSpell : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent(out SlimeHealth slimeHealth))
+        // Try to get any component that implements IEnemy interface
+        IEnemy enemy = other.gameObject.GetComponent<IEnemy>();
+        
+        if (enemy != null)
         {
-            slimeHealth.TakeDamage((int)damage);
+            enemy.TakeDamage((int)damage);
             Destroy(gameObject);
         }
     }

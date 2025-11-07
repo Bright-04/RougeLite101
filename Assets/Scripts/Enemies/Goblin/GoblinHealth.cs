@@ -1,10 +1,12 @@
 using UnityEngine;
-using System.Collections;
 
+/// <summary>
+/// Goblin Health: Similar to slime but with different default health
+/// </summary>
 [RequireComponent(typeof(EnemyDeathNotifier))]
-public class SlimeHealth : MonoBehaviour, IEnemy
+public class GoblinHealth : MonoBehaviour, IEnemy
 {
-    [SerializeField] private int startingHealth = 3;
+    [SerializeField] private int startingHealth = 4;
 
     private int currentHealth;
     private Knockback knockback;
@@ -43,19 +45,7 @@ public class SlimeHealth : MonoBehaviour, IEnemy
         if (dead) return;
         dead = true;
 
-        // Inform the DungeonManager
         notifier?.NotifyDied();
-
-        // Destroy the enemy
         Destroy(gameObject);
     }
-
-    public void DetectDeath()
-    {
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
 }

@@ -8,7 +8,10 @@ public class DamageSource : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.TryGetComponent(out SlimeHealth slimeHealth))
+        // Try to get any component that implements IEnemy interface
+        IEnemy enemy = other.gameObject.GetComponent<IEnemy>();
+        
+        if (enemy != null)
         {
             float finalDamage = baseDamage;
 
@@ -25,7 +28,7 @@ public class DamageSource : MonoBehaviour
                 }
             }
 
-            slimeHealth.TakeDamage(Mathf.RoundToInt(finalDamage));
+            enemy.TakeDamage(Mathf.RoundToInt(finalDamage));
         }
     }
 }

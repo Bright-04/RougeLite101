@@ -57,9 +57,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3431518360957571014}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.39178005, w: 0.9200589}
-  m_LocalPosition: {x: 47.23256, y: 4.0926385, z: 0}
-  m_LocalScale: {x: 96.472946, y: 96.472946, z: 96.472946}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.5, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7326061346903966319}
@@ -110,11 +110,13 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.08833568, y: 0.12783855}
-      - {x: 0.08663374, y: 0.013893932}
-      - {x: 0.036892444, y: -0.15994923}
-      - {x: 0.22329511, y: -0.10965393}
-      - {x: 0.22681196, y: 0.07884653}
+    - - {x: 0.0, y: -0.3}
+      - {x: 0.1, y: -0.2}
+      - {x: 0.15, y: 0.3}
+      - {x: 0.05, y: 0.4}
+      - {x: -0.05, y: 0.4}
+      - {x: -0.15, y: 0.3}
+      - {x: -0.1, y: -0.2}
   m_UseDelaunayMesh: 0
 --- !u!114 &3282061560079567817
 MonoBehaviour:
