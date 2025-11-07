@@ -99,7 +99,7 @@ public class DungeonManager : MonoBehaviour
         // Spawn using per-room profile
         if (rt == null)
         {
-            Debug.LogWarning("RoomTemplate missing on room; unlocking door.");
+            Debug.LogWarning("RoomTemplate missing on room; unlocking door.");  
             _exitDoor?.Unlock();
             return;
         }
