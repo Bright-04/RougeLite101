@@ -96,13 +96,23 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
         if (playerController != null && playerController.FacingLeft)
         {
-            weaponHolder.transform.rotation  = Quaternion.Euler(0, -180, 0);
-            weaponCollider.transform.rotation = Quaternion.Euler(0, -180, 0);
+            // Flip the weapon holder on X scale instead of rotating on Y axis
+            // This maintains position while flipping the sprite
+            Vector3 newScale = weaponHolder.localScale;
+            newScale.x = -Mathf.Abs(newScale.x); // Ensure it's negative (flipped)
+            weaponHolder.localScale = newScale;
+            
+            // Keep collider rotation for proper hit detection
+            weaponCollider.transform.localRotation = Quaternion.Euler(0, -180, 0);
         }
         else
         {
-            weaponHolder.transform.rotation = Quaternion.Euler(0, 0, 0);
-            weaponCollider.transform.rotation = Quaternion.Euler(0, 0, 0);
+            // Reset to normal scale
+            Vector3 newScale = weaponHolder.localScale;
+            newScale.x = Mathf.Abs(newScale.x); // Ensure it's positive (not flipped)
+            weaponHolder.localScale = newScale;
+            
+            weaponCollider.transform.localRotation = Quaternion.Euler(0, 0, 0);
         }
     }
 }
