@@ -28,9 +28,29 @@ public class SlimeHealth : MonoBehaviour
     {
         if (dead) return;
 
+        Debug.Log($"{gameObject.name} taking {damage} damage. Current health: {currentHealth}");
+        
         currentHealth -= damage;
-        if (knockback) knockback.GetKnockedBack(PlayerController.Instance.transform, 15f);
-        if (flash) StartCoroutine(flash.FlashRoutine());
+        
+        if (knockback)
+        {
+            Debug.Log("Applying knockback!");
+            knockback.GetKnockedBack(PlayerController.Instance.transform, 15f);
+        }
+        else
+        {
+            Debug.LogWarning($"No Knockback component on {gameObject.name}");
+        }
+        
+        if (flash)
+        {
+            Debug.Log("Applying flash effect!");
+            StartCoroutine(flash.FlashRoutine());
+        }
+        else
+        {
+            Debug.LogWarning($"No Flash component on {gameObject.name}");
+        }
 
         if (currentHealth <= 0)
         {
