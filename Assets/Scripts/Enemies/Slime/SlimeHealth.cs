@@ -5,6 +5,7 @@ using System.Collections;
 public class SlimeHealth : MonoBehaviour
 {
     [SerializeField] private int startingHealth = 3;
+    [SerializeField] private EnemyHealthBar healthBar;
 
     private int currentHealth;
     private Knockback knockback;
@@ -22,6 +23,12 @@ public class SlimeHealth : MonoBehaviour
     private void Start()
     {
         currentHealth = startingHealth;
+        
+        // Initialize healthbar
+        if (healthBar != null)
+        {
+            healthBar.Initialize(transform, startingHealth);
+        }
     }
 
     public void TakeDamage(int damage)
@@ -31,6 +38,12 @@ public class SlimeHealth : MonoBehaviour
         Debug.Log($"{gameObject.name} taking {damage} damage. Current health: {currentHealth}");
         
         currentHealth -= damage;
+        
+        // Update healthbar
+        if (healthBar != null)
+        {
+            healthBar.UpdateHealth(currentHealth);
+        }
         
         if (knockback)
         {

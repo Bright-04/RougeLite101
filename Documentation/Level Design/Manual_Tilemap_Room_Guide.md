@@ -1,10 +1,5 @@
 # Manual Tilemap Room Design Guide for RougeLite101
 
-## Overview
-This guide will help you create handcrafted tilemap rooms that work seamlessly with your existing DungeonManager system.
-
-## Step-by-Step Workflow
-
 ### Phase 1: Create the Room Scene
 
 1. **Create New Scene**
