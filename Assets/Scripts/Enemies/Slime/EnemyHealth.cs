@@ -13,7 +13,6 @@ public class EnemyHealth : MonoBehaviour
     
     [Header("Hit Reaction Settings")]
     [SerializeField] private float hitKnockbackForce = 15f;
-    [SerializeField] private float flashDuration = 0.2f;
     
     [Header("References (Optional)")]
     [SerializeField] private EnemyHealthBar healthBar;

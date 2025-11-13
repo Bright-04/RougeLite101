@@ -6,7 +6,6 @@ public class SlimePathFinding : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2f;
-    [SerializeField] private float rotationSpeed = 5f;
     
     [Header("Obstacle Avoidance")]
     [SerializeField] private float obstacleDetectionDistance = 0.8f;
