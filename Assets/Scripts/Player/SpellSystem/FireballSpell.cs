@@ -8,7 +8,6 @@ public class FireballSpell : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Fireball instantiated at " + transform.position);
         Destroy(gameObject, lifetime);
     }
 

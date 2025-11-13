@@ -5,20 +5,24 @@ using UnityEngine;
 public class DamageSource : MonoBehaviour
 {
     [SerializeField] private int baseDamage = 1;
+    [Header("Debug Visualization")]
+    [SerializeField] private bool showDebugGizmos = true;
+    [SerializeField] private Color gizmoColor = Color.red;
 
     private void OnEnable()
     {
-        Debug.Log("DamageSource ENABLED!");
+        // Damage source activated
+    }
+
+    private void OnDisable()
+    {
+        // Damage source deactivated
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"DamageSource hit: {other.gameObject.name}");
-        
         if (other.gameObject.TryGetComponent(out SlimeHealth slimeHealth))
         {
-            Debug.Log("SlimeHealth component found!");
-            
             float finalDamage = baseDamage;
 
             // Get the player's stats for AD and Crit
@@ -30,16 +34,50 @@ public class DamageSource : MonoBehaviour
                 if (stats.TryCrit())
                 {
                     finalDamage *= stats.GetCritMultiplier();
-                    Debug.Log("Critical hit!");
                 }
             }
 
-            Debug.Log($"Dealing {finalDamage} damage to {other.gameObject.name}");
             slimeHealth.TakeDamage(Mathf.RoundToInt(finalDamage));
         }
-        else
+    }
+
+    // Visualize the collider in Scene view
+    private void OnDrawGizmos()
+    {
+        if (!showDebugGizmos) return;
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col == null) return;
+
+        // Different color when enabled vs disabled
+        Gizmos.color = enabled && gameObject.activeInHierarchy ? gizmoColor : new Color(gizmoColor.r, gizmoColor.g, gizmoColor.b, 0.3f);
+        
+        if (col is PolygonCollider2D polyCol)
         {
-            Debug.LogWarning($"No SlimeHealth component on {other.gameObject.name}");
+            // Draw the polygon
+            Gizmos.matrix = transform.localToWorldMatrix;
+            Vector2[] points = polyCol.points;
+            for (int i = 0; i < points.Length; i++)
+            {
+                Vector2 start = points[i];
+                Vector2 end = points[(i + 1) % points.Length];
+                Gizmos.DrawLine(start, end);
+            }
+            Gizmos.matrix = Matrix4x4.identity;
         }
+        else if (col is BoxCollider2D boxCol)
+        {
+            Gizmos.matrix = transform.localToWorldMatrix;
+            Gizmos.DrawWireCube(boxCol.offset, boxCol.size);
+            Gizmos.matrix = Matrix4x4.identity;
+        }
+        else if (col is CircleCollider2D circleCol)
+        {
+            Gizmos.DrawWireSphere(transform.position + (Vector3)circleCol.offset, circleCol.radius);
+        }
+
+        // Draw center point
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, 0.05f);
     }
 }

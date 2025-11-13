@@ -183,16 +183,24 @@ public class DungeonManager : MonoBehaviour
 
     private ExitDoor FindOrCreateExitDoor(RoomTemplate rt)
     {
-        // 1) Prefer an ExitDoor already inside the room prefab
-        var existing = _activeRoom.GetComponentInChildren<ExitDoor>(true);
-        if (existing) return existing;
-
-        // 2) Spawn a door if we have a prefab and anchor
+        // 1) If we have a prefab assigned, ALWAYS spawn it (ignoring any old doors in the room)
         if (exitDoorPrefab && rt && rt.exitAnchor)
         {
+            // Remove any old ExitDoor from the room first
+            var oldDoor = _activeRoom.GetComponentInChildren<ExitDoor>(true);
+            if (oldDoor != null)
+            {
+                Debug.Log($"Removing old ExitDoor from room and spawning new one from prefab.");
+                Destroy(oldDoor.gameObject);
+            }
+            
             var doorGO = Instantiate(exitDoorPrefab, rt.exitAnchor.position, Quaternion.identity, _activeRoom.transform);
             return doorGO.GetComponent<ExitDoor>();
         }
+
+        // 2) Fallback: Use an ExitDoor already inside the room prefab (only if no prefab assigned)
+        var existing = _activeRoom.GetComponentInChildren<ExitDoor>(true);
+        if (existing) return existing;
 
         Debug.LogWarning("No ExitDoor found or created (missing prefab or exitAnchor). Room will have no exit.");
         return null;

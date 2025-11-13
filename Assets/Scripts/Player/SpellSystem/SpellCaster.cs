@@ -18,8 +18,6 @@ public class SpellCaster : MonoBehaviour
 
         playerControls = new PlayerControls();
         playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
-
-        Debug.Log("SpellCaster initialized.");
     }
 
     private void OnEnable() => playerControls.Enable();
@@ -56,8 +54,6 @@ public class SpellCaster : MonoBehaviour
     //}
     private void OnSpellCastingPerformed(InputAction.CallbackContext context)
     {
-        Debug.Log("SpellCasting input received");
-
         if (Keyboard.current.digit1Key.wasPressedThisFrame)
             TryCastSpell(0);
         else if (Keyboard.current.digit2Key.wasPressedThisFrame)
@@ -69,26 +65,21 @@ public class SpellCaster : MonoBehaviour
 
     private void TryCastSpell(int index)
     {
-        Debug.Log($"Trying to cast spell in slot {index}");
-
         if (index >= spellSlots.Length) return;
 
         Spell spell = spellSlots[index];
         if (spell == null)
         {
-            Debug.Log("No spell assigned to this slot.");
             return;
         }
 
         if (cooldownTimers[index] > 0)
         {
-            Debug.Log($"{spell.spellName} is on cooldown.");
             return;
         }
 
         if (stats.currentMana < spell.manaCost)
         {
-            Debug.Log("Not enough mana!");
             return;
         }
 
@@ -121,8 +112,6 @@ public class SpellCaster : MonoBehaviour
                 Instantiate(spell.spellPrefab, mouseWorldPos, Quaternion.identity);
             }
         }
-
-        Debug.Log($"Cast {spell.spellName} toward {mouseWorldPos}");
     }
 
 
