@@ -142,8 +142,39 @@ public class DungeonManager : MonoBehaviour
     private IEnumerator GuardedTransition()
     {
         _transitioning = true;
-        yield return null; // wait one frame to swallow duplicate triggers
-        LoadNextRoomInternal();
+        
+        // Try using fancy LoadingScreen first, fallback to simple fade
+        bool hasLoadingScreen = LoadingScreen.Instance != null;
+        bool hasSimpleFade = SimpleFadeTransition.Instance != null;
+        
+        if (hasLoadingScreen)
+        {
+            // Use full loading screen with tips and progress bar
+            LoadingScreen.Instance.Show();
+            yield return new WaitForSeconds(0.3f); // Wait for fade in
+            yield return null; // wait one frame to swallow duplicate triggers
+            LoadNextRoomInternal();
+            yield return new WaitForSeconds(0.5f); // Minimum display time
+            LoadingScreen.Instance.Hide();
+        }
+        else if (hasSimpleFade)
+        {
+            // Use simple fade to black transition
+            yield return SimpleFadeTransition.Instance.FadeIn();
+            yield return null; // wait one frame to swallow duplicate triggers
+            LoadNextRoomInternal();
+            yield return new WaitForSeconds(0.2f); // Brief pause
+            yield return SimpleFadeTransition.Instance.FadeOut();
+        }
+        else
+        {
+            // No transition system - just add delays for pacing
+            yield return new WaitForSeconds(0.4f);
+            yield return null; // wait one frame to swallow duplicate triggers
+            LoadNextRoomInternal();
+            yield return new WaitForSeconds(0.4f);
+        }
+        
         _transitioning = false;
     }
 
