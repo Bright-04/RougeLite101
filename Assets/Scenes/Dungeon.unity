@@ -673,6 +673,8 @@ GameObject:
   - component: {fileID: 1693237144}
   - component: {fileID: 1693237145}
   - component: {fileID: 1693237146}
+  - component: {fileID: 1693237148}
+  - component: {fileID: 1693237147}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -907,6 +909,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponHolder: {fileID: 732865201}
   startingWeaponPrefab: {fileID: 7706408078841532381, guid: cd06504aa93a6fb48ae71d1819c2e8ed, type: 3}
+--- !u!114 &1693237147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693237137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9061b560f6459a14c80a454285f66cfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whiteFlashMat: {fileID: 2100000, guid: 288a9ba680f315742be43afa2a09190a, type: 2}
+  restoreDefaultMatTime: 0.2
+--- !u!114 &1693237148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693237137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89b44c43b6f9a05498dcc5c758bf03fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  knockBackTime: 0.2
 --- !u!1 &2015012934
 GameObject:
   m_ObjectHideFlags: 0
