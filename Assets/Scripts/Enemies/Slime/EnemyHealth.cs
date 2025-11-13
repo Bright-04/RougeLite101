@@ -1,10 +1,21 @@
 using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Generic health component for enemies. Can be used for any enemy type.
+/// Handles damage, hit reactions (flash + knockback), and death animation.
+/// </summary>
 [RequireComponent(typeof(EnemyDeathNotifier))]
-public class SlimeHealth : MonoBehaviour
+public class EnemyHealth : MonoBehaviour
 {
+    [Header("Health Settings")]
     [SerializeField] private int startingHealth = 3;
+    
+    [Header("Hit Reaction Settings")]
+    [SerializeField] private float hitKnockbackForce = 15f;
+    [SerializeField] private float flashDuration = 0.2f;
+    
+    [Header("References (Optional)")]
     [SerializeField] private EnemyHealthBar healthBar;
 
     private int currentHealth;
@@ -26,7 +37,7 @@ public class SlimeHealth : MonoBehaviour
     {
         currentHealth = startingHealth;
         
-        // Initialize healthbar
+        // Initialize healthbar if present
         if (healthBar != null)
         {
             healthBar.Initialize(transform, startingHealth);
@@ -47,29 +58,28 @@ public class SlimeHealth : MonoBehaviour
             healthBar.UpdateHealth(currentHealth);
         }
         
-        if (knockback)
-        {
-            Debug.Log("Applying knockback!");
-            knockback.GetKnockedBack(PlayerController.Instance.transform, 15f);
-        }
-        else
-        {
-            Debug.LogWarning($"No Knockback component on {gameObject.name}");
-        }
-        
-        if (flash)
-        {
-            Debug.Log("Applying flash effect!");
-            StartCoroutine(flash.FlashRoutine());
-        }
-        else
-        {
-            Debug.LogWarning($"No Flash component on {gameObject.name}");
-        }
+        // Play hit reactions (knockback + flash)
+        PlayHitReaction();
 
+        // Check if dead
         if (currentHealth <= 0)
         {
             Die();
+        }
+    }
+
+    private void PlayHitReaction()
+    {
+        // Knockback effect
+        if (knockback && PlayerController.Instance != null)
+        {
+            knockback.GetKnockedBack(PlayerController.Instance.transform, hitKnockbackForce);
+        }
+        
+        // Flash white effect
+        if (flash)
+        {
+            StartCoroutine(flash.FlashRoutine());
         }
     }
 
@@ -78,18 +88,19 @@ public class SlimeHealth : MonoBehaviour
         if (dead) return;
         dead = true;
 
+        Debug.Log($"<color=red>[DEATH] {gameObject.name} died!</color>");
+
         // Inform the DungeonManager
         notifier?.NotifyDied();
 
-        // Play death animation if available, otherwise just destroy
+        // Play death animation if available
         if (deathAnimation != null)
         {
-            Debug.Log($"<color=purple>[DEATH] Playing death animation for {gameObject.name}</color>");
-            deathAnimation.PlayDeathAnimation(PlayerController.Instance.transform);
+            deathAnimation.PlayDeathAnimation(PlayerController.Instance?.transform);
         }
         else
         {
-            Debug.LogWarning($"No death animation component on {gameObject.name}, destroying immediately");
+            // Fallback: just destroy immediately
             Destroy(gameObject);
         }
     }
@@ -102,4 +113,8 @@ public class SlimeHealth : MonoBehaviour
         }
     }
 
+    // Public getters for other systems
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => startingHealth;
+    public bool IsDead => dead;
 }
