@@ -120,7 +120,7 @@ MonoBehaviour:
   enemySpawns:
   - {fileID: 6734274539307251690}
   - {fileID: 4525334901180071338}
-  spawnProfile: {fileID: 11400000, guid: 7e7d962388d2ab54db7253267add0bb2, type: 2}
+  spawnProfile: {fileID: 11400000, guid: 4ef55bda33e24a54f9874fa6853c7cdd, type: 2}
 --- !u!1 &2762882809548926295
 GameObject:
   m_ObjectHideFlags: 0

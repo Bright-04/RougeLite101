@@ -21,7 +21,7 @@ public class DamageSource : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.TryGetComponent(out SlimeHealth slimeHealth))
+        if (other.gameObject.TryGetComponent(out IDamageable damageable))
         {
             float finalDamage = baseDamage;
 
@@ -37,7 +37,7 @@ public class DamageSource : MonoBehaviour
                 }
             }
 
-            slimeHealth.TakeDamage(Mathf.RoundToInt(finalDamage));
+            damageable.TakeDamage(Mathf.RoundToInt(finalDamage));
         }
     }
 

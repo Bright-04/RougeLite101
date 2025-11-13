@@ -2,9 +2,9 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(EnemyDeathNotifier))]
-public class SlimeHealth : MonoBehaviour, IDamageable
+public class BatHealth : MonoBehaviour, IDamageable
 {
-    [SerializeField] private int startingHealth = 3;
+    [SerializeField] private int startingHealth = 2; // Lower health than slime (slime has 3)
     [SerializeField] private EnemyHealthBar healthBar;
 
     private int currentHealth;
@@ -47,7 +47,7 @@ public class SlimeHealth : MonoBehaviour, IDamageable
         
         if (knockback)
         {
-            knockback.GetKnockedBack(PlayerController.Instance.transform, 15f);
+            knockback.GetKnockedBack(PlayerController.Instance.transform, 18f); // Slightly more knockback than slime
         }
         
         if (flash)
