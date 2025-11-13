@@ -19,10 +19,15 @@ public class BatAI : MonoBehaviour
     [SerializeField] private float detectionRange = 8f; // Detection range
 
     [Header("Charge Attack")]
-    [SerializeField] private float prepareTime = 0.8f; // Time to stand still before charging
-    [SerializeField] private float chargeSpeed = 8f; // Speed during charge (much faster than normal)
+    [SerializeField] private float prepareTime = 0.6f; // Time to stand still before charging
+    [SerializeField] private float chargeSpeed = 12f; // Speed during charge (much faster than normal)
     [SerializeField] private float chargeDuration = 0.5f; // How long the charge lasts
-    [SerializeField] private float cooldownTime = 1.2f; // Time to wait after charge before next one
+    [SerializeField] private float cooldownTime = 1.0f; // Time to wait after charge before next one
+    
+    [Header("Visual Effects")]
+    [SerializeField] private float prepareFlashSpeed = 10f; // How fast to flash when preparing
+    [SerializeField] private Color prepareColor = new Color(1f, 0.3f, 0.3f, 1f); // Red tint when preparing
+    [SerializeField] private Color chargeColor = new Color(1f, 0f, 0f, 1f); // Bright red when charging
 
     [Header("Roaming")]
     [SerializeField] private float roamRadius = 2f; // Radius to circle around
@@ -35,10 +40,16 @@ public class BatAI : MonoBehaviour
     private float stateTimer = 0f; // Timer for current state
     private bool isCharging = false;
     private float chargeDistance = 0f; // How far to charge
+    
+    // Visual components
+    private SpriteRenderer spriteRenderer;
+    private Color originalColor;
+    private Vector3 originalScale;
 
     private void Awake()
     {
         batPathFinding = GetComponent<BatPathFinding>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         state = State.IdleRoaming;
     }
 
@@ -53,6 +64,13 @@ public class BatAI : MonoBehaviour
         // Set initial roam center to starting position
         roamCenter = transform.position;
         roamAngle = Random.Range(0f, 360f);
+        
+        // Store original visuals
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+        }
+        originalScale = transform.localScale;
 
         StartCoroutine(AIBehaviour());
     }
@@ -100,6 +118,16 @@ public class BatAI : MonoBehaviour
 
     private void HandleIdleRoaming(float distanceToPlayer)
     {
+        // Ensure normal visuals during roaming
+        if (spriteRenderer != null && spriteRenderer.color != originalColor)
+        {
+            spriteRenderer.color = originalColor;
+        }
+        if (transform.localScale != originalScale)
+        {
+            transform.localScale = originalScale;
+        }
+        
         // Check if player is in range
         if (distanceToPlayer < detectionRange)
         {
@@ -135,6 +163,21 @@ public class BatAI : MonoBehaviour
             chargeDirection = (playerTransform.position - transform.position).normalized;
         }
         
+        // Visual feedback: Flash red and shake
+        if (spriteRenderer != null)
+        {
+            float flashValue = Mathf.PingPong(Time.time * prepareFlashSpeed, 1f);
+            spriteRenderer.color = Color.Lerp(originalColor, prepareColor, flashValue);
+        }
+        
+        // Shake effect during prepare
+        float shakeAmount = 0.05f;
+        transform.localScale = originalScale + new Vector3(
+            Mathf.Sin(Time.time * 30f) * shakeAmount,
+            Mathf.Sin(Time.time * 25f) * shakeAmount,
+            0f
+        );
+        
         // Decrement timer (using fixed 0.05 from coroutine wait time)
         stateTimer -= 0.05f;
 
@@ -150,6 +193,13 @@ public class BatAI : MonoBehaviour
             
             // Use distance-based tracking instead of time
             stateTimer = chargeDuration * 1.5f; // Safety timeout
+            
+            // Set charging visuals
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.color = chargeColor;
+            }
+            transform.localScale = originalScale * 1.2f; // Slightly bigger when charging
         }
     }
 
@@ -157,6 +207,14 @@ public class BatAI : MonoBehaviour
     {
         // Check if we've reached the target or hit something
         float distanceToTarget = Vector2.Distance(transform.position, chargeTargetPosition);
+        
+        // Add motion trail effect (stretch sprite in direction of movement)
+        Vector2 velocity = ((Vector2)transform.position - chargeTargetPosition).normalized;
+        transform.localScale = new Vector3(
+            originalScale.x * 1.2f,
+            originalScale.y * 0.9f, // Squish vertically
+            originalScale.z
+        );
         
         // Stop if we're close to target or timeout
         stateTimer -= 0.05f;
@@ -168,6 +226,13 @@ public class BatAI : MonoBehaviour
             isCharging = false;
             batPathFinding.SetChargeMode(false, 0f);
             batPathFinding.StopMoving();
+            
+            // Reset visuals
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.color = originalColor;
+            }
+            transform.localScale = originalScale;
             return;
         }
         
@@ -180,6 +245,16 @@ public class BatAI : MonoBehaviour
     {
         // Stand still after charge
         batPathFinding.StopMoving();
+        
+        // Ensure visuals are reset
+        if (spriteRenderer != null && spriteRenderer.color != originalColor)
+        {
+            spriteRenderer.color = originalColor;
+        }
+        if (transform.localScale != originalScale)
+        {
+            transform.localScale = originalScale;
+        }
         
         stateTimer -= 0.05f;
 
