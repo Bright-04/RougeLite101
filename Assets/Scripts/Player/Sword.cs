@@ -101,7 +101,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
                 // Use a threshold of -0.3 to allow hitting slightly off to the side
                 if (dotProduct > -0.3f)
                 {
-                    if (hit.TryGetComponent(out SlimeHealth slimeHealth))
+                    if (hit.TryGetComponent(out IDamageable damageable))
                     {
                         // Calculate damage same as DamageSource
                         float finalDamage = 1; // baseDamage
@@ -115,7 +115,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
                             }
                         }
                         
-                        slimeHealth.TakeDamage(Mathf.RoundToInt(finalDamage));
+                        damageable.TakeDamage(Mathf.RoundToInt(finalDamage));
                     }
                 }
             }

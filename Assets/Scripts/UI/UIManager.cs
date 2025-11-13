@@ -19,6 +19,14 @@ public class PlayerUI : MonoBehaviour
     private void Start()
     {
         playerStats = FindAnyObjectByType<PlayerStats>();
+        if (playerStats == null)
+        {
+            Debug.LogError("PlayerUI: Could not find PlayerStats!");
+        }
+        else
+        {
+            Debug.Log("PlayerUI: Found PlayerStats successfully");
+        }
     }
 
 
@@ -34,6 +42,8 @@ public class PlayerUI : MonoBehaviour
 
     private void UpdateHealthUI()
     {
+        if (playerStats == null) return;
+        
         if (healthSlider != null)
         {
             healthSlider.maxValue = playerStats.maxHP;

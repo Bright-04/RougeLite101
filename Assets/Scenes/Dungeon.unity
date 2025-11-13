@@ -673,6 +673,8 @@ GameObject:
   - component: {fileID: 1693237144}
   - component: {fileID: 1693237145}
   - component: {fileID: 1693237146}
+  - component: {fileID: 1693237148}
+  - component: {fileID: 1693237147}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -790,7 +792,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18a609612324908469e60e62fed14b37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 4
+  moveSpeed: 10
 --- !u!95 &1693237142
 Animator:
   serializedVersion: 7
@@ -907,6 +909,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponHolder: {fileID: 732865201}
   startingWeaponPrefab: {fileID: 7706408078841532381, guid: cd06504aa93a6fb48ae71d1819c2e8ed, type: 3}
+--- !u!114 &1693237147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693237137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9061b560f6459a14c80a454285f66cfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whiteFlashMat: {fileID: 2100000, guid: 288a9ba680f315742be43afa2a09190a, type: 2}
+  restoreDefaultMatTime: 0.2
+--- !u!114 &1693237148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693237137}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89b44c43b6f9a05498dcc5c758bf03fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  knockBackTime: 0.2
 --- !u!1 &2015012934
 GameObject:
   m_ObjectHideFlags: 0
@@ -1018,6 +1047,12 @@ MonoBehaviour:
   totalRooms: 10
   roomsPerTheme: 5
   seed: 0
+  useTestRooms: 1
+  testRoomSequence:
+  - {fileID: 4495700257502947901, guid: 488e3f82e7434b946b6e2c9dd333c537, type: 3}
+  - {fileID: 2630498160803011870, guid: e7070dfb5ba61e2468829b93d792548a, type: 3}
+  - {fileID: 5551893689476621015, guid: 1dfc196bc7cc8e44ca57bafe98c66814, type: 3}
+  startAtRoomIndex: 0
   themes:
   - {fileID: 11400000, guid: 0b8da0dda55225848b064027e75b7195, type: 2}
   - {fileID: 11400000, guid: c3170f78ffb86c442ab945db7ecb1c47, type: 2}

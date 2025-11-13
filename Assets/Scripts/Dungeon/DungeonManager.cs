@@ -9,6 +9,14 @@ public class DungeonManager : MonoBehaviour
     [Min(1)] public int roomsPerTheme = 5;
     public int seed = 0;
 
+    [Header("Test Mode")]
+    [Tooltip("Enable to use specific room sequence instead of random")]
+    public bool useTestRooms = false;
+    [Tooltip("Drag specific room prefabs here for testing (ignores themes)")]
+    public GameObject[] testRoomSequence;
+    [Tooltip("Start at this room index (0-based). Useful for testing later rooms")]
+    public int startAtRoomIndex = 0;
+
     [Header("Themes (order by block)")]
     public ThemeSO[] themes;  // still used to pick room prefabs
 
@@ -29,7 +37,16 @@ public class DungeonManager : MonoBehaviour
     {
         int finalSeed = seed != 0 ? seed : Random.Range(int.MinValue, int.MaxValue);
         _rng = new System.Random(finalSeed);
+        Debug.Log($"DungeonManager using seed: {finalSeed}");
         BuildPlan();
+        
+        // Skip to specified room for testing
+        if (startAtRoomIndex > 0)
+        {
+            _index = Mathf.Clamp(startAtRoomIndex - 1, -1, _planPrefabs.Count - 1);
+            Debug.Log($"<color=cyan>Skipping to room index {startAtRoomIndex}</color>");
+        }
+        
         LoadNextRoomInternal();
     }
 
@@ -37,6 +54,30 @@ public class DungeonManager : MonoBehaviour
     {
         _planPrefabs = new List<GameObject>(totalRooms);
 
+        // TEST MODE: Use specific room sequence
+        if (useTestRooms && testRoomSequence != null && testRoomSequence.Length > 0)
+        {
+            Debug.Log($"<color=yellow>TEST MODE: Using {testRoomSequence.Length} specified rooms</color>");
+            for (int i = 0; i < totalRooms; i++)
+            {
+                // Loop through test rooms if we run out
+                int testIndex = i % testRoomSequence.Length;
+                var testRoom = testRoomSequence[testIndex];
+                
+                if (testRoom != null)
+                {
+                    _planPrefabs.Add(testRoom);
+                    Debug.Log($"  Room {i}: {testRoom.name}");
+                }
+                else
+                {
+                    Debug.LogWarning($"Test room at index {testIndex} is null!");
+                }
+            }
+            return;
+        }
+
+        // NORMAL MODE: Random selection from themes
         for (int i = 0; i < totalRooms; i++)
         {
             int block = i / roomsPerTheme;

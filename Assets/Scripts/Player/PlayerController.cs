@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Animator myAnimator;
     private SpriteRenderer mySpriteRender;
+    private Knockback knockback;
 
     private bool facingLeft =false;
     private void Awake()
@@ -24,6 +25,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
         mySpriteRender = GetComponent<SpriteRenderer>();
+        knockback = GetComponent<Knockback>();
     }
 
     private void OnEnable()
@@ -39,6 +41,11 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         AdjustPlayerFacingDirection();
+        
+        // Don't move if being knocked back
+        if (knockback != null && knockback.gettingKnockedBack)
+            return;
+            
         Move();
     }
 

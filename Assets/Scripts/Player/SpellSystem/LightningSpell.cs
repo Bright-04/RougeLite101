@@ -12,9 +12,9 @@ public class LightningSpell : MonoBehaviour
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, radius);
         foreach (var hit in hits)
         {
-            if (hit.TryGetComponent<SlimeHealth>(out var slimeHealth))
+            if (hit.TryGetComponent<IDamageable>(out var damageable))
             {
-                slimeHealth.TakeDamage((int)damage);
+                damageable.TakeDamage((int)damage);
             }
         }
 
