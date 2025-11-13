@@ -42,7 +42,7 @@ GameObject:
   - component: {fileID: 1904787829855790125}
   - component: {fileID: 2692511129410971273}
   - component: {fileID: 3282061560079567817}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Weapon Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,7 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 451395b01066a2b42b8569e73ad14f88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseDamage: 1
+  baseDamage: 10
 --- !u!1 &7706408078841532381
 GameObject:
   m_ObjectHideFlags: 0
