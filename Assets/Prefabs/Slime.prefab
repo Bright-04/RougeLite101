@@ -128,7 +128,7 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -175,6 +175,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 2
+  obstacleDetectionDistance: 0.8
+  avoidanceForce: 3
+  obstacleLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  rayCount: 7
+  showDebugRays: 0
 --- !u!114 &6591106432729160525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -265,6 +272,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageAmount: 5
   damageCooldown: 0.5
+  knockbackForce: 10
 --- !u!114 &4540165409629686099
 MonoBehaviour:
   m_ObjectHideFlags: 0
