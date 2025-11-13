@@ -12,7 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a281cf7c6da9604d9bc7a659fbe5211, type: 3}
   m_Name: Forest_Hard
   m_EditorClassIdentifier: 
-  entries: []
+  entries:
+  - prefab: {fileID: 875806337206470879, guid: 180bb1070612454438b120a3ea20107d, type: 3}
+    minCount: 3
+    maxCount: 4
+  - prefab: {fileID: 1416822661671252518, guid: 13439e286361eb14f83ed50154d84926, type: 3}
+    minCount: 2
+    maxCount: 4
   spawnGradually: 1
   initialDelay: 0.5
-  perSpawnDelayRange: {x: 0.4, y: 1}
+  perSpawnDelayRange: {x: 0.2, y: 0.6}

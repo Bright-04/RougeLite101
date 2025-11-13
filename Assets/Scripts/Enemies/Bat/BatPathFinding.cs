@@ -26,6 +26,10 @@ public class BatPathFinding : MonoBehaviour
     private bool hasTarget = false;
     private Vector2 avoidanceDirection = Vector2.zero;
     private float hoverOffset = 0f;
+    
+    // Charge mode
+    private bool isCharging = false;
+    private float chargeSpeedOverride = 0f;
 
     private void Awake()
     {
@@ -61,19 +65,39 @@ public class BatPathFinding : MonoBehaviour
         
         // Combine all directions
         Vector2 finalDirection;
-        if (unstuckDirection != Vector2.zero)
+        float currentSpeed;
+        
+        if (isCharging)
+        {
+            // During charge: still check for walls but don't avoid them as much
+            if (unstuckDirection != Vector2.zero)
+            {
+                // Stuck in wall, stop charge
+                finalDirection = unstuckDirection;
+                currentSpeed = moveSpeed;
+            }
+            else
+            {
+                // Charging with minimal obstacle avoidance
+                finalDirection = (desiredDirection + avoidance * 0.3f).normalized;
+                currentSpeed = chargeSpeedOverride;
+            }
+        }
+        else if (unstuckDirection != Vector2.zero)
         {
             // Priority: getting unstuck first
             finalDirection = (unstuckDirection * 2f + avoidance).normalized;
+            currentSpeed = moveSpeed;
         }
         else
         {
             // Normal movement with avoidance and hover
             finalDirection = (desiredDirection + avoidance * 1.8f + hoverMotion).normalized;
+            currentSpeed = moveSpeed;
         }
         
-        // Move in the final direction (faster than slime)
-        Vector2 newPosition = rb.position + finalDirection * (moveSpeed * Time.fixedDeltaTime);
+        // Move in the final direction
+        Vector2 newPosition = rb.position + finalDirection * (currentSpeed * Time.fixedDeltaTime);
         rb.MovePosition(newPosition);
     }
     
@@ -176,6 +200,12 @@ public class BatPathFinding : MonoBehaviour
     public void StopMoving()
     {
         hasTarget = false;
+    }
+    
+    public void SetChargeMode(bool charging, float chargeSpeed)
+    {
+        isCharging = charging;
+        chargeSpeedOverride = chargeSpeed;
     }
     
     // Draw gizmos to visualize detection range

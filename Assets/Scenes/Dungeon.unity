@@ -1018,6 +1018,12 @@ MonoBehaviour:
   totalRooms: 10
   roomsPerTheme: 5
   seed: 0
+  useTestRooms: 1
+  testRoomSequence:
+  - {fileID: 4495700257502947901, guid: 488e3f82e7434b946b6e2c9dd333c537, type: 3}
+  - {fileID: 2630498160803011870, guid: e7070dfb5ba61e2468829b93d792548a, type: 3}
+  - {fileID: 5551893689476621015, guid: 1dfc196bc7cc8e44ca57bafe98c66814, type: 3}
+  startAtRoomIndex: 0
   themes:
   - {fileID: 11400000, guid: 0b8da0dda55225848b064027e75b7195, type: 2}
   - {fileID: 11400000, guid: 0b8da0dda55225848b064027e75b7195, type: 2}
