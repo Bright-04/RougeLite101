@@ -29,8 +29,8 @@ public class ExitDoor : MonoBehaviour
         _locked = true;
         if (_col) _col.enabled = false;
         
-        // Play close animation if animator exists
-        if (_animator) _animator.Play("close");
+        // Trigger close animation if animator exists
+        if (_animator) _animator.SetTrigger("Close");
     }
 
     public void Unlock()
@@ -38,8 +38,8 @@ public class ExitDoor : MonoBehaviour
         _locked = false;
         if (_col) _col.enabled = true;  // <- critical: ensure collider is ON
         
-        // Play open animation if animator exists
-        if (_animator) _animator.Play("open");
+        // Trigger open animation if animator exists
+        if (_animator) _animator.SetTrigger("Open");
     }
 
     private void OnTriggerEnter2D(Collider2D other)
