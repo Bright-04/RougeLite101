@@ -28,10 +28,6 @@
             {
                 playerTransform = playerObj.transform;
             }
-            else
-            {
-                Debug.LogWarning("SlimeAI: No GameObject tagged 'Player' found. Slime will only roam.");
-            }
 
             StartCoroutine(AIBehaviour());
         }

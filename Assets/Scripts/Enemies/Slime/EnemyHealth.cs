@@ -47,8 +47,6 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(int damage)
     {
         if (dead) return;
-
-        Debug.Log($"{gameObject.name} taking {damage} damage. Current health: {currentHealth}");
         
         currentHealth -= damage;
         
@@ -87,8 +85,6 @@ public class EnemyHealth : MonoBehaviour
     {
         if (dead) return;
         dead = true;
-
-        Debug.Log($"<color=red>[DEATH] {gameObject.name} died!</color>");
 
         // Inform the DungeonManager
         notifier?.NotifyDied();

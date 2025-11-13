@@ -31,13 +31,11 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         // TEMPORARY FIX: Reset weapon collider transform to reasonable values
         if (weaponCollider != null)
         {
-            Debug.LogWarning("[SWORD] Applying TEMPORARY FIX to weapon collider position/scale!");
             // Make the collider a direct child of the player for simpler positioning
             weaponCollider.SetParent(PlayerController.Instance.transform);
             weaponCollider.localPosition = new Vector3(0.5f, 0f, 0f); // 0.5 units in front of player
             weaponCollider.localScale = Vector3.one; // Normal scale
             weaponCollider.localRotation = Quaternion.identity; // No rotation
-            Debug.Log($"[SWORD] Fixed weapon collider - Local Position: {weaponCollider.localPosition}, Local Scale: {weaponCollider.localScale}");
         }
     }
 
@@ -67,27 +65,8 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
         nextAttackTime = Time.time + attackCooldown;
 
-        Debug.Log($"[SWORD] Attack initiated at {Time.time}");
-        Debug.Log($"[SWORD] Player position: {PlayerController.Instance.transform.position}");
-        
         myAnimator.SetTrigger("Attack");
         weaponCollider.gameObject.SetActive(true);
-        
-        Debug.Log($"[SWORD] Weapon collider WORLD position: {weaponCollider.position}");
-        Debug.Log($"[SWORD] Weapon collider LOCAL position: {weaponCollider.localPosition}");
-        Debug.Log($"[SWORD] Weapon collider LOCAL scale: {weaponCollider.localScale}");
-        
-        // Check for nearby enemies to help debug
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(PlayerController.Instance.transform.position, 5f);
-        Debug.Log($"[SWORD] Found {nearbyColliders.Length} colliders within 5 units of player");
-        foreach (var col in nearbyColliders)
-        {
-            if (col.gameObject.layer == LayerMask.NameToLayer("Enemy"))
-            {
-                float distance = Vector2.Distance(PlayerController.Instance.transform.position, col.transform.position);
-                Debug.Log($"[SWORD] Enemy '{col.gameObject.name}' at position {col.transform.position}, distance: {distance:F2}");
-            }
-        }
 
         slashAnim = Instantiate(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
         slashAnim.transform.parent = this.transform.parent;
@@ -95,8 +74,6 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
     public void DoneAttackingAnimEvent()
     {
-        Debug.Log($"[SWORD] Weapon collider DISABLED");
-        
         // BACKUP SOLUTION: If trigger didn't work, manually check for nearby enemies
         ManualHitDetection();
         
@@ -126,8 +103,6 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
                 {
                     if (hit.TryGetComponent(out SlimeHealth slimeHealth))
                     {
-                        Debug.Log($"<color=cyan>[SWORD] 🎯 MANUAL HIT DETECTION triggered on {hit.gameObject.name} (direction: {attackDirection}, dot: {dotProduct:F2})</color>");
-                        
                         // Calculate damage same as DamageSource
                         float finalDamage = 1; // baseDamage
                         PlayerStats stats = PlayerController.Instance.GetComponent<PlayerStats>();
@@ -137,17 +112,11 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
                             if (stats.TryCrit())
                             {
                                 finalDamage *= stats.GetCritMultiplier();
-                                Debug.Log("<color=orange>[SWORD] 💥 CRITICAL HIT!</color>");
                             }
                         }
                         
-                        Debug.Log($"<color=red>[SWORD] 💀 Dealing {finalDamage} damage via manual detection</color>");
                         slimeHealth.TakeDamage(Mathf.RoundToInt(finalDamage));
                     }
-                }
-                else
-                {
-                    Debug.Log($"<color=yellow>[SWORD] ❌ {hit.gameObject.name} is behind player (dot: {dotProduct:F2}), not hitting</color>");
                 }
             }
         }

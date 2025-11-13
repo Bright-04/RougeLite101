@@ -36,8 +36,6 @@ public class SlimeHealth : MonoBehaviour
     public void TakeDamage(int damage)
     {
         if (dead) return;
-
-        Debug.Log($"{gameObject.name} taking {damage} damage. Current health: {currentHealth}");
         
         currentHealth -= damage;
         
@@ -49,22 +47,12 @@ public class SlimeHealth : MonoBehaviour
         
         if (knockback)
         {
-            Debug.Log("Applying knockback!");
             knockback.GetKnockedBack(PlayerController.Instance.transform, 15f);
-        }
-        else
-        {
-            Debug.LogWarning($"No Knockback component on {gameObject.name}");
         }
         
         if (flash)
         {
-            Debug.Log("Applying flash effect!");
             StartCoroutine(flash.FlashRoutine());
-        }
-        else
-        {
-            Debug.LogWarning($"No Flash component on {gameObject.name}");
         }
 
         if (currentHealth <= 0)
@@ -84,12 +72,10 @@ public class SlimeHealth : MonoBehaviour
         // Play death animation if available, otherwise just destroy
         if (deathAnimation != null)
         {
-            Debug.Log($"<color=purple>[DEATH] Playing death animation for {gameObject.name}</color>");
             deathAnimation.PlayDeathAnimation(PlayerController.Instance.transform);
         }
         else
         {
-            Debug.LogWarning($"No death animation component on {gameObject.name}, destroying immediately");
             Destroy(gameObject);
         }
     }

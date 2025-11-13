@@ -11,23 +11,18 @@ public class DamageSource : MonoBehaviour
 
     private void OnEnable()
     {
-        Debug.Log($"[DAMAGE SOURCE] ENABLED on {gameObject.name} at position {transform.position}");
-        Debug.Log($"[DAMAGE SOURCE] Layer: {LayerMask.LayerToName(gameObject.layer)}, IsTrigger: {GetComponent<Collider2D>()?.isTrigger}");
+        // Damage source activated
     }
 
     private void OnDisable()
     {
-        Debug.Log($"[DAMAGE SOURCE] DISABLED on {gameObject.name}");
+        // Damage source deactivated
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"<color=yellow>[DAMAGE SOURCE] ⚔️ TRIGGER ENTER with: {other.gameObject.name} (Layer: {LayerMask.LayerToName(other.gameObject.layer)})</color>");
-        
         if (other.gameObject.TryGetComponent(out SlimeHealth slimeHealth))
         {
-            Debug.Log("<color=green>[DAMAGE SOURCE] ✅ SlimeHealth component found!</color>");
-            
             float finalDamage = baseDamage;
 
             // Get the player's stats for AD and Crit
@@ -39,23 +34,11 @@ public class DamageSource : MonoBehaviour
                 if (stats.TryCrit())
                 {
                     finalDamage *= stats.GetCritMultiplier();
-                    Debug.Log("<color=orange>[DAMAGE SOURCE] 💥 CRITICAL HIT!</color>");
                 }
             }
 
-            Debug.Log($"<color=red>[DAMAGE SOURCE] 💀 Dealing {finalDamage} damage to {other.gameObject.name}</color>");
             slimeHealth.TakeDamage(Mathf.RoundToInt(finalDamage));
         }
-        else
-        {
-            Debug.LogWarning($"[DAMAGE SOURCE] ❌ No SlimeHealth component on {other.gameObject.name}");
-        }
-    }
-
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        // This helps debug if the collider is overlapping but not triggering Enter
-        Debug.Log($"[DAMAGE SOURCE] 🔄 TRIGGER STAY with: {other.gameObject.name}");
     }
 
     // Visualize the collider in Scene view
