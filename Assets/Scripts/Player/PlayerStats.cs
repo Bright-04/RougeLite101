@@ -16,7 +16,7 @@ public class PlayerStats : MonoBehaviour
 
     public float attackDamage = 10; // AD
     public float abilityPower = 5;  // AP
-    public float defense = 2;       // DEF
+    public float defense = 0;       // DEF - Changed from 2 to 0 so enemies can deal damage
 
     public float critChance = 1f; // 10%
     public float critDamage = 1.5f; // 1.5x
@@ -51,10 +51,15 @@ public class PlayerStats : MonoBehaviour
     public void TakeDamage(float damage)
     {
         if (damageTimer > 0)
+        {
+            Debug.Log("Damage blocked by cooldown");
             return;
+        }
 
         float reducedDamage = Mathf.Max(0, damage - defense);
         currentHP -= reducedDamage;
+        
+        Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{maxHP}");
 
         damageTimer = damageCooldown;
 
