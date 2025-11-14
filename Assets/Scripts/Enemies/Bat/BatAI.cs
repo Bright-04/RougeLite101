@@ -38,7 +38,6 @@ public class BatAI : MonoBehaviour
     private Vector2 chargeDirection; // Direction to charge
     private Vector2 chargeTargetPosition; // Exact position to charge to
     private float stateTimer = 0f; // Timer for current state
-    private bool isCharging = false;
     private float chargeDistance = 0f; // How far to charge
     
     // Visual components
@@ -185,7 +184,6 @@ public class BatAI : MonoBehaviour
         {
             // Time to charge! Lock in the target position
             state = State.Charging;
-            isCharging = true;
             
             // Calculate fixed charge distance and target
             chargeDistance = chargeSpeed * chargeDuration;
@@ -223,7 +221,6 @@ public class BatAI : MonoBehaviour
             // Charge complete, enter cooldown
             state = State.Cooldown;
             stateTimer = cooldownTime;
-            isCharging = false;
             batPathFinding.SetChargeMode(false, 0f);
             batPathFinding.StopMoving();
             
