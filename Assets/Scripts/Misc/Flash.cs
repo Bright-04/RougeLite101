@@ -14,6 +14,10 @@ public class Flash : MonoBehaviour
     {
         // Try to find any health component that has a DetectDeath method
         healthComponent = GetComponent<SlimeHealth>();
+        if (healthComponent == null)
+        {
+            healthComponent = GetComponent<SkeletonHealth>();
+        }
         // Could be extended to search for other health components in the future
         
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -30,6 +34,10 @@ public class Flash : MonoBehaviour
         if (healthComponent is SlimeHealth slimeHealth)
         {
             slimeHealth.DetectDeath();
+        }
+        else if (healthComponent is SkeletonHealth skeletonHealth)
+        {
+            skeletonHealth.DetectDeath();
         }
         // Can be extended for other health component types
     }
