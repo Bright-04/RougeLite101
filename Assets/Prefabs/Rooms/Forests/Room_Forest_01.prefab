@@ -6087,7 +6087,7 @@ MonoBehaviour:
   - {fileID: 8890549532542115160}
   - {fileID: 2598973760726027883}
   - {fileID: 8629484179760558209}
-  spawnProfile: {fileID: 11400000, guid: 8e39432ca3a227e40aa22a790e49be39, type: 2}
+  spawnProfile: {fileID: 11400000, guid: 3ec11ccee3b49694b8f9fed69b084806, type: 2}
 --- !u!1 &5802812931860905054
 GameObject:
   m_ObjectHideFlags: 0

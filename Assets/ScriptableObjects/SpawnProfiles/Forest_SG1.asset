@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a281cf7c6da9604d9bc7a659fbe5211, type: 3}
+  m_Name: Forest_SG1
+  m_EditorClassIdentifier: 
+  entries:
+  - prefab: {fileID: 8288836646438469588, guid: 56200dd89842e7941838be1eaedfff8e, type: 3}
+    minCount: 3
+    maxCount: 5
+  spawnGradually: 1
+  initialDelay: 0.5
+  perSpawnDelayRange: {x: 0.4, y: 1}

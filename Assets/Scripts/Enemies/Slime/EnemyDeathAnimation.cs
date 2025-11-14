@@ -95,6 +95,16 @@ public class EnemyDeathAnimation : MonoBehaviour
         var slimePathFinding = GetComponent<SlimePathFinding>();
         if (slimePathFinding) slimePathFinding.enabled = false;
 
+        // Disable skeleton components
+        var skeletonAI = GetComponent<SkeletonAI>();
+        if (skeletonAI)
+        {
+            skeletonAI.StopAI(); // Use StopAI to clean up visuals
+        }
+
+        var skeletonPathFinding = GetComponent<SkeletonPathFinding>();
+        if (skeletonPathFinding) skeletonPathFinding.enabled = false;
+
         var enemyDamageSource = GetComponent<EnemyDamageSource>();
         if (enemyDamageSource) enemyDamageSource.enabled = false;
 
