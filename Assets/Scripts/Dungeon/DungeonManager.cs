@@ -47,7 +47,19 @@ public class DungeonManager : MonoBehaviour
             Debug.Log($"<color=cyan>Skipping to room index {startAtRoomIndex}</color>");
         }
         
+        StartCoroutine(InitialRoomLoad());
+    }
+
+    private IEnumerator InitialRoomLoad()
+    {
+        // Load the first room
         LoadNextRoomInternal();
+        
+        // Fade in from black
+        if (SceneTransition.Instance != null)
+        {
+            yield return SceneTransition.Instance.FadeIn();
+        }
     }
 
     void BuildPlan()
@@ -142,8 +154,25 @@ public class DungeonManager : MonoBehaviour
     private IEnumerator GuardedTransition()
     {
         _transitioning = true;
-        yield return null; // wait one frame to swallow duplicate triggers
+        
+        // Fade out
+        if (SceneTransition.Instance != null)
+        {
+            yield return SceneTransition.Instance.FadeOut();
+        }
+        else
+        {
+            yield return null; // wait one frame to swallow duplicate triggers
+        }
+        
         LoadNextRoomInternal();
+        
+        // Fade in
+        if (SceneTransition.Instance != null)
+        {
+            yield return SceneTransition.Instance.FadeIn();
+        }
+        
         _transitioning = false;
     }
 
