@@ -1,6 +1,7 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DungeonManager : MonoBehaviour
 {
@@ -157,6 +158,7 @@ public class DungeonManager : MonoBehaviour
         if (_index >= _planPrefabs.Count)
         {
             Debug.Log("Run complete!");
+            SceneManager.LoadScene("GameHome");
             return;
         }
 

@@ -232,7 +232,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.3372549, g: 0.3372549, b: 0.3372549, a: 0}
+  m_BackGroundColor: {r: 0.1, g: 0.1, b: 0.1, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1047,10 +1047,10 @@ MonoBehaviour:
   totalRooms: 10
   roomsPerTheme: 5
   seed: 0
-  useTestRooms: 1
+  useTestRooms: 0
   testRoomSequence:
-  - {fileID: 4495700257502947901, guid: 488e3f82e7434b946b6e2c9dd333c537, type: 3}
-  - {fileID: 2630498160803011870, guid: e7070dfb5ba61e2468829b93d792548a, type: 3}
+  - {fileID: 4495700257502947901, guid: 954a60660b3e82f4aad325b945e1f098, type: 3}
+  - {fileID: 4495700257502947901, guid: 27c8fec1417c3d64699b317749935f95, type: 3}
   - {fileID: 5551893689476621015, guid: 1dfc196bc7cc8e44ca57bafe98c66814, type: 3}
   startAtRoomIndex: 0
   themes:
