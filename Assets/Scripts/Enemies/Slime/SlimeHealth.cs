@@ -47,7 +47,7 @@ public class SlimeHealth : MonoBehaviour, IDamageable
         
         if (knockback)
         {
-            knockback.GetKnockedBack(PlayerController.Instance.transform, 15f);
+            knockback.GetKnockedBack(PlayerMovement.Instance.transform, 15f);
         }
         
         if (flash)
@@ -72,7 +72,7 @@ public class SlimeHealth : MonoBehaviour, IDamageable
         // Play death animation if available, otherwise just destroy
         if (deathAnimation != null)
         {
-            deathAnimation.PlayDeathAnimation(PlayerController.Instance.transform);
+            deathAnimation.PlayDeathAnimation(PlayerMovement.Instance.transform);
         }
         else
         {

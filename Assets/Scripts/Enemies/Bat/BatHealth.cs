@@ -47,7 +47,7 @@ public class BatHealth : MonoBehaviour, IDamageable
         
         if (knockback)
         {
-            knockback.GetKnockedBack(PlayerController.Instance.transform, 18f); // Slightly more knockback than slime
+            knockback.GetKnockedBack(PlayerMovement.Instance.transform, 18f); // Slightly more knockback than slime
         }
         
         if (flash)
@@ -72,7 +72,7 @@ public class BatHealth : MonoBehaviour, IDamageable
         // Play death animation if available, otherwise just destroy
         if (deathAnimation != null)
         {
-            deathAnimation.PlayDeathAnimation(PlayerController.Instance.transform);
+            deathAnimation.PlayDeathAnimation(PlayerMovement.Instance.transform);
         }
         else
         {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerMovement : MonoBehaviour
 {   
     public bool FacingLeft { get { return facingLeft; } set { facingLeft = value; } }
-    public static PlayerController Instance;
+    public static PlayerMovement Instance;
 
     [SerializeField] private float moveSpeed = 1f;
     

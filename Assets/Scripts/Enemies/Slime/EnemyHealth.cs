@@ -68,9 +68,9 @@ public class EnemyHealth : MonoBehaviour
     private void PlayHitReaction()
     {
         // Knockback effect
-        if (knockback && PlayerController.Instance != null)
+        if (knockback && PlayerMovement.Instance != null)
         {
-            knockback.GetKnockedBack(PlayerController.Instance.transform, hitKnockbackForce);
+            knockback.GetKnockedBack(PlayerMovement.Instance.transform, hitKnockbackForce);
         }
         
         // Flash white effect
@@ -91,7 +91,7 @@ public class EnemyHealth : MonoBehaviour
         // Play death animation if available
         if (deathAnimation != null)
         {
-            deathAnimation.PlayDeathAnimation(PlayerController.Instance?.transform);
+            deathAnimation.PlayDeathAnimation(PlayerMovement.Instance?.transform);
         }
         else
         {

@@ -14,7 +14,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
     private PlayerControls playerControls;
     private Animator myAnimator;
-    private PlayerController playerController;
+    private PlayerMovement playerMovement;
 
     private GameObject slashAnim;
 
@@ -22,7 +22,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
     private void Awake()
     {
-        playerController = GetComponentInParent<PlayerController>();
+        playerMovement = GetComponentInParent<PlayerMovement>();
         myAnimator = GetComponent<Animator>();
         playerControls = new PlayerControls();
 
@@ -32,7 +32,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         if (weaponCollider != null)
         {
             // Make the collider a direct child of the player for simpler positioning
-            weaponCollider.SetParent(PlayerController.Instance.transform);
+            weaponCollider.SetParent(PlayerMovement.Instance.transform);
             weaponCollider.localPosition = new Vector3(0.5f, 0f, 0f); // 0.5 units in front of player
             weaponCollider.localScale = Vector3.one; // Normal scale
             weaponCollider.localRotation = Quaternion.identity; // No rotation
@@ -84,7 +84,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
     {
         // Check for enemies in a small radius around the player
         float hitRadius = 1.5f;
-        Collider2D[] hits = Physics2D.OverlapCircleAll(PlayerController.Instance.transform.position, hitRadius);
+        Collider2D[] hits = Physics2D.OverlapCircleAll(PlayerMovement.Instance.transform.position, hitRadius);
         
         // Get player's last movement direction to determine attack direction
         Vector2 attackDirection = GetAttackDirection();
@@ -94,7 +94,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
             if (hit.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 // Check if enemy is in the general direction of the attack
-                Vector2 toEnemy = (hit.transform.position - PlayerController.Instance.transform.position).normalized;
+                Vector2 toEnemy = (hit.transform.position - PlayerMovement.Instance.transform.position).normalized;
                 float dotProduct = Vector2.Dot(attackDirection, toEnemy);
                 
                 // Only hit if enemy is in front (dot > 0 means same general direction)
@@ -105,7 +105,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
                     {
                         // Calculate damage same as DamageSource
                         float finalDamage = 1; // baseDamage
-                        PlayerStats stats = PlayerController.Instance.GetComponent<PlayerStats>();
+                        PlayerStats stats = PlayerMovement.Instance.GetComponent<PlayerStats>();
                         if (stats != null)
                         {
                             finalDamage += stats.attackDamage;
@@ -126,7 +126,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
     {
         // Try to get the player's movement direction from the player controller
         // This requires reading the movement input
-        PlayerController pc = PlayerController.Instance;
+        PlayerMovement pc = PlayerMovement.Instance;
         
         // Check the player's last movement direction from animator
         Animator anim = pc.GetComponent<Animator>();
@@ -143,7 +143,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         }
         
         // Fallback: use facing direction (left/right only)
-        return playerController.FacingLeft ? Vector2.left : Vector2.right;
+        return playerMovement.FacingLeft ? Vector2.left : Vector2.right;
     }
 
     public void SwingUpFlipAnimEvent()
@@ -151,7 +151,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         if (slashAnim == null) return;
 
         slashAnim.transform.rotation = Quaternion.Euler(-180, 0, 0);
-        if (playerController.FacingLeft)
+        if (playerMovement.FacingLeft)
         {
             slashAnim.GetComponent<SpriteRenderer>().flipX = true;
         }
@@ -162,7 +162,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         if (slashAnim == null) return;
 
         slashAnim.transform.rotation = Quaternion.Euler(0, 0, 0);
-        if (playerController.FacingLeft)
+        if (playerMovement.FacingLeft)
         {
             slashAnim.GetComponent<SpriteRenderer>().flipX = true;
         }
@@ -170,10 +170,10 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
     private void FollowPlayerDirection()
     {
-        if (playerController == null) Debug.LogError("Sword: playerController is NULL!", this);
+        if (playerMovement == null) Debug.LogError("Sword: playerController is NULL!", this);
         if (weaponCollider == null) Debug.LogError("Sword: weaponCollider is NULL!", this);
 
-        if (playerController != null && playerController.FacingLeft)
+        if (playerMovement != null && playerMovement.FacingLeft)
         {
             // Flip the weapon holder on X scale instead of rotating on Y axis
             // This maintains position while flipping the sprite
