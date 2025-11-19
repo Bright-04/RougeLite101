@@ -32,7 +32,7 @@ public class EquipmentManager : MonoBehaviour
             Debug.LogError("Equipped prefab does not have a Weapon component!");
         }
     }
-
+    
     private void Update()
     {
         if (equippedWeapon != null && Mouse.current.leftButton.wasPressedThisFrame)

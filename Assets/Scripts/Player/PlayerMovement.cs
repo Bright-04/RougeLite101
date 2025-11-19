@@ -38,10 +38,10 @@ public class PlayerMovement : MonoBehaviour
         playerControls.Disable();
     }
 
-    private void OnDestroy()
-    {
-        playerControls?.Dispose();
-    }
+    //private void OnDestroy()
+    //{
+    //    playerControls?.Dispose();
+    //}
 
     private void Update()
     {
