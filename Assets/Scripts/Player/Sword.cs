@@ -12,7 +12,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
     [SerializeField] private Transform slashAnimSpawnPoint;
     [SerializeField] private Transform weaponCollider;
 
-    private PlayerControls playerControls;
+    
     private Animator myAnimator;
     private PlayerMovement playerMovement;
 
@@ -24,7 +24,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
     {
         playerMovement = GetComponentInParent<PlayerMovement>();
         myAnimator = GetComponent<Animator>();
-        playerControls = new PlayerControls();
+        
 
         weaponHolder = transform.parent; // because Sword is instantiated under WeaponHolder
         
@@ -37,15 +37,6 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
             weaponCollider.localScale = Vector3.one; // Normal scale
             weaponCollider.localRotation = Quaternion.identity; // No rotation
         }
-    }
-
-
-    private void OnEnable() => playerControls.Enable();
-    private void OnDisable() => playerControls.Disable();
-
-    private void Start()
-    {
-        playerControls.Combat.Attack.started += _ => Attack();
     }
 
     private void Update()

@@ -7,6 +7,25 @@ public class EquipmentManager : MonoBehaviour
     private Weapon equippedWeapon;
     public GameObject startingWeaponPrefab;
 
+    private PlayerControls playerControls;
+
+    private void Awake()
+    {
+        playerControls = new PlayerControls();
+    }
+
+    private void OnEnable()
+    {
+        playerControls.Enable();
+        playerControls.Combat.Attack.started += OnAttackPerformed;
+    }
+
+    private void OnDisable()
+    {
+        playerControls.Combat.Attack.started -= OnAttackPerformed;
+        playerControls.Disable();
+    }
+
     private void Start()
     {
         if (startingWeaponPrefab != null)
@@ -14,6 +33,15 @@ public class EquipmentManager : MonoBehaviour
             EquipWeapon(startingWeaponPrefab);
         }
     }
+
+    private void OnAttackPerformed(InputAction.CallbackContext context)
+    {
+        if (equippedWeapon != null)
+        {
+            equippedWeapon.Use();
+        }
+    }
+
 
     public void EquipWeapon(GameObject weaponPrefab)
     {
@@ -30,14 +58,6 @@ public class EquipmentManager : MonoBehaviour
         if (equippedWeapon == null)
         {
             Debug.LogError("Equipped prefab does not have a Weapon component!");
-        }
-    }
-    
-    private void Update()
-    {
-        if (equippedWeapon != null && Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            equippedWeapon.Use();
         }
     }
 }
