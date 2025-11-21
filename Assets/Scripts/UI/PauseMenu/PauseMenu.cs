@@ -1,22 +1,112 @@
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [Header("UI References")]
+    public GameObject pauseCanvas;
+   
+    private PlayerControls playerControls;
+    private bool isPaused = false;
+
+    private void Awake()
     {
-        
+        // Ẩn pause menu ban đầu
+        if (pauseCanvas)
+            pauseCanvas.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
+        // Đợi đến Start để đảm bảo InputManager đã Awake
+        if (InputManager.Instance == null)
+        {
+            Debug.LogError("InputManager.Instance is null! Make sure InputManager prefab exists in the scene.");
+            return;
+        }
+
+        playerControls = InputManager.Instance.Controls;
+
+        // Subscribe ESC key
+        playerControls.NavigateUI.OpenPauseMenu.performed += OnOpenPausePerformed;
         
+        Debug.Log("PauseMenu initialized!");
     }
 
-    public void BackToMainMenu()
+    //private void OnEnable()
+    //{
+    //    // Subscribe to ESC key
+    //    // Kiểm tra null trước khi unsubscribe
+    //    if (playerControls != null)
+    //    {
+    //        playerControls.NavigateUI.OpenPauseMenu.performed += OnOpenPausePerformed;
+    //    }
+
+
+    //}
+
+    //private void OnDisable()
+    //{
+    //    // Kiểm tra null trước khi unsubscribe
+    //    if (playerControls != null)
+    //    {
+    //        playerControls.NavigateUI.OpenPauseMenu.performed -= OnOpenPausePerformed;
+    //    }
+
+    //}
+
+    private void OnDestroy()
     {
-        SceneManager.LoadSceneAsync(0);
+        if (playerControls != null)
+            playerControls.NavigateUI.OpenPauseMenu.performed -= OnOpenPausePerformed;
+    }
+
+
+    private void OnOpenPausePerformed(InputAction.CallbackContext ctx)
+    {
+        Pause();
+    }
+
+    public void Pause()
+    {
+        if (isPaused) return;
+
+        isPaused = true;
+        pauseCanvas.SetActive(true);
+
+        // Disable gameplay inputs
+        InputManager.Instance.EnableUIMap();
+        
+
+        Debug.Log("Game PAUSED");
+    }
+
+    
+    public void Resume()
+    {
+        if (!isPaused) return;
+
+        isPaused = false;
+        pauseCanvas.SetActive(false);
+
+        // Enable gameplay inputs
+        InputManager.Instance.DisableUIMap();
+
+        Debug.Log("Game RESUMED");
+    }
+
+    public void Quit()
+    {
+        Scene activeScene = SceneManager.GetActiveScene();
+        Resume();
+        if (activeScene.name == "GameHome")
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+        else
+        {
+            SceneManager.LoadScene("GameHome");
+        }
     }
 }

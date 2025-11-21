@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -21,22 +21,35 @@ public class PlayerMovement : MonoBehaviour
     private void Awake()
     {   
         Instance = this;
-        playerControls = new PlayerControls();
+
         rb = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
         mySpriteRender = GetComponent<SpriteRenderer>();
         knockback = GetComponent<Knockback>();
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        playerControls.Enable();
+        // Đợi đến Start để đảm bảo InputManager đã Awake
+        if (InputManager.Instance == null)
+        {
+            Debug.LogError("InputManager.Instance is null! Make sure InputManager prefab exists in the scene.");
+            return;
+        }
+
+        playerControls = InputManager.Instance.Controls;
     }
 
-    private void OnDisable()
-    {
-        playerControls.Disable();
-    }
+
+    //private void OnEnable()
+    //{
+    //    playerControls.Movement.Enable();
+    //}
+
+    //private void OnDisable()
+    //{
+    //    playerControls.Movement.Disable();
+    //}
 
     //private void OnDestroy()
     //{
@@ -61,6 +74,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void PlayerInput()
     {
+        // Kiểm tra null trước khi đọc input
+        if (playerControls == null)
+        {
+            movement = Vector2.zero;
+            return;
+        }
+
         movement = playerControls.Movement.Move.ReadValue<Vector2>();
 
         myAnimator.SetFloat("moveX", movement.x);
