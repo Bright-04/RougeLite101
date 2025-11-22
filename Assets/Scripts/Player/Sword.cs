@@ -67,12 +67,23 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
     {
         // BACKUP SOLUTION: If trigger didn't work, manually check for nearby enemies
         ManualHitDetection();
+
+        if (weaponCollider != null)
+        {
+            weaponCollider.gameObject.SetActive(false);
+        }
         
-        weaponCollider.gameObject.SetActive(false);
     }
     
     private void ManualHitDetection()
     {
+        // CRITICAL: Check if PlayerMovement instance is valid
+        if (PlayerMovement.Instance == null || PlayerMovement.Instance.transform == null)
+        {
+            Debug.LogWarning("PlayerMovement.Instance is null or destroyed. Skipping hit detection.");
+            return;
+        }
+
         // Check for enemies in a small radius around the player
         float hitRadius = 1.5f;
         Collider2D[] hits = Physics2D.OverlapCircleAll(PlayerMovement.Instance.transform.position, hitRadius);
@@ -161,7 +172,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
     private void FollowPlayerDirection()
     {
-        if (playerMovement == null) Debug.LogError("Sword: playerController is NULL!", this);
+        if (playerMovement == null) Debug.LogError("Sword: playerMovement is NULL!", this);
         if (weaponCollider == null) Debug.LogError("Sword: weaponCollider is NULL!", this);
 
         if (playerMovement != null && playerMovement.FacingLeft)

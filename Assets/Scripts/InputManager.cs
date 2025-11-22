@@ -25,7 +25,13 @@ public class InputManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
     public void EnableUIMap()
     {
         uiActive = true;

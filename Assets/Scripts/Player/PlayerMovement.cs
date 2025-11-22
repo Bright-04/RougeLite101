@@ -19,7 +19,13 @@ public class PlayerMovement : MonoBehaviour
 
     private bool facingLeft =false;
     private void Awake()
-    {   
+    {
+        if (Instance != null && Instance != this)
+        {
+            // Đã có Instance khác rồi, destroy object này
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
 
         rb = GetComponent<Rigidbody2D>();
@@ -55,6 +61,14 @@ public class PlayerMovement : MonoBehaviour
     //{
     //    playerControls?.Dispose();
     //}
+
+    private void OnDestroy()
+    {      
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
 
     private void Update()
     {

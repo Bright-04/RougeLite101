@@ -102,6 +102,7 @@ public class PauseMenu : MonoBehaviour
         Resume();
         if (activeScene.name == "GameHome")
         {
+            GameManager.Instance.CleanupBeforeQuit();
             SceneManager.LoadScene("MainMenu");
         }
         else
