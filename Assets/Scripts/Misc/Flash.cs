@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 public class Flash : MonoBehaviour
@@ -17,13 +17,13 @@ public class Flash : MonoBehaviour
         // Could be extended to search for other health components in the future
         
         spriteRenderer = GetComponent<SpriteRenderer>();
-        defaultMat = spriteRenderer.material;
+        defaultMat = spriteRenderer.material;      
     }
 
     public IEnumerator FlashRoutine()
     {
         spriteRenderer.material = whiteFlashMat;
-        yield return new WaitForSeconds(restoreDefaultMatTime);
+        yield return new WaitForSeconds(restoreDefaultMatTime);       
         spriteRenderer.material = defaultMat;
         
         // Call DetectDeath if health component exists and has the method
@@ -33,4 +33,5 @@ public class Flash : MonoBehaviour
         }
         // Can be extended for other health component types
     }
+
 }

@@ -1,4 +1,5 @@
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -24,7 +25,7 @@ public class PlayerStats : MonoBehaviour
 
     private float damageCooldown = 1.0f; // seconds of invulnerability after taking damage
     private float damageTimer = 0;
-
+ 
     private void Start()
     {
         currentHP = maxHP;
@@ -64,13 +65,38 @@ public class PlayerStats : MonoBehaviour
         damageTimer = damageCooldown;
 
         if (currentHP <= 0)
+        {
             Die();
+            Respawn();
+        }
+            
     }
 
 
     private void Die()
     {
         // TODO: Implement proper death handling (game over screen, restart, etc.)
+        Debug.Log("Player is dead");
+    }
+
+    private void Respawn()
+    {
+        var player = GameObject.FindGameObjectWithTag("Player");
+        if (player)
+        {
+            ResetStatsOnRespawn();
+            player.transform.position = Vector3.zero;
+
+            SceneManager.LoadScene("GameHome");          
+        }       
+    }
+
+    private void ResetStatsOnRespawn()
+    {
+        currentHP = maxHP;
+        currentMana = maxMana;
+        currentStamina = maxStamina;
+        damageTimer = 0;      
     }
 
     public bool TryCrit()
