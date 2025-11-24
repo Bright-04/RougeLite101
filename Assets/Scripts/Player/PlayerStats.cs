@@ -84,6 +84,13 @@ public class PlayerStats : MonoBehaviour
         var player = GameObject.FindGameObjectWithTag("Player");
         if (player)
         {
+            // Reset any ongoing flash effects
+            var flash = player.GetComponent<Flash>();
+            if (flash != null)
+            {
+                flash.ResetMaterial();
+            }
+            
             ResetStatsOnRespawn();
             player.transform.position = Vector3.zero;
 
