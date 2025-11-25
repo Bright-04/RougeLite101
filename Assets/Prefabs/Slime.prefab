@@ -208,7 +208,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whiteFlashMat: {fileID: 2100000, guid: 288a9ba680f315742be43afa2a09190a, type: 2}
+  defaultMat: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   restoreDefaultMatTime: 0.2
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  forceColorFlash: 0
 --- !u!95 &8641304617333191631
 Animator:
   serializedVersion: 7

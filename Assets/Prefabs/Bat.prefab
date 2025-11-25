@@ -220,10 +220,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectionRange: 7
-  attackRange: 2
-  attackCooldown: 1.5
-  retreatDistance: 4
-  retreatDuration: 1
+  prepareTime: 0.6
+  chargeSpeed: 12
+  chargeDuration: 0.5
+  cooldownTime: 1
+  prepareFlashSpeed: 10
+  prepareColor: {r: 1, g: 0.3, b: 0.3, a: 1}
+  chargeColor: {r: 1, g: 0, b: 0, a: 1}
+  roamRadius: 2
+  roamSpeed: 1.5
 --- !u!114 &2176408391703691144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,7 +281,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whiteFlashMat: {fileID: 2100000, guid: 288a9ba680f315742be43afa2a09190a, type: 2}
+  defaultMat: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   restoreDefaultMatTime: 0.2
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  forceColorFlash: 0
 --- !u!114 &7520443862588216942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,6 +299,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageAmount: 10
   damageCooldown: 0.5
+  knockbackForce: 10
 --- !u!114 &3979708243118343304
 MonoBehaviour:
   m_ObjectHideFlags: 0
