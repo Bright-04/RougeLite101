@@ -1,6 +1,7 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DungeonManager : MonoBehaviour
 {
@@ -156,7 +157,14 @@ public class DungeonManager : MonoBehaviour
         _index++;
         if (_index >= _planPrefabs.Count)
         {
-            Debug.Log("Run complete!");
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player)
+            {
+                Debug.Log("Run complete!");
+                player.transform.position = new Vector3(0f, 9f, 0f);
+                SceneManager.LoadScene("GameHome");
+            }
+            //SceneManager.LoadScene("GameHome");
             return;
         }
 

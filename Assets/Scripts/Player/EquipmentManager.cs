@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class EquipmentManager : MonoBehaviour
@@ -7,13 +7,64 @@ public class EquipmentManager : MonoBehaviour
     private Weapon equippedWeapon;
     public GameObject startingWeaponPrefab;
 
+    private PlayerControls playerControls;
+
+    private void Awake()
+    {
+        // Chỉ khởi tạo components local ở đây
+    }
+
     private void Start()
     {
+        // Lấy InputManager.Instance ở Start
+        if (InputManager.Instance == null)
+        {
+            Debug.LogError("InputManager.Instance is null! Make sure InputManager prefab exists in the scene.");
+            return;
+        }
+
+        playerControls = InputManager.Instance.Controls;
+        playerControls.Combat.Attack.started += OnAttackPerformed;
+
+        // Equip starting weapon
         if (startingWeaponPrefab != null)
         {
             EquipWeapon(startingWeaponPrefab);
         }
     }
+
+    //private void OnEnable()
+    //{
+    //    if (playerControls != null)
+    //    {
+    //        playerControls.Combat.Attack.started += OnAttackPerformed;
+    //    }
+
+    //}
+
+    //private void OnDisable()
+    //{
+    //    if (playerControls != null)
+    //    {
+    //        playerControls.Combat.Attack.started -= OnAttackPerformed;
+    //    }
+
+    //}
+
+    private void OnDestroy()
+    {
+        if (playerControls != null)
+            playerControls.Combat.Attack.started -= OnAttackPerformed;
+    }
+
+    private void OnAttackPerformed(InputAction.CallbackContext context)
+    {
+        if (equippedWeapon != null)
+        {
+            equippedWeapon.Use();
+        }
+    }
+
 
     public void EquipWeapon(GameObject weaponPrefab)
     {
@@ -30,14 +81,6 @@ public class EquipmentManager : MonoBehaviour
         if (equippedWeapon == null)
         {
             Debug.LogError("Equipped prefab does not have a Weapon component!");
-        }
-    }
-
-    private void Update()
-    {
-        if (equippedWeapon != null && Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            equippedWeapon.Use();
         }
     }
 }

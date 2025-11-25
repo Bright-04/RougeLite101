@@ -26,7 +26,7 @@ public class DamageSource : MonoBehaviour
             float finalDamage = baseDamage;
 
             // Get the player's stats for AD and Crit
-            PlayerStats stats = PlayerController.Instance.GetComponent<PlayerStats>();
+            PlayerStats stats = PlayerMovement.Instance.GetComponent<PlayerStats>();
             if (stats != null)
             {
                 finalDamage += stats.attackDamage;

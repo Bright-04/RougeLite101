@@ -14,14 +14,45 @@ public class SpellCaster : MonoBehaviour
     {
         stats = GetComponent<PlayerStats>();
         animator = GetComponent<Animator>();
-        cooldownTimers = new float[spellSlots.Length];
+        cooldownTimers = new float[spellSlots.Length];      
 
-        playerControls = new PlayerControls();
-        playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
     }
 
-    private void OnEnable() => playerControls.Enable();
-    private void OnDisable() => playerControls.Disable();
+    private void Start()
+    {
+        // Đợi đến Start để đảm bảo InputManager đã Awake
+        if (InputManager.Instance == null)
+        {
+            Debug.LogError("InputManager.Instance is null! Make sure InputManager prefab exists in the scene.");
+            return;
+        }
+        
+        playerControls = InputManager.Instance.Controls;
+        playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
+        
+    }
+
+    //private void OnEnable()
+    //{
+    //    if (playerControls != null)
+    //    {
+    //        playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
+    //    }
+            
+    //}
+    //private void OnDisable()
+    //{
+    //    if (playerControls != null)
+    //    {
+    //        playerControls.Combat.SpellCasting.performed -= OnSpellCastingPerformed;
+    //    }
+    //}
+
+    private void OnDestroy()
+    {
+        if (playerControls != null)
+            playerControls.Combat.SpellCasting.performed -= OnSpellCastingPerformed;
+    }
 
     private void Update()
     {
@@ -54,6 +85,10 @@ public class SpellCaster : MonoBehaviour
     //}
     private void OnSpellCastingPerformed(InputAction.CallbackContext context)
     {
+        // Kiểm tra xem UI có đang active không
+        if (InputManager.Instance != null && InputManager.Instance.IsUIActive())
+            return;
+
         if (Keyboard.current.digit1Key.wasPressedThisFrame)
             TryCastSpell(0);
         else if (Keyboard.current.digit2Key.wasPressedThisFrame)
