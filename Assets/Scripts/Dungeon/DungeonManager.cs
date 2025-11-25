@@ -64,7 +64,7 @@ public class DungeonManager : MonoBehaviour
                 // Loop through test rooms if we run out
                 int testIndex = i % testRoomSequence.Length;
                 var testRoom = testRoomSequence[testIndex];
-                
+
                 if (testRoom != null)
                 {
                     _planPrefabs.Add(testRoom);
@@ -78,26 +78,51 @@ public class DungeonManager : MonoBehaviour
             return;
         }
 
-        // NORMAL MODE: Random selection from themes
+        // NORMAL MODE: 4 normal + 1 boss per theme block
         for (int i = 0; i < totalRooms; i++)
         {
-            int block = i / roomsPerTheme;
-            var theme = themes[Mathf.Clamp(block, 0, themes.Length - 1)];
-            var rooms = theme.roomPrefabs;
-            if (rooms == null || rooms.Length == 0)
+            int block = i / roomsPerTheme;          // which theme block (0,1,2,…)
+            int localIndex = i % roomsPerTheme;          // index inside block (0..roomsPerTheme-1)
+
+            ThemeSO theme = themes[Mathf.Clamp(block, 0, themes.Length - 1)];
+
+            bool isBossSlot = (localIndex == roomsPerTheme - 1);   // last room in this block
+
+            GameObject choice = null;
+
+            if (isBossSlot && theme.bossRoomPrefabs != null && theme.bossRoomPrefabs.Length > 0)
             {
-                Debug.LogError($"Theme '{theme.themeName}' has no roomPrefabs assigned!");
+                // Pick one boss room at random
+                int bossIdx = _rng.Next(0, theme.bossRoomPrefabs.Length);
+                choice = theme.bossRoomPrefabs[bossIdx];
+                Debug.Log($"Plan room {i}: <color=red>BOSS</color> from theme '{theme.themeName}' -> {choice.name}");
+            }
+            else
+            {
+                // Pick a normal room
+                if (theme.normalRoomPrefabs == null || theme.normalRoomPrefabs.Length == 0)
+                {
+                    Debug.LogError($"Theme '{theme.themeName}' has no normalRoomPrefabs assigned!");
+                    continue;
+                }
+
+                int normalIdx = _rng.Next(0, theme.normalRoomPrefabs.Length);
+                choice = theme.normalRoomPrefabs[normalIdx];
+                Debug.Log($"Plan room {i}: normal from theme '{theme.themeName}' -> {choice.name}");
+            }
+
+            // Safety
+            if (choice == null)
+            {
+                Debug.LogError($"Null room choice at index {i} for theme '{theme.themeName}'");
                 continue;
             }
 
-            var choice = rooms[_rng.Next(0, rooms.Length)];
-            
-            // Validate the chosen room prefab
             ValidateRoomPrefab(choice, theme.themeName);
-            
             _planPrefabs.Add(choice);
         }
     }
+
 
     /// <summary>
     /// Validates a room prefab and logs warnings about potential issues

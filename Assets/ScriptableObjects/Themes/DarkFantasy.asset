@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DarkFantasy
   m_EditorClassIdentifier: 
   themeName: DarkFantasy
-  roomPrefabs:
+  normalRoomPrefabs:
   - {fileID: 4495700257502947901, guid: 67af3e0daf01574409aeedf2cd99f9b2, type: 3}
   - {fileID: 4495700257502947901, guid: 389ea30639e835b4fb9e29343f8a4599, type: 3}
   - {fileID: 4495700257502947901, guid: eb58551946c542940960d3e3093afd9c, type: 3}
@@ -22,6 +22,7 @@ MonoBehaviour:
   - {fileID: 4495700257502947901, guid: 89cadcda7e75b924e98f366ac09a2553, type: 3}
   - {fileID: 4495700257502947901, guid: c98319fa7be1b5840b9a6fcba60bfc93, type: 3}
   - {fileID: 4495700257502947901, guid: ed7f66403bb51a8498db4a621ef144e3, type: 3}
+  bossRoomPrefabs:
   - {fileID: 4495700257502947901, guid: 20ce171582e00894aa63deff267e6d5b, type: 3}
   - {fileID: 4495700257502947901, guid: 2a8f3517547cca940a54fe75d76e0ff6, type: 3}
   mapColor: {r: 0, g: 0, b: 0, a: 1}
