@@ -105,9 +105,23 @@ public class PauseMenu : MonoBehaviour
             GameManager.Instance.CleanupBeforeQuit();
             SceneManager.LoadScene("MainMenu");
         }
+        else if(activeScene.name == "Dungeon")
+        {
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player)
+            {
+                player.transform.position = new Vector3(0f, 9f, 0f);
+                SceneManager.LoadScene("GameHome");
+            }
+        }
         else
         {
-            SceneManager.LoadScene("GameHome");
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player)
+            {
+                player.transform.position = new Vector3(0f, 9f, 0f);
+                SceneManager.LoadScene("GameHome");
+            }
         }
     }
 }

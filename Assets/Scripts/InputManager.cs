@@ -29,6 +29,16 @@ public class InputManager : MonoBehaviour
     {
         if (Instance == this)
         {
+            // Properly disable all input actions before destroying
+            if (Controls != null)
+            {
+                Controls.Movement.Disable();
+                Controls.Combat.Disable();
+                Controls.NavigateUI.Disable();
+                Controls.UI.Disable();
+                Controls.Dispose();
+            }
+            
             Instance = null;
         }
     }

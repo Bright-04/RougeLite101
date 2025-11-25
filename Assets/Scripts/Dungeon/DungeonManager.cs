@@ -157,8 +157,14 @@ public class DungeonManager : MonoBehaviour
         _index++;
         if (_index >= _planPrefabs.Count)
         {
-            Debug.Log("Run complete!");
-            SceneManager.LoadScene("GameHome");
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player)
+            {
+                Debug.Log("Run complete!");
+                player.transform.position = new Vector3(0f, 9f, 0f);
+                SceneManager.LoadScene("GameHome");
+            }
+            //SceneManager.LoadScene("GameHome");
             return;
         }
 
