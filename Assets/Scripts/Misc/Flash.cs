@@ -4,75 +4,108 @@ using UnityEngine.SceneManagement;
 
 public class Flash : MonoBehaviour
 {
-    [SerializeField] private Material whiteFlashMat;
-    [SerializeField] private Material defaultMat;
+    [Header("Material Flash (Optional)")] 
+    [SerializeField] private Material whiteFlashMat; // Optional: can be null
+    [SerializeField] private Material defaultMat;    // Original material (assign in Inspector if using material swapping)
     [SerializeField] private float restoreDefaultMatTime = .2f;
+
+    [Header("Color Flash Fallback")] 
+    [SerializeField] private Color flashColor = Color.white; // Used if material not valid
+    [SerializeField] private bool forceColorFlash = false;   // Force using color-based flash even if materials exist
 
     private SpriteRenderer spriteRenderer;
     private MonoBehaviour healthComponent;
+    private Color originalColor;
 
     private void Awake()
     {
-        // Try to find any health component that has a DetectDeath method
+        // Detect health component (extend as needed)
         healthComponent = GetComponent<SlimeHealth>();
-        // Could be extended to search for other health components in the future
-        
+
         spriteRenderer = GetComponent<SpriteRenderer>();
-        
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+        }
+
         // Subscribe to scene loaded event
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private void OnDestroy()
     {
-        // Unsubscribe from scene loaded event to prevent memory leaks
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void OnEnable()
     {
-        // Always reset to default material when enabled (including after scene loads)
-        ResetToDefaultMaterial();
+        ResetVisualState();
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Reset material whenever a scene is loaded
-        ResetToDefaultMaterial();
+        ResetVisualState();
     }
 
-    private void ResetToDefaultMaterial()
+    private void ResetVisualState()
     {
-        if (spriteRenderer != null && defaultMat != null)
+        if (!spriteRenderer) return;
+
+        if (CanUseMaterialFlash())
         {
-            spriteRenderer.material = defaultMat;
+            // Restore material
+            if (defaultMat != null)
+            {
+                spriteRenderer.material = defaultMat;
+            }
         }
+        else
+        {
+            // Restore color
+            spriteRenderer.color = originalColor;
+        }
+    }
+
+    private bool CanUseMaterialFlash()
+    {
+        if (forceColorFlash) return false;
+        if (!spriteRenderer) return false;
+        if (whiteFlashMat == null || defaultMat == null) return false;
+        if (whiteFlashMat.shader == null || defaultMat.shader == null) return false;
+        // Unity shows pink (error) when shader unsupported; guard against that
+        if (!whiteFlashMat.shader.isSupported || !defaultMat.shader.isSupported) return false;
+        return true;
     }
 
     public IEnumerator FlashRoutine()
     {
-        spriteRenderer.material = whiteFlashMat;
-        yield return new WaitForSeconds(restoreDefaultMatTime);       
-        spriteRenderer.material = defaultMat;
-        
-        // Call DetectDeath if health component exists and has the method
+        if (!spriteRenderer)
+            yield break;
+
+        if (CanUseMaterialFlash())
+        {
+            spriteRenderer.material = whiteFlashMat;
+            yield return new WaitForSeconds(restoreDefaultMatTime);
+            spriteRenderer.material = defaultMat;
+        }
+        else
+        {
+            // Color flash fallback (no shader swap, avoids pink error material)
+            spriteRenderer.color = flashColor;
+            yield return new WaitForSeconds(restoreDefaultMatTime);
+            spriteRenderer.color = originalColor;
+        }
+
+        // Death detection (extend for other health types as needed)
         if (healthComponent is SlimeHealth slimeHealth)
         {
             slimeHealth.DetectDeath();
         }
-        // Can be extended for other health component types
     }
 
     public void ResetMaterial()
     {
-        // Stop any ongoing flash coroutines
         StopAllCoroutines();
-        
-        // Reset to default material
-        if (spriteRenderer != null && defaultMat != null)
-        {
-            spriteRenderer.material = defaultMat;
-        }
+        ResetVisualState();
     }
-
 }
