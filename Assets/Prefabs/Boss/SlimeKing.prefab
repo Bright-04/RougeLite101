@@ -286,9 +286,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whiteFlashMat: {fileID: 2100000, guid: 288a9ba680f315742be43afa2a09190a, type: 2}
-  defaultMat: {fileID: 0}
+  defaultMat: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   restoreDefaultMatTime: 0.2
-  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  flashColor: {r: 1, g: 0, b: 0, a: 1}
   forceColorFlash: 0
 --- !u!114 &-2209151483412701216
 MonoBehaviour:
