@@ -94,7 +94,15 @@ public class PlayerStats : MonoBehaviour
             ResetStatsOnRespawn();
             player.transform.position = Vector3.zero;
 
-            SceneManager.LoadScene("GameHome");          
+            // Use loading screen for respawn if available
+            if (LoadingScreenManager.Instance != null)
+            {
+                LoadingScreenManager.Instance.LoadSceneAsync("GameHome");
+            }
+            else
+            {
+                SceneManager.LoadScene("GameHome");
+            }
         }       
     }
 

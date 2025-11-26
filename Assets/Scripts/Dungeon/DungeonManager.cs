@@ -169,7 +169,18 @@ public class DungeonManager : MonoBehaviour
     {
         _transitioning = true;
         yield return null; // wait one frame to swallow duplicate triggers
-        LoadNextRoomInternal();
+        
+        // Use loading screen if available
+        if (LoadingScreenManager.Instance != null)
+        {
+            // Wait for the loading screen transition to complete
+            yield return StartCoroutine(LoadingScreenManager.Instance.ShowRoomTransitionCoroutine(() => LoadNextRoomInternal()));
+        }
+        else
+        {
+            LoadNextRoomInternal();
+        }
+        
         _transitioning = false;
     }
 
@@ -187,9 +198,17 @@ public class DungeonManager : MonoBehaviour
             {
                 Debug.Log("Run complete!");
                 player.transform.position = new Vector3(0f, 9f, 0f);
-                SceneManager.LoadScene("GameHome");
+                
+                // Use loading screen for scene transition if available
+                if (LoadingScreenManager.Instance != null)
+                {
+                    LoadingScreenManager.Instance.LoadSceneAsync("GameHome");
+                }
+                else
+                {
+                    SceneManager.LoadScene("GameHome");
+                }
             }
-            //SceneManager.LoadScene("GameHome");
             return;
         }
 
