@@ -4,10 +4,18 @@ using UnityEngine;
 public class ThemeSO : ScriptableObject
 {
     public string themeName = "Forest";
-    [Tooltip("Room layout prefabs that belong to this theme")]
-    public GameObject[] roomPrefabs;
+
+    [Header("Normal Rooms (used for the first roomsPerTheme-1 rooms)")]
+    [Tooltip("All the non-boss layouts for this theme.")]
+    public GameObject[] normalRoomPrefabs;
+
+    [Header("Boss Rooms (used for the last room in each theme block)")]
+    [Tooltip("One of these will be picked as the boss room for this theme block.")]
+    public GameObject[] bossRoomPrefabs;
+
     [Header("Optional map color")]
     public Color mapColor = Color.green;
-    public SpawnPackSO[] spawnPacks;  // assign 2–4 packs per theme in Inspector
 
+    [Header("Spawn packs used by rooms of this theme")]
+    public SpawnPackSO[] spawnPacks;  // same as before
 }

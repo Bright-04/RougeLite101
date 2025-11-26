@@ -1,0 +1,832 @@
+fileFormatVersion: 2
+guid: 1e9c8d6c3b4611645a6da55478d9afef
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 734185514223811199
+    second: slime king_0
+  - first:
+      213: 1476752395282461676
+    second: slime king_1
+  - first:
+      213: -5061546650973805331
+    second: slime king_2
+  - first:
+      213: 3980353232413277848
+    second: slime king_3
+  - first:
+      213: 4812124283122399369
+    second: slime king_4
+  - first:
+      213: -3335813931160990986
+    second: slime king_5
+  - first:
+      213: -6598389975855078189
+    second: slime king_6
+  - first:
+      213: -6997555256590010831
+    second: slime king_7
+  - first:
+      213: -7856821760942465347
+    second: slime king_8
+  - first:
+      213: 8330591829731719229
+    second: slime king_9
+  - first:
+      213: 650663910035333466
+    second: slime king_10
+  - first:
+      213: -5509089059120547927
+    second: slime king_11
+  - first:
+      213: -8423296060378079589
+    second: slime king_12
+  - first:
+      213: -1151611019343777374
+    second: slime king_13
+  - first:
+      213: 4603697516534591646
+    second: slime king_14
+  - first:
+      213: -3239069235584712877
+    second: slime king_15
+  - first:
+      213: -3531678335708640676
+    second: slime king_16
+  - first:
+      213: 1124925636833411549
+    second: slime king_17
+  - first:
+      213: 3696498215498868036
+    second: slime king_18
+  - first:
+      213: -6742396165705129127
+    second: slime king_19
+  - first:
+      213: -3944079410976922584
+    second: slime king_20
+  - first:
+      213: 5682460457304642935
+    second: slime king_21
+  - first:
+      213: -4537117524526639472
+    second: slime king_22
+  - first:
+      213: -3456981467880240366
+    second: slime king_23
+  - first:
+      213: -2195461999272250892
+    second: slime king_24
+  - first:
+      213: -643775216921316502
+    second: slime king_25
+  - first:
+      213: -3405672936000402289
+    second: slime king_26
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: slime king_0
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 174
+        width: 354
+        height: 214
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7a3c86d5d9503a00800000000000000
+      internalID: 734185514223811199
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_1
+      rect:
+        serializedVersion: 2
+        x: 813
+        y: 176
+        width: 294
+        height: 222
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce3b406ba7a7e7410800000000000000
+      internalID: 1476752395282461676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_2
+      rect:
+        serializedVersion: 2
+        x: 1455
+        y: 177
+        width: 290
+        height: 225
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de463ae5326c1c9b0800000000000000
+      internalID: -5061546650973805331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_3
+      rect:
+        serializedVersion: 2
+        x: 2093
+        y: 178
+        width: 294
+        height: 228
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89e32921d2e0d3730800000000000000
+      internalID: 3980353232413277848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_4
+      rect:
+        serializedVersion: 2
+        x: 2734
+        y: 180
+        width: 292
+        height: 235
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 988ba8e2a8918c240800000000000000
+      internalID: 4812124283122399369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_5
+      rect:
+        serializedVersion: 2
+        x: 3373
+        y: 183
+        width: 294
+        height: 242
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fa895c47eec4b1d0800000000000000
+      internalID: -3335813931160990986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_6
+      rect:
+        serializedVersion: 2
+        x: 4013
+        y: 195
+        width: 294
+        height: 257
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d4e8a7d64fcd64a0800000000000000
+      internalID: -6598389975855078189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_7
+      rect:
+        serializedVersion: 2
+        x: 4653
+        y: 199
+        width: 294
+        height: 255
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 136f8ca9190b3ee90800000000000000
+      internalID: -6997555256590010831
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_8
+      rect:
+        serializedVersion: 2
+        x: 5293
+        y: 222
+        width: 294
+        height: 226
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dbe17735c36f6f290800000000000000
+      internalID: -7856821760942465347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_9
+      rect:
+        serializedVersion: 2
+        x: 5934
+        y: 220
+        width: 292
+        height: 220
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d383eebb1253c9370800000000000000
+      internalID: 8330591829731719229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_10
+      rect:
+        serializedVersion: 2
+        x: 6575
+        y: 215
+        width: 290
+        height: 217
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a51a2d9f06f970900800000000000000
+      internalID: 650663910035333466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_11
+      rect:
+        serializedVersion: 2
+        x: 7215
+        y: 211
+        width: 290
+        height: 208
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a7f02b60b8cb83b0800000000000000
+      internalID: -5509089059120547927
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_12
+      rect:
+        serializedVersion: 2
+        x: 7855
+        y: 207
+        width: 290
+        height: 210
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9e97339cd07a1b80800000000000000
+      internalID: -8423296060378079589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_13
+      rect:
+        serializedVersion: 2
+        x: 8495
+        y: 202
+        width: 290
+        height: 214
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2a1b69021e7a400f0800000000000000
+      internalID: -1151611019343777374
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_14
+      rect:
+        serializedVersion: 2
+        x: 9135
+        y: 200
+        width: 290
+        height: 215
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e907466ff7e93ef30800000000000000
+      internalID: 4603697516534591646
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_15
+      rect:
+        serializedVersion: 2
+        x: 9775
+        y: 195
+        width: 290
+        height: 218
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 35fb31a01b38c03d0800000000000000
+      internalID: -3239069235584712877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_16
+      rect:
+        serializedVersion: 2
+        x: 10415
+        y: 189
+        width: 290
+        height: 215
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c5ac42be345fcfec0800000000000000
+      internalID: -3531678335708640676
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_17
+      rect:
+        serializedVersion: 2
+        x: 11055
+        y: 185
+        width: 290
+        height: 212
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd18f2618e98c9f00800000000000000
+      internalID: 1124925636833411549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_18
+      rect:
+        serializedVersion: 2
+        x: 11695
+        y: 179
+        width: 290
+        height: 192
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 445eca7ca899c4330800000000000000
+      internalID: 3696498215498868036
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_19
+      rect:
+        serializedVersion: 2
+        x: 12335
+        y: 177
+        width: 290
+        height: 188
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 953a038f8623e62a0800000000000000
+      internalID: -6742396165705129127
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_20
+      rect:
+        serializedVersion: 2
+        x: 12975
+        y: 175
+        width: 290
+        height: 151
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 824e9ce1ca0d349c0800000000000000
+      internalID: -3944079410976922584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_21
+      rect:
+        serializedVersion: 2
+        x: 13615
+        y: 175
+        width: 290
+        height: 134
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 775d8dfcda72cde40800000000000000
+      internalID: 5682460457304642935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_22
+      rect:
+        serializedVersion: 2
+        x: 14253
+        y: 173
+        width: 294
+        height: 162
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 096d36e66abe801c0800000000000000
+      internalID: -4537117524526639472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_23
+      rect:
+        serializedVersion: 2
+        x: 14892
+        y: 173
+        width: 296
+        height: 187
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21bc3ebbba55600d0800000000000000
+      internalID: -3456981467880240366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_24
+      rect:
+        serializedVersion: 2
+        x: 15531
+        y: 174
+        width: 298
+        height: 195
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f1328791f62881e0800000000000000
+      internalID: -2195461999272250892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_25
+      rect:
+        serializedVersion: 2
+        x: 16170
+        y: 174
+        width: 300
+        height: 204
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a637430e9d9d017f0800000000000000
+      internalID: -643775216921316502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: slime king_26
+      rect:
+        serializedVersion: 2
+        x: 16783
+        y: 174
+        width: 354
+        height: 214
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f8cc88c328e9cb0d0800000000000000
+      internalID: -3405672936000402289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      slime king_0: 734185514223811199
+      slime king_1: 1476752395282461676
+      slime king_10: 650663910035333466
+      slime king_11: -5509089059120547927
+      slime king_12: -8423296060378079589
+      slime king_13: -1151611019343777374
+      slime king_14: 4603697516534591646
+      slime king_15: -3239069235584712877
+      slime king_16: -3531678335708640676
+      slime king_17: 1124925636833411549
+      slime king_18: 3696498215498868036
+      slime king_19: -6742396165705129127
+      slime king_2: -5061546650973805331
+      slime king_20: -3944079410976922584
+      slime king_21: 5682460457304642935
+      slime king_22: -4537117524526639472
+      slime king_23: -3456981467880240366
+      slime king_24: -2195461999272250892
+      slime king_25: -643775216921316502
+      slime king_26: -3405672936000402289
+      slime king_3: 3980353232413277848
+      slime king_4: 4812124283122399369
+      slime king_5: -3335813931160990986
+      slime king_6: -6598389975855078189
+      slime king_7: -6997555256590010831
+      slime king_8: -7856821760942465347
+      slime king_9: 8330591829731719229
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -9560,7 +9560,7 @@ MonoBehaviour:
   - {fileID: 8890549532542115160}
   - {fileID: 2598973760726027883}
   - {fileID: 8629484179760558209}
-  spawnProfile: {fileID: 11400000, guid: 7e7d962388d2ab54db7253267add0bb2, type: 2}
+  spawnProfile: {fileID: 11400000, guid: f57f5f98e33d8ba49a65f9cece2999a5, type: 2}
 --- !u!1 &5802812931860905054
 GameObject:
   m_ObjectHideFlags: 0
