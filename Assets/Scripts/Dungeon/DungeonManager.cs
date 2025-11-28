@@ -198,6 +198,7 @@ public class DungeonManager : MonoBehaviour
         _activeRoom = Instantiate(prefab, Vector3.zero, Quaternion.identity, roomsParent);
         var rt = _activeRoom.GetComponent<RoomTemplate>();
 
+       
         // Handle missing RoomTemplate component
         if (rt == null)
         {
@@ -407,4 +408,5 @@ public class DungeonManager : MonoBehaviour
 
         Debug.LogWarning($"Auto-configured RoomTemplate for '{_activeRoom.name}' with {rt.enemySpawns.Length} enemy spawns.");
     }
+
 }

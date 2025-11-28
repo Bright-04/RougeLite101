@@ -3,10 +3,11 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyDeathNotifier))]
 public class BnnyHealth : MonoBehaviour, IDamageable
 {
-    [SerializeField] private int startingHealth = 50;
-    [SerializeField] private EnemyHealthBar healthBar;
+    [SerializeField] private string bossName = "Bnny";
+    [SerializeField] private float maxHealth = 50f;
+    //[SerializeField] private EnemyHealthBar healthBar;
 
-    private int currentHealth;
+    private float currentHealth;
     private Knockback knockback;
     private Flash flash;
     private EnemyDeathNotifier notifier;
@@ -23,11 +24,11 @@ public class BnnyHealth : MonoBehaviour, IDamageable
 
     private void Start()
     {
-        currentHealth = startingHealth;
+        currentHealth = maxHealth;
 
-        if (healthBar != null)
+        if (BossHealthBar.Instance != null)
         {
-            healthBar.Initialize(transform, startingHealth);
+            BossHealthBar.Instance.Initialize(maxHealth, bossName);
         }
     }
 
@@ -37,10 +38,10 @@ public class BnnyHealth : MonoBehaviour, IDamageable
 
         currentHealth -= damage;
 
-        if (healthBar != null)
+        if (BossHealthBar.Instance != null)
         {
-            healthBar.UpdateHealth(currentHealth);
-        }
+            BossHealthBar.Instance.UpdateHealthUI(damage);
+        }   
 
         if (knockback)
         {
@@ -62,6 +63,11 @@ public class BnnyHealth : MonoBehaviour, IDamageable
     {
         if (dead) return;
         dead = true;
+
+        if (BossHealthBar.Instance != null)
+        {
+            BossHealthBar.Instance.HideHealthBar();
+        }
 
         notifier?.NotifyDied();
 

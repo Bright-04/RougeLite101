@@ -121,7 +121,10 @@ MonoBehaviour:
   fireballDelay: 0.05
   bigSlashProjectilePrefab: {fileID: 3193452950326634338, guid: fcdca55154b03e64db2849bc1d626b95, type: 3}
   skill3ChargeTime: 1.5
-  skill3FacingOffset: 0
+  skill3ReleaseDuration: 0.7
+  skill1Cooldown: 3
+  skill2Cooldown: 4
+  skill3Cooldown: 6
 --- !u!114 &8882316761995760070
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146,8 +149,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab4f80d6654ff0b46ade14b1817751bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingHealth: 50
-  healthBar: {fileID: 0}
+  bossName: Bnny
+  maxHealth: 50
+  healthBar: {fileID: 1930239321732749768, guid: 857b90ff4de820143bd4c7b038f9d9e9, type: 3}
 --- !u!114 &2954440164730203618
 MonoBehaviour:
   m_ObjectHideFlags: 0

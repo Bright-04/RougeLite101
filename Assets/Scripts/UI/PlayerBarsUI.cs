@@ -4,10 +4,6 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
-    //public Image hpFill;
-    //public Image manaFill;
-    //public Image staminaFill;
-
     private PlayerStats playerStats;
 
     [Header("UI References")]
@@ -33,11 +29,7 @@ public class PlayerUI : MonoBehaviour
     private void Update()
     {
         UpdateHealthUI();
-        UpdateManaUI();
-
-        //hpFill.fillAmount = playerStats.currentHP / playerStats.maxHP;
-        //manaFill.fillAmount = playerStats.currentMana / playerStats.maxMana;
-        //staminaFill.fillAmount = playerStats.currentStamina / playerStats.maxStamina;
+        UpdateManaUI();     
     }
 
     private void UpdateHealthUI()
