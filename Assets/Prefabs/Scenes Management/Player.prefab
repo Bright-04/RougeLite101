@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 1339241568981859123}
   - component: {fileID: 4215567663166107315}
   - component: {fileID: 6630334986598602266}
+  - component: {fileID: 6449599854977480468}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -223,6 +224,9 @@ MonoBehaviour:
   critChance: 0.1
   critDamage: 1.5
   luck: 0
+  currentExp: 0
+  levelUpExp: 10
+  level: 0
 --- !u!114 &6817578523957917170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,6 +287,29 @@ MonoBehaviour:
   restoreDefaultMatTime: 0.2
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   forceColorFlash: 0
+--- !u!114 &6449599854977480468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a80d75678f37241910668e0457a09a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerStats: {fileID: 7337046418264200616}
+  expMultiplier: 1.5
+  hpGrowth: 10
+  manaGrowth: 20
+  staminaGrowth: 5
+  attackDamageGrowth: 2
+  abilityPowerGrowth: 1
+  defenseGrowth: 1
+  hpRegenGrowth: 0.1
+  manaRegenGrowth: 0.2
+  staminaRegenGrowth: 0.1
 --- !u!1 &3247644244558153244
 GameObject:
   m_ObjectHideFlags: 0

@@ -27,8 +27,9 @@ public class PlayerStats : MonoBehaviour
     private float damageTimer = 0;
 
     public float currentExp = 0;
-    public float levelUpExp = 0;
-    public float Level = 0;
+    public float levelUpExp = 10;
+    public float level = 0;
+
     private void Start()
     {
         currentHP = maxHP;

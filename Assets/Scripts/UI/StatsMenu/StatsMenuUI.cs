@@ -33,7 +33,7 @@ public class StatsMenuUI : MonoBehaviour
     public Slider expBar;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
         // Tự động tìm PlayerStats nếu chưa được gán
         if (playerStats == null)
@@ -61,7 +61,7 @@ public class StatsMenuUI : MonoBehaviour
 
         // Level & Experience
         if (levelText != null)
-            levelText.text = $"Level: {playerStats.Level}";
+            levelText.text = $"Level: {playerStats.level}";
 
         if (expText != null)
             expText.text = $"EXP: {playerStats.currentExp:F0} / {playerStats.levelUpExp:F0}";

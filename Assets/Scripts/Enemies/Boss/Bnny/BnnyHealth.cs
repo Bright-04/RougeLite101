@@ -5,6 +5,7 @@ public class BnnyHealth : MonoBehaviour, IDamageable
 {
     [SerializeField] private string bossName = "Bnny";
     [SerializeField] private float maxHealth = 50f;
+    public float expReward = 12;
     //[SerializeField] private EnemyHealthBar healthBar;
 
     private float currentHealth;
@@ -63,6 +64,8 @@ public class BnnyHealth : MonoBehaviour, IDamageable
     {
         if (dead) return;
         dead = true;
+
+        ExpManager.Instance.GainExperience(expReward);
 
         if (BossHealthBar.Instance != null)
         {

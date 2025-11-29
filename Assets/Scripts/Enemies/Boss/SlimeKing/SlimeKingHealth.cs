@@ -7,6 +7,7 @@ public class SlimeKingHealth : MonoBehaviour, IDamageable
     [SerializeField] private string bossName = "Slime King";
     [SerializeField] private float maxHealth = 200f;
     private float currentHealth;
+    public float expReward = 10;
 
     private EnemyDeathNotifier deathNotifier;
     private EnemyDeathAnimation deathAnimation;
@@ -87,6 +88,9 @@ public class SlimeKingHealth : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
+
+        ExpManager.Instance.GainExperience(expReward);
+
         CleanupSlimeKingProjectiles();
 
         if (BossHealthBar.Instance != null)
