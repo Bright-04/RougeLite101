@@ -17,11 +17,11 @@ public class PlayerUI : MonoBehaviour
         playerStats = FindAnyObjectByType<PlayerStats>();
         if (playerStats == null)
         {
-            Debug.LogError("PlayerUI: Could not find PlayerStats!");
+            Debug.LogError("PlayerBarUI: Could not find PlayerStats!");
         }
         else
         {
-            Debug.Log("PlayerUI: Found PlayerStats successfully");
+            Debug.Log("PlayerBarUI: Found PlayerStats successfully");
         }
     }
 

@@ -26,9 +26,9 @@ public class PlayerStats : MonoBehaviour
     private float damageCooldown = 1.0f; // seconds of invulnerability after taking damage
     private float damageTimer = 0;
 
-    public float currentExp;
-    public float levelUpExp;
-    public float Lvl;
+    public float currentExp = 0;
+    public float levelUpExp = 0;
+    public float Level = 0;
     private void Start()
     {
         currentHP = maxHP;
