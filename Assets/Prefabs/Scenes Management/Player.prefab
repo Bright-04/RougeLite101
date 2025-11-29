@@ -212,7 +212,7 @@ MonoBehaviour:
   maxHP: 100
   currentHP: 0
   hpRegen: 1
-  maxMana: 500
+  maxMana: 100
   currentMana: 0
   manaRegen: 1
   maxStamina: 50

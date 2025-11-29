@@ -947,6 +947,7 @@ MonoBehaviour:
   persistentObject:
   - {fileID: 2681816811590592301}
   - {fileID: 576894162}
+  - {fileID: 1733904189}
 --- !u!4 &872004706
 Transform:
   m_ObjectHideFlags: 0
@@ -5317,6 +5318,53 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   changeSceneName: Dungeon
+--- !u!1 &1733904189
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1733904191}
+  - component: {fileID: 1733904190}
+  m_Layer: 0
+  m_Name: SaveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1733904190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733904189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02c99b7e6ca70764aacd69681b553b2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  autoSaveInterval: 60
+  enableAutoSave: 1
+  playerStats: {fileID: 2681816811590592302}
+--- !u!4 &1733904191
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1733904189}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 756.6494, y: 511.36417, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1840989014
 GameObject:
   m_ObjectHideFlags: 0
@@ -105305,6 +105353,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1918963932709273604, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
   m_PrefabInstance: {fileID: 2681816811590592300}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2681816811590592302 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7337046418264200616, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
+  m_PrefabInstance: {fileID: 2681816811590592300}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2681816811590592301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea6ed426af4683d42934e666324c15ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -105318,3 +105377,4 @@ SceneRoots:
   - {fileID: 872004706}
   - {fileID: 2681816811590592300}
   - {fileID: 576894161}
+  - {fileID: 1733904191}
