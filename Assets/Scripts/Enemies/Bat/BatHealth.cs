@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(EnemyDeathNotifier))]
 public class BatHealth : MonoBehaviour, IDamageable
 {
+    public float expReward = 4;
     [SerializeField] private int startingHealth = 2; // Lower health than slime (slime has 3)
     [SerializeField] private EnemyHealthBar healthBar;
 
@@ -65,6 +66,8 @@ public class BatHealth : MonoBehaviour, IDamageable
     {
         if (dead) return;
         dead = true;
+
+        ExpManager.Instance.GainExperience(expReward);
 
         // Inform the DungeonManager
         notifier?.NotifyDied();

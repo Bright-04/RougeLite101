@@ -4,6 +4,8 @@ using System.Collections;
 [RequireComponent(typeof(EnemyDeathNotifier))]
 public class SlimeHealth : MonoBehaviour, IDamageable
 {
+    public float expReward = 3;
+
     [SerializeField] private int startingHealth = 3;
     [SerializeField] private EnemyHealthBar healthBar;
 
@@ -65,6 +67,8 @@ public class SlimeHealth : MonoBehaviour, IDamageable
     {
         if (dead) return;
         dead = true;
+
+        ExpManager.Instance.GainExperience(expReward);
 
         // Inform the DungeonManager
         notifier?.NotifyDied();

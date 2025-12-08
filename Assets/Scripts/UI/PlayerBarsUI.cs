@@ -4,10 +4,6 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
-    //public Image hpFill;
-    //public Image manaFill;
-    //public Image staminaFill;
-
     private PlayerStats playerStats;
 
     [Header("UI References")]
@@ -21,11 +17,11 @@ public class PlayerUI : MonoBehaviour
         playerStats = FindAnyObjectByType<PlayerStats>();
         if (playerStats == null)
         {
-            Debug.LogError("PlayerUI: Could not find PlayerStats!");
+            Debug.LogError("PlayerBarUI: Could not find PlayerStats!");
         }
         else
         {
-            Debug.Log("PlayerUI: Found PlayerStats successfully");
+            Debug.Log("PlayerBarUI: Found PlayerStats successfully");
         }
     }
 
@@ -33,11 +29,7 @@ public class PlayerUI : MonoBehaviour
     private void Update()
     {
         UpdateHealthUI();
-        UpdateManaUI();
-
-        //hpFill.fillAmount = playerStats.currentHP / playerStats.maxHP;
-        //manaFill.fillAmount = playerStats.currentMana / playerStats.maxMana;
-        //staminaFill.fillAmount = playerStats.currentStamina / playerStats.maxStamina;
+        UpdateManaUI();     
     }
 
     private void UpdateHealthUI()

@@ -8045,37 +8045,6 @@ Transform:
   - {fileID: 8637457894075621911}
   m_Father: {fileID: 9184886222989870678}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3248864274078530788
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2598973760726027883}
-  m_Layer: 0
-  m_Name: EnemySpawn_1
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2598973760726027883
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3248864274078530788}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.3, y: 11.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 9184886222989870678}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3560048071046238732
 GameObject:
   m_ObjectHideFlags: 0
@@ -10049,9 +10018,8 @@ Transform:
   - {fileID: 1751320035784326369}
   - {fileID: 7885857238824224915}
   - {fileID: 8890549532542115160}
-  - {fileID: 2598973760726027883}
-  - {fileID: 8629484179760558209}
   - {fileID: 6421222548061846325}
+  - {fileID: 5374456970973927680}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4103408711280891784
@@ -10070,9 +10038,7 @@ MonoBehaviour:
   exitAnchor: {fileID: 7885857238824224915}
   enemySpawns:
   - {fileID: 8890549532542115160}
-  - {fileID: 2598973760726027883}
-  - {fileID: 8629484179760558209}
-  spawnProfile: {fileID: 11400000, guid: f57f5f98e33d8ba49a65f9cece2999a5, type: 2}
+  spawnProfile: {fileID: 11400000, guid: d79ca4461ce1267448dbbc15af7ce213, type: 2}
 --- !u!1 &5802812931860905054
 GameObject:
   m_ObjectHideFlags: 0
@@ -10120,37 +10086,6 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
---- !u!1 &6643429120777299133
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8629484179760558209}
-  m_Layer: 0
-  m_Name: EnemySpawn_2
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8629484179760558209
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6643429120777299133}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.5, y: -0.1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 9184886222989870678}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7864005938417871894
 GameObject:
   m_ObjectHideFlags: 0
@@ -12020,7 +11955,38 @@ Transform:
   m_GameObject: {fileID: 8795218796524693604}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.4, y: 11.3, z: 0}
+  m_LocalPosition: {x: -0.87, y: 7.04, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9184886222989870678}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9203933338280434202
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5374456970973927680}
+  m_Layer: 0
+  m_Name: Bnny_EdgeTop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5374456970973927680
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9203933338280434202}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.98, y: 13.79, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

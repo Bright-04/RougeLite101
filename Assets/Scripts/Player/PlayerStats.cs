@@ -7,12 +7,12 @@ public class PlayerStats : MonoBehaviour
     public float currentHP;
     public float hpRegen = 1;
 
-    public float maxMana = 500;
+    public float maxMana = 100;
     public float currentMana;
     public float manaRegen = 1;
 
     public float maxStamina = 50;
-    public float currentStamina  = 50;
+    public float currentStamina = 50;
     public float staminaRegen = 2;
 
     public float attackDamage = 10; // AD
@@ -25,7 +25,11 @@ public class PlayerStats : MonoBehaviour
 
     private float damageCooldown = 1.0f; // seconds of invulnerability after taking damage
     private float damageTimer = 0;
- 
+
+    public float currentExp = 0;
+    public float levelUpExp = 10;
+    public float level = 0;
+
     private void Start()
     {
         currentHP = maxHP;
@@ -59,7 +63,7 @@ public class PlayerStats : MonoBehaviour
 
         float reducedDamage = Mathf.Max(0, damage - defense);
         currentHP -= reducedDamage;
-        
+
         Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{maxHP}");
 
         damageTimer = damageCooldown;
@@ -69,7 +73,7 @@ public class PlayerStats : MonoBehaviour
             Die();
             Respawn();
         }
-            
+
     }
 
 
@@ -90,12 +94,12 @@ public class PlayerStats : MonoBehaviour
             {
                 flash.ResetMaterial();
             }
-            
+
             ResetStatsOnRespawn();
             player.transform.position = Vector3.zero;
 
-            SceneManager.LoadScene("GameHome");          
-        }       
+            SceneManager.LoadScene("GameHome");
+        }
     }
 
     private void ResetStatsOnRespawn()
@@ -103,7 +107,7 @@ public class PlayerStats : MonoBehaviour
         currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
-        damageTimer = 0;      
+        damageTimer = 0;
     }
 
     public bool TryCrit()
@@ -119,5 +123,43 @@ public class PlayerStats : MonoBehaviour
     public void UseMana(float amount)
     {
         currentMana = Mathf.Max(0, currentMana - amount);
+    }
+
+    // ============ SAVE/LOAD METHODS ============
+
+    /// <summary>
+    /// Load data từ PlayerStatsData vào PlayerStats
+    /// </summary>
+    public void LoadFromData(PlayerStatsData data)
+    {
+        // Level System
+        level = data.level;
+        currentExp = data.currentExp;
+        levelUpExp = data.levelUpExp;
+
+        // Core Stats
+        maxHP = data.maxHP;
+        maxMana = data.maxMana;
+        maxStamina = data.maxStamina;
+
+        // Regeneration
+        hpRegen = data.hpRegen;
+        manaRegen = data.manaRegen;
+        staminaRegen = data.staminaRegen;
+
+        // Combat Stats
+        attackDamage = data.attackDamage;
+        abilityPower = data.abilityPower;
+        defense = data.defense;
+        critChance = data.critChance;
+        critDamage = data.critDamage;
+        luck = data.luck;
+
+        // Reset current values to max after loading
+        currentHP = maxHP;
+        currentMana = maxMana;
+        currentStamina = maxStamina;
+
+        Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
     }
 }

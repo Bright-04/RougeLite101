@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 6391120002411112715}
   - component: {fileID: 2916670140396482249}
   - component: {fileID: 4354768808205243760}
-  - component: {fileID: 8627549721853375109}
   - component: {fileID: 6515057203118224769}
   - component: {fileID: -2405068380468014029}
+  - component: {fileID: -2214936946021961104}
   m_Layer: 0
   m_Name: SlimeBlob
   m_TagString: Untagged
@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.72552, y: 9.57703, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 1}
+  m_LocalScale: {x: 6, y: 6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -80,7 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 438506713874657932, guid: 9eec5cfba78bef3468b62fe7fba476e9, type: 3}
+  m_Sprite: {fileID: -3168990307505556304, guid: 8309411822c0d974ebcb560ff8c17e25, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -125,24 +125,9 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.0029613376, y: -0.017768543}
-  m_Size: {x: 0.30454928, y: 0.5024891}
+  m_Offset: {x: -0.0075428784, y: 0.019808521}
+  m_Size: {x: 0.21291822, y: 0.21291822}
   m_Direction: 0
---- !u!114 &8627549721853375109
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2999882574704112946}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: edcada1bbd80a5148ac64d67d86f1b9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damageAmount: 10
-  damageCooldown: 0.5
-  knockbackForce: 10
 --- !u!114 &6515057203118224769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,7 +142,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 6
   lifetime: 6
-  damage: 10
 --- !u!114 &-2405068380468014029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175,3 +159,18 @@ MonoBehaviour:
   restoreDefaultMatTime: 0.2
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   forceColorFlash: 0
+--- !u!114 &-2214936946021961104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2999882574704112946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43e5e56fa1f8471468f27d14728ebf82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 10
+  knockbackForce: 10
+  destroyOnHit: 1

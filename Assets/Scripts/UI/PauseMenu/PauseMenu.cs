@@ -10,15 +10,13 @@ public class PauseMenu : MonoBehaviour
     private PlayerControls playerControls;
     private bool isPaused = false;
 
-    private void Awake()
+    private void Start()
     {
         // Ẩn pause menu ban đầu
         if (pauseCanvas)
+        {
             pauseCanvas.SetActive(false);
-    }
-
-    private void Start()
-    {
+        }
         // Đợi đến Start để đảm bảo InputManager đã Awake
         if (InputManager.Instance == null)
         {

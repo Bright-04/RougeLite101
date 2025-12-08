@@ -241,6 +241,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenStatsMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""3e4c3f39-f258-46cb-928e-46e0b440e4f3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -252,6 +261,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""OpenPauseMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""32fdb891-dc28-48e8-a72b-4f55f77161d8"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenStatsMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -347,6 +367,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""type"": ""PassThrough"",
                     ""id"": ""3bba6f5b-281c-4a9a-98f0-8b0034116950"",
                     ""expectedControlType"": ""Quaternion"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CloseStatsMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""ca2a49c8-b5b7-451d-bbde-a2974d30c97f"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -770,6 +799,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""TrackedDeviceOrientation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""70b1ac78-30ce-4d05-b491-6b1ede05a746"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseStatsMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -786,6 +826,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // NavigateUI
         m_NavigateUI = asset.FindActionMap("NavigateUI", throwIfNotFound: true);
         m_NavigateUI_OpenPauseMenu = m_NavigateUI.FindAction("OpenPauseMenu", throwIfNotFound: true);
+        m_NavigateUI_OpenStatsMenu = m_NavigateUI.FindAction("OpenStatsMenu", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -798,6 +839,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_UI_RightClick = m_UI.FindAction("RightClick", throwIfNotFound: true);
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+        m_UI_CloseStatsMenu = m_UI.FindAction("CloseStatsMenu", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -1085,6 +1127,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_NavigateUI;
     private List<INavigateUIActions> m_NavigateUIActionsCallbackInterfaces = new List<INavigateUIActions>();
     private readonly InputAction m_NavigateUI_OpenPauseMenu;
+    private readonly InputAction m_NavigateUI_OpenStatsMenu;
     /// <summary>
     /// Provides access to input actions defined in input action map "NavigateUI".
     /// </summary>
@@ -1100,6 +1143,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "NavigateUI/OpenPauseMenu".
         /// </summary>
         public InputAction @OpenPauseMenu => m_Wrapper.m_NavigateUI_OpenPauseMenu;
+        /// <summary>
+        /// Provides access to the underlying input action "NavigateUI/OpenStatsMenu".
+        /// </summary>
+        public InputAction @OpenStatsMenu => m_Wrapper.m_NavigateUI_OpenStatsMenu;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1129,6 +1176,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @OpenPauseMenu.started += instance.OnOpenPauseMenu;
             @OpenPauseMenu.performed += instance.OnOpenPauseMenu;
             @OpenPauseMenu.canceled += instance.OnOpenPauseMenu;
+            @OpenStatsMenu.started += instance.OnOpenStatsMenu;
+            @OpenStatsMenu.performed += instance.OnOpenStatsMenu;
+            @OpenStatsMenu.canceled += instance.OnOpenStatsMenu;
         }
 
         /// <summary>
@@ -1143,6 +1193,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @OpenPauseMenu.started -= instance.OnOpenPauseMenu;
             @OpenPauseMenu.performed -= instance.OnOpenPauseMenu;
             @OpenPauseMenu.canceled -= instance.OnOpenPauseMenu;
+            @OpenStatsMenu.started -= instance.OnOpenStatsMenu;
+            @OpenStatsMenu.performed -= instance.OnOpenStatsMenu;
+            @OpenStatsMenu.canceled -= instance.OnOpenStatsMenu;
         }
 
         /// <summary>
@@ -1190,6 +1243,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_RightClick;
     private readonly InputAction m_UI_TrackedDevicePosition;
     private readonly InputAction m_UI_TrackedDeviceOrientation;
+    private readonly InputAction m_UI_CloseStatsMenu;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -1241,6 +1295,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/TrackedDeviceOrientation".
         /// </summary>
         public InputAction @TrackedDeviceOrientation => m_Wrapper.m_UI_TrackedDeviceOrientation;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/CloseStatsMenu".
+        /// </summary>
+        public InputAction @CloseStatsMenu => m_Wrapper.m_UI_CloseStatsMenu;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1297,6 +1355,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @TrackedDeviceOrientation.started += instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.performed += instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.canceled += instance.OnTrackedDeviceOrientation;
+            @CloseStatsMenu.started += instance.OnCloseStatsMenu;
+            @CloseStatsMenu.performed += instance.OnCloseStatsMenu;
+            @CloseStatsMenu.canceled += instance.OnCloseStatsMenu;
         }
 
         /// <summary>
@@ -1338,6 +1399,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @TrackedDeviceOrientation.started -= instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.performed -= instance.OnTrackedDeviceOrientation;
             @TrackedDeviceOrientation.canceled -= instance.OnTrackedDeviceOrientation;
+            @CloseStatsMenu.started -= instance.OnCloseStatsMenu;
+            @CloseStatsMenu.performed -= instance.OnCloseStatsMenu;
+            @CloseStatsMenu.canceled -= instance.OnCloseStatsMenu;
         }
 
         /// <summary>
@@ -1422,6 +1486,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOpenPauseMenu(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenStatsMenu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenStatsMenu(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
@@ -1500,5 +1571,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CloseStatsMenu" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseStatsMenu(InputAction.CallbackContext context);
     }
 }

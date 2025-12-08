@@ -155,6 +155,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "OpenStatsMenu",
+                    "type": "Button",
+                    "id": "3e4c3f39-f258-46cb-928e-46e0b440e4f3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -166,6 +175,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "OpenPauseMenu",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "32fdb891-dc28-48e8-a72b-4f55f77161d8",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OpenStatsMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -261,6 +281,15 @@
                     "type": "PassThrough",
                     "id": "3bba6f5b-281c-4a9a-98f0-8b0034116950",
                     "expectedControlType": "Quaternion",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CloseStatsMenu",
+                    "type": "Button",
+                    "id": "ca2a49c8-b5b7-451d-bbde-a2974d30c97f",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -682,6 +711,17 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "TrackedDeviceOrientation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "70b1ac78-30ce-4d05-b491-6b1ede05a746",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CloseStatsMenu",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
