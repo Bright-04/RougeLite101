@@ -12,7 +12,18 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
     [SerializeField] private Transform slashAnimSpawnPoint;
     [SerializeField] private Transform weaponCollider;
 
-    
+    [Header("Hit Settings")]
+    [SerializeField] private int baseDamage = 1;
+    [SerializeField] private float hitRadius = 1.5f;
+    [SerializeField] private float dotThreshold = -0.3f; // how far to the side can still be hit
+    [SerializeField] private LayerMask enemyLayerMask;
+
+    [Header("Collider Positioning")]
+    [SerializeField] private Vector3 defaultColliderLocalPosition = new Vector3(0.5f, 0f, 0f);
+    [SerializeField] private Vector3 leftColliderLocalPosition = new Vector3(-0.1f, 0f, 0f);
+    [SerializeField] private Vector3 rightColliderLocalPosition = new Vector3(0.1f, 0f, 0f);
+    [SerializeField] private Vector3 colliderLocalScale = new Vector3(2f, 2f, 1f);
+
     private Animator myAnimator;
     private PlayerMovement playerMovement;
 
@@ -27,15 +38,33 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         
 
         weaponHolder = transform.parent; // because Sword is instantiated under WeaponHolder
-        
+
         // TEMPORARY FIX: Reset weapon collider transform to reasonable values
         if (weaponCollider != null)
         {
-            // Make the collider a direct child of the player for simpler positioning
-            weaponCollider.SetParent(PlayerMovement.Instance.transform);
-            weaponCollider.localPosition = new Vector3(0.5f, 0f, 0f); // 0.5 units in front of player
-            weaponCollider.localScale = Vector3.one; // Normal scale
-            weaponCollider.localRotation = Quaternion.identity; // No rotation
+            // Prefer making collider a child of the weapon holder so it follows the weapon
+            if (weaponHolder != null)
+            {
+                weaponCollider.SetParent(weaponHolder, false);
+            }
+            else if (PlayerMovement.Instance != null)
+            {
+                // fallback to player transform if no weapon holder
+                weaponCollider.SetParent(PlayerMovement.Instance.transform, false);
+            }
+
+            // Apply configurable defaults
+            weaponCollider.localPosition = defaultColliderLocalPosition;
+            weaponCollider.localScale = Vector3.one;
+            weaponCollider.localRotation = Quaternion.identity;
+        }
+
+        // If no explicit enemy layer was set, try to resolve the "Enemy" layer once
+        if (enemyLayerMask == 0)
+        {
+            int enemyLayer = LayerMask.NameToLayer("Enemy");
+            if (enemyLayer >= 0)
+                enemyLayerMask = 1 << enemyLayer;
         }
     }
 
@@ -57,10 +86,18 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         nextAttackTime = Time.time + attackCooldown;
 
         myAnimator.SetTrigger("Attack");
-        weaponCollider.gameObject.SetActive(true);
+        if (weaponCollider != null)
+            weaponCollider.gameObject.SetActive(true);
 
-        slashAnim = Instantiate(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
-        slashAnim.transform.parent = this.transform.parent;
+        if (slashAnimPrefab != null && slashAnimSpawnPoint != null)
+        {
+            slashAnim = Instantiate(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
+            // Parent to weaponHolder when possible so it follows the weapon
+            if (weaponHolder != null)
+                slashAnim.transform.SetParent(weaponHolder, true);
+            else if (transform.parent != null)
+                slashAnim.transform.SetParent(transform.parent, true);
+        }
     }
 
     public void DoneAttackingAnimEvent()
@@ -85,41 +122,53 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         }
 
         // Check for enemies in a small radius around the player
-        float hitRadius = 1.5f;
-        Collider2D[] hits = Physics2D.OverlapCircleAll(PlayerMovement.Instance.transform.position, hitRadius);
-        
+        Vector2 origin = PlayerMovement.Instance.transform.position;
+
+        int layerMask = enemyLayerMask != 0 ? enemyLayerMask.value : 0;
+
+        Collider2D[] hits;
+        if (layerMask != 0)
+            hits = Physics2D.OverlapCircleAll(origin, hitRadius, layerMask);
+        else
+            hits = Physics2D.OverlapCircleAll(origin, hitRadius);
+
         // Get player's last movement direction to determine attack direction
         Vector2 attackDirection = GetAttackDirection();
-        
+
+        // Avoid hitting the same damageable more than once
+        HashSet<IDamageable> damaged = new HashSet<IDamageable>();
+
         foreach (var hit in hits)
         {
-            if (hit.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            // double-guard: ensure layer matches if we didn't pass layerMask
+            if (enemyLayerMask == 0 && hit.gameObject.layer != LayerMask.NameToLayer("Enemy"))
+                continue;
+
+            Vector2 toEnemy = (hit.transform.position - (Vector3)origin).normalized;
+            float dotProduct = Vector2.Dot(attackDirection, toEnemy);
+
+            if (dotProduct <= dotThreshold)
+                continue;
+
+            if (hit.TryGetComponent(out IDamageable damageable))
             {
-                // Check if enemy is in the general direction of the attack
-                Vector2 toEnemy = (hit.transform.position - PlayerMovement.Instance.transform.position).normalized;
-                float dotProduct = Vector2.Dot(attackDirection, toEnemy);
-                
-                // Only hit if enemy is in front (dot > 0 means same general direction)
-                // Use a threshold of -0.3 to allow hitting slightly off to the side
-                if (dotProduct > -0.3f)
+                if (damaged.Contains(damageable))
+                    continue;
+
+                // Calculate damage using configurable base and player stats
+                float finalDamage = baseDamage;
+                PlayerStats stats = PlayerMovement.Instance.GetComponent<PlayerStats>();
+                if (stats != null)
                 {
-                    if (hit.TryGetComponent(out IDamageable damageable))
+                    finalDamage += stats.attackDamage;
+                    if (stats.TryCrit())
                     {
-                        // Calculate damage same as DamageSource
-                        float finalDamage = 1; // baseDamage
-                        PlayerStats stats = PlayerMovement.Instance.GetComponent<PlayerStats>();
-                        if (stats != null)
-                        {
-                            finalDamage += stats.attackDamage;
-                            if (stats.TryCrit())
-                            {
-                                finalDamage *= stats.GetCritMultiplier();
-                            }
-                        }
-                        
-                        damageable.TakeDamage(Mathf.RoundToInt(finalDamage));
+                        finalDamage *= stats.GetCritMultiplier();
                     }
                 }
+
+                damageable.TakeDamage(Mathf.RoundToInt(finalDamage));
+                damaged.Add(damageable);
             }
         }
     }
@@ -129,23 +178,40 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         // Try to get the player's movement direction from the player controller
         // This requires reading the movement input
         PlayerMovement pc = PlayerMovement.Instance;
-        
-        // Check the player's last movement direction from animator
+        if (pc == null)
+            return Vector2.right;
+
+        // Check the player's last movement direction from animator when available
         Animator anim = pc.GetComponent<Animator>();
         if (anim != null)
         {
-            float moveX = anim.GetFloat("moveX");
-            float moveY = anim.GetFloat("moveY");
-            
-            // If player was moving, use that direction
+            bool hasMoveX = false;
+            bool hasMoveY = false;
+            foreach (var p in anim.parameters)
+            {
+                if (p.name == "moveX") hasMoveX = true;
+                if (p.name == "moveY") hasMoveY = true;
+            }
+
+            float moveX = 0f;
+            float moveY = 0f;
+            if (hasMoveX)
+            {
+                try { moveX = anim.GetFloat("moveX"); } catch { }
+            }
+            if (hasMoveY)
+            {
+                try { moveY = anim.GetFloat("moveY"); } catch { }
+            }
+
             if (Mathf.Abs(moveX) > 0.01f || Mathf.Abs(moveY) > 0.01f)
             {
                 return new Vector2(moveX, moveY).normalized;
             }
         }
-        
+
         // Fallback: use facing direction (left/right only)
-        return playerMovement.FacingLeft ? Vector2.left : Vector2.right;
+        return playerMovement != null && playerMovement.FacingLeft ? Vector2.left : Vector2.right;
     }
 
     public void SwingUpFlipAnimEvent()
@@ -172,33 +238,48 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
     private void FollowPlayerDirection()
     {
-        if (playerMovement == null) Debug.LogError("Sword: playerMovement is NULL!", this);
-        if (weaponCollider == null) Debug.LogError("Sword: weaponCollider is NULL!", this);
-
-        if (playerMovement != null && playerMovement.FacingLeft)
+        if (playerMovement == null)
         {
-            // Flip the weapon holder on X scale instead of rotating on Y axis
-            // This maintains position while flipping the sprite
-            Vector3 newScale = weaponHolder.localScale;
-            newScale.x = -Mathf.Abs(newScale.x); // Ensure it's negative (flipped)
-            weaponHolder.localScale = newScale;
-            
-            // Position weapon collider to the LEFT of player (closer range to hit nearby enemies)
-            weaponCollider.transform.localPosition = new Vector3(-0.1f, 0f, 0f);
-            weaponCollider.transform.localRotation = Quaternion.identity;
-            weaponCollider.transform.localScale = new Vector3(2f, 2f, 1f); // Larger hitbox
+            Debug.LogWarning("Sword: playerMovement is NULL!", this);
+            return;
+        }
+
+        if (weaponHolder == null)
+        {
+            Debug.LogWarning("Sword: weaponHolder is NULL!", this);
+        }
+
+        if (playerMovement.FacingLeft)
+        {
+            if (weaponHolder != null)
+            {
+                Vector3 newScale = weaponHolder.localScale;
+                newScale.x = -Mathf.Abs(newScale.x);
+                weaponHolder.localScale = newScale;
+            }
+
+            if (weaponCollider != null)
+            {
+                weaponCollider.transform.localPosition = leftColliderLocalPosition;
+                weaponCollider.transform.localRotation = Quaternion.identity;
+                weaponCollider.transform.localScale = colliderLocalScale;
+            }
         }
         else
         {
-            // Reset to normal scale
-            Vector3 newScale = weaponHolder.localScale;
-            newScale.x = Mathf.Abs(newScale.x); // Ensure it's positive (not flipped)
-            weaponHolder.localScale = newScale;
-            
-            // Position weapon collider to the RIGHT of player (closer range to hit nearby enemies)
-            weaponCollider.transform.localPosition = new Vector3(0.1f, 0f, 0f);
-            weaponCollider.transform.localRotation = Quaternion.identity;
-            weaponCollider.transform.localScale = new Vector3(2f, 2f, 1f); // Larger hitbox
+            if (weaponHolder != null)
+            {
+                Vector3 newScale = weaponHolder.localScale;
+                newScale.x = Mathf.Abs(newScale.x);
+                weaponHolder.localScale = newScale;
+            }
+
+            if (weaponCollider != null)
+            {
+                weaponCollider.transform.localPosition = rightColliderLocalPosition;
+                weaponCollider.transform.localRotation = Quaternion.identity;
+                weaponCollider.transform.localScale = colliderLocalScale;
+            }
         }
     }
 

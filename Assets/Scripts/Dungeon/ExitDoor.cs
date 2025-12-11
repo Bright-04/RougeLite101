@@ -49,6 +49,8 @@ public class ExitDoor : MonoBehaviour
 
         _consumed = true;
         _col.enabled = false; // hard debounce
+        // Hide any room-completed UI (if shown) before transitioning
+        if (_mgr != null) _mgr.HideRoomCompleted();
         _mgr.TryLoadNextRoom();
     }
 }

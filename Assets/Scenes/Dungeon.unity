@@ -841,6 +841,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1468140694 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3702289407623203241, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
+  m_PrefabInstance: {fileID: 966626100}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1747059410
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1020,6 +1025,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c3170f78ffb86c442ab945db7ecb1c47, type: 2}
   roomsParent: {fileID: 344513088}
   exitDoorPrefab: {fileID: 7147763459994913800, guid: 0f88c67c99f0d5342a9726baf53a2961, type: 3}
+  roomCompleteUI: {fileID: 1468140694}
+  roomCompleteDisplayTime: 2
+  autoCreateDefaultRoomCompleteUI: 1
 --- !u!4 &2039335386
 Transform:
   m_ObjectHideFlags: 0

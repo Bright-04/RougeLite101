@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class DungeonManager : MonoBehaviour
 {
@@ -33,6 +35,24 @@ public class DungeonManager : MonoBehaviour
     private ExitDoor _exitDoor;
     private int _aliveEnemies;
     private bool _transitioning;
+
+    [Header("Screen Fade")]
+    [Tooltip("Optional CanvasGroup used for screen fade. If null and autoCreateFadeCanvas is true, a full-screen black panel will be created at runtime.")]
+    public CanvasGroup fadeCanvasGroup;
+    [Tooltip("Duration of fade in/out in seconds")]
+    public float fadeDuration = 0.25f;
+    [Tooltip("Automatically create a fullscreen black CanvasGroup if none is assigned")] 
+    public bool autoCreateFadeCanvas = true;
+
+    [Header("Room Complete UI")]
+    [Tooltip("Optional: Assign a UI GameObject (Text or Panel) to show when the room is completed. Can be a child of your HUD Canvas.")]
+    public GameObject roomCompleteUI;
+    [Tooltip("How long to show the 'Room Completed' message (seconds)")]
+    public float roomCompleteDisplayTime = 2f;
+    [Tooltip("When true, a simple default Room Completed UI will be created at runtime if none is assigned.")]
+    public bool autoCreateDefaultRoomCompleteUI = true;
+    [Tooltip("Optional Resources path (without extension) to a Room Complete prefab. Example: 'UI/RoomComplete' -> Assets/Resources/UI/RoomComplete.prefab")]
+    public string roomCompletePrefabResourcePath = "UI/RoomComplete";
 
     void Start()
     {
@@ -168,9 +188,150 @@ public class DungeonManager : MonoBehaviour
     private IEnumerator GuardedTransition()
     {
         _transitioning = true;
-        yield return null; // wait one frame to swallow duplicate triggers
-        LoadNextRoomInternal();
+        // Fade out, load, then fade in
+        // Wait one frame to swallow duplicate triggers
+        yield return null;
+        yield return StartCoroutine(TransitionAndLoad());
         _transitioning = false;
+    }
+
+    private IEnumerator TransitionAndLoad()
+    {
+        // Disable player movement while transitioning
+        DisablePlayerControl();
+
+        // Ensure fade canvas exists
+        EnsureFadeCanvas();
+
+        // Fade to black
+        if (fadeCanvasGroup != null)
+            yield return StartCoroutine(Fade(0f, 1f, fadeDuration));
+
+        // Perform the room load while screen is hidden
+        LoadNextRoomInternal();
+
+        // Give one frame for objects to initialize
+        yield return null;
+
+        // Fade back in
+        if (fadeCanvasGroup != null)
+            yield return StartCoroutine(Fade(1f, 0f, fadeDuration));
+
+        // Re-enable player movement after transition
+        EnablePlayerControl();
+    }
+
+    private IEnumerator Fade(float from, float to, float duration)
+    {
+        if (fadeCanvasGroup == null)
+            yield break;
+
+        fadeCanvasGroup.alpha = from;
+        fadeCanvasGroup.gameObject.SetActive(true);
+
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.unscaledDeltaTime;
+            float v = Mathf.Lerp(from, to, Mathf.Clamp01(t / Mathf.Max(0.0001f, duration)));
+            fadeCanvasGroup.alpha = v;
+            yield return null;
+        }
+
+        fadeCanvasGroup.alpha = to;
+
+        // If fully transparent, deactivate to avoid blocking raycasts
+        if (Mathf.Approximately(to, 0f))
+            fadeCanvasGroup.gameObject.SetActive(false);
+    }
+
+    private void EnsureFadeCanvas()
+    {
+        if (fadeCanvasGroup != null) return;
+        if (!autoCreateFadeCanvas) return;
+
+        // Try to find an existing CanvasGroup named 'ScreenFade' in scene
+        var existing = GameObject.Find("ScreenFade");
+        if (existing != null)
+        {
+            fadeCanvasGroup = existing.GetComponent<CanvasGroup>();
+            if (fadeCanvasGroup != null) return;
+        }
+
+        // Create Canvas
+        Canvas canvas = FindObjectOfType<Canvas>();
+        if (canvas == null)
+        {
+            var canvasGO = new GameObject("Auto_Canvas_Fade");
+            canvas = canvasGO.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvasGO.AddComponent<CanvasScaler>();
+            canvasGO.AddComponent<GraphicRaycaster>();
+        }
+
+        // Create full-screen panel
+        var panelGO = new GameObject("ScreenFade");
+        panelGO.transform.SetParent(canvas.transform, false);
+        var rt = panelGO.AddComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+
+        var img = panelGO.AddComponent<Image>();
+        img.color = Color.black;
+
+        fadeCanvasGroup = panelGO.AddComponent<CanvasGroup>();
+        fadeCanvasGroup.alpha = 0f;
+        fadeCanvasGroup.interactable = false;
+        fadeCanvasGroup.blocksRaycasts = true;
+        panelGO.SetActive(false);
+    }
+
+    private bool _playerMovementWasEnabled = false;
+
+    private void DisablePlayerControl()
+    {
+        var pm = PlayerMovement.Instance;
+        if (pm != null)
+        {
+            _playerMovementWasEnabled = pm.enabled;
+            pm.enabled = false;
+        }
+        else
+        {
+            // fallback: try to find player by tag and disable PlayerMovement component
+            var player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                var comp = player.GetComponent<PlayerMovement>();
+                if (comp != null)
+                {
+                    _playerMovementWasEnabled = comp.enabled;
+                    comp.enabled = false;
+                }
+            }
+        }
+    }
+
+    private void EnablePlayerControl()
+    {
+        var pm = PlayerMovement.Instance;
+        if (pm != null)
+        {
+            pm.enabled = _playerMovementWasEnabled;
+            return;
+        }
+
+        var player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            var comp = player.GetComponent<PlayerMovement>();
+            if (comp != null)
+            {
+                comp.enabled = _playerMovementWasEnabled;
+            }
+        }
     }
 
     private void LoadNextRoomInternal()
@@ -324,6 +485,213 @@ public class DungeonManager : MonoBehaviour
         while (_aliveEnemies > 0) yield return null;
 
         _exitDoor?.Unlock();
+
+        // Show Room Completed UI message
+        ShowRoomCompleted();
+    }
+
+    private void ShowRoomCompleted()
+    {
+        // Ensure we have a UI object: try to resolve existing scene object, then Resources prefab, then create default
+        if (roomCompleteUI == null)
+        {
+            roomCompleteUI = ResolveRoomCompleteUI();
+            if (roomCompleteUI == null && autoCreateDefaultRoomCompleteUI)
+                roomCompleteUI = CreateDefaultRoomCompleteUI();
+        }
+
+        if (roomCompleteUI == null)
+        {
+            Debug.Log("Room Completed!");
+            return;
+        }
+
+        // Prefer TextMeshPro if present
+        var tmp = roomCompleteUI.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (tmp != null)
+        {
+            tmp.text = "Room Completed!";
+            tmp.gameObject.SetActive(true);
+        }
+        else
+        {
+            // fallback to legacy UI Text
+            var txt = roomCompleteUI.GetComponentInChildren<Text>(true);
+            if (txt != null)
+            {
+                txt.text = "Room Completed!";
+                txt.gameObject.SetActive(true);
+            }
+        }
+
+        roomCompleteUI.SetActive(true);
+        // Hide after delay
+        if (_hideCoroutine != null) StopCoroutine(_hideCoroutine);
+        _hideCoroutine = StartCoroutine(HideRoomCompleteAfterDelay(roomCompleteDisplayTime));
+    }
+
+    private GameObject ResolveRoomCompleteUI()
+    {
+        // 1) Find by exact name
+        var byName = GameObject.Find("RoomCompleteUI");
+        if (byName != null) return byName;
+
+        // 2) Search for a TMP/Text in scene whose name suggests it's a room-complete message
+        var tmps = FindObjectsOfType<TextMeshProUGUI>(true);
+        foreach (var t in tmps)
+        {
+            var n = t.gameObject.name.ToLower();
+            if (n.Contains("room") || n.Contains("complete") || n.Contains("completed") || n.Contains("RoomCompleteUI"))
+            {
+                return t.gameObject;
+            }
+        }
+
+        var texts = FindObjectsOfType<Text>(true);
+        foreach (var t in texts)
+        {
+            var n = t.gameObject.name.ToLower();
+            if (n.Contains("room") || n.Contains("complete") || n.Contains("completed"))
+            {
+                if (t.transform.parent != null) return t.transform.parent.gameObject;
+                return t.gameObject;
+            }
+        }
+
+        // 3) Optionally search for a GameObject tagged specifically (guard against missing tag)
+        try
+        {
+            var tagged = GameObject.FindWithTag("RoomCompleteUI");
+            if (tagged != null) return tagged;
+        }
+        catch { }
+
+        return null;
+    }
+
+    private IEnumerator HideRoomCompleteAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(Mathf.Max(0.1f, delay));
+        if (roomCompleteUI != null)
+            roomCompleteUI.SetActive(false);
+        _hideCoroutine = null;
+    }
+
+    private Coroutine _hideCoroutine;
+
+    /// <summary>
+    /// Immediately hide any active Room Completed UI and cancel pending hide coroutine.
+    /// Can be called externally (e.g. when player enters exit) to clear the message.
+    /// </summary>
+    public void HideRoomCompleted()
+    {
+        if (_hideCoroutine != null)
+        {
+            StopCoroutine(_hideCoroutine);
+            _hideCoroutine = null;
+        }
+
+        if (roomCompleteUI != null)
+        {
+            // hide TMP if present
+            var tmp = roomCompleteUI.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (tmp != null) tmp.gameObject.SetActive(false);
+
+            var txt = roomCompleteUI.GetComponentInChildren<Text>(true);
+            if (txt != null) txt.gameObject.SetActive(false);
+
+            roomCompleteUI.SetActive(false);
+        }
+    }
+
+    private GameObject CreateDefaultRoomCompleteUI()
+    {
+        // Before creating a default, attempt to load a prefab from Resources if configured
+        if (!string.IsNullOrEmpty(roomCompletePrefabResourcePath))
+        {
+            var prefab = Resources.Load<GameObject>(roomCompletePrefabResourcePath);
+            if (prefab != null)
+            {
+                // Find or create a Canvas
+                Canvas canva = FindObjectOfType<Canvas>();
+                if (canva == null)
+                {
+                    var canvasGO = new GameObject("Auto_Canvas_RoomComplete");
+                    canva = canvasGO.AddComponent<Canvas>();
+                    canva.renderMode = RenderMode.ScreenSpaceOverlay;
+                    canvasGO.AddComponent<CanvasScaler>();
+                    canvasGO.AddComponent<GraphicRaycaster>();
+                }
+
+                var inst = Instantiate(prefab, canva.transform, false);
+                inst.SetActive(false);
+                return inst;
+            }
+        }
+
+        // Find or create a Canvas
+        Canvas canvas = FindObjectOfType<Canvas>();
+        if (canvas == null)
+        {
+            var canvasGO = new GameObject("Auto_Canvas_RoomComplete");
+            canvas = canvasGO.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvasGO.AddComponent<CanvasScaler>();
+            canvasGO.AddComponent<GraphicRaycaster>();
+        }
+
+        // Create root panel
+        var panelGO = new GameObject("RoomCompleteUI");
+        panelGO.transform.SetParent(canvas.transform, false);
+        var rect = panelGO.AddComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(400, 100);
+        rect.anchorMin = new Vector2(0.5f, 0.9f);
+        rect.anchorMax = new Vector2(0.5f, 0.9f);
+        rect.anchoredPosition = Vector2.zero;
+
+        // Optional background image
+        var img = panelGO.AddComponent<Image>();
+        img.color = new Color(0f, 0f, 0f, 0.5f);
+
+        // Try to add TextMeshPro first
+        TextMeshProUGUI tmp = null;
+        try
+        {
+            tmp = panelGO.AddComponent<TextMeshProUGUI>();
+        }
+        catch { tmp = null; }
+
+        if (tmp != null)
+        {
+            tmp.text = "Room Completed!";
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.fontSize = 36;
+            tmp.color = Color.white;
+            var rt = tmp.rectTransform;
+            rt.anchorMin = new Vector2(0, 0);
+            rt.anchorMax = new Vector2(1, 1);
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+        }
+        else
+        {
+            // Fallback to legacy Text
+            var textGO = new GameObject("Text");
+            textGO.transform.SetParent(panelGO.transform, false);
+            var txt = textGO.AddComponent<Text>();
+            txt.text = "Room Completed!";
+            txt.alignment = TextAnchor.MiddleCenter;
+            txt.color = Color.white;
+            txt.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            var tr = txt.rectTransform;
+            tr.anchorMin = new Vector2(0, 0);
+            tr.anchorMax = new Vector2(1, 1);
+            tr.offsetMin = Vector2.zero;
+            tr.offsetMax = Vector2.zero;
+        }
+
+        panelGO.SetActive(false);
+        return panelGO;
     }
 
     private void SpawnOne(RoomTemplate rt, GameObject prefab)

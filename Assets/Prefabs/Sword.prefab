@@ -261,4 +261,14 @@ MonoBehaviour:
   slashAnimPrefab: {fileID: 3484730034140652443, guid: fabc858041496d34e8bf63cbd0393f93, type: 3}
   slashAnimSpawnPoint: {fileID: 8969733094458530049}
   weaponCollider: {fileID: 1904787829855790125}
+  baseDamage: 1
+  hitRadius: 1.5
+  dotThreshold: -0.3
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  defaultColliderLocalPosition: {x: 0.5, y: 0, z: 0}
+  leftColliderLocalPosition: {x: -0.12, y: 0, z: 0}
+  rightColliderLocalPosition: {x: -0.12, y: 0, z: 0}
+  colliderLocalScale: {x: 2, y: 2, z: 1}
   weaponHolder: {fileID: 0}
