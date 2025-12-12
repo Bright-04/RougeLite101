@@ -8,7 +8,6 @@ public class FireballSpell : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("Fireball instantiated at " + transform.position);
         Destroy(gameObject, lifetime);
     }
 
@@ -20,9 +19,9 @@ public class FireballSpell : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.TryGetComponent(out SlimeHealth slimeHealth))
+        if (other.TryGetComponent(out IDamageable damageable))
         {
-            slimeHealth.TakeDamage((int)damage);
+            damageable.TakeDamage((int)damage);
             Destroy(gameObject);
         }
     }

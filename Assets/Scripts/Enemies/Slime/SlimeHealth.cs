@@ -2,14 +2,18 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent(typeof(EnemyDeathNotifier))]
-public class SlimeHealth : MonoBehaviour
+public class SlimeHealth : MonoBehaviour, IDamageable
 {
+    public float expReward = 3;
+
     [SerializeField] private int startingHealth = 3;
+    [SerializeField] private EnemyHealthBar healthBar;
 
     private int currentHealth;
     private Knockback knockback;
     private Flash flash;
     private EnemyDeathNotifier notifier;
+    private EnemyDeathAnimation deathAnimation;
     private bool dead;
 
     private void Awake()
@@ -17,20 +21,41 @@ public class SlimeHealth : MonoBehaviour
         flash = GetComponent<Flash>();
         knockback = GetComponent<Knockback>();
         notifier = GetComponent<EnemyDeathNotifier>();
+        deathAnimation = GetComponent<EnemyDeathAnimation>();
     }
 
     private void Start()
     {
         currentHealth = startingHealth;
+        
+        // Initialize healthbar
+        if (healthBar != null)
+        {
+            healthBar.Initialize(transform, startingHealth);
+        }
     }
 
     public void TakeDamage(int damage)
     {
         if (dead) return;
-
+        
         currentHealth -= damage;
-        if (knockback) knockback.GetKnockedBack(PlayerController.Instance.transform, 15f);
-        if (flash) StartCoroutine(flash.FlashRoutine());
+        
+        // Update healthbar
+        if (healthBar != null)
+        {
+            healthBar.UpdateHealth(currentHealth);
+        }
+        
+        if (knockback)
+        {
+            knockback.GetKnockedBack(PlayerMovement.Instance.transform, 15f);
+        }
+        
+        if (flash)
+        {
+            StartCoroutine(flash.FlashRoutine());
+        }
 
         if (currentHealth <= 0)
         {
@@ -43,11 +68,20 @@ public class SlimeHealth : MonoBehaviour
         if (dead) return;
         dead = true;
 
+        ExpManager.Instance.GainExperience(expReward);
+
         // Inform the DungeonManager
         notifier?.NotifyDied();
 
-        // Destroy the enemy
-        Destroy(gameObject);
+        // Play death animation if available, otherwise just destroy
+        if (deathAnimation != null)
+        {
+            deathAnimation.PlayDeathAnimation(PlayerMovement.Instance.transform);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     public void DetectDeath()

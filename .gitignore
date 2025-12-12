@@ -156,3 +156,4 @@ packages-lock.json
 # Unity/IDE upgrade logs are machine-specific and regenerated
 UpgradeLog.htm
 *_UpgradeLog.htm
+/.temp

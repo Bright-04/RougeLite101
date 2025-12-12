@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class SpellCaster : MonoBehaviour
@@ -14,16 +14,45 @@ public class SpellCaster : MonoBehaviour
     {
         stats = GetComponent<PlayerStats>();
         animator = GetComponent<Animator>();
-        cooldownTimers = new float[spellSlots.Length];
+        cooldownTimers = new float[spellSlots.Length];      
 
-        playerControls = new PlayerControls();
-        playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
-
-        Debug.Log("SpellCaster initialized.");
     }
 
-    private void OnEnable() => playerControls.Enable();
-    private void OnDisable() => playerControls.Disable();
+    private void Start()
+    {
+        // Đợi đến Start để đảm bảo InputManager đã Awake
+        if (InputManager.Instance == null)
+        {
+            Debug.LogError("InputManager.Instance is null! Make sure InputManager prefab exists in the scene.");
+            return;
+        }
+        
+        playerControls = InputManager.Instance.Controls;
+        playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
+        
+    }
+
+    //private void OnEnable()
+    //{
+    //    if (playerControls != null)
+    //    {
+    //        playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
+    //    }
+            
+    //}
+    //private void OnDisable()
+    //{
+    //    if (playerControls != null)
+    //    {
+    //        playerControls.Combat.SpellCasting.performed -= OnSpellCastingPerformed;
+    //    }
+    //}
+
+    private void OnDestroy()
+    {
+        if (playerControls != null)
+            playerControls.Combat.SpellCasting.performed -= OnSpellCastingPerformed;
+    }
 
     private void Update()
     {
@@ -32,6 +61,14 @@ public class SpellCaster : MonoBehaviour
             if (cooldownTimers[i] > 0)
                 cooldownTimers[i] -= Time.deltaTime;
         }
+    }
+
+    // Method để SpellCasterUI có thể truy cập cooldown
+    public float GetCooldownRemaining(int index)
+    {
+        if (index >= 0 && index < cooldownTimers.Length)
+            return Mathf.Max(0, cooldownTimers[index]);
+        return 0;
     }
 
     //private void OnSpellCastingPerformed(InputAction.CallbackContext context)
@@ -48,7 +85,9 @@ public class SpellCaster : MonoBehaviour
     //}
     private void OnSpellCastingPerformed(InputAction.CallbackContext context)
     {
-        Debug.Log("SpellCasting input received");
+        // Kiểm tra xem UI có đang active không
+        if (InputManager.Instance != null && InputManager.Instance.IsUIActive())
+            return;
 
         if (Keyboard.current.digit1Key.wasPressedThisFrame)
             TryCastSpell(0);
@@ -61,26 +100,21 @@ public class SpellCaster : MonoBehaviour
 
     private void TryCastSpell(int index)
     {
-        Debug.Log($"Trying to cast spell in slot {index}");
-
         if (index >= spellSlots.Length) return;
 
         Spell spell = spellSlots[index];
         if (spell == null)
         {
-            Debug.Log("No spell assigned to this slot.");
             return;
         }
 
         if (cooldownTimers[index] > 0)
         {
-            Debug.Log($"{spell.spellName} is on cooldown.");
             return;
         }
 
         if (stats.currentMana < spell.manaCost)
         {
-            Debug.Log("Not enough mana!");
             return;
         }
 
@@ -113,8 +147,6 @@ public class SpellCaster : MonoBehaviour
                 Instantiate(spell.spellPrefab, mouseWorldPos, Quaternion.identity);
             }
         }
-
-        Debug.Log($"Cast {spell.spellName} toward {mouseWorldPos}");
     }
 
 

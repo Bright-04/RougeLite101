@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5382e6a434761446974a86f4712d5cb, type: 3}
+  m_Name: DarkFantasy
+  m_EditorClassIdentifier: 
+  themeName: DarkFantasy
+  normalRoomPrefabs:
+  - {fileID: 4495700257502947901, guid: 67af3e0daf01574409aeedf2cd99f9b2, type: 3}
+  - {fileID: 4495700257502947901, guid: 389ea30639e835b4fb9e29343f8a4599, type: 3}
+  - {fileID: 4495700257502947901, guid: eb58551946c542940960d3e3093afd9c, type: 3}
+  - {fileID: 4495700257502947901, guid: 4a2d0b35c0f92bf4ea717129086792bd, type: 3}
+  - {fileID: 5551893689476621015, guid: 044e9a02382d84f48867ac1afeb6a17a, type: 3}
+  - {fileID: 4495700257502947901, guid: 89cadcda7e75b924e98f366ac09a2553, type: 3}
+  - {fileID: 4495700257502947901, guid: c98319fa7be1b5840b9a6fcba60bfc93, type: 3}
+  - {fileID: 4495700257502947901, guid: ed7f66403bb51a8498db4a621ef144e3, type: 3}
+  bossRoomPrefabs:
+  - {fileID: 4495700257502947901, guid: 20ce171582e00894aa63deff267e6d5b, type: 3}
+  - {fileID: 4495700257502947901, guid: 2a8f3517547cca940a54fe75d76e0ff6, type: 3}
+  mapColor: {r: 0, g: 0, b: 0, a: 1}
+  spawnPacks: []

@@ -1,0 +1,7 @@
+/*
+ * RougeLite101 - Unity 2D Roguelike Game
+ * Copyright (c) 2025 Bright-04
+ * Licensed under the MIT License. See LICENSE file for details.
+ */
+
+// Use this header template for new C# scripts if desired.

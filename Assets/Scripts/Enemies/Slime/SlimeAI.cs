@@ -28,10 +28,6 @@
             {
                 playerTransform = playerObj.transform;
             }
-            else
-            {
-                Debug.LogWarning("SlimeAI: No GameObject tagged 'Player' found. Slime will only roam.");
-            }
 
             StartCoroutine(AIBehaviour());
         }
@@ -88,24 +84,19 @@
                 if (playerTransform != null)
                 {
                     float distance = Vector2.Distance(transform.position, playerTransform.position);
-                     //Debug.Log($"DetectionRange: {detectionRange}, DistanceToPlayer: {distance}");
-                        if (distance < detectionRange)
-                        {
-                            //Debug.Log("KTR");
-                            state = State.Chasing;
-                            slimePathFinding.MoveTo(playerTransform.position);
-                        }
-
-
-                else
-                {
+                    if (distance < detectionRange)
+                    {
+                        state = State.Chasing;
+                        slimePathFinding.MoveTo(playerTransform.position);
+                    }
+                    else
+                    {
                         if (state != State.Roaming)
                         {
                             state = State.Roaming;
                         }
                         Vector2 roamPosition = GetRoamingPosition();
                         slimePathFinding.MoveTo(roamPosition);
-                        yield return new WaitForSeconds(0.2f);
                     }
                 }
                 yield return new WaitForSeconds(0.2f);
