@@ -21,24 +21,8 @@ public class DamageSource : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.TryGetComponent(out IDamageable damageable))
-        {
-            float finalDamage = baseDamage;
-
-            // Get the player's stats for AD and Crit
-            PlayerStats stats = PlayerMovement.Instance.GetComponent<PlayerStats>();
-            if (stats != null)
-            {
-                finalDamage += stats.attackDamage;
-
-                if (stats.TryCrit())
-                {
-                    finalDamage *= stats.GetCritMultiplier();
-                }
-            }
-
-            damageable.TakeDamage(Mathf.RoundToInt(finalDamage));
-        }
+        // Hit detection moved to Sword.cs per Manual Overlap logic
+        // This is skipped to prevent duplicate trigger hits.
     }
 
     // Visualize the collider in Scene view
