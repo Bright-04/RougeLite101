@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using RougeLite.System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -286,12 +287,28 @@ public class DungeonManager : MonoBehaviour
         if (profile.spawnGradually && profile.initialDelay > 0)
             yield return new WaitForSeconds(profile.initialDelay);
 
+        if (DifficultyManager.Instance != null)
+        {
+            DifficultyManager.Instance.StartRoomTracking(_index);
+        }
+
         // Decide total count per entry up front
         var toSpawn = new List<GameObject>();
         foreach (var e in profile.entries)
         {
             if (e.prefab == null) continue;
             int count = Mathf.Max(0, _rng.Next(e.minCount, e.maxCount + 1));
+            
+            if (DifficultyManager.Instance != null && count > 0)
+            {
+                int bonus = DifficultyManager.Instance.GetBonusSpawnCount();
+                count += bonus;
+                if (bonus > 0)
+                {
+                    Debug.Log($"<color=orange>[Adaptive AI]</color> Spawning {e.prefab.name}: base count + {bonus} bonus = {count} total");
+                }
+            }
+
             for (int i = 0; i < count; i++) toSpawn.Add(e.prefab);
         }
 
@@ -322,6 +339,11 @@ public class DungeonManager : MonoBehaviour
 
         // wait for clear
         while (_aliveEnemies > 0) yield return null;
+
+        if (DifficultyManager.Instance != null)
+        {
+            DifficultyManager.Instance.EvaluateRoomClear();
+        }
 
         _exitDoor?.Unlock();
     }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using RougeLite.System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -53,6 +54,12 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         nextAttackTime = Time.time + attackCooldown;
         isAttacking = true;
         enemiesHitThisSwing.Clear();
+
+        // Track swing for Accuracy Adaptive Setting
+        if (DifficultyManager.Instance != null)
+        {
+            DifficultyManager.Instance.RecordSwing();
+        }
 
         myAnimator.SetTrigger("Attack");
         if (weaponCollider != null)
@@ -110,6 +117,11 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
                     }
                     
                     damageable.TakeDamage(Mathf.RoundToInt(finalDamage));
+                    
+                    if (DifficultyManager.Instance != null)
+                    {
+                        DifficultyManager.Instance.RecordHit();
+                    }
                 }
             }
         }

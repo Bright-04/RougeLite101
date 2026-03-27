@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using RougeLite.System;
 
 /// <summary>
 /// Generic health component for enemies. Can be used for any enemy type.
@@ -34,6 +35,14 @@ public class EnemyHealth : MonoBehaviour
 
     private void Start()
     {
+        // Scale health based on adaptive difficulty
+        if (DifficultyManager.Instance != null)
+        {
+            int baseHP = startingHealth;
+            startingHealth = Mathf.RoundToInt(startingHealth * DifficultyManager.Instance.GetHealthMultiplier());
+            Debug.Log($"<color=orange>[Adaptive AI]</color> {gameObject.name} HP: {baseHP} → {startingHealth} (x{DifficultyManager.Instance.GetHealthMultiplier():F2})");
+        }
+
         currentHealth = startingHealth;
         
         // Initialize healthbar if present

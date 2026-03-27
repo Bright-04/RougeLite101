@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using RougeLite.System;
 
 public class EnemyDamageSource : MonoBehaviour
 {
@@ -7,6 +8,17 @@ public class EnemyDamageSource : MonoBehaviour
     [SerializeField] private float damageCooldown = 0.5f;
     [SerializeField] private float knockbackForce = 10f; // Force applied to player
     private float damageTimer = 0;
+
+    private void Start()
+    {
+        // Scale damage based on adaptive difficulty
+        if (DifficultyManager.Instance != null)
+        {
+            float baseDmg = damageAmount;
+            damageAmount *= DifficultyManager.Instance.GetDamageMultiplier();
+            Debug.Log($"<color=orange>[Adaptive AI]</color> {gameObject.name} DMG: {baseDmg} → {damageAmount:F1} (x{DifficultyManager.Instance.GetDamageMultiplier():F2})");
+        }
+    }
 
     private void Update()
     {

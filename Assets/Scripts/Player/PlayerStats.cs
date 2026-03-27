@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using RougeLite.System;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class PlayerStats : MonoBehaviour
     public float abilityPower = 5;  // AP
     public float defense = 0;       // DEF - Changed from 2 to 0 so enemies can deal damage
 
-    public float critChance = 1f; // 10%
+    public float critChance = 0.1f; // 10%
     public float critDamage = 1.5f; // 1.5x
     public float luck = 0;
 
@@ -65,6 +66,10 @@ public class PlayerStats : MonoBehaviour
         currentHP -= reducedDamage;
 
         Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{maxHP}");
+        if (DifficultyManager.Instance != null)
+        {
+            DifficultyManager.Instance.RecordDamageTaken(Mathf.RoundToInt(reducedDamage));
+        }
 
         damageTimer = damageCooldown;
 
