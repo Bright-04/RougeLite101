@@ -14,9 +14,29 @@ public class EnemyDamageSource : MonoBehaviour
             damageTimer -= Time.deltaTime;
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        DealDamageToPlayer(other.gameObject);
+    }
+
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (other.TryGetComponent(out PlayerStats playerStats) && damageTimer <= 0)
+        DealDamageToPlayer(other.gameObject);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        DealDamageToPlayer(collision.gameObject);
+    }
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        DealDamageToPlayer(collision.gameObject);
+    }
+
+    private void DealDamageToPlayer(GameObject target)
+    {
+        if (target.TryGetComponent(out PlayerStats playerStats) && damageTimer <= 0)
         {
             Debug.Log($"Enemy dealing {damageAmount} damage to player");
             
@@ -25,7 +45,7 @@ public class EnemyDamageSource : MonoBehaviour
             damageTimer = damageCooldown;
             
             // Apply knockback to player
-            if (other.TryGetComponent(out Knockback playerKnockback))
+            if (target.TryGetComponent(out Knockback playerKnockback))
             {
                 playerKnockback.GetKnockedBack(transform, knockbackForce);
             }
@@ -35,7 +55,7 @@ public class EnemyDamageSource : MonoBehaviour
             }
             
             // Flash player red
-            if (other.TryGetComponent(out Flash playerFlash))
+            if (target.TryGetComponent(out Flash playerFlash))
             {
                 StartCoroutine(playerFlash.FlashRoutine());
             }
