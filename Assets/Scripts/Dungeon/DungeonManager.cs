@@ -26,6 +26,14 @@ public class DungeonManager : MonoBehaviour
     public Transform roomsParent;
     public GameObject exitDoorPrefab;   // optional if your room already has a door
 
+    [Header("Room Transition")]
+    [SerializeField] private bool overrideRoomTransitionTiming = false;
+    [SerializeField, Min(0f)] private float roomFadeOutDuration = 0.1f;
+    [SerializeField, Min(0f)] private float roomHoldDuration = 0.04f;
+    [SerializeField, Min(0f)] private float roomFadeInDuration = 0.14f;
+    [SerializeField] private bool showRoomLoadingText = false;
+    [SerializeField] private string roomLoadingText = "Loading...";
+
     private System.Random _rng;
     private List<GameObject> _planPrefabs;
     private int _index = -1;
@@ -169,7 +177,21 @@ public class DungeonManager : MonoBehaviour
     {
         _transitioning = true;
         yield return null; // wait one frame to swallow duplicate triggers
-        LoadNextRoomInternal();
+        if (overrideRoomTransitionTiming)
+        {
+            yield return ScreenTransition.Play(
+                LoadNextRoomInternal,
+                roomFadeOutDuration,
+                roomHoldDuration,
+                roomFadeInDuration,
+                showRoomLoadingText,
+                roomLoadingText
+            );
+        }
+        else
+        {
+            yield return ScreenTransition.Play(LoadNextRoomInternal);
+        }
         _transitioning = false;
     }
 
