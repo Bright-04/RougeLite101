@@ -19,10 +19,6 @@ public class PlayerUI : MonoBehaviour
         {
             Debug.LogError("PlayerBarUI: Could not find PlayerStats!");
         }
-        else
-        {
-            Debug.Log("PlayerBarUI: Found PlayerStats successfully");
-        }
     }
 
 

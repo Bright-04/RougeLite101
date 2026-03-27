@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class AutoSaveManager : MonoBehaviour
 {
@@ -42,7 +42,7 @@ public class AutoSaveManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        Debug.Log("Game đang tắt... Đang save...");
+
         SaveGame();
     }
 
@@ -50,7 +50,7 @@ public class AutoSaveManager : MonoBehaviour
     {
         if (pauseStatus)
         {
-            Debug.Log("Game bị pause... Đang save...");
+
             SaveGame();
         }
     }
@@ -60,7 +60,7 @@ public class AutoSaveManager : MonoBehaviour
         if (playerStats != null)
         {
             SaveSystem.SavePlayerStats(playerStats);
-            Debug.Log($"Game saved at {System.DateTime.Now:HH:mm:ss}");
+
         }
         else
         {
@@ -77,7 +77,7 @@ public class AutoSaveManager : MonoBehaviour
             if (playerStats != null)
             {
                 playerStats.LoadFromData(data);
-                Debug.Log("Game loaded successfully!");
+
             }
             else
             {

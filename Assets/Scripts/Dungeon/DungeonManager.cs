@@ -39,7 +39,6 @@ public class DungeonManager : MonoBehaviour
     {
         int finalSeed = seed != 0 ? seed : Random.Range(int.MinValue, int.MaxValue);
         _rng = new System.Random(finalSeed);
-        Debug.Log($"DungeonManager using seed: {finalSeed}");
         BuildPlan();
         
         // Skip to specified room for testing
@@ -96,7 +95,6 @@ public class DungeonManager : MonoBehaviour
                 // Pick one boss room at random
                 int bossIdx = _rng.Next(0, theme.bossRoomPrefabs.Length);
                 choice = theme.bossRoomPrefabs[bossIdx];
-                Debug.Log($"Plan room {i}: <color=red>BOSS</color> from theme '{theme.themeName}' -> {choice.name}");
             }
             else
             {
@@ -109,7 +107,6 @@ public class DungeonManager : MonoBehaviour
 
                 int normalIdx = _rng.Next(0, theme.normalRoomPrefabs.Length);
                 choice = theme.normalRoomPrefabs[normalIdx];
-                Debug.Log($"Plan room {i}: normal from theme '{theme.themeName}' -> {choice.name}");
             }
 
             // Safety
@@ -122,6 +119,8 @@ public class DungeonManager : MonoBehaviour
             ValidateRoomPrefab(choice, theme.themeName);
             _planPrefabs.Add(choice);
         }
+
+        Debug.Log($"<color=cyan>[Dungeon]</color> Plan built: {_planPrefabs.Count} rooms");
     }
 
 
@@ -266,7 +265,7 @@ public class DungeonManager : MonoBehaviour
             var oldDoor = _activeRoom.GetComponentInChildren<ExitDoor>(true);
             if (oldDoor != null)
             {
-                Debug.Log($"Removing old ExitDoor from room and spawning new one from prefab.");
+
                 Destroy(oldDoor.gameObject);
             }
             

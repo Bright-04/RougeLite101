@@ -58,14 +58,14 @@ public class PlayerStats : MonoBehaviour
     {
         if (damageTimer > 0)
         {
-            Debug.Log("Damage blocked by cooldown");
+
             return;
         }
 
         float reducedDamage = Mathf.Max(0, damage - defense);
         currentHP -= reducedDamage;
 
-        Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{maxHP}");
+
         if (DifficultyManager.Instance != null)
         {
             DifficultyManager.Instance.RecordDamageTaken(Mathf.RoundToInt(reducedDamage));
@@ -165,6 +165,5 @@ public class PlayerStats : MonoBehaviour
         currentMana = maxMana;
         currentStamina = maxStamina;
 
-        Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
     }
 }

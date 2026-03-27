@@ -50,7 +50,6 @@ public class EnemyDamageSource : MonoBehaviour
     {
         if (target.TryGetComponent(out PlayerStats playerStats) && damageTimer <= 0)
         {
-            Debug.Log($"Enemy dealing {damageAmount} damage to player");
             
             // Deal damage
             playerStats.TakeDamage(damageAmount);

@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections;
+using RougeLite.System;
 
 [RequireComponent(typeof(EnemyDeathNotifier))]
 public class SlimeHealth : MonoBehaviour, IDamageable
 {
     public float expReward = 3;
 
-    [SerializeField] private int startingHealth = 3;
+    [SerializeField] private int startingHealth = 30;
     [SerializeField] private EnemyHealthBar healthBar;
 
     private int currentHealth;
@@ -26,6 +27,14 @@ public class SlimeHealth : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        // Scale health based on adaptive difficulty
+        if (DifficultyManager.Instance != null)
+        {
+            int baseHP = startingHealth;
+            startingHealth = Mathf.RoundToInt(startingHealth * DifficultyManager.Instance.GetHealthMultiplier());
+            Debug.Log($"<color=orange>[Adaptive AI]</color> {gameObject.name} HP: {baseHP} → {startingHealth} (x{DifficultyManager.Instance.GetHealthMultiplier():F2})");
+        }
+
         currentHealth = startingHealth;
         
         // Initialize healthbar

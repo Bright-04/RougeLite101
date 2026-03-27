@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
@@ -29,7 +29,7 @@ public class PauseMenu : MonoBehaviour
         // Subscribe ESC key
         playerControls.NavigateUI.OpenPauseMenu.performed += OnOpenPausePerformed;
         
-        Debug.Log("PauseMenu initialized!");
+
     }
 
     //private void OnEnable()
@@ -77,7 +77,7 @@ public class PauseMenu : MonoBehaviour
         InputManager.Instance.EnableUIMap();
         
 
-        Debug.Log("Game PAUSED");
+
     }
 
     
@@ -91,7 +91,7 @@ public class PauseMenu : MonoBehaviour
         // Enable gameplay inputs
         InputManager.Instance.DisableUIMap();
 
-        Debug.Log("Game RESUMED");
+
     }
 
     public void Quit()

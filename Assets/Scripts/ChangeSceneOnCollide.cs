@@ -8,7 +8,6 @@ public class ChangeSceneOnCollide : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            Debug.Log("Change to " + changeSceneName);
             SceneManager.LoadScene(changeSceneName);
         }
     }

@@ -36,7 +36,7 @@ public static class SaveSystem
         formatter.Serialize(stream, playerStatsData);
         stream.Close();
 
-        Debug.Log("Player stats saved to: " + path);
+
     }
 
     public static PlayerStatsData LoadPlayerStats()
@@ -51,7 +51,7 @@ public static class SaveSystem
             PlayerStatsData data = formatter.Deserialize(stream) as PlayerStatsData;
             stream.Close();
 
-            Debug.Log("Player stats loaded from: " + path);
+
             return data;
         }
         else
