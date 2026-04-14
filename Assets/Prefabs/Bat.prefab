@@ -254,7 +254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   expReward: 4
-  startingHealth: 2
+  startingHealth: 30
   healthBar: {fileID: 0}
 --- !u!114 &8399633098070433257
 MonoBehaviour:
