@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class EquipmentManager : MonoBehaviour
@@ -75,7 +75,9 @@ public class EquipmentManager : MonoBehaviour
         }
 
         // Instantiate new weapon under the weapon holder
-        GameObject weaponGO = Instantiate(weaponPrefab, weaponHolder.position, Quaternion.identity, weaponHolder);
+        GameObject weaponGO = Instantiate(weaponPrefab, weaponHolder);
+        weaponGO.transform.localPosition = weaponPrefab.transform.localPosition;
+        weaponGO.transform.localRotation = weaponPrefab.transform.localRotation;
         equippedWeapon = weaponGO.GetComponent<Weapon>();
 
         if (equippedWeapon == null)
