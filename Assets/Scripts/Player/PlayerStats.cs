@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerStats : MonoBehaviour
@@ -15,11 +15,11 @@ public class PlayerStats : MonoBehaviour
     public float currentStamina = 50;
     public float staminaRegen = 2;
 
-    public float attackDamage = 10; // AD
+    public float attackDamage = 2; // AD
     public float abilityPower = 5;  // AP
     public float defense = 0;       // DEF - Changed from 2 to 0 so enemies can deal damage
 
-    public float critChance = 1f; // 10%
+    public float critChance = 0.1f; // 10%
     public float critDamage = 1.5f; // 1.5x
     public float luck = 0;
 

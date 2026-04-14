@@ -5,7 +5,7 @@ using System.Collections;
 public class BatHealth : MonoBehaviour, IDamageable
 {
     public float expReward = 4;
-    [SerializeField] private int startingHealth = 2; // Lower health than slime (slime has 3)
+    [SerializeField] private int startingHealth = 5; // Lower health than slime
     [SerializeField] private EnemyHealthBar healthBar;
 
     private int currentHealth;

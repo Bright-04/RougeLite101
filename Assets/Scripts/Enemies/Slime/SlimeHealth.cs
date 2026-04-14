@@ -6,7 +6,7 @@ public class SlimeHealth : MonoBehaviour, IDamageable
 {
     public float expReward = 3;
 
-    [SerializeField] private int startingHealth = 3;
+    [SerializeField] private int startingHealth = 10;
     [SerializeField] private EnemyHealthBar healthBar;
 
     private int currentHealth;
