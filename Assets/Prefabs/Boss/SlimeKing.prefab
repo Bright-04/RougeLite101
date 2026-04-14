@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bossName: Slime King
-  maxHealth: 10
+  maxHealth: 100
   expReward: 10
 --- !u!50 &2028139364825511722
 Rigidbody2D:
