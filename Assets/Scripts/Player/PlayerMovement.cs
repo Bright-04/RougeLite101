@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,12 +6,17 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {   
     public bool FacingLeft { get { return facingLeft; } set { facingLeft = value; } }
+    public Vector2 LastAimDirection => lastAimDirection;
+    public Transform AimPivot => aimPivot != null ? aimPivot : transform;
+
     public static PlayerMovement Instance;
 
     [SerializeField] private float moveSpeed = 1f;
+    [SerializeField] private Transform aimPivot;
     
     private PlayerControls playerControls;
     private Vector2 movement;
+    private Vector2 lastAimDirection = Vector2.right;
     private Rigidbody2D rb;
     private Animator myAnimator;
     private SpriteRenderer mySpriteRender;
@@ -32,6 +37,8 @@ public class PlayerMovement : MonoBehaviour
         myAnimator = GetComponent<Animator>();
         mySpriteRender = GetComponent<SpriteRenderer>();
         knockback = GetComponent<Knockback>();
+
+        EnsureAimPivot();
     }
 
     private void Start()
@@ -73,12 +80,11 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         PlayerInput();
+        UpdateAimDirection();
     }
 
     private void FixedUpdate()
     {
-        AdjustPlayerFacingDirection();
-        
         // Don't move if being knocked back
         if (knockback != null && knockback.gettingKnockedBack)
             return;
@@ -106,17 +112,58 @@ public class PlayerMovement : MonoBehaviour
         rb.MovePosition(rb.position + movement * (moveSpeed * Time.fixedDeltaTime));
     }
 
-    private void AdjustPlayerFacingDirection()
+    private void EnsureAimPivot()
     {
-        if (movement.x < 0)
+        if (aimPivot != null)
         {
-            mySpriteRender.flipX = true;
-            FacingLeft = true;
+            return;
         }
-        else if (movement.x > 0)
+
+        Transform existingPivot = transform.Find("AimPivot");
+        if (existingPivot != null)
         {
-            mySpriteRender.flipX = false;
-            FacingLeft = false;
+            aimPivot = existingPivot;
+            return;
+        }
+
+        GameObject pivotObject = new GameObject("AimPivot");
+        pivotObject.transform.SetParent(transform, false);
+        pivotObject.transform.localPosition = Vector3.zero;
+        pivotObject.transform.localRotation = Quaternion.identity;
+        pivotObject.transform.localScale = Vector3.one;
+        aimPivot = pivotObject.transform;
+    }
+
+    private void UpdateAimDirection()
+    {
+        if (Mouse.current == null || Camera.main == null)
+        {
+            return;
+        }
+
+        Vector3 mouseScreenPosition = Mouse.current.position.ReadValue();
+        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
+        mouseWorldPosition.z = 0f;
+
+        Vector3 aimOrigin = AimPivot.position;
+        Vector2 newAimDirection = mouseWorldPosition - aimOrigin;
+
+        if (newAimDirection.sqrMagnitude < 0.0001f)
+        {
+            return;
+        }
+
+        lastAimDirection = newAimDirection.normalized;
+
+        // Use stable root center for flipping logic to avoid the AimPivot feedback loop vibration!
+        Vector2 stableAimDirection = mouseWorldPosition - transform.position;
+        if (Mathf.Abs(stableAimDirection.x) >= 0.01f)
+        {
+            FacingLeft = stableAimDirection.x < 0f;
+            if (mySpriteRender != null)
+            {
+                mySpriteRender.flipX = FacingLeft;
+            }
         }
     }
 

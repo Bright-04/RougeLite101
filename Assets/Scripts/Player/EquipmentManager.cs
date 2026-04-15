@@ -12,11 +12,22 @@ public class EquipmentManager : MonoBehaviour
 
     [Header("Runtime References")]
     [SerializeField] private Transform weaponHolder;
+    [SerializeField] private Transform aimPivot;
     [SerializeField] private WeaponPickupModalUI weaponPickupModalUI;
+
+    [Header("Aim Hand Anchoring")]
+    [SerializeField] private Vector3 rightHandLocalOffset = new Vector3(0.08f, -0.01f, 0f);
+    [SerializeField] private Vector3 leftHandLocalOffset = new Vector3(-0.08f, -0.01f, 0f);
+    [SerializeField] private float handSwitchDeadZoneX = 0.02f;
+
+    [Header("Weapon Draw Order")]
+    [SerializeField] private int frontOrderOffset = 1;
+    [SerializeField] private int backOrderOffset = -1;
 
     [Header("Data")]
     [SerializeField] private WeaponRegistry weaponRegistry;
-    [SerializeField] private WeaponDefinitionSO startingWeaponDef;
+    [SerializeField] private WeaponDefinitionSO startingMainWeapon;
+    [SerializeField] private WeaponDefinitionSO startingSubWeapon;
 
     private WeaponDefinitionSO mainWeaponDef;
     private WeaponDefinitionSO subWeaponDef;
@@ -30,9 +41,16 @@ public class EquipmentManager : MonoBehaviour
     private PlayerControls playerControls;
     private InputAction attackAction;
     private InputAction swapWeaponAction;
+    private PlayerMovement playerMovement;
+    private SpriteRenderer playerSpriteRenderer;
+
+    private bool isUsingLeftHand;
+    private int currentWeaponSortingOrder = int.MinValue;
 
     public event Action<WeaponSlot, WeaponDefinitionSO> OnWeaponChanged;
     public event Action<WeaponSlot> OnActiveSlotChanged;
+
+    private Transform WeaponMount => aimPivot != null ? aimPivot : weaponHolder;
 
     private void Awake()
     {
@@ -40,10 +58,24 @@ public class EquipmentManager : MonoBehaviour
         {
             weaponRegistry.Initialize();
         }
+
+        playerMovement = GetComponent<PlayerMovement>();
+        playerSpriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (playerSpriteRenderer != null)
+        {
+            if ((playerSpriteRenderer.sortingLayerName == "Default" || string.IsNullOrEmpty(playerSpriteRenderer.sortingLayerName)) && playerSpriteRenderer.sortingOrder < 10)
+            {
+                playerSpriteRenderer.sortingOrder = 10; // Ensure player and weapons stay above map floor
+            }
+        }
     }
 
     private void Start()
     {
+        EnsureWeaponMount();
+        UpdateVisualMountFromAim();
+
         if (InputManager.Instance == null)
         {
             Debug.LogError("InputManager.Instance is null! Make sure InputManager prefab exists in the scene.");
@@ -68,12 +100,18 @@ public class EquipmentManager : MonoBehaviour
             swapWeaponAction.performed += OnSwapWeaponPerformed;
         }
 
-        if (mainWeaponDef == null && subWeaponDef == null && startingWeaponDef != null)
+        if (mainWeaponDef == null && subWeaponDef == null)
         {
-            EquipIntoSlot(WeaponSlot.Main, startingWeaponDef);
+            if (startingMainWeapon != null) EquipIntoSlot(WeaponSlot.Main, startingMainWeapon);
+            if (startingSubWeapon != null) EquipIntoSlot(WeaponSlot.Sub, startingSubWeapon);
         }
 
         SetActiveSlot(activeSlot, true);
+    }
+
+    private void Update()
+    {
+        UpdateVisualMountFromAim();
     }
 
     private void OnDestroy()
@@ -182,9 +220,10 @@ public class EquipmentManager : MonoBehaviour
             EquipIntoSlot(WeaponSlot.Sub, loadedSub);
         }
 
-        if (mainWeaponDef == null && subWeaponDef == null && startingWeaponDef != null)
+        if (mainWeaponDef == null && subWeaponDef == null)
         {
-            EquipIntoSlot(WeaponSlot.Main, startingWeaponDef);
+            if (startingMainWeapon != null) EquipIntoSlot(WeaponSlot.Main, startingMainWeapon);
+            if (startingSubWeapon != null) EquipIntoSlot(WeaponSlot.Sub, startingSubWeapon);
         }
 
         WeaponSlot finalActiveSlot = loadedActiveSlot;
@@ -241,15 +280,23 @@ public class EquipmentManager : MonoBehaviour
             return;
         }
 
-        if (weaponHolder == null)
+        Transform mount = WeaponMount;
+        if (mount == null)
         {
-            Debug.LogError("EquipmentManager: WeaponHolder is not assigned.", this);
+            Debug.LogError("EquipmentManager: Weapon mount is not assigned.", this);
             return;
         }
 
         ClearSlot(slot);
 
-        GameObject weaponObject = Instantiate(definition.WeaponPrefab, weaponHolder);
+        // CREATE an Offset Container to protect position changes from the Animator!
+        GameObject offsetContainer = new GameObject("OffsetContainer_" + definition.WeaponId);
+        offsetContainer.transform.SetParent(mount, false);
+        offsetContainer.transform.localPosition = definition.LocalPositionOffset;
+        offsetContainer.transform.localRotation = Quaternion.Euler(definition.LocalRotationOffset);
+        offsetContainer.transform.localScale = Vector3.one;
+
+        GameObject weaponObject = Instantiate(definition.WeaponPrefab, offsetContainer.transform);
         weaponObject.transform.localPosition = definition.WeaponPrefab.transform.localPosition;
         weaponObject.transform.localRotation = definition.WeaponPrefab.transform.localRotation;
         weaponObject.transform.localScale = definition.WeaponPrefab.transform.localScale;
@@ -257,10 +304,12 @@ public class EquipmentManager : MonoBehaviour
         Weapon weaponComponent = weaponObject.GetComponent<Weapon>();
         if (weaponComponent == null)
         {
-            Destroy(weaponObject);
+            Destroy(offsetContainer); // Destroy wrapper if weapon fails
             Debug.LogError("EquipmentManager: Equipped prefab does not have a Weapon component!", this);
             return;
         }
+
+        weaponComponent.Initialize(definition);
 
         if (slot == WeaponSlot.Main)
         {
@@ -274,7 +323,128 @@ public class EquipmentManager : MonoBehaviour
         }
 
         RefreshWeaponObjectVisibility();
+        ApplySortingToWeapon(weaponComponent, currentWeaponSortingOrder);
         OnWeaponChanged?.Invoke(slot, definition);
+    }
+
+    private void UpdateVisualMountFromAim()
+    {
+        if (playerMovement == null)
+        {
+            playerMovement = GetComponent<PlayerMovement>();
+            if (playerMovement == null)
+            {
+                return;
+            }
+        }
+
+        Vector2 aimDirection = playerMovement.LastAimDirection;
+        if (aimDirection.sqrMagnitude < 0.0001f)
+        {
+            return;
+        }
+
+        UpdateHandAnchor(aimDirection.x);
+        UpdateWeaponSortingOrder(aimDirection.y);
+    }
+
+    private void UpdateHandAnchor(float aimX)
+    {
+        if (aimPivot == null)
+        {
+            return;
+        }
+
+        // Rely on central stable body facing direction to prevent AimPivot vibration
+        bool shouldUseLeftHand = PlayerMovement.Instance != null ? PlayerMovement.Instance.FacingLeft : isUsingLeftHand;
+
+        Vector3 targetOffset = shouldUseLeftHand ? leftHandLocalOffset : rightHandLocalOffset;
+        if (aimPivot.localPosition != targetOffset)
+        {
+            aimPivot.localPosition = targetOffset;
+        }
+
+        isUsingLeftHand = shouldUseLeftHand;
+    }
+
+    private void UpdateWeaponSortingOrder(float aimY)
+    {
+        int baseOrder = playerSpriteRenderer != null ? playerSpriteRenderer.sortingOrder : 0;
+        int targetOrder = baseOrder + (aimY > 0f ? backOrderOffset : frontOrderOffset);
+
+        if (targetOrder == currentWeaponSortingOrder)
+        {
+            return;
+        }
+
+        currentWeaponSortingOrder = targetOrder;
+        ApplySortingToWeapon(mainWeaponInstance, targetOrder);
+        ApplySortingToWeapon(subWeaponInstance, targetOrder);
+    }
+
+    private void ApplySortingToWeapon(Weapon weapon, int targetOrder)
+    {
+        if (weapon == null || targetOrder == int.MinValue)
+        {
+            return;
+        }
+
+        SpriteRenderer[] renderers = weapon.GetComponentsInChildren<SpriteRenderer>(true);
+        if (renderers == null || renderers.Length == 0)
+        {
+            return;
+        }
+
+        SpriteRenderer baseRenderer = weapon.GetComponent<SpriteRenderer>();
+        if (baseRenderer == null)
+        {
+            baseRenderer = renderers[0];
+        }
+
+        int delta = targetOrder - baseRenderer.sortingOrder;
+        if (delta == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            renderers[i].sortingOrder += delta;
+        }
+    }
+
+    private void EnsureWeaponMount()
+    {
+        if (aimPivot != null)
+        {
+            return;
+        }
+
+        PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+        if (playerMovement != null && playerMovement.AimPivot != null)
+        {
+            aimPivot = playerMovement.AimPivot;
+            return;
+        }
+
+        if (weaponHolder == null)
+        {
+            return;
+        }
+
+        Transform existingPivot = weaponHolder.Find("AimPivot");
+        if (existingPivot != null)
+        {
+            aimPivot = existingPivot;
+            return;
+        }
+
+        GameObject pivotObject = new GameObject("AimPivot");
+        pivotObject.transform.SetParent(weaponHolder, false);
+        pivotObject.transform.localPosition = Vector3.zero;
+        pivotObject.transform.localRotation = Quaternion.identity;
+        pivotObject.transform.localScale = Vector3.one;
+        aimPivot = pivotObject.transform;
     }
 
     private void ClearSlot(WeaponSlot slot)
@@ -282,7 +452,15 @@ public class EquipmentManager : MonoBehaviour
         Weapon weapon = GetWeaponInstance(slot);
         if (weapon != null)
         {
-            Destroy(weapon.gameObject);
+            // Destroy the offset container (parent) instead of just the weapon!
+            if (weapon.transform.parent != null && weapon.transform.parent.name.StartsWith("OffsetContainer_"))
+            {
+                Destroy(weapon.transform.parent.gameObject);
+            }
+            else
+            {
+                Destroy(weapon.gameObject);
+            }
         }
 
         if (slot == WeaponSlot.Main)

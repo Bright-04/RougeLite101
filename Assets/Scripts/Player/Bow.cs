@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Bow : Weapon
 {
@@ -12,10 +11,6 @@ public class Bow : Weapon
     private void Awake()
     {
         mySprite = GetComponent<SpriteRenderer>();
-
-        // Đảm bảo Bow được nằm đúng vị trí trong tay nhân vật (nếu bị lệch)
-        transform.localPosition = Vector3.zero;
-        transform.localScale = Vector3.one;
     }
 
     private void Update()
@@ -25,22 +20,29 @@ public class Bow : Weapon
 
     private void FollowPlayerDirection()
     {
-        // 1. Lấy vị trí chuột trên màn hình
-        Vector3 mouseScreenPosition = Mouse.current.position.ReadValue();
-        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(mouseScreenPosition);
-        mouseWorldPosition.z = 0f; // Gameplay 2D
+        if (PlayerMovement.Instance == null)
+        {
+            return;
+        }
 
-        // 2. Tính toán vector hướng và góc quay 
-        Vector3 direction = (mouseWorldPosition - transform.position).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        Vector2 aimDirection = PlayerMovement.Instance.LastAimDirection;
+        if (aimDirection.sqrMagnitude < 0.0001f)
+        {
+            return;
+        }
 
-        // 3. Xoay cây cung hướng về chuột
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
 
-        // 4. Lật sprite (Flip) để lúc nào nỏ/cung cũng đúng chiều
+        transform.localRotation = Quaternion.Euler(0, 0, angle) * GetLocalRotationOffset();
+        if (weaponDefinition != null)
+        {
+            // The position offset should rotate relative to the aim direction
+            transform.localPosition = Quaternion.Euler(0, 0, angle) * weaponDefinition.LocalPositionOffset;
+        }
+
         if (mySprite != null)
         {
-            mySprite.flipY = (mouseWorldPosition.x < transform.position.x);
+            mySprite.flipY = PlayerMovement.Instance.FacingLeft;
         }
     }
 

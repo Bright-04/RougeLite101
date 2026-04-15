@@ -10,6 +10,10 @@ public class WeaponDefinitionSO : ScriptableObject
     [Header("Presentation")]
     [SerializeField] private Sprite icon;
 
+    [Header("Offset")]
+    [SerializeField] private Vector3 localPositionOffset = Vector3.zero;
+    [SerializeField] private Vector3 localRotationOffset = Vector3.zero;
+
     [Header("Runtime")]
     [SerializeField] private GameObject weaponPrefab;
 
@@ -20,6 +24,8 @@ public class WeaponDefinitionSO : ScriptableObject
     public string WeaponId => weaponId;
     public string DisplayName => displayName;
     public Sprite Icon => icon;
+    public Vector3 LocalPositionOffset => localPositionOffset;
+    public Vector3 LocalRotationOffset => localRotationOffset;
     public GameObject WeaponPrefab => weaponPrefab;
     public string Rarity => rarity;
     public string[] Tags => tags;
