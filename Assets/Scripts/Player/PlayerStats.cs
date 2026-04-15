@@ -60,6 +60,11 @@ public class PlayerStats : MonoBehaviour
         currentStamina = Mathf.Min(maxStamina, currentStamina + staminaRegen * Time.deltaTime);
     }
 
+    public void TriggerInvincibility(float duration)
+    {
+        damageTimer = duration;
+    }
+
     public void TakeDamage(float damage)
     {
         if (damageTimer > 0)
