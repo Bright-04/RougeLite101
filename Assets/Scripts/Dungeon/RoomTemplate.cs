@@ -1,8 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RoomTemplate : MonoBehaviour
 {
+    private bool hasSpawnedEnemies = false;
+
     [Header("Layout")]
     public Transform center;
 
@@ -88,5 +91,85 @@ public class RoomTemplate : MonoBehaviour
         if (dir == Vector2Int.right) return eastSocket;
         if (dir == Vector2Int.left) return westSocket;
         return null;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Player"))
+        {
+            if (!hasSpawnedEnemies)
+            {
+                Debug.Log($"[RoomTemplate] Người chơi đã bước vào phòng {gameObject.name}. Bắt đầu kiểm tra điều kiện spawn quái... ");
+                hasSpawnedEnemies = true;
+                StartCoroutine(SpawnEnemiesRoutine());
+            }
+            else
+            {
+                // Đã spawn quái từ trước đó rồi
+            }
+        }
+    }
+
+    private IEnumerator SpawnEnemiesRoutine()
+    {
+        if (spawnProfile == null)
+        {
+            Debug.LogWarning($"[RoomTemplate] THẤT BẠI: Phòng {gameObject.name} CHƯA được gán Spawn Profile (spawnProfile). Hãy gán Box (RoomSpawnProfileSO) vào Inspector!");
+            yield break;
+        }
+        
+        if (spawnProfile.entries == null || spawnProfile.entries.Length == 0)
+        {
+            Debug.LogWarning($"[RoomTemplate] THẤT BẠI: Spawn Profile của phòng {gameObject.name} hiện đang TRỐNG (không có dữ liệu Entry nào).");
+            yield break;
+        }
+
+        if (enemySpawns == null || enemySpawns.Length == 0)
+        {
+            Debug.LogWarning($"[RoomTemplate] THẤT BẠI: Phòng {gameObject.name} KHÔNG CÓ điểm spawn tọa độ nào được cấu hình trong mảng 'enemySpawns'. Phải kéo các Transform vào đây!");
+            yield break;
+        }
+
+        Debug.Log($"[RoomTemplate] Điều kiện hợp lệ! Chờ delay {spawnProfile.initialDelay}s và sắp sửa sinh quái ra tại phòng {gameObject.name}...");
+        yield return new WaitForSeconds(spawnProfile.initialDelay);
+
+        List<GameObject> enemiesToSpawn = new List<GameObject>();
+        foreach (var entry in spawnProfile.entries)
+        {
+            int count = Random.Range(entry.minCount, entry.maxCount + 1);
+            for (int i = 0; i < count; i++)
+            {
+                enemiesToSpawn.Add(entry.prefab);
+            }
+        }
+
+        // Shuffle the list for random distribution
+        for (int i = 0; i < enemiesToSpawn.Count; i++)
+        {
+            GameObject temp = enemiesToSpawn[i];
+            int randomIndex = Random.Range(i, enemiesToSpawn.Count);
+            enemiesToSpawn[i] = enemiesToSpawn[randomIndex];
+            enemiesToSpawn[randomIndex] = temp;
+        }
+
+        int spawnIndex = 0;
+        foreach (GameObject enemyPrefab in enemiesToSpawn)
+        {
+            if (spawnIndex >= enemySpawns.Length)
+            {
+                // If there are more enemies than spawn points, just wrap around or pick a random point
+                spawnIndex = 0;
+            }
+
+            Transform spawnPoint = enemySpawns[spawnIndex];
+            Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+            spawnIndex++;
+
+            if (spawnProfile.spawnGradually)
+            {
+                float delay = Random.Range(spawnProfile.perSpawnDelayRange.x, spawnProfile.perSpawnDelayRange.y);
+                yield return new WaitForSeconds(delay);
+            }
+        }
     }
 }

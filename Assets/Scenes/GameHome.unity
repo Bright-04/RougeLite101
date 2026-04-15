@@ -105349,9 +105349,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 33e69cf0b17abfb418c7456f649d3b95, type: 2}
     - target: {fileID: 1339241568981859123, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
+      propertyPath: startingSubWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: 68a110418a3886947ba22ae1e05fe483, type: 2}
+    - target: {fileID: 1339241568981859123, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
       propertyPath: startingWeaponDef
       value: 
       objectReference: {fileID: 11400000, guid: 68a110418a3886947ba22ae1e05fe483, type: 2}
+    - target: {fileID: 1339241568981859123, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
+      propertyPath: startingMainWeapon
+      value: 
+      objectReference: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
     - target: {fileID: 1918963932709273604, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
       propertyPath: m_Name
       value: Player

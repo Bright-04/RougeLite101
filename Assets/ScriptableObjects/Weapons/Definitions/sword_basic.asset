@@ -15,6 +15,8 @@ MonoBehaviour:
   weaponId: sword_basic
   displayName: Iron Sword
   icon: {fileID: 712035800519618848, guid: c9218c59738d4a34f8c917303348dc7f, type: 3}
+  localPositionOffset: {x: -0.09, y: 0, z: 0}
+  localRotationOffset: {x: 0, y: 0, z: 0}
   weaponPrefab: {fileID: 7706408078841532381, guid: cd06504aa93a6fb48ae71d1819c2e8ed, type: 3}
   rarity: Common
   tags:
