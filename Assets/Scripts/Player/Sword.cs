@@ -93,8 +93,9 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
     public void DoneAttackingAnimEvent()
     {
-        // BACKUP SOLUTION: If trigger didn't work, manually check for nearby enemies
-        ManualHitDetection();
+        // [CẬP NHẬT] Chúng ta không gọi ManualHitDetection đè vào nữa vì đã dùng DamageSource.cs gắn trên Weapon Collider.
+        // Việc gọi song song 2 hàm sẽ gây lỗi 1-Hit Slime (Double Damage). Đã comment block hàm bên dưới để giữ tóm tắt logic nếu về sau cần dùng.
+        // ManualHitDetection();
 
         if (weaponCollider != null)
         {
@@ -103,6 +104,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
         
     }
     
+    /* [Vô Hiệu Hoá Block Code] 
     private void ManualHitDetection()
     {
         // CRITICAL: Check if PlayerMovement instance is valid
@@ -151,6 +153,7 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
             }
         }
     }
+    */
     
     private Vector2 GetAttackDirection()
     {

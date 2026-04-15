@@ -21,8 +21,11 @@ public class Arrow : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Bỏ qua nếu chạm vào Player
-        if (other.CompareTag("Player")) return;
+        // Bỏ qua nếu chạm vào Player, hoặc chạm vào mũi tên khác
+        if (other.CompareTag("Player") || other.GetComponent<Arrow>() != null) return;
+        
+        // Bỏ qua các trigger vô hình (như ranh giới phòng, cảm biến...)
+        if (other.isTrigger) return;
 
         // Trừ máu enemy
         if (other.TryGetComponent<IDamageable>(out var damageable))
@@ -30,10 +33,9 @@ public class Arrow : MonoBehaviour
             damageable.TakeDamage((int)damage);
             Destroy(gameObject); // Chạm là huỷ mũi tên
         }
-        else if (other.gameObject.layer == LayerMask.NameToLayer("Environment") ||
-                 other.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+        else 
         {
-            // Khi chạm tường thì huỷ
+            // Bất kể là tường Default, Environment hay Obstacle, miễn là vật thể vật lý TRÙNG KHỚP -> tự rụng.
             Destroy(gameObject);
         }
     }

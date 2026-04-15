@@ -5,13 +5,13 @@ using UnityEngine;
 public class BatPathFinding : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 3.5f; // Faster than slime (slime is 2f)
+    [SerializeField] private float moveSpeed = 3.5f; 
     
     [Header("Obstacle Avoidance")]
-    [SerializeField] private float obstacleDetectionDistance = 0.6f; // Slightly shorter since bats are more agile
-    [SerializeField] private float avoidanceForce = 4f; // Higher avoidance for quick reactions
+    [SerializeField] private float obstacleDetectionDistance = 1.0f; // Tăng lên 1.0 để phát hiện tường sớm hơn ở tốc độ cao
+    [SerializeField] private float avoidanceForce = 5f; 
     [SerializeField] private LayerMask obstacleLayer;
-    [SerializeField] private int rayCount = 5; // Fewer rays needed for agile movement
+    [SerializeField] private int rayCount = 8; // Tăng số tia để quét kỹ hơn các góc nhọn
     
     [Header("Flying Behavior")]
     [SerializeField] private float hoverAmplitude = 0.15f; // How much it bobs up and down
@@ -35,14 +35,27 @@ public class BatPathFinding : MonoBehaviour
     {
         knockback = GetComponent<Knockback>();
         rb = GetComponent<Rigidbody2D>();
-        
-        // Auto-detect obstacle layers if not set
-        if (obstacleLayer == 0)
+
+        // ENFORCE STABLE PHYSICS: Đảm bảo quái vật là object vật lý thực thụ
+        if (rb != null)
         {
-            obstacleLayer = LayerMask.GetMask("Default", "InvisibleWall");
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = 0f; // Top-down game
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation; // Ngăn quái bị xoay tít khi va chạm
         }
         
-        // Random starting hover offset for variety
+        // Auto-detect obstacle layers
+        if (obstacleLayer == 0)
+        {
+            obstacleLayer = LayerMask.GetMask("Default", "Environment", "Obstacle");
+        }
+        else
+        {
+            obstacleLayer |= LayerMask.GetMask("Default", "Environment", "Obstacle");
+        }
+        
         hoverOffset = Random.Range(0f, Mathf.PI * 2f);
     }
 
@@ -110,21 +123,24 @@ public class BatPathFinding : MonoBehaviour
     
     private Vector2 CheckIfStuck()
     {
-        // Check if we're currently overlapping or very close to an obstacle
-        Collider2D[] overlaps = Physics2D.OverlapCircleAll(rb.position, 0.25f, obstacleLayer);
+        // Kiểm tra xem ta có đang nằm đè lên tường không
+        Collider2D obstacle = Physics2D.OverlapCircle(rb.position, 0.25f, obstacleLayer);
         
-        if (overlaps.Length > 0)
+        if (obstacle != null)
         {
-            // We're stuck! Calculate escape direction
-            Vector2 escapeDirection = Vector2.zero;
+            // TÌM ĐIỂM THOÁT: Lấy điểm gần nhất trên bề mặt tường so với ta
+            Vector2 closestPoint = obstacle.ClosestPoint(rb.position);
             
-            foreach (Collider2D obstacle in overlaps)
+            // Nếu ta bị lún vào lòng tường, ClosestPoint sẽ trùng với rb.position
+            // Ta cần đẩy ra ngoài theo hướng ngược lại với tâm của Collider đó (hoặc hướng hợp lý)
+            if (Vector2.Distance(closestPoint, rb.position) < 0.01f)
             {
-                Vector2 awayFromObstacle = (rb.position - (Vector2)obstacle.transform.position).normalized;
-                escapeDirection += awayFromObstacle;
+                // Push AWAY from the center of the obstacle if deep inside
+                return (rb.position - (Vector2)obstacle.bounds.center).normalized;
             }
             
-            return escapeDirection.normalized;
+            // Hướng thoát = Từ điểm va chạm trên bề mặt đẩy ngược vào ta
+            return (rb.position - closestPoint).normalized;
         }
         
         return Vector2.zero;
