@@ -3,6 +3,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayerStats : MonoBehaviour
 {
+    [SerializeField] private EquipmentManager equipmentManager;
+
     public float maxHP = 100;
     public float currentHP;
     public float hpRegen = 1;
@@ -32,6 +34,11 @@ public class PlayerStats : MonoBehaviour
 
     private void Start()
     {
+        if (equipmentManager == null)
+        {
+            equipmentManager = FindAnyObjectByType<EquipmentManager>();
+        }
+
         currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
@@ -159,6 +166,24 @@ public class PlayerStats : MonoBehaviour
         currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
+
+        if (equipmentManager == null)
+        {
+            equipmentManager = FindAnyObjectByType<EquipmentManager>();
+        }
+
+        if (equipmentManager != null)
+        {
+            EquipmentManager.WeaponSlot loadedSlot = data.activeSlot == (int)EquipmentManager.WeaponSlot.Sub
+                ? EquipmentManager.WeaponSlot.Sub
+                : EquipmentManager.WeaponSlot.Main;
+
+            equipmentManager.LoadWeapons(data.mainWeaponId, data.subWeaponId, loadedSlot);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerStats: EquipmentManager not found while loading weapon data.");
+        }
 
         Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
     }
