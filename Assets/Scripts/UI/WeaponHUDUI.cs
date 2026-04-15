@@ -5,19 +5,9 @@ public class WeaponHUDUI : MonoBehaviour
 {
     private EquipmentManager equipmentManager;
 
-    [Header("Slot Containers")]
-    [SerializeField] private Image mainSlotImage;
-    [SerializeField] private Image subSlotImage;
-
     [Header("Icon Displays")]
-    [SerializeField] private Image mainWeaponIcon;
-    [SerializeField] private Image subWeaponIcon;
-
-    [Header("Colors / Highlighting")]
-    [SerializeField] private Color activeColor = Color.white;
-    [SerializeField] private Color inactiveColor = new Color(0.7f, 0.7f, 0.7f, 0.5f);
-    [SerializeField] private float activeScale = 1.1f;
-    [SerializeField] private float inactiveScale = 1.0f;
+    [SerializeField] private Image mainWeaponIcon; // Ô UI to (Main)
+    [SerializeField] private Image subWeaponIcon;  // Ô UI nhỏ (Sub)
 
     [Header("Settings")]
     [SerializeField] private Sprite emptySlotIcon;
@@ -28,13 +18,11 @@ public class WeaponHUDUI : MonoBehaviour
 
         if (equipmentManager != null)
         {
-            equipmentManager.OnWeaponChanged += UpdateWeaponIcon;
-            equipmentManager.OnActiveSlotChanged += UpdateActiveSlotHighlight;
+            // Cả hai sự kiện đều kích hoạt việc vẽ lại toàn bộ icon
+            equipmentManager.OnWeaponChanged += (slot, def) => RefreshAllIcons();
+            equipmentManager.OnActiveSlotChanged += (slot) => RefreshAllIcons();
 
-            // Initial UI state
-            UpdateWeaponIcon(EquipmentManager.WeaponSlot.Main, equipmentManager.GetWeaponDefinition(EquipmentManager.WeaponSlot.Main));
-            UpdateWeaponIcon(EquipmentManager.WeaponSlot.Sub, equipmentManager.GetWeaponDefinition(EquipmentManager.WeaponSlot.Sub));
-            UpdateActiveSlotHighlight(equipmentManager.GetActiveSlot());
+            RefreshAllIcons();
         }
     }
 
@@ -42,15 +30,33 @@ public class WeaponHUDUI : MonoBehaviour
     {
         if (equipmentManager != null)
         {
-            equipmentManager.OnWeaponChanged -= UpdateWeaponIcon;
-            equipmentManager.OnActiveSlotChanged -= UpdateActiveSlotHighlight;
+            equipmentManager.OnWeaponChanged -= (slot, def) => RefreshAllIcons();
+            equipmentManager.OnActiveSlotChanged -= (slot) => RefreshAllIcons();
         }
     }
 
-    private void UpdateWeaponIcon(EquipmentManager.WeaponSlot slot, WeaponDefinitionSO weaponDef)
+    private void RefreshAllIcons()
     {
-        Image targetIcon = (slot == EquipmentManager.WeaponSlot.Main) ? mainWeaponIcon : subWeaponIcon;
-        
+        if (equipmentManager == null) return;
+
+        // Xác định Weapon nào đang là "Active" trên tay người chơi
+        EquipmentManager.WeaponSlot activeSlot = equipmentManager.GetActiveSlot();
+        EquipmentManager.WeaponSlot inactiveSlot = (activeSlot == EquipmentManager.WeaponSlot.Main) 
+            ? EquipmentManager.WeaponSlot.Sub 
+            : EquipmentManager.WeaponSlot.Main;
+
+        WeaponDefinitionSO activeDef = equipmentManager.GetWeaponDefinition(activeSlot);
+        WeaponDefinitionSO inactiveDef = equipmentManager.GetWeaponDefinition(inactiveSlot);
+
+        // Ô chính luôn hiện vũ khí đang Active
+        SetIcon(mainWeaponIcon, activeDef);
+
+        // Ô phụ hiện vũ khí còn lại (nếu có)
+        SetIcon(subWeaponIcon, inactiveDef);
+    }
+
+    private void SetIcon(Image targetIcon, WeaponDefinitionSO weaponDef)
+    {
         if (targetIcon == null) return;
 
         if (weaponDef != null && weaponDef.Icon != null)
@@ -61,33 +67,8 @@ public class WeaponHUDUI : MonoBehaviour
         else
         {
             targetIcon.sprite = emptySlotIcon;
-            // If no icon and no placeholder, make it invisible
+            // Nếu không có icon và không có hình mặc định, làm Icon tàng hình
             targetIcon.color = (emptySlotIcon != null) ? Color.white : new Color(1, 1, 1, 0);
-        }
-    }
-
-    private void UpdateActiveSlotHighlight(EquipmentManager.WeaponSlot activeSlot)
-    {
-        bool isMainActive = (activeSlot == EquipmentManager.WeaponSlot.Main);
-
-        ApplyHighlight(mainSlotImage, mainWeaponIcon, isMainActive);
-        ApplyHighlight(subSlotImage, subWeaponIcon, !isMainActive);
-    }
-
-    private void ApplyHighlight(Image slotBg, Image icon, bool isActive)
-    {
-        if (slotBg != null)
-        {
-            slotBg.color = isActive ? activeColor : inactiveColor;
-            slotBg.transform.localScale = Vector3.one * (isActive ? activeScale : inactiveScale);
-        }
-
-        if (icon != null)
-        {
-            // Dim the icon slightly if its slot is inactive
-            Color iconColor = icon.color;
-            iconColor.a = isActive ? 1.0f : 0.6f;
-            icon.color = iconColor;
         }
     }
 }
