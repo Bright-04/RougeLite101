@@ -167,8 +167,6 @@ public class PlayerMovement : MonoBehaviour
             yield return null;
         }
         
-        Debug.Log($"Dash Finished. Distance: {Vector2.Distance(startPos, rb.position)} units.");
-        
         // Trả lại các thông số vật lý bình thường
         if (myAnimator != null) myAnimator.applyRootMotion = originalRootMotion;
         rb.linearDamping = originalDrag;
