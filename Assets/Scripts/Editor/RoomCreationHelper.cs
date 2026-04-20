@@ -206,12 +206,7 @@ public class RoomCreationHelper : EditorWindow
         var enemySpawnsContainer = roomTransform.Find("EnemySpawns");
         if (enemySpawnsContainer != null)
         {
-            var enemySpawns = new Transform[enemySpawnsContainer.childCount];
-            for (int i = 0; i < enemySpawnsContainer.childCount; i++)
-            {
-                enemySpawns[i] = enemySpawnsContainer.GetChild(i);
-            }
-            roomTemplate.enemySpawns = enemySpawns;
+            Debug.Log($"Ignored EnemySpawns inside '{roomTransform.name}' because system now uses BoxCollider bounds.");
         }
 
         EditorUtility.SetDirty(roomTemplate);

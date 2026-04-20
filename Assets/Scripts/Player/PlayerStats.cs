@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerStats : MonoBehaviour
 {
+    [SerializeField] private EquipmentManager equipmentManager;
+
     public float maxHP = 100;
     public float currentHP;
     public float hpRegen = 1;
@@ -15,11 +17,11 @@ public class PlayerStats : MonoBehaviour
     public float currentStamina = 50;
     public float staminaRegen = 2;
 
-    public float attackDamage = 10; // AD
+    public float attackDamage = 2; // AD
     public float abilityPower = 5;  // AP
     public float defense = 0;       // DEF - Changed from 2 to 0 so enemies can deal damage
 
-    public float critChance = 1f; // 10%
+    public float critChance = 0.1f; // 10%
     public float critDamage = 1.5f; // 1.5x
     public float luck = 0;
 
@@ -32,6 +34,11 @@ public class PlayerStats : MonoBehaviour
 
     private void Start()
     {
+        if (equipmentManager == null)
+        {
+            equipmentManager = FindAnyObjectByType<EquipmentManager>();
+        }
+
         currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
@@ -51,6 +58,11 @@ public class PlayerStats : MonoBehaviour
         currentHP = Mathf.Min(maxHP, currentHP + hpRegen * Time.deltaTime);
         currentMana = Mathf.Min(maxMana, currentMana + manaRegen * Time.deltaTime);
         currentStamina = Mathf.Min(maxStamina, currentStamina + staminaRegen * Time.deltaTime);
+    }
+
+    public void TriggerInvincibility(float duration)
+    {
+        damageTimer = duration;
     }
 
     public void TakeDamage(float damage)
@@ -159,6 +171,24 @@ public class PlayerStats : MonoBehaviour
         currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
+
+        if (equipmentManager == null)
+        {
+            equipmentManager = FindAnyObjectByType<EquipmentManager>();
+        }
+
+        if (equipmentManager != null)
+        {
+            EquipmentManager.WeaponSlot loadedSlot = data.activeSlot == (int)EquipmentManager.WeaponSlot.Sub
+                ? EquipmentManager.WeaponSlot.Sub
+                : EquipmentManager.WeaponSlot.Main;
+
+            equipmentManager.LoadWeapons(data.mainWeaponId, data.subWeaponId, loadedSlot);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerStats: EquipmentManager not found while loading weapon data.");
+        }
 
         Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
     }

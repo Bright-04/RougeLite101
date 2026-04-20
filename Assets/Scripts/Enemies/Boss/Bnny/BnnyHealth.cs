@@ -4,7 +4,7 @@ using UnityEngine;
 public class BnnyHealth : MonoBehaviour, IDamageable
 {
     [SerializeField] private string bossName = "Bnny";
-    [SerializeField] private float maxHealth = 50f;
+    [SerializeField] private float maxHealth = 150f;
     public float expReward = 12;
     //[SerializeField] private EnemyHealthBar healthBar;
 

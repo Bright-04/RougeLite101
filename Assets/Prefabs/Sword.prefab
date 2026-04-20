@@ -58,9 +58,9 @@ Transform:
   m_GameObject: {fileID: 3431518360957571014}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0.39178005, w: 0.9200589}
-  m_LocalPosition: {x: 47.23256, y: 4.0926385, z: 0}
-  m_LocalScale: {x: 96.472946, y: 96.472946, z: 96.472946}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 10.2, y: 10.2, z: 10.2}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 7326061346903966319}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -159,7 +159,7 @@ Transform:
   m_GameObject: {fileID: 7706408078841532381}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.39178005, w: 0.9200589}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.105, y: 0.017, z: 0}
   m_LocalScale: {x: 0.1243872, y: 0.1243872, z: 0.1243872}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -169,6 +169,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 46.131}
 --- !u!212 &2821997758510792989
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -187,6 +188,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -208,9 +211,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 712035800519618848, guid: c9218c59738d4a34f8c917303348dc7f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -220,7 +225,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!95 &4523338393317400768
 Animator:
@@ -258,6 +262,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cooldown: 0.5
   attackCooldown: 0.5
+  colliderDistance: 0
+  weaponColliderScale: {x: 1, y: 1, z: 1}
   slashAnimPrefab: {fileID: 3484730034140652443, guid: fabc858041496d34e8bf63cbd0393f93, type: 3}
   slashAnimSpawnPoint: {fileID: 8969733094458530049}
   weaponCollider: {fileID: 1904787829855790125}

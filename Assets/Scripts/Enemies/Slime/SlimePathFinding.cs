@@ -27,10 +27,24 @@ public class SlimePathFinding : MonoBehaviour
         knockback = GetComponent<Knockback>();
         rb = GetComponent<Rigidbody2D>();
         
+        // ENFORCE STABLE PHYSICS
+        if (rb != null)
+        {
+            rb.bodyType = RigidbodyType2D.Dynamic;
+            rb.gravityScale = 0f;
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+            rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+
         // Auto-detect obstacle layers if not set
         if (obstacleLayer == 0)
         {
-            obstacleLayer = LayerMask.GetMask("Default", "InvisibleWall");
+            obstacleLayer = LayerMask.GetMask("Default", "Environment", "Obstacle");
+        }
+        else
+        {
+            obstacleLayer |= LayerMask.GetMask("Default", "Environment", "Obstacle");
         }
     }
 
@@ -68,21 +82,19 @@ public class SlimePathFinding : MonoBehaviour
     
     private Vector2 CheckIfStuck()
     {
-        // Check if we're currently overlapping or very close to an obstacle
-        Collider2D[] overlaps = Physics2D.OverlapCircleAll(rb.position, 0.3f, obstacleLayer);
+        // Kiểm tra đa điểm gần nhất để thoát khỏi tường
+        Collider2D obstacle = Physics2D.OverlapCircle(rb.position, 0.3f, obstacleLayer);
         
-        if (overlaps.Length > 0)
+        if (obstacle != null)
         {
-            // We're stuck! Calculate escape direction
-            Vector2 escapeDirection = Vector2.zero;
+            Vector2 closestPoint = obstacle.ClosestPoint(rb.position);
             
-            foreach (Collider2D obstacle in overlaps)
+            if (Vector2.Distance(closestPoint, rb.position) < 0.01f)
             {
-                Vector2 awayFromObstacle = (rb.position - (Vector2)obstacle.transform.position).normalized;
-                escapeDirection += awayFromObstacle;
+                return (rb.position - (Vector2)obstacle.bounds.center).normalized;
             }
             
-            return escapeDirection.normalized;
+            return (rb.position - closestPoint).normalized;
         }
         
         return Vector2.zero;

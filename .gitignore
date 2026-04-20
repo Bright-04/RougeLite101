@@ -157,3 +157,5 @@ packages-lock.json
 UpgradeLog.htm
 *_UpgradeLog.htm
 /.temp
+/.github
+/.agent

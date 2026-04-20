@@ -151,6 +151,7 @@ MonoBehaviour:
   autoSaveInterval: 60
   enableAutoSave: 1
   playerStats: {fileID: 292091129}
+  equipmentManager: {fileID: 0}
 --- !u!4 &212342187
 Transform:
   m_ObjectHideFlags: 0
@@ -166,6 +167,63 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &251172315
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4556732373201890884, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_Name
+      value: CursorManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 84.86364
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 43.99905
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8797684022265397597, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ea5c7c7d28d2dee4dad385d0bbd5d4d3, type: 3}
 --- !u!1001 &292091127
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -214,6 +272,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1339241568981859123, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
+      propertyPath: weaponRegistry
+      value: 
+      objectReference: {fileID: 11400000, guid: 33e69cf0b17abfb418c7456f649d3b95, type: 2}
+    - target: {fileID: 1339241568981859123, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
+      propertyPath: startingWeaponDef
+      value: 
+      objectReference: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
     - target: {fileID: 1918963932709273604, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
       propertyPath: m_Name
       value: Player
@@ -342,7 +408,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -350,6 +415,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -1006,20 +1072,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6c0d5cfe4cb32a45b355b6648603de8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalRooms: 10
-  roomsPerTheme: 5
-  seed: 0
-  useTestRooms: 0
-  testRoomSequence:
-  - {fileID: 4495700257502947901, guid: 954a60660b3e82f4aad325b945e1f098, type: 3}
-  - {fileID: 4495700257502947901, guid: 27c8fec1417c3d64699b317749935f95, type: 3}
-  - {fileID: 5551893689476621015, guid: 1dfc196bc7cc8e44ca57bafe98c66814, type: 3}
-  startAtRoomIndex: 0
+  gridWidth: 4
+  gridHeight: 4
+  spawnGridPos: {x: 3, y: 2}
+  normalRoomCount: 5
+  roomSpacing: 40
+  roomsParent: {fileID: 344513088}
   themes:
   - {fileID: 11400000, guid: 0b8da0dda55225848b064027e75b7195, type: 2}
-  - {fileID: 11400000, guid: c3170f78ffb86c442ab945db7ecb1c47, type: 2}
-  roomsParent: {fileID: 344513088}
-  exitDoorPrefab: {fileID: 7147763459994913800, guid: 0f88c67c99f0d5342a9726baf53a2961, type: 3}
+  currentThemeIndex: 0
+  seed: 0
+  corridorSegmentLength: 1
 --- !u!4 &2039335386
 Transform:
   m_ObjectHideFlags: 0
@@ -1282,6 +1345,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1551,6 +1615,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1755,3 +1820,4 @@ SceneRoots:
   - {fileID: 292091127}
   - {fileID: 966626100}
   - {fileID: 212342187}
+  - {fileID: 251172315}

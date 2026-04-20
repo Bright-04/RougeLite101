@@ -189,6 +189,17 @@ public class BatAI : MonoBehaviour
             
             // Calculate fixed charge distance and target
             chargeDistance = chargeSpeed * chargeDuration;
+            
+            // CIRCLECAST CHECK: Dùng vòng tròn (body quái) thay vì tia laser để check tường cực chuẩn
+            int mask = LayerMask.GetMask("Default", "Environment", "Obstacle");
+            RaycastHit2D hit = Physics2D.CircleCast(transform.position, 0.3f, chargeDirection, chargeDistance, mask);
+            
+            if (hit.collider != null && !hit.collider.isTrigger)
+            {
+                // Dừng lại cách tường một khoảng an toàn
+                chargeDistance = Mathf.Max(hit.distance - 0.2f, 0f);
+            }
+
             chargeTargetPosition = (Vector2)transform.position + chargeDirection * chargeDistance;
             
             // Use distance-based tracking instead of time

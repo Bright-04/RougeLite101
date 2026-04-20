@@ -9,7 +9,7 @@ using System.Collections;
 public class EnemyHealth : MonoBehaviour
 {
     [Header("Health Settings")]
-    [SerializeField] private int startingHealth = 3;
+    [SerializeField] private int startingHealth = 10;
     
     [Header("Hit Reaction Settings")]
     [SerializeField] private float hitKnockbackForce = 15f;

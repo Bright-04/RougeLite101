@@ -9,9 +9,12 @@ public class DamageSource : MonoBehaviour
     [SerializeField] private bool showDebugGizmos = true;
     [SerializeField] private Color gizmoColor = Color.red;
 
+    private List<Collider2D> alreadyHit = new List<Collider2D>();
+
     private void OnEnable()
     {
-        // Damage source activated
+        // Reset the hit list when the damage source bounds is enabled (e.g. beginning of sword slash)
+        alreadyHit.Clear();
     }
 
     private void OnDisable()
@@ -21,8 +24,12 @@ public class DamageSource : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (alreadyHit.Contains(other)) return;
+
         if (other.gameObject.TryGetComponent(out IDamageable damageable))
         {
+            alreadyHit.Add(other); // Add to the block list so we only hit once per activation
+
             float finalDamage = baseDamage;
 
             // Get the player's stats for AD and Crit

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class PlayerUI : MonoBehaviour
 {
     private PlayerStats playerStats;
+    private EquipmentManager equipmentManager;
 
     [Header("UI References")]
     [SerializeField] private Slider healthSlider;
@@ -15,16 +16,22 @@ public class PlayerUI : MonoBehaviour
     private void Start()
     {
         playerStats = FindAnyObjectByType<PlayerStats>();
+        equipmentManager = FindAnyObjectByType<EquipmentManager>();
+
         if (playerStats == null)
         {
             Debug.LogError("PlayerBarUI: Could not find PlayerStats!");
         }
-        else
+
+        if (equipmentManager == null)
         {
-            Debug.Log("PlayerBarUI: Found PlayerStats successfully");
+            Debug.LogWarning("PlayerBarUI: Could not find EquipmentManager!");
         }
     }
 
+    private void OnDestroy()
+    {
+    }
 
     private void Update()
     {
@@ -51,6 +58,8 @@ public class PlayerUI : MonoBehaviour
 
     private void UpdateManaUI()
     {
+        if (playerStats == null) return;
+
         if (manaSlider != null)
         {
             manaSlider.maxValue = playerStats.maxMana;

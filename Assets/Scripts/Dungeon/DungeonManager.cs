@@ -1,412 +1,506 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class DungeonManager : MonoBehaviour
 {
-    [Header("Run Settings")]
-    [Min(1)] public int totalRooms = 10;
-    [Min(1)] public int roomsPerTheme = 5;
+    [Header("Floor Settings")]
+    public int gridWidth = 4;
+    public int gridHeight = 4;
+    public Vector2Int spawnGridPos = new Vector2Int(3, 2);
+    [Min(1)] public int normalRoomCount = 5;
+
+    [Header("World Settings")]
+    public float roomSpacing = 40f;
+    public Transform roomsParent;
+
+    [Header("Player")]
+
+
+    [Header("Themes")]
+    public ThemeSO[] themes;
+    public int currentThemeIndex = 0;
+
+    [Header("Random")]
     public int seed = 0;
 
-    [Header("Test Mode")]
-    [Tooltip("Enable to use specific room sequence instead of random")]
-    public bool useTestRooms = false;
-    [Tooltip("Drag specific room prefabs here for testing (ignores themes)")]
-    public GameObject[] testRoomSequence;
-    [Tooltip("Start at this room index (0-based). Useful for testing later rooms")]
-    public int startAtRoomIndex = 0;
 
-    [Header("Themes (order by block)")]
-    public ThemeSO[] themes;  // still used to pick room prefabs
 
-    [Header("Scene References")]
-    public Transform roomsParent;
-    public GameObject exitDoorPrefab;   // optional if your room already has a door
+    public float corridorSegmentLength = 7f;
 
     private System.Random _rng;
-    private List<GameObject> _planPrefabs;
-    private int _index = -1;
-    private GameObject _activeRoom;
+    private Dictionary<Vector2Int, RoomNode> _roomMap = new Dictionary<Vector2Int, RoomNode>();
 
-    private ExitDoor _exitDoor;
-    private int _aliveEnemies;
-    private bool _transitioning;
+    private static readonly Vector2Int[] Directions =
+    {
+        Vector2Int.up,
+        Vector2Int.down,
+        Vector2Int.left,
+        Vector2Int.right
+    };
 
-    void Start()
+    private void Start()
     {
         int finalSeed = seed != 0 ? seed : Random.Range(int.MinValue, int.MaxValue);
         _rng = new System.Random(finalSeed);
         Debug.Log($"DungeonManager using seed: {finalSeed}");
-        BuildPlan();
-        
-        // Skip to specified room for testing
-        if (startAtRoomIndex > 0)
-        {
-            _index = Mathf.Clamp(startAtRoomIndex - 1, -1, _planPrefabs.Count - 1);
-            Debug.Log($"<color=cyan>Skipping to room index {startAtRoomIndex}</color>");
-        }
-        
-        LoadNextRoomInternal();
+
+        GenerateFloor();
     }
 
-    void BuildPlan()
+    public void GenerateFloor()
     {
-        _planPrefabs = new List<GameObject>(totalRooms);
+        ClearFloor();
+        _roomMap.Clear();
 
-        // TEST MODE: Use specific room sequence
-        if (useTestRooms && testRoomSequence != null && testRoomSequence.Length > 0)
+        ThemeSO theme = GetCurrentTheme();
+        if (theme == null)
         {
-            Debug.Log($"<color=yellow>TEST MODE: Using {testRoomSequence.Length} specified rooms</color>");
-            for (int i = 0; i < totalRooms; i++)
-            {
-                // Loop through test rooms if we run out
-                int testIndex = i % testRoomSequence.Length;
-                var testRoom = testRoomSequence[testIndex];
-
-                if (testRoom != null)
-                {
-                    _planPrefabs.Add(testRoom);
-                    Debug.Log($"  Room {i}: {testRoom.name}");
-                }
-                else
-                {
-                    Debug.LogWarning($"Test room at index {testIndex} is null!");
-                }
-            }
+            Debug.LogError("No valid theme assigned.");
             return;
         }
 
-        // NORMAL MODE: 4 normal + 1 boss per theme block
-        for (int i = 0; i < totalRooms; i++)
+        AddSpawnRoom();
+        GenerateConnectedNormalRooms();
+        GenerateExitRoomLast();
+        AssignSpecialAndBuffRooms();
+        ChoosePrefabs(theme);
+        SolveConnections();
+        SpawnRooms();
+        SpawnCorridors(theme);
+        PlacePlayerInSpawnRoom();
+    }
+
+    private ThemeSO GetCurrentTheme()
+    {
+        if (themes == null || themes.Length == 0) return null;
+        return themes[Mathf.Clamp(currentThemeIndex, 0, themes.Length - 1)];
+    }
+
+    private void AddSpawnRoom()
+    {
+        RoomNode spawn = new RoomNode(spawnGridPos);
+        spawn.roomType = RoomType.Spawn;
+        _roomMap.Add(spawnGridPos, spawn);
+    }
+
+    private void GenerateConnectedNormalRooms()
+    {
+        List<Vector2Int> frontier = new List<Vector2Int>();
+        AddAvailableNeighbors(spawnGridPos, frontier);
+
+        int generated = 0;
+
+        while (generated < normalRoomCount && frontier.Count > 0)
         {
-            int block = i / roomsPerTheme;          // which theme block (0,1,2,…)
-            int localIndex = i % roomsPerTheme;          // index inside block (0..roomsPerTheme-1)
+            int index = _rng.Next(0, frontier.Count);
+            Vector2Int chosen = frontier[index];
+            frontier.RemoveAt(index);
 
-            ThemeSO theme = themes[Mathf.Clamp(block, 0, themes.Length - 1)];
+            if (_roomMap.ContainsKey(chosen))
+                continue;
 
-            bool isBossSlot = (localIndex == roomsPerTheme - 1);   // last room in this block
+            RoomNode node = new RoomNode(chosen);
+            node.roomType = RoomType.Enemy; // default, may be changed later
+            _roomMap.Add(chosen, node);
+            generated++;
 
-            GameObject choice = null;
+            AddAvailableNeighbors(chosen, frontier);
+        }
+    }
 
-            if (isBossSlot && theme.bossRoomPrefabs != null && theme.bossRoomPrefabs.Length > 0)
+    private void GenerateExitRoomLast()
+    {
+        List<Vector2Int> deadEndCandidates = new List<Vector2Int>();
+        List<Vector2Int> generalCandidates = new List<Vector2Int>();
+
+        foreach (Vector2Int emptyCell in GetAllEmptyCells())
+        {
+            int neighborCount = CountExistingNeighbors(emptyCell);
+            if (neighborCount < 1) continue;
+
+            if (IsAdjacent(emptyCell, spawnGridPos)) continue;
+
+            if (neighborCount == 1)
+                deadEndCandidates.Add(emptyCell);
+            else
+                generalCandidates.Add(emptyCell);
+        }
+
+        Vector2Int? exitPos = null;
+
+        if (deadEndCandidates.Count > 0)
+        {
+            exitPos = deadEndCandidates[_rng.Next(0, deadEndCandidates.Count)];
+        }
+        else if (generalCandidates.Count > 0)
+        {
+            exitPos = generalCandidates[_rng.Next(0, generalCandidates.Count)];
+        }
+        else
+        {
+            foreach (Vector2Int emptyCell in GetAllEmptyCells())
             {
-                // Pick one boss room at random
-                int bossIdx = _rng.Next(0, theme.bossRoomPrefabs.Length);
-                choice = theme.bossRoomPrefabs[bossIdx];
-                Debug.Log($"Plan room {i}: <color=red>BOSS</color> from theme '{theme.themeName}' -> {choice.name}");
+                if (CountExistingNeighbors(emptyCell) >= 1)
+                {
+                    exitPos = emptyCell;
+                    break;
+                }
+            }
+        }
+
+        if (!exitPos.HasValue)
+        {
+            Debug.LogWarning("Could not place exit room.");
+            return;
+        }
+
+        RoomNode exitNode = new RoomNode(exitPos.Value);
+        exitNode.roomType = RoomType.Exit;
+        _roomMap.Add(exitPos.Value, exitNode);
+    }
+
+    private void AssignSpecialAndBuffRooms()
+    {
+        List<RoomNode> candidates = new List<RoomNode>();
+
+        foreach (var kvp in _roomMap)
+        {
+            RoomNode node = kvp.Value;
+            if (node.roomType == RoomType.Spawn || node.roomType == RoomType.Exit)
+                continue;
+
+            candidates.Add(node);
+        }
+
+        if (candidates.Count > 0)
+        {
+            int specialIndex = _rng.Next(0, candidates.Count);
+            candidates[specialIndex].roomType = RoomType.Special;
+            candidates.RemoveAt(specialIndex);
+        }
+
+        if (candidates.Count > 0)
+        {
+            int buffIndex = _rng.Next(0, candidates.Count);
+            candidates[buffIndex].roomType = RoomType.Buff;
+            candidates.RemoveAt(buffIndex);
+        }
+
+        foreach (RoomNode node in candidates)
+        {
+            node.roomType = RoomType.Enemy;
+        }
+    }
+
+    private void ChoosePrefabs(ThemeSO theme)
+    {
+        foreach (var kvp in _roomMap)
+        {
+            RoomNode node = kvp.Value;
+
+            switch (node.roomType)
+            {
+                case RoomType.Spawn:
+                    node.chosenPrefab = theme.spawnRoomPrefab;
+                    break;
+                case RoomType.Exit:
+                    node.chosenPrefab = theme.exitRoomPrefab;
+                    break;
+                case RoomType.Enemy:
+                    node.chosenPrefab = GetRandomPrefab(theme.enemyRoomPrefabs);
+                    break;
+                case RoomType.Special:
+                    node.chosenPrefab = GetRandomPrefab(theme.specialRoomPrefabs);
+                    break;
+                case RoomType.Buff:
+                    node.chosenPrefab = GetRandomPrefab(theme.buffRoomPrefabs);
+                    break;
+            }
+
+            if (node.chosenPrefab == null)
+            {
+                Debug.LogError($"No prefab available for {node.roomType} in theme {theme.themeName}");
+            }
+        }
+    }
+
+    private GameObject GetRandomPrefab(GameObject[] prefabs)
+    {
+        if (prefabs == null || prefabs.Length == 0) return null;
+        int index = _rng.Next(0, prefabs.Length);
+        return prefabs[index];
+    }
+
+    private void SolveConnections()
+    {
+        foreach (var kvp in _roomMap)
+        {
+            RoomNode node = kvp.Value;
+            Vector2Int pos = node.gridPos;
+
+            node.openNorth = _roomMap.ContainsKey(pos + Vector2Int.up);
+            node.openSouth = _roomMap.ContainsKey(pos + Vector2Int.down);
+            node.openEast = _roomMap.ContainsKey(pos + Vector2Int.right);
+            node.openWest = _roomMap.ContainsKey(pos + Vector2Int.left);
+        }
+    }
+
+    private void SpawnRooms()
+    {
+        foreach (var kvp in _roomMap)
+        {
+            RoomNode node = kvp.Value;
+            if (node.chosenPrefab == null) continue;
+
+            Transform parent = roomsParent != null ? roomsParent : transform;
+
+            GameObject roomObj = Instantiate(node.chosenPrefab, Vector3.zero, Quaternion.identity, parent);
+            roomObj.name = $"{node.roomType}_{node.gridPos.x}_{node.gridPos.y}";
+            node.spawnedInstance = roomObj;
+
+            Vector3 targetWorldPos = GridToWorld(node.gridPos);
+
+            RoomTemplate template = roomObj.GetComponent<RoomTemplate>();
+            if (template != null && template.center != null)
+            {
+                Vector3 delta = targetWorldPos - template.center.position;
+                roomObj.transform.position += delta;
+
+                template.ApplyConnections(node.openNorth, node.openSouth, node.openEast, node.openWest);
             }
             else
             {
-                // Pick a normal room
-                if (theme.normalRoomPrefabs == null || theme.normalRoomPrefabs.Length == 0)
+                Debug.LogWarning($"{roomObj.name} is missing RoomTemplate or center. Using default grid position.");
+                roomObj.transform.position = targetWorldPos;
+
+                if (template != null)
+                    template.ApplyConnections(node.openNorth, node.openSouth, node.openEast, node.openWest);
+            }
+
+            if (node.roomType == RoomType.Exit)
+            {
+                ExitDoor exitDoor = roomObj.GetComponentInChildren<ExitDoor>();
+                if (exitDoor != null)
                 {
-                    Debug.LogError($"Theme '{theme.themeName}' has no normalRoomPrefabs assigned!");
-                    continue;
+                    exitDoor.Init(this);
                 }
-
-                int normalIdx = _rng.Next(0, theme.normalRoomPrefabs.Length);
-                choice = theme.normalRoomPrefabs[normalIdx];
-                Debug.Log($"Plan room {i}: normal from theme '{theme.themeName}' -> {choice.name}");
+                else
+                {
+                    Debug.LogWarning($"{roomObj.name} has no ExitDoor component.");
+                }
             }
 
-            // Safety
-            if (choice == null)
+            Debug.Log($"{roomObj.name} grid={node.gridPos} root={roomObj.transform.position} center={template.center.position}");
+
+        }
+    }
+
+    private void AddAvailableNeighbors(Vector2Int pos, List<Vector2Int> frontier)
+    {
+        foreach (Vector2Int dir in Directions)
+        {
+            Vector2Int next = pos + dir;
+
+            if (!IsInsideGrid(next)) continue;
+            if (_roomMap.ContainsKey(next)) continue;
+            if (!frontier.Contains(next)) frontier.Add(next);
+        }
+    }
+
+    private IEnumerable<Vector2Int> GetAllEmptyCells()
+    {
+        for (int x = 0; x < gridWidth; x++)
+        {
+            for (int y = 0; y < gridHeight; y++)
             {
-                Debug.LogError($"Null room choice at index {i} for theme '{theme.themeName}'");
-                continue;
+                Vector2Int pos = new Vector2Int(x, y);
+                if (!_roomMap.ContainsKey(pos))
+                    yield return pos;
             }
-
-            ValidateRoomPrefab(choice, theme.themeName);
-            _planPrefabs.Add(choice);
         }
     }
 
-
-    /// <summary>
-    /// Validates a room prefab and logs warnings about potential issues
-    /// </summary>
-    private void ValidateRoomPrefab(GameObject roomPrefab, string themeName)
+    private int CountExistingNeighbors(Vector2Int pos)
     {
-        if (roomPrefab == null)
+        int count = 0;
+        foreach (Vector2Int dir in Directions)
         {
-            Debug.LogError($"Null room prefab found in theme '{themeName}'!");
+            if (_roomMap.ContainsKey(pos + dir))
+                count++;
+        }
+        return count;
+    }
+
+    private bool IsInsideGrid(Vector2Int pos)
+    {
+        return pos.x >= 0 && pos.x < gridWidth && pos.y >= 0 && pos.y < gridHeight;
+    }
+
+    private bool IsAdjacent(Vector2Int a, Vector2Int b)
+    {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) == 1;
+    }
+
+    private Vector3 GridToWorld(Vector2Int pos)
+    {
+        return new Vector3(pos.x * roomSpacing, pos.y * roomSpacing, 0f);
+    }
+
+    private void ClearFloor()
+    {
+        if (roomsParent == null) return;
+
+        for (int i = roomsParent.childCount - 1; i >= 0; i--)
+        {
+            Destroy(roomsParent.GetChild(i).gameObject);
+        }
+    }
+
+    private void PlacePlayerInSpawnRoom()
+    {
+        if (!_roomMap.TryGetValue(spawnGridPos, out RoomNode spawnNode))
+        {
+            Debug.LogWarning("DungeonManager: could not find spawn room node.");
             return;
         }
 
-        var roomTemplate = roomPrefab.GetComponent<RoomTemplate>();
-        if (roomTemplate == null)
+        if (spawnNode.spawnedInstance == null)
         {
-            Debug.LogWarning($"Room prefab '{roomPrefab.name}' in theme '{themeName}' is missing RoomTemplate component. It will be added automatically at runtime.");
+            Debug.LogWarning("DungeonManager: spawn room instance missing.");
             return;
         }
 
-        // Validate room template configuration
-        if (roomTemplate.playerSpawn == null)
+        RoomTemplate template = spawnNode.spawnedInstance.GetComponent<RoomTemplate>();
+        if (template == null)
         {
-            Debug.LogWarning($"Room '{roomPrefab.name}' has no player spawn point set.");
-        }
-
-        if (roomTemplate.exitAnchor == null)
-        {
-            Debug.LogWarning($"Room '{roomPrefab.name}' has no exit anchor set.");
-        }
-
-        if (roomTemplate.enemySpawns == null || roomTemplate.enemySpawns.Length == 0)
-        {
-            Debug.LogWarning($"Room '{roomPrefab.name}' has no enemy spawn points set.");
-        }
-    }
-
-    public void TryLoadNextRoom()
-    {
-        if (_transitioning) return;
-        StartCoroutine(GuardedTransition());
-    }
-
-    private IEnumerator GuardedTransition()
-    {
-        _transitioning = true;
-        yield return null; // wait one frame to swallow duplicate triggers
-        LoadNextRoomInternal();
-        _transitioning = false;
-    }
-
-    private void LoadNextRoomInternal()
-    {
-        if (_activeRoom) Destroy(_activeRoom);
-        _exitDoor = null;
-        _aliveEnemies = 0;
-
-        _index++;
-        if (_index >= _planPrefabs.Count)
-        {
-            var player = GameObject.FindGameObjectWithTag("Player");
-            if (player)
-            {
-                Debug.Log("Run complete!");
-                player.transform.position = new Vector3(0f, 9f, 0f);
-                SceneManager.LoadScene("GameHome");
-            }
-            //SceneManager.LoadScene("GameHome");
+            Debug.LogWarning("DungeonManager: spawn room missing RoomTemplate.");
             return;
         }
 
-        // Instantiate room
-        var prefab = _planPrefabs[_index];
-        _activeRoom = Instantiate(prefab, Vector3.zero, Quaternion.identity, roomsParent);
-        var rt = _activeRoom.GetComponent<RoomTemplate>();
+        if (template.playerSpawn == null)
+        {
+            Debug.LogWarning("DungeonManager: playerSpawn not assigned on spawn room.");
+            return;
+        }
 
+        GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+        if (playerObj == null)
+        {
+            Debug.LogWarning("DungeonManager: could not find player with tag 'Player'.");
+            return;
+        }
+
+        Rigidbody2D rb = playerObj.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.position = template.playerSpawn.position;
+        }
+        else
+        {
+            playerObj.transform.position = template.playerSpawn.position;
+        }
+
+        Debug.Log("Player placed at spawn room: " + template.playerSpawn.position);
+    }
+    private void TrySpawnCorridor(RoomNode node, Vector2Int dir, RoomTemplate templateA, GameObject corridorPrefab)
+    {
+        Vector2Int neighborPos = node.gridPos + dir;
+
+        if (!_roomMap.TryGetValue(neighborPos, out RoomNode neighbor))
+            return;
+
+        if (neighbor.spawnedInstance == null)
+            return;
+
+        RoomTemplate templateB = neighbor.spawnedInstance.GetComponent<RoomTemplate>();
+        if (templateB == null)
+            return;
+
+        GameObject gateAObj = templateA.GetSpawnedSideObject(dir);
+        GameObject gateBObj = templateB.GetSpawnedSideObject(-dir);
+
+        if (gateAObj == null || gateBObj == null)
+        {
+            Debug.LogWarning($"Missing spawned gate object between {node.gridPos} and {neighborPos}");
+            return;
+        }
+
+        ConnectionPoints gateA = gateAObj.GetComponentInChildren<ConnectionPoints>();
+        ConnectionPoints gateB = gateBObj.GetComponentInChildren<ConnectionPoints>();
+
+        if (gateA == null || gateB == null)
+        {
+            Debug.LogWarning($"Missing ConnectionPoints on gate between {node.gridPos} and {neighborPos}");
+            return;
+        }
+
+        RepeatCorridorBetween(gateA, gateB, corridorPrefab);
+    }
+    private void RepeatCorridorBetween(ConnectionPoints gateA, ConnectionPoints gateB, GameObject corridorPrefab)
+    {
+        ConnectionPoints t = corridorPrefab.GetComponentInChildren<ConnectionPoints>();
+        if (t == null || t.center == null) return;
+
+        Vector3 start = gateA.center.position;
+        start.z = 0f;
+        Vector3 end = gateB.center.position;
+        end.z = 0f;
+
+        Vector3 dir = (end - start).normalized;
+        float totalDistance = Vector3.Distance(start, end);
+        
        
-        // Handle missing RoomTemplate component
-        if (rt == null)
-        {
-            Debug.LogWarning($"RoomTemplate missing on room '{prefab.name}'. This can cause issues with spawn points and door positioning. Adding component automatically and creating basic configuration.");
-            rt = _activeRoom.AddComponent<RoomTemplate>();
-            
-            // Try to find basic spawn points automatically
-            TryAutoConfigureRoomTemplate(rt);
-        }
 
-        // Ensure ExitDoor exists, is initialized, and starts locked
-        _exitDoor = FindOrCreateExitDoor(rt);
-        if (_exitDoor != null) { _exitDoor.Init(this); _exitDoor.Lock(); }
-
-        // Move player
-        if (rt && rt.playerSpawn)
-        {
-            var player = GameObject.FindGameObjectWithTag("Player");
-            if (player) player.transform.position = rt.playerSpawn.position;
-        }
+        // Rotate 90 degrees if moving horizontally (X axis)
+        bool isHorizontal = Mathf.Abs(dir.x) > Mathf.Abs(dir.y);
+        Quaternion rot = isHorizontal ? Quaternion.Euler(0f, 0f, 90f) : Quaternion.identity;
+        int count;
+        if (isHorizontal)
+            count = Mathf.Max(1, Mathf.RoundToInt(totalDistance));
         else
-        {
-            // If no player spawn is set, try to find a reasonable position
-            var player = GameObject.FindGameObjectWithTag("Player");
-            if (player) 
-            {
-                player.transform.position = _activeRoom.transform.position;
-                Debug.LogWarning($"No player spawn set for room '{prefab.name}'. Placing player at room center.");
-            }
-        }
+            count = Mathf.Max(1, Mathf.RoundToInt(totalDistance))+1;
+        // Center offset rotated correctly
+        Vector3 centerLocal = rot * t.center.localPosition;
 
-        // Spawn using per-room profile
-        if (rt == null)
+        Transform parent = roomsParent != null ? roomsParent : transform;
+        Vector3Int test = new Vector3Int(1, 0, 0);
+        for (int i = 0; i < count; i++)
         {
-            Debug.LogError("Failed to create RoomTemplate component. Unlocking door immediately.");  
-            _exitDoor?.Unlock();
+            Vector3 worldPos = start + dir * i;
+
+            // Offset 1 unit perpendicular to direction to close the gap
+            if (isHorizontal)
+                worldPos.x += 1f;
+            else 
+                worldPos.y -= 1f;
+
+                Vector3 rootPos = worldPos - centerLocal;
+            rootPos.z = 0f;
+
+            Instantiate(corridorPrefab, rootPos, rot, parent);
+        }
+    }
+    private void SpawnCorridors(ThemeSO theme)
+    {
+        Debug.Log("SpawnCorridors called");
+
+        if (theme == null || theme.corridorPrefab == null)
+        {
+            Debug.LogWarning("Current theme is missing corridor prefab.");
             return;
         }
 
-        if (rt.spawnProfile == null)
+        foreach (var kvp in _roomMap)
         {
-            Debug.Log("No spawn profile on this room � unlocking door immediately.");
-            _exitDoor?.Unlock();                    // <<� will actually enable collider
-            return;
-        }
+            RoomNode node = kvp.Value;
+            if (node.spawnedInstance == null) continue;
 
-        // If there are no spawn points, also unlock
-        if (rt.enemySpawns == null || rt.enemySpawns.Length == 0)
-        {
-            Debug.Log("No enemy spawns in this room � unlocking door immediately.");
-            _exitDoor?.Unlock();
-            return;
-        }
+            RoomTemplate templateA = node.spawnedInstance.GetComponent<RoomTemplate>();
+            if (templateA == null) continue;
 
-        StartCoroutine(SpawnFromProfile(rt, rt.spawnProfile));
+            TrySpawnCorridor(node, Vector2Int.right, templateA, theme.corridorPrefab);
+            TrySpawnCorridor(node, Vector2Int.up, templateA, theme.corridorPrefab);
+        }
     }
-
-    private ExitDoor FindOrCreateExitDoor(RoomTemplate rt)
-    {
-        // 1) If we have a prefab assigned, ALWAYS spawn it (ignoring any old doors in the room)
-        if (exitDoorPrefab && rt && rt.exitAnchor)
-        {
-            // Remove any old ExitDoor from the room first
-            var oldDoor = _activeRoom.GetComponentInChildren<ExitDoor>(true);
-            if (oldDoor != null)
-            {
-                Debug.Log($"Removing old ExitDoor from room and spawning new one from prefab.");
-                Destroy(oldDoor.gameObject);
-            }
-            
-            var doorGO = Instantiate(exitDoorPrefab, rt.exitAnchor.position, Quaternion.identity, _activeRoom.transform);
-            return doorGO.GetComponent<ExitDoor>();
-        }
-
-        // 2) Fallback: Use an ExitDoor already inside the room prefab (only if no prefab assigned)
-        var existing = _activeRoom.GetComponentInChildren<ExitDoor>(true);
-        if (existing) return existing;
-
-        Debug.LogWarning("No ExitDoor found or created (missing prefab or exitAnchor). Room will have no exit.");
-        return null;
-    }
-
-    private IEnumerator SpawnFromProfile(RoomTemplate rt, RoomSpawnProfileSO profile)
-    {
-        if (profile.spawnGradually && profile.initialDelay > 0)
-            yield return new WaitForSeconds(profile.initialDelay);
-
-        // Decide total count per entry up front
-        var toSpawn = new List<GameObject>();
-        foreach (var e in profile.entries)
-        {
-            if (e.prefab == null) continue;
-            int count = Mathf.Max(0, _rng.Next(e.minCount, e.maxCount + 1));
-            for (int i = 0; i < count; i++) toSpawn.Add(e.prefab);
-        }
-
-        if (toSpawn.Count == 0)
-        {
-            Debug.Log("Spawn profile produced 0 enemies � unlocking door.");
-            _exitDoor?.Unlock();
-            yield break;
-        }
-
-        _aliveEnemies = 0;
-
-        if (!profile.spawnGradually)
-        {
-            // spawn all instantly
-            foreach (var prefab in toSpawn) SpawnOne(rt, prefab);
-        }
-        else
-        {
-            // spawn over time
-            foreach (var prefab in toSpawn)
-            {
-                SpawnOne(rt, prefab);
-                float delay = Random.Range(profile.perSpawnDelayRange.x, profile.perSpawnDelayRange.y);
-                yield return new WaitForSeconds(Mathf.Max(0f, delay));
-            }
-        }
-
-        // wait for clear
-        while (_aliveEnemies > 0) yield return null;
-
-        _exitDoor?.Unlock();
-    }
-
-    private void SpawnOne(RoomTemplate rt, GameObject prefab)
-    {
-        var sp = rt.enemySpawns[_rng.Next(0, rt.enemySpawns.Length)];
-        var enemy = Instantiate(prefab, sp.position, Quaternion.identity, _activeRoom.transform);
-
-        var notifier = enemy.GetComponent<EnemyDeathNotifier>();
-        if (!notifier) notifier = enemy.AddComponent<EnemyDeathNotifier>();
-        notifier.Died += OnEnemyDied;
-
-        _aliveEnemies++;
-    }
-
-    private void OnEnemyDied(EnemyDeathNotifier n)
-    {
-        if (n) n.Died -= OnEnemyDied;
-        _aliveEnemies = Mathf.Max(0, _aliveEnemies - 1);
-    }
-
-    /// <summary>
-    /// Attempts to automatically configure a RoomTemplate component with basic settings
-    /// </summary>
-    private void TryAutoConfigureRoomTemplate(RoomTemplate rt)
-    {
-        if (rt == null) return;
-
-        // Try to find or create player spawn point
-        var playerSpawnTransform = _activeRoom.transform.Find("PlayerSpawn");
-        if (playerSpawnTransform == null)
-        {
-            // Create a basic player spawn at room center
-            var playerSpawnGO = new GameObject("PlayerSpawn");
-            playerSpawnGO.transform.SetParent(_activeRoom.transform);
-            playerSpawnGO.transform.localPosition = Vector3.zero;
-            playerSpawnTransform = playerSpawnGO.transform;
-        }
-        rt.playerSpawn = playerSpawnTransform;
-
-        // Try to find or create exit anchor
-        var exitAnchorTransform = _activeRoom.transform.Find("ExitAnchor");
-        if (exitAnchorTransform == null)
-        {
-            // Create a basic exit anchor
-            var exitAnchorGO = new GameObject("ExitAnchor");
-            exitAnchorGO.transform.SetParent(_activeRoom.transform);
-            exitAnchorGO.transform.localPosition = new Vector3(5f, 0f, 0f); // Offset to the right
-            exitAnchorTransform = exitAnchorGO.transform;
-        }
-        rt.exitAnchor = exitAnchorTransform;
-
-        // Try to find enemy spawn points
-        var enemySpawnsList = new List<Transform>();
-        for (int i = 0; i < _activeRoom.transform.childCount; i++)
-        {
-            var child = _activeRoom.transform.GetChild(i);
-            if (child.name.ToLower().Contains("spawn") && child.name.ToLower().Contains("enemy"))
-            {
-                enemySpawnsList.Add(child);
-            }
-        }
-
-        // If no enemy spawns found, create a few basic ones
-        if (enemySpawnsList.Count == 0)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                var spawnGO = new GameObject($"EnemySpawn_{i}");
-                spawnGO.transform.SetParent(_activeRoom.transform);
-                // Spread spawns around the room
-                float angle = (i * 120f) * Mathf.Deg2Rad;
-                spawnGO.transform.localPosition = new Vector3(
-                    Mathf.Cos(angle) * 3f,
-                    Mathf.Sin(angle) * 3f,
-                    0f
-                );
-                enemySpawnsList.Add(spawnGO.transform);
-            }
-        }
-
-        rt.enemySpawns = enemySpawnsList.ToArray();
-
-        Debug.LogWarning($"Auto-configured RoomTemplate for '{_activeRoom.name}' with {rt.enemySpawns.Length} enemy spawns.");
-    }
-
 }
