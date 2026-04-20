@@ -25,13 +25,13 @@ public static class SaveSystem
         return Path.Combine(playerPath, "playerStats.sav");
     }
 
-    public static void SavePlayerStats(PlayerStats playerStats)
+    public static void SavePlayerStats(PlayerStats playerStats, EquipmentManager equipmentManager)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         string path = GetPlayerStatsPath();
         FileStream stream = new FileStream(path, FileMode.Create);
 
-        PlayerStatsData playerStatsData = new PlayerStatsData(playerStats);
+        PlayerStatsData playerStatsData = new PlayerStatsData(playerStats, equipmentManager);
 
         formatter.Serialize(stream, playerStatsData);
         stream.Close();

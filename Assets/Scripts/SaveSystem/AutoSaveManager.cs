@@ -8,6 +8,7 @@ public class AutoSaveManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerStats playerStats;
+    [SerializeField] private EquipmentManager equipmentManager;
 
     private float autoSaveTimer = 0f;
 
@@ -20,6 +21,15 @@ public class AutoSaveManager : MonoBehaviour
             if (playerStats == null)
             {
                 Debug.LogError("AutoSaveManager: PlayerStats not found! Please assign it in the inspector.");
+            }
+        }
+
+        if (equipmentManager == null)
+        {
+            equipmentManager = FindAnyObjectByType<EquipmentManager>();
+            if (equipmentManager == null)
+            {
+                Debug.LogWarning("AutoSaveManager: EquipmentManager not found. Weapon loadout will not be saved.");
             }
         }
 
@@ -59,7 +69,7 @@ public class AutoSaveManager : MonoBehaviour
     {
         if (playerStats != null)
         {
-            SaveSystem.SavePlayerStats(playerStats);
+            SaveSystem.SavePlayerStats(playerStats, equipmentManager);
             Debug.Log($"Game saved at {System.DateTime.Now:HH:mm:ss}");
         }
         else

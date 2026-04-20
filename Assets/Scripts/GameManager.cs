@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,8 +11,7 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            CleanUpAndDestroy();
-            //Destroy(gameObject);
+            Destroy(gameObject);
             return;
         }
         else

@@ -72,9 +72,9 @@ public class RoomTemplateValidator : EditorWindow
                         Debug.LogWarning($"Room '{prefab.name}' has no exit anchor set.", prefab);
                         issuesFound++;
                     }
-                    if (roomTemplate.enemySpawns == null || roomTemplate.enemySpawns.Length == 0)
+                    if (prefab.GetComponent<BoxCollider2D>() == null)
                     {
-                        Debug.LogWarning($"Room '{prefab.name}' has no enemy spawn points set.", prefab);
+                        Debug.LogWarning($"Room '{prefab.name}' is missing a BoxCollider2D for random enemy bounds.", prefab);
                         issuesFound++;
                     }
                 }
