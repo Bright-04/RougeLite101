@@ -68,7 +68,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Pause()
     {
-        if (isPaused) return;
+        if (isPaused && InputManager.Instance.IsUIActive()) return;
 
         isPaused = true;
         pauseCanvas.SetActive(true);
@@ -83,7 +83,7 @@ public class PauseMenu : MonoBehaviour
     
     public void Resume()
     {
-        if (!isPaused) return;
+        if (!isPaused && !InputManager.Instance.IsUIActive()) return;
 
         isPaused = false;
         pauseCanvas.SetActive(false);

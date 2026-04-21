@@ -38,18 +38,24 @@ public class StatsMenu : MonoBehaviour
     }
     private void OnOpenStatsPerformed(InputAction.CallbackContext ctx)
     {
-        statsMenu.SetActive(true);
-        // Disable gameplay inputs
-        InputManager.Instance.EnableUIMap();
-        Debug.Log("OPEN Stats Menu");
+        if (!statsMenu.activeSelf && !InputManager.Instance.IsUIActive())
+        {
+            statsMenu.SetActive(true);
+            // Disable gameplay inputs
+            InputManager.Instance.EnableUIMap();
+            Debug.Log("OPEN Stats Menu");
+        }
     }
 
     private void OnCloseStatsPerformed(InputAction.CallbackContext ctx)
     {
-        statsMenu.SetActive(false);
-        // Enable gameplay inputs
-        InputManager.Instance.DisableUIMap();
-        Debug.Log("CLOSE Stats Menu");
+        if (statsMenu.activeSelf && InputManager.Instance.IsUIActive())
+        {
+            statsMenu.SetActive(false);
+            // Enable gameplay inputs
+            InputManager.Instance.DisableUIMap();
+            Debug.Log("CLOSE Stats Menu");
+        }
     }
 
     

@@ -333,6 +333,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""e04e85cc-3739-4222-a1ee-64c4fbf1eccb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -355,6 +364,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""OpenStatsMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d72d2610-9dbb-4540-989d-dc9f46a4fbd1"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""OpenInventory"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -458,6 +478,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""name"": ""CloseStatsMenu"",
                     ""type"": ""Button"",
                     ""id"": ""ca2a49c8-b5b7-451d-bbde-a2974d30c97f"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""CloseInventory"",
+                    ""type"": ""Button"",
+                    ""id"": ""dc8f5ed1-1556-4bb2-8ba5-2190d653551c"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -893,6 +922,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""CloseStatsMenu"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f7056de7-3b60-4dd4-8d47-0897a2afcaac"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseInventory"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -913,6 +953,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_NavigateUI = asset.FindActionMap("NavigateUI", throwIfNotFound: true);
         m_NavigateUI_OpenPauseMenu = m_NavigateUI.FindAction("OpenPauseMenu", throwIfNotFound: true);
         m_NavigateUI_OpenStatsMenu = m_NavigateUI.FindAction("OpenStatsMenu", throwIfNotFound: true);
+        m_NavigateUI_OpenInventory = m_NavigateUI.FindAction("OpenInventory", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -926,6 +967,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
         m_UI_CloseStatsMenu = m_UI.FindAction("CloseStatsMenu", throwIfNotFound: true);
+        m_UI_CloseInventory = m_UI.FindAction("CloseInventory", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
@@ -1247,6 +1289,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<INavigateUIActions> m_NavigateUIActionsCallbackInterfaces = new List<INavigateUIActions>();
     private readonly InputAction m_NavigateUI_OpenPauseMenu;
     private readonly InputAction m_NavigateUI_OpenStatsMenu;
+    private readonly InputAction m_NavigateUI_OpenInventory;
     /// <summary>
     /// Provides access to input actions defined in input action map "NavigateUI".
     /// </summary>
@@ -1266,6 +1309,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "NavigateUI/OpenStatsMenu".
         /// </summary>
         public InputAction @OpenStatsMenu => m_Wrapper.m_NavigateUI_OpenStatsMenu;
+        /// <summary>
+        /// Provides access to the underlying input action "NavigateUI/OpenInventory".
+        /// </summary>
+        public InputAction @OpenInventory => m_Wrapper.m_NavigateUI_OpenInventory;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1298,6 +1345,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @OpenStatsMenu.started += instance.OnOpenStatsMenu;
             @OpenStatsMenu.performed += instance.OnOpenStatsMenu;
             @OpenStatsMenu.canceled += instance.OnOpenStatsMenu;
+            @OpenInventory.started += instance.OnOpenInventory;
+            @OpenInventory.performed += instance.OnOpenInventory;
+            @OpenInventory.canceled += instance.OnOpenInventory;
         }
 
         /// <summary>
@@ -1315,6 +1365,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @OpenStatsMenu.started -= instance.OnOpenStatsMenu;
             @OpenStatsMenu.performed -= instance.OnOpenStatsMenu;
             @OpenStatsMenu.canceled -= instance.OnOpenStatsMenu;
+            @OpenInventory.started -= instance.OnOpenInventory;
+            @OpenInventory.performed -= instance.OnOpenInventory;
+            @OpenInventory.canceled -= instance.OnOpenInventory;
         }
 
         /// <summary>
@@ -1363,6 +1416,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_TrackedDevicePosition;
     private readonly InputAction m_UI_TrackedDeviceOrientation;
     private readonly InputAction m_UI_CloseStatsMenu;
+    private readonly InputAction m_UI_CloseInventory;
     /// <summary>
     /// Provides access to input actions defined in input action map "UI".
     /// </summary>
@@ -1418,6 +1472,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/CloseStatsMenu".
         /// </summary>
         public InputAction @CloseStatsMenu => m_Wrapper.m_UI_CloseStatsMenu;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/CloseInventory".
+        /// </summary>
+        public InputAction @CloseInventory => m_Wrapper.m_UI_CloseInventory;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1477,6 +1535,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CloseStatsMenu.started += instance.OnCloseStatsMenu;
             @CloseStatsMenu.performed += instance.OnCloseStatsMenu;
             @CloseStatsMenu.canceled += instance.OnCloseStatsMenu;
+            @CloseInventory.started += instance.OnCloseInventory;
+            @CloseInventory.performed += instance.OnCloseInventory;
+            @CloseInventory.canceled += instance.OnCloseInventory;
         }
 
         /// <summary>
@@ -1521,6 +1582,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @CloseStatsMenu.started -= instance.OnCloseStatsMenu;
             @CloseStatsMenu.performed -= instance.OnCloseStatsMenu;
             @CloseStatsMenu.canceled -= instance.OnCloseStatsMenu;
+            @CloseInventory.started -= instance.OnCloseInventory;
+            @CloseInventory.performed -= instance.OnCloseInventory;
+            @CloseInventory.canceled -= instance.OnCloseInventory;
         }
 
         /// <summary>
@@ -1633,6 +1697,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOpenStatsMenu(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenInventory(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
@@ -1718,5 +1789,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnCloseStatsMenu(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CloseInventory" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCloseInventory(InputAction.CallbackContext context);
     }
 }

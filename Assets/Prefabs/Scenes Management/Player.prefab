@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 6630334986598602266}
   - component: {fileID: 6449599854977480468}
   - component: {fileID: -4104276699102849048}
+  - component: {fileID: 6781368395977323218}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -448,6 +449,20 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &6781368395977323218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91a92ff696a777e49bf5f530bf8f2fe6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SafeInventoryController
+  inventoryUI: {fileID: 0}
+  inventorySize: 20
 --- !u!1 &3247644244558153244
 GameObject:
   m_ObjectHideFlags: 0
