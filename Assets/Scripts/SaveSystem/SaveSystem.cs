@@ -31,7 +31,8 @@ public static class SaveSystem
         string path = GetPlayerStatsPath();
         FileStream stream = new FileStream(path, FileMode.Create);
 
-        PlayerStatsData playerStatsData = new PlayerStatsData(playerStats, equipmentManager);
+        SkillManager skillManager = Object.FindAnyObjectByType<SkillManager>();
+        PlayerStatsData playerStatsData = new PlayerStatsData(playerStats, equipmentManager, skillManager);
 
         formatter.Serialize(stream, playerStatsData);
         stream.Close();

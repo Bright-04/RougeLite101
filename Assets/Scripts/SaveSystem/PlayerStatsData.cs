@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// Class chứa data cần save - PHẢI có [Serializable]
@@ -10,6 +11,10 @@ public class PlayerStatsData
     public float level;
     public float currentExp;
     public float levelUpExp;
+    public int skillPoints;
+    
+    // Skill Tree Data
+    public List<string> unlockedSkillIDs = new List<string>();
 
     // Core Stats
     public float maxHP;
@@ -38,30 +43,36 @@ public class PlayerStatsData
     // <summary>
     /// Constructor từ PlayerStats
     /// </summary>
-    public PlayerStatsData(PlayerStats stats, EquipmentManager equipment)
+    public PlayerStatsData(PlayerStats stats, EquipmentManager equipment, SkillManager skillManager)
     {
         // Level
         level = stats.level;
         currentExp = stats.currentExp;
         levelUpExp = stats.levelUpExp;
+        skillPoints = stats.skillPoints;
 
-        // Core Stats
-        maxHP = stats.maxHP;
-        maxMana = stats.maxMana;
-        maxStamina = stats.maxStamina;
+        if (skillManager != null)
+        {
+            unlockedSkillIDs = new List<string>(skillManager.unlockedSkillIDs);
+        }
+
+        // Core Stats (Store Base Stats only)
+        maxHP = stats.baseMaxHP;
+        maxMana = stats.baseMaxMana;
+        maxStamina = stats.baseMaxStamina;
 
         // Regen
-        hpRegen = stats.hpRegen;
-        manaRegen = stats.manaRegen;
-        staminaRegen = stats.staminaRegen;
+        hpRegen = stats.baseHpRegen;
+        manaRegen = stats.baseManaRegen;
+        staminaRegen = stats.baseStaminaRegen;
 
         // Combat
-        attackDamage = stats.attackDamage;
-        abilityPower = stats.abilityPower;
-        defense = stats.defense;
-        critChance = stats.critChance;
-        critDamage = stats.critDamage;
-        luck = stats.luck;
+        attackDamage = stats.baseAttackDamage;
+        abilityPower = stats.baseAbilityPower;
+        defense = stats.baseDefense;
+        critChance = stats.baseCritChance;
+        critDamage = stats.baseCritDamage;
+        luck = stats.baseLuck;
 
         mainWeaponId = equipment != null ? equipment.GetMainWeaponId() : string.Empty;
         subWeaponId = equipment != null ? equipment.GetSubWeaponId() : string.Empty;
