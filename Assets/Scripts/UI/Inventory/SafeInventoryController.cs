@@ -5,7 +5,8 @@ public class SafeInventoryController : MonoBehaviour
 {
     [Header("UI References")]
     public InventoryUI inventoryUI;
-    public int inventorySize = 20;
+    public int safeInventorySize = 30;
+    public int dungeonInventorySize = 20;
     private PlayerControls playerControls;
 
 
@@ -22,7 +23,7 @@ public class SafeInventoryController : MonoBehaviour
                 return;
             }
         }
-        inventoryUI.InitializedInventoryUI(inventorySize);
+        inventoryUI.InitializedInventoryUI(safeInventorySize, dungeonInventorySize);
         inventoryUI.HideInventory();
         // Đợi đến Start để đảm bảo InputManager đã Awake
         if (InputManager.Instance == null)

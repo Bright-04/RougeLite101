@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b502df20d27e49a45a30b4d753ac0737, type: 3}
+  m_Name: KhoGa
+  m_EditorClassIdentifier: Assembly-CSharp::ItemSO
+  <IsStackable>k__BackingField: 1
+  <MaxStackSize>k__BackingField: 99
+  <Name>k__BackingField: "Kh\xF4 G\xE0 \u0110\u1ED9 Mixi"
+  <Description>k__BackingField: "Kh\xF4 g\xE0 l\xE1 chanh MIXIFOOD tuy\u1EC7t ph\u1EA9m
+    th\u1ECBt g\xE0 ch\u1EA5t l\u01B0\u1EE3ng cao, h\u1ED9p 500G SI\xCAU NGON - \u0110\u1EACM
+    \u0110\xC0"
+  <ItemImage>k__BackingField: {fileID: -9165503541736318532, guid: 419d77eed2f382648b62ac7479913a2e, type: 3}

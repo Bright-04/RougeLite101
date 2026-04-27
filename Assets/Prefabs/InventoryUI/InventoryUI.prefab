@@ -363,6 +363,7 @@ GameObject:
   - component: {fileID: 3971374361942399451}
   - component: {fileID: 4133166173310922223}
   - component: {fileID: 4294514142991387751}
+  - component: {fileID: 8686787050081135178}
   m_Layer: 5
   m_Name: Inventory_Description
   m_TagString: Untagged
@@ -475,6 +476,21 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &8686787050081135178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1582924665069497798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d57d9f24d7437b4cb0aa92f0d0d3883, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryDescriptionUI
+  itemImage: {fileID: 7942581626956720959}
+  title: {fileID: 5714623290518676652}
+  description: {fileID: 8846591510576379431}
 --- !u!1 &1931989834894567496
 GameObject:
   m_ObjectHideFlags: 0
@@ -1591,6 +1607,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
   itemPrefab: {fileID: 6523544430046650397, guid: f8748c8a62a78604eb246ed42c7900d5, type: 3}
   contentPanel: {fileID: 1280519979289570769}
+  itemDescription: {fileID: 8686787050081135178}
+  image: {fileID: -9165503541736318532, guid: 419d77eed2f382648b62ac7479913a2e, type: 3}
+  quantity: 10
+  title: do mixi
+  description: kho ga ba mia hang A
 --- !u!1 &7757248108597630659
 GameObject:
   m_ObjectHideFlags: 0
