@@ -8,12 +8,6 @@ using UnityEngine.U2D;
 using UnityEngine.UI;
 using static UnityEditor.Progress;
 
-public enum InventoryType
-{
-    Safe,
-    Dungeon
-}
-
 public class InventoryUI : MonoBehaviour
 {
     [SerializeField]
@@ -22,8 +16,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField]
     private RectTransform contentPanel;
 
-    List<InventoryItemUI> safeItemsList = new List<InventoryItemUI>(); //list of safe item
-    List<InventoryItemUI> dungeonItemsList = new List<InventoryItemUI>(); //list of dungeon item
+    List<InventoryItemUI> itemsList = new List<InventoryItemUI>(); //list of  item   
 
     private bool inventoryActive = false;
     public bool IsInventoryActive() => inventoryActive;
@@ -51,78 +44,65 @@ public class InventoryUI : MonoBehaviour
         mouseFollower.Toggle(false);
         itemDescription.ResetDescription();
     }
-    public void ShowInventory(InventoryType type)
+
+
+    public void ClearInventoryUI()
     {
-        ClearUI();
-
-        List<InventoryItemUI> targetList = (type == InventoryType.Safe)
-            ? safeItemsList
-            : dungeonItemsList;
-
-        foreach (var item in targetList)
+        foreach (var item in itemsList)
         {
-            InventoryItemUI itemUI = Instantiate(itemPrefab, contentPanel);
-            itemUI.transform.SetParent(contentPanel, false);
-            safeItemsList.Add(itemUI);
-
-            itemUI.OnItemClicked += HandleItemSelection;
-            itemUI.OnItemBeginDrag += HandleBeginDrag;
-            itemUI.OnItemDroppedOn += HandleSwap;
-            itemUI.OnItemEndDrag += HandleEndDrag;
-            itemUI.OnRightMouseBtnClick += HandleShowItemActions;
+            if (item != null)
+            {
+                Destroy(item.gameObject);
+            }
+                
         }
+        itemsList.Clear();
     }
 
-    void ClearUI()
-    {
-        foreach (Transform child in contentPanel)
+    public void InitializedInventoryUI(int inventorySize)
+    {     
+        for (int i = 0; i < inventorySize; i++)
         {
-            Destroy(child.gameObject);
-        }
-    }
-
-    public void InitializedInventoryUI(int safeInventorySize, int dungeonInventorySize)
-    {
-        for (int i = 0; i < safeInventorySize; i++)
-        {
-
             InventoryItemUI itemUI = Instantiate(itemPrefab);
             itemUI.transform.SetParent(contentPanel, false);
-            safeItemsList.Add(itemUI);
+            itemsList.Add(itemUI);
             itemUI.OnItemClicked += HandleItemSelection;
             itemUI.OnItemBeginDrag += HandleBeginDrag;
             itemUI.OnItemDroppedOn += HandleSwap;
             itemUI.OnItemEndDrag += HandleEndDrag;
             itemUI.OnRightMouseBtnClick += HandleShowItemActions;
         }
-
-
 
     }
 
     internal void ResetAllItems()
     {
-        foreach (var item in safeItemsList)
+        foreach (var item in itemsList)
         {
             item.ResetData();
             item.Deselect();
         }
     }
 
-    
+    internal void UpdateDescription(int itemIndex, Sprite itemImage, string name, string description)
+    {
+        itemDescription.SetDescription(itemImage, name, description);
+        DeselectAllItems();
+        itemsList[itemIndex].Select();
+    }
 
     public void UpdateData(int itemIndex,
         Sprite itemImage, int itemQuantity)
     {
-        if (safeItemsList.Count > itemIndex)
+        if (itemsList.Count > itemIndex)
         {
-            safeItemsList[itemIndex].SetData(itemImage, itemQuantity);
+            itemsList[itemIndex].SetData(itemImage, itemQuantity);
         }
     }
 
     private void HandleShowItemActions(InventoryItemUI inventoryItemUI)
     {
-        int index = safeItemsList.IndexOf(inventoryItemUI);
+        int index = itemsList.IndexOf(inventoryItemUI);
         if (index == -1)
         {
             return;
@@ -138,7 +118,7 @@ public class InventoryUI : MonoBehaviour
 
     private void HandleSwap(InventoryItemUI inventoryItemUI)
     {
-        int index = safeItemsList.IndexOf(inventoryItemUI);
+        int index = itemsList.IndexOf(inventoryItemUI);
         if (index == -1)
         {         
             return;
@@ -155,7 +135,7 @@ public class InventoryUI : MonoBehaviour
 
     private void HandleBeginDrag(InventoryItemUI inventoryItemUI)
     {
-        int index = safeItemsList.IndexOf(inventoryItemUI);
+        int index = itemsList.IndexOf(inventoryItemUI);
         if (index == -1)
         {
             return;
@@ -173,7 +153,7 @@ public class InventoryUI : MonoBehaviour
 
     private void HandleItemSelection(InventoryItemUI inventoryItemUI)
     {
-        int index = safeItemsList.IndexOf(inventoryItemUI);
+        int index = itemsList.IndexOf(inventoryItemUI);
         if (index == -1)
         {
             return;
@@ -216,7 +196,7 @@ public class InventoryUI : MonoBehaviour
 
     private void DeselectAllItems()
     {
-        foreach (InventoryItemUI item in safeItemsList)
+        foreach (InventoryItemUI item in itemsList)
         {
             item.Deselect();
         }
