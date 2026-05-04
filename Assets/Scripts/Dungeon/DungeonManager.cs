@@ -15,6 +15,12 @@ public class DungeonManager : MonoBehaviour
 
     [Header("Player")]
 
+    [Header("Boss Floor")]
+    public bool isBossFloor = false;
+
+    [Header("Floor Progression")]
+    public int currentFloor = 1;
+    public int bossEveryXFloor = 5;
 
     [Header("Themes")]
     public ThemeSO[] themes;
@@ -59,10 +65,22 @@ public class DungeonManager : MonoBehaviour
             return;
         }
 
-        AddSpawnRoom();
-        GenerateConnectedNormalRooms();
-        GenerateExitRoomLast();
-        AssignSpecialAndBuffRooms();
+        bool isBossFloor = currentFloor % bossEveryXFloor == 0;
+
+        Debug.Log($"Generating floor {currentFloor}. Boss floor = {isBossFloor}");
+
+        if (isBossFloor)
+        {
+            GenerateBossFloor();
+        }
+        else
+        {
+            AddSpawnRoom();
+            GenerateConnectedNormalRooms();
+            GenerateExitRoomLast();
+            AssignSpecialAndBuffRooms();
+        }
+
         ChoosePrefabs(theme);
         SolveConnections();
         SpawnRooms();
@@ -214,6 +232,9 @@ public class DungeonManager : MonoBehaviour
                     break;
                 case RoomType.Buff:
                     node.chosenPrefab = GetRandomPrefab(theme.buffRoomPrefabs);
+                    break;
+                case RoomType.Boss:
+                    node.chosenPrefab = GetRandomPrefab(theme.bossRoomPrefabs);
                     break;
             }
 
@@ -502,5 +523,52 @@ public class DungeonManager : MonoBehaviour
             TrySpawnCorridor(node, Vector2Int.right, templateA, theme.corridorPrefab);
             TrySpawnCorridor(node, Vector2Int.up, templateA, theme.corridorPrefab);
         }
+    }
+
+    private void GenerateBossFloor()
+    {
+        AddSpawnRoom();
+
+        Vector2Int bossPos = spawnGridPos + Vector2Int.right;
+        Vector2Int exitPos = bossPos + Vector2Int.right;
+
+        if (!IsInsideGrid(bossPos) || !IsInsideGrid(exitPos))
+        {
+            bossPos = spawnGridPos + Vector2Int.left;
+            exitPos = bossPos + Vector2Int.left;
+        }
+
+        if (!IsInsideGrid(bossPos) || !IsInsideGrid(exitPos))
+        {
+            bossPos = spawnGridPos + Vector2Int.up;
+            exitPos = bossPos + Vector2Int.up;
+        }
+
+        if (!IsInsideGrid(bossPos) || !IsInsideGrid(exitPos))
+        {
+            bossPos = spawnGridPos + Vector2Int.down;
+            exitPos = bossPos + Vector2Int.down;
+        }
+
+        RoomNode boss = new RoomNode(bossPos);
+        boss.roomType = RoomType.Boss;
+        _roomMap.Add(bossPos, boss);
+
+        RoomNode exit = new RoomNode(exitPos);
+        exit.roomType = RoomType.Exit;
+        _roomMap.Add(exitPos, exit);
+    }
+
+
+    public void LoadNextFloor()
+    {
+        currentFloor++;
+
+        Debug.Log("Loading Floor: " + currentFloor);
+        if ((currentFloor-1)%5==0)
+        {
+            currentThemeIndex += 1;
+        }
+        GenerateFloor();
     }
 }

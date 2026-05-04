@@ -31,7 +31,7 @@ public class ExitDoor : MonoBehaviour
 
         if (_mgr != null)
         {
-            _mgr.GenerateFloor();
+            _mgr.LoadNextFloor();
         }
         else
         {

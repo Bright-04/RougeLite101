@@ -215,7 +215,7 @@ public class SlimeKingAI : MonoBehaviour
 
         // disable body collision for whole jump (weapons still work, but damage is ignored)
         DisableBossPlayerCollision();
-
+       
         // --- Phase 1: Charge animation while boss stands still ---
         path?.SetCanMove(false);
         if (rb != null) rb.linearVelocity = Vector2.zero;
@@ -223,10 +223,12 @@ public class SlimeKingAI : MonoBehaviour
 
         if (animator != null)
             animator.SetTrigger("Jump"); // plays SlimeKing_Jump
+            
 
         yield return new WaitForSeconds(jumpChargeDuration);
 
         // --- Phase 2: Shadow follows player for shadowFollowDuration ---
+        transform.position = new Vector3(-9999, -9999, 0);
         GameObject shadowObj = null;
         SlimeKingJumpShadow shadow = null;
 

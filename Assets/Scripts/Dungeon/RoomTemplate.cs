@@ -18,7 +18,6 @@ public class RoomTemplate : MonoBehaviour
     public Transform exitAnchor;
 
     [Header("Spawning")]
-    [Header("Spawning")]
     public RoomSpawnProfileSO spawnProfile;
 
     [Header("Connection Sockets")]
@@ -27,9 +26,17 @@ public class RoomTemplate : MonoBehaviour
     public Transform eastSocket;
     public Transform westSocket;
 
+    [Header("PlaceHolder")]
+    public Transform placeHolder;
+
     [Header("Connection Prefabs")]
     public GameObject doorPrefab;
     public GameObject wallPrefab;
+
+    [Header("Room Structure")]
+    public StructureRandomizer structureRandomizer;
+
+    private GameObject spawnedStructure;
 
     private readonly List<GameObject> _spawnedConnections = new List<GameObject>();
     private readonly List<GameObject> _spawnedDoors = new List<GameObject>();
@@ -280,5 +287,47 @@ public class RoomTemplate : MonoBehaviour
         // Đánh dấu là đã spawn đủ số lượng
         isSpawningFinished = true;
         Debug.Log($"[RoomTemplate] Đã spawn và nạp khoá cửa hoàn tất! Tổng số quái phải giết: {activeEnemies.Count}");
+    }
+
+    private void Start()
+    {
+        if (structureRandomizer == null)
+        {
+            structureRandomizer = GetComponent<StructureRandomizer>();
+        }
+
+        SpawnStructure();
+    }
+
+
+    private void SpawnStructure()
+    {
+        if (placeHolder == null || structureRandomizer == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: Missing placeHolder or structureRandomizer.");
+            return;
+        }
+
+        GameObject prefab = structureRandomizer.GetRandomStructure();
+
+        if (prefab == null)
+        {
+            Debug.LogWarning($"{gameObject.name}: StructureRandomizer returned null.");
+            return;
+        }
+
+        spawnedStructure = Instantiate(
+            prefab,
+            placeHolder.position,
+            placeHolder.rotation,
+            placeHolder
+        );
+
+        Transform centerChild = spawnedStructure.transform.Find("Center");
+        if (centerChild != null)
+        {
+            Vector3 offset = spawnedStructure.transform.position - centerChild.position;
+            spawnedStructure.transform.position = placeHolder.position + offset;
+        }
     }
 }
