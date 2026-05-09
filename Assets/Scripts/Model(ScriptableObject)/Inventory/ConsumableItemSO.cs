@@ -20,15 +20,3 @@ public class ConsumableItemSO : ItemSO, IDestroyableItem, IItemAction
         return true;
     }
 }
-
-public interface IDestroyableItem
-{
-
-}
-
-public interface IItemAction
-{
-    public string ActionName { get; }
-    //public AudioClip actionSFX { get; }
-    bool PerformAction(GameObject character);
-}

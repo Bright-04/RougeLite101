@@ -31,4 +31,18 @@ public class ModifierData
 {
     public PlayerStatModifierSO statModifier;
     public float value;
+
+    public PlayerStatModifierSO StatModifier => statModifier;
+}
+
+public interface IDestroyableItem
+{
+
+}
+
+public interface IItemAction
+{
+    public string ActionName { get; }
+    //public AudioClip actionSFX { get; }
+    bool PerformAction(GameObject character);
 }

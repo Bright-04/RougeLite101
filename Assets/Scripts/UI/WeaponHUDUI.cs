@@ -59,9 +59,9 @@ public class WeaponHUDUI : MonoBehaviour
     {
         if (targetIcon == null) return;
 
-        if (weaponDef != null && weaponDef.Icon != null)
+        if (weaponDef != null && weaponDef.ItemImage != null)
         {
-            targetIcon.sprite = weaponDef.Icon;
+            targetIcon.sprite = weaponDef.ItemImage;
             targetIcon.color = Color.white;
         }
         else

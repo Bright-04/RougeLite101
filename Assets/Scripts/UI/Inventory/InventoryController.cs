@@ -95,7 +95,7 @@ public class InventoryController : MonoBehaviour
         }
         ItemSO item = inventoryItem.item;
         string description = PrepareDescription(inventoryItem);
-        inventoryUI.UpdateDescription(itemIndex, item.ItemImage, item.name, description);
+        inventoryUI.UpdateDescription(itemIndex, item.ItemImage, item.Name, description);
 
     }
 
@@ -106,7 +106,7 @@ public class InventoryController : MonoBehaviour
         sb.AppendLine();
         for (int i = 0; i < inventoryItem.item.modifiersData.Count; i++)
         {
-            sb.Append($"{inventoryItem.item.modifiersData[i].statModifier.ModifierName} " +
+            sb.Append($"{inventoryItem.item.modifiersData[i].StatModifier.ModifierName} " +
                 $": {inventoryItem.item.modifiersData[i].value}");
             sb.AppendLine();
         }
@@ -135,19 +135,20 @@ public class InventoryController : MonoBehaviour
             return;
         }
 
-        IItemAction itemAction = inventoryItem.item as IItemAction;
+        IDestroyableItem destroyableItem = inventoryItem.item as IDestroyableItem;
+        if (destroyableItem != null)
+        {
+            CurrentInventoryData.RemoveItem(itemIndex, 1);
+        }
 
+        IItemAction itemAction = inventoryItem.item as IItemAction;
         if (itemAction != null)
         {
 
             itemAction.PerformAction(gameObject);
         }
 
-        IDestroyableItem destroyableItem = inventoryItem.item as IDestroyableItem;
-        if (destroyableItem != null)
-        {
-            //inventoryUI.AddAction("Drop", () => DropItem(itemIndex, inventoryItem.quantity));
-        }
+        
 
 
     }

@@ -9,7 +9,6 @@ public class EquipmentManager : MonoBehaviour
         Main = 0,
         Sub = 1
     }
-
     [Header("Runtime References")]
     [SerializeField] private Transform weaponHolder;
     [SerializeField] private Transform aimPivot;
