@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewWeapon", menuName = "Weapons/Weapon Definition")]
-public class WeaponDefinitionSO : ScriptableObject
+public class WeaponDefinitionSO : ItemSO
 {
     [Header("Identity")]
     [SerializeField] private string weaponId;

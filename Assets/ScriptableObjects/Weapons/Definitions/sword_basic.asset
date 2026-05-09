@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 338117e368fff564395ed01a4d1900ac, type: 3}
   m_Name: sword_basic
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
+  <IsStackable>k__BackingField: 0
+  <MaxStackSize>k__BackingField: 1
+  <Name>k__BackingField: Basic Sword
+  <Description>k__BackingField: A normal iron sword
+  <ItemImage>k__BackingField: {fileID: 712035800519618848, guid: c9218c59738d4a34f8c917303348dc7f, type: 3}
   weaponId: sword_basic
   displayName: Iron Sword
   icon: {fileID: 712035800519618848, guid: c9218c59738d4a34f8c917303348dc7f, type: 3}

@@ -486,7 +486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29f8eb08454c23d46bad58f2375e8b31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUpSystem
-  inventoryData: {fileID: 0}
+  inventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
 --- !u!1 &3247644244558153244
 GameObject:
   m_ObjectHideFlags: 0
