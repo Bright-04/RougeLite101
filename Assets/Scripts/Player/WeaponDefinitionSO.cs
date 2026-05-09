@@ -35,10 +35,11 @@ public class WeaponDefinitionSO : ItemSO, IDestroyableItem, IItemAction
 
     public bool PerformAction(GameObject character)
     {
-        EquipmentManager weaponSystem = character.GetComponent<EquipmentManager>();
-        if (weaponSystem != null)
+        EquipmentManager equipmentManager = character.GetComponent<EquipmentManager>();
+        if (equipmentManager != null)
         {
-            weaponSystem.ReplaceWeapon(EquipmentManager.WeaponSlot.Main, this);
+            EquipmentManager.WeaponSlot activeSlot = equipmentManager.GetActiveSlot();
+            equipmentManager.ReplaceWeapon(activeSlot, this);
             return true;
         }
         return false;
