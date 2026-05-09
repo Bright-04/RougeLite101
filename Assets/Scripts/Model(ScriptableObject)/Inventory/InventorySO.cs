@@ -137,6 +137,30 @@ public class InventorySO : ScriptableObject
     {
         OnInventoryUpdated?.Invoke(GetCurrentInventoryState());
     }
+
+    public void RemoveItem(int itemIndex, int amount)
+    {
+        if (inventoryItems.Count > itemIndex)
+        {
+            if (inventoryItems[itemIndex].IsEmpty)
+            {
+                return;
+            }
+                
+            int reminder = inventoryItems[itemIndex].quantity - amount;
+            if (reminder <= 0)
+            {
+                inventoryItems[itemIndex] = InventoryItem.GetEmptyItem();
+            }
+            else
+            {
+                inventoryItems[itemIndex] = inventoryItems[itemIndex].ChangeQuantity(reminder);
+            }
+                
+
+            InformAboutChange();
+        }
+    }
 }
 
 [Serializable]
@@ -144,7 +168,6 @@ public struct InventoryItem
 {
     public int quantity;
     public ItemSO item;
-    //public List<ItemParameter> itemState;
     public bool IsEmpty => item == null;
 
     public InventoryItem ChangeQuantity(int newQuantity)
@@ -153,7 +176,6 @@ public struct InventoryItem
         {
             item = this.item,
             quantity = newQuantity,
-            //itemState = new List<ItemParameter>(this.itemState)
         };
     }
 
@@ -162,6 +184,5 @@ public struct InventoryItem
         {
             item = null,
             quantity = 0,
-            //itemState = new List<ItemParameter>()
         };
 }

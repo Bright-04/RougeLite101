@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewItem", menuName = "Inventory/ItemSO")]
-public class ItemSO : ScriptableObject
+public abstract class ItemSO : ScriptableObject
 {
     [field: SerializeField]
     public bool IsStackable { get; set; }
@@ -23,18 +22,13 @@ public class ItemSO : ScriptableObject
     [field: SerializeField]
     public Sprite ItemImage { get; set; }
 
-    //[field: SerializeField]
-    //public List<ItemParameter> DefaultParametersList { get; set; }
+    [SerializeField]
+    public List<ModifierData> modifiersData = new List<ModifierData>();
 }
 
-//[Serializable]
-//public struct ItemParameter : IEquatable<ItemParameter>
-//{
-//    public ItemParameterSO itemParameter;
-//    public float value;
-
-//    public bool Equals(ItemParameter other)
-//    {
-//        return other.itemParameter == itemParameter;
-//    }
-//}
+[Serializable]
+public class ModifierData
+{
+    public PlayerStatModifierSO statModifier;
+    public float value;
+}

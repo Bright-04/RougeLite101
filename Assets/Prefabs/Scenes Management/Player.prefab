@@ -465,15 +465,7 @@ MonoBehaviour:
   inventoryUI: {fileID: 0}
   safeInventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
   dungeonInventoryData: {fileID: 11400000, guid: 9563c9a8f6befc0418b7b48ef404a27d, type: 2}
-  initialItems:
-  - quantity: 2
-    item: {fileID: 11400000, guid: 0e8e731ca1b945e45a37e3ec00694de9, type: 2}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 3
-    item: {fileID: 11400000, guid: e6bbc37ff158dc144adfe5113012489f, type: 2}
+  initialItems: []
 --- !u!114 &3348738501711190917
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 public class InventoryController : MonoBehaviour
 {
@@ -93,11 +94,25 @@ public class InventoryController : MonoBehaviour
             return;
         }
         ItemSO item = inventoryItem.item;
-        //string description = PrepareDescription(inventoryItem);
-        inventoryUI.UpdateDescription(itemIndex, item.ItemImage,
-            item.name, item.Description);
+        string description = PrepareDescription(inventoryItem);
+        inventoryUI.UpdateDescription(itemIndex, item.ItemImage, item.name, description);
 
     }
+
+    private string PrepareDescription(InventoryItem inventoryItem)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append(inventoryItem.item.Description);
+        sb.AppendLine();
+        for (int i = 0; i < inventoryItem.item.modifiersData.Count; i++)
+        {
+            sb.Append($"{inventoryItem.item.modifiersData[i].statModifier.ModifierName} " +
+                $": {inventoryItem.item.modifiersData[i].value}");
+            sb.AppendLine();
+        }
+        return sb.ToString();
+    }
+
     private void HandleSwapItems(int itemIndex_1, int itemIndex_2)
     {
         CurrentInventoryData.SwapItems(itemIndex_1, itemIndex_2);
@@ -113,7 +128,27 @@ public class InventoryController : MonoBehaviour
     }
 
     private void HandleItemActionRequest(int itemIndex)
-    {       
+    {
+        InventoryItem inventoryItem = CurrentInventoryData.GetItemAt(itemIndex);
+        if (inventoryItem.IsEmpty)
+        {
+            return;
+        }
+
+        IItemAction itemAction = inventoryItem.item as IItemAction;
+
+        if (itemAction != null)
+        {
+
+            itemAction.PerformAction(gameObject);
+        }
+
+        IDestroyableItem destroyableItem = inventoryItem.item as IDestroyableItem;
+        if (destroyableItem != null)
+        {
+            //inventoryUI.AddAction("Drop", () => DropItem(itemIndex, inventoryItem.quantity));
+        }
+
 
     }
 
