@@ -16,7 +16,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField]
     private RectTransform contentPanel;
 
-    List<InventoryItemUI> itemsList = new List<InventoryItemUI>(); //list of  item   
+    public List<InventoryItemUI> itemsList = new List<InventoryItemUI>(); //list of  item   
 
     private bool inventoryActive = false;
     public bool IsInventoryActive() => inventoryActive;
@@ -35,8 +35,8 @@ public class InventoryUI : MonoBehaviour
 
     public event Action<int, int> OnSwapItems;
 
-    //[SerializeField]
-    //private ItemActionPanel actionPanel;
+    [SerializeField]
+    private ItemActionPanel actionPanel;
 
     private void Awake()
     {
@@ -108,7 +108,6 @@ public class InventoryUI : MonoBehaviour
             return;
         }
         OnItemActionRequested?.Invoke(index);
-        
     }
 
     private void HandleEndDrag(InventoryItemUI inventoryItemUI)
@@ -173,6 +172,7 @@ public class InventoryUI : MonoBehaviour
 
     public void HideInventory()
     {
+        actionPanel.Toggle(false);
         inventoryActive = false;
         gameObject.SetActive(false);
     }
@@ -183,16 +183,17 @@ public class InventoryUI : MonoBehaviour
         DeselectAllItems();
     }
 
-    //public void AddAction(string actionName, Action performAction)
-    //{
-    //    actionPanel.AddButon(actionName, performAction);
-    //}
+    //item action panel
+    public void AddAction(string actionName, Action performAction)
+    {
+        actionPanel.AddButon(actionName, performAction);
+    }
 
-    //public void ShowItemAction(int itemIndex)
-    //{
-    //    actionPanel.Toggle(true);
-    //    actionPanel.transform.position = listOfUIItems[itemIndex].transform.position;
-    //}
+    public void ShowItemAction(int itemIndex)
+    {
+        actionPanel.Toggle(true);
+        actionPanel.transform.position = itemsList[itemIndex].transform.position;
+    }
 
     private void DeselectAllItems()
     {
@@ -200,7 +201,7 @@ public class InventoryUI : MonoBehaviour
         {
             item.Deselect();
         }
-        //actionPanel.Toggle(false);
+        actionPanel.Toggle(false);
     }
 
 

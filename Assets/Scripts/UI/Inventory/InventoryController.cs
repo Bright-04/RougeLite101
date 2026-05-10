@@ -22,6 +22,12 @@ public class InventoryController : MonoBehaviour
 
     private PlayerControls playerControls;
 
+    //[SerializeField]
+    //private AudioClip dropClip;
+
+    //[SerializeField]
+    //private AudioSource audioSource;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -135,6 +141,39 @@ public class InventoryController : MonoBehaviour
             return;
         }
 
+        IItemAction itemAction = inventoryItem.item as IItemAction;
+        if (itemAction != null)
+        {
+            HandleDescriptionRequest(itemIndex);
+            inventoryUI.ShowItemAction(itemIndex);
+            inventoryUI.AddAction(itemAction.ActionName, () => PerformAction(itemIndex));       
+        }
+
+
+        IDestroyableItem destroyableItem = inventoryItem.item as IDestroyableItem;
+        if (destroyableItem != null)
+        {
+            inventoryUI.AddAction("Drop", () => DropItem(itemIndex, inventoryItem.quantity));
+        }
+    
+    }
+
+    private void DropItem(int itemIndex, int quantity)
+    {
+        CurrentInventoryData.RemoveItem(itemIndex, quantity);
+        inventoryUI.ResetSelection();
+        //audioSource.PlayOneShot(dropClip);
+    }
+
+    public void PerformAction(int itemIndex)
+    {
+        InventoryItem inventoryItem = CurrentInventoryData.GetItemAt(itemIndex);
+        if (inventoryItem.IsEmpty)
+        {
+            return;
+        }
+        
+
         IDestroyableItem destroyableItem = inventoryItem.item as IDestroyableItem;
         if (destroyableItem != null)
         {
@@ -144,13 +183,20 @@ public class InventoryController : MonoBehaviour
         IItemAction itemAction = inventoryItem.item as IItemAction;
         if (itemAction != null)
         {
-
             itemAction.PerformAction(gameObject);
+            //audioSource.PlayOneShot(itemAction.actionSFX);
+            if (CurrentInventoryData.GetItemAt(itemIndex).IsEmpty)
+            {
+                inventoryUI.ResetSelection();
+            }
+            else
+            {
+                inventoryUI.itemsList[itemIndex].Select();
+            }
+                
         }
 
-        
-
-
+      
     }
 
     private void OnEnable()

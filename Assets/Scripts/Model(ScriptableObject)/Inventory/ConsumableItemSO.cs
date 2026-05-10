@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "NewConsumableItem", menuName = "Inventory/ConsumableItemSO")]
 public class ConsumableItemSO : ItemSO, IDestroyableItem, IItemAction
 {
-    public string ActionName => "Consume";
+    public string ActionName => "Use";
 
     //[field: SerializeField]
     //public AudioClip actionSFX { get; private set; }
