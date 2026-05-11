@@ -60,6 +60,16 @@ public class PlayerStats : MonoBehaviour
         currentStamina = Mathf.Min(maxStamina, currentStamina + staminaRegen * Time.deltaTime);
     }
 
+    public void HealthRestore(float health)
+    {
+        currentHP = Mathf.Min(maxHP, currentHP + health);
+    }
+
+    public void ManaRestore(float mana)
+    {
+        currentMana = Mathf.Min(maxMana, currentMana + mana);
+    }
+
     public void TriggerInvincibility(float duration)
     {
         damageTimer = duration;

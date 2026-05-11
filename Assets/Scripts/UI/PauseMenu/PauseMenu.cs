@@ -8,14 +8,15 @@ public class PauseMenu : MonoBehaviour
     public GameObject pauseCanvas;
    
     private PlayerControls playerControls;
-    private bool isPaused = false;
+    private bool isPaused;
 
     private void Start()
     {
         // Ẩn pause menu ban đầu
-        if (pauseCanvas)
+        if (pauseCanvas != null)
         {
             pauseCanvas.SetActive(false);
+            isPaused = false;
         }
         // Đợi đến Start để đảm bảo InputManager đã Awake
         if (InputManager.Instance == null)
@@ -32,28 +33,6 @@ public class PauseMenu : MonoBehaviour
         Debug.Log("PauseMenu initialized!");
     }
 
-    //private void OnEnable()
-    //{
-    //    // Subscribe to ESC key
-    //    // Kiểm tra null trước khi unsubscribe
-    //    if (playerControls != null)
-    //    {
-    //        playerControls.NavigateUI.OpenPauseMenu.performed += OnOpenPausePerformed;
-    //    }
-
-
-    //}
-
-    //private void OnDisable()
-    //{
-    //    // Kiểm tra null trước khi unsubscribe
-    //    if (playerControls != null)
-    //    {
-    //        playerControls.NavigateUI.OpenPauseMenu.performed -= OnOpenPausePerformed;
-    //    }
-
-    //}
-
     private void OnDestroy()
     {
         if (playerControls != null)
@@ -68,7 +47,7 @@ public class PauseMenu : MonoBehaviour
 
     public void Pause()
     {
-        if (isPaused) return;
+        if (isPaused && !InputManager.Instance.IsUIActive()) return;
 
         isPaused = true;
         pauseCanvas.SetActive(true);
@@ -76,14 +55,13 @@ public class PauseMenu : MonoBehaviour
         // Disable gameplay inputs
         InputManager.Instance.EnableUIMap();
         
-
         Debug.Log("Game PAUSED");
     }
 
     
     public void Resume()
     {
-        if (!isPaused) return;
+        if (!isPaused && InputManager.Instance.IsUIActive()) return;
 
         isPaused = false;
         pauseCanvas.SetActive(false);
