@@ -28,6 +28,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private RuntimeAnimatorController playerAnimatorController;
     [SerializeField] private RuntimeAnimatorController swordAnimatorController;
     [SerializeField] private RuntimeAnimatorController bowAnimatorController;
+
+    [Header("Ground Shadow")]
+    [SerializeField] private bool showGroundShadow = true;
+    [SerializeField] private Vector3 groundShadowLocalPosition = new Vector3(0f, -0.145f, 0f);
+    [SerializeField] private Vector3 groundShadowLocalScale = new Vector3(0.32f, 0.12f, 1f);
+    [SerializeField] private Color groundShadowColor = new Color(0f, 0f, 0f, 0.6f);
+    [SerializeField] private int groundShadowOrderOffset = -1;
     
     private PlayerControls playerControls;
     private Vector2 movement;
@@ -40,6 +47,8 @@ public class PlayerMovement : MonoBehaviour
     private PlayerStats playerStats;
     private bool loggedMissingAnimatorController;
     private AnimationProfile animationProfile = AnimationProfile.Default;
+    private SpriteRenderer groundShadowRenderer;
+    private static Sprite groundShadowSprite;
 
     [Header("Dash Settings")]
     [SerializeField] private float dashSpeed = 200f;
@@ -68,6 +77,7 @@ public class PlayerMovement : MonoBehaviour
         playerStats = GetComponent<PlayerStats>();
 
         EnsureAimPivot();
+        EnsureGroundShadow();
     }
 
     private void Start()
@@ -108,9 +118,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (showGroundShadow && groundShadowRenderer == null)
+        {
+            EnsureGroundShadow();
+        }
+
         // 1. Cập nhật Input ngay lập tức để có hướng mới nhất cho Dash
         PlayerInput();
         UpdateAimDirection();
+        UpdateGroundShadowSorting();
 
         // 2. Kiểm tra Dash dựa trên hướng vừa cập nhật
         HandleDashInput();
@@ -295,6 +311,87 @@ public class PlayerMovement : MonoBehaviour
         pivotObject.transform.localRotation = Quaternion.identity;
         pivotObject.transform.localScale = Vector3.one;
         aimPivot = pivotObject.transform;
+    }
+
+    private void EnsureGroundShadow()
+    {
+        if (!showGroundShadow || mySpriteRender == null)
+        {
+            return;
+        }
+
+        Transform existingShadow = transform.Find("PlayerShadow");
+        GameObject shadowObject = existingShadow != null ? existingShadow.gameObject : new GameObject("PlayerShadow");
+        shadowObject.layer = gameObject.layer;
+        shadowObject.transform.SetParent(transform, false);
+        shadowObject.transform.localPosition = groundShadowLocalPosition;
+        shadowObject.transform.localRotation = Quaternion.identity;
+        shadowObject.transform.localScale = groundShadowLocalScale;
+
+        groundShadowRenderer = shadowObject.GetComponent<SpriteRenderer>();
+        if (groundShadowRenderer == null)
+        {
+            groundShadowRenderer = shadowObject.AddComponent<SpriteRenderer>();
+        }
+
+        groundShadowRenderer.sprite = GetGroundShadowSprite();
+        groundShadowRenderer.color = groundShadowColor;
+        groundShadowRenderer.flipX = false;
+        groundShadowRenderer.flipY = false;
+        groundShadowRenderer.enabled = true;
+        UpdateGroundShadowSorting();
+    }
+
+    private void UpdateGroundShadowSorting()
+    {
+        if (groundShadowRenderer == null || mySpriteRender == null)
+        {
+            return;
+        }
+
+        groundShadowRenderer.sortingLayerID = mySpriteRender.sortingLayerID;
+        groundShadowRenderer.sortingOrder = mySpriteRender.sortingOrder + groundShadowOrderOffset;
+    }
+
+    private static Sprite GetGroundShadowSprite()
+    {
+        if (groundShadowSprite != null)
+        {
+            return groundShadowSprite;
+        }
+
+        const int width = 64;
+        const int height = 32;
+        Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false)
+        {
+            name = "Generated_PlayerShadow"
+        };
+        texture.filterMode = FilterMode.Bilinear;
+        texture.wrapMode = TextureWrapMode.Clamp;
+
+        Color transparent = new Color(1f, 1f, 1f, 0f);
+        Color opaque = Color.white;
+        Vector2 center = new Vector2((width - 1) * 0.5f, (height - 1) * 0.5f);
+        float radiusX = width * 0.46f;
+        float radiusY = height * 0.38f;
+
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                float dx = (x - center.x) / radiusX;
+                float dy = (y - center.y) / radiusY;
+                float distance = dx * dx + dy * dy;
+                float alpha = Mathf.Clamp01(1f - distance);
+                alpha = Mathf.SmoothStep(0f, 1f, alpha);
+                texture.SetPixel(x, y, Color.Lerp(transparent, opaque, alpha));
+            }
+        }
+
+        texture.Apply();
+        groundShadowSprite = Sprite.Create(texture, new Rect(0f, 0f, width, height), new Vector2(0.5f, 0.5f), 100f);
+        groundShadowSprite.name = "Generated_PlayerShadow";
+        return groundShadowSprite;
     }
 
     private void UpdateAimDirection()
