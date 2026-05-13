@@ -1,16 +1,19 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class SpellCaster : MonoBehaviour
 {
     private const string DefaultCastTrigger = "Cast";
 
     public Spell[] spellSlots; // drag your 3 spells here in inspector
+    [SerializeField] private float castReleaseDelay = 0.5f;
 
     private PlayerStats stats;
     private Animator animator;
     private PlayerControls playerControls;
     private float[] cooldownTimers;
+    private bool isCasting;
 
     private void Awake()
     {
@@ -120,14 +123,20 @@ public class SpellCaster : MonoBehaviour
             return;
         }
 
-        CastSpell(spell);
+        if (isCasting)
+        {
+            return;
+        }
+
+        StartCoroutine(CastSpellAfterDelay(spell));
         stats.UseMana(spell.manaCost);
         cooldownTimers[index] = spell.cooldown;
     }
 
 
-    private void CastSpell(Spell spell)
+    private IEnumerator CastSpellAfterDelay(Spell spell)
     {
+        isCasting = true;
         Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
         if (animator != null)
@@ -136,6 +145,18 @@ public class SpellCaster : MonoBehaviour
             animator.SetTrigger(castTrigger);
         }
 
+        if (castReleaseDelay > 0f)
+        {
+            yield return new WaitForSeconds(castReleaseDelay);
+        }
+
+        ExecuteSpell(spell, mouseWorldPos);
+        isCasting = false;
+    }
+
+
+    private void ExecuteSpell(Spell spell, Vector2 mouseWorldPos)
+    {
         if (spell.spellPrefab != null)
         {
             if (spell.spellPrefab.GetComponent<FireballSpell>())
