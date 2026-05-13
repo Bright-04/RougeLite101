@@ -1,0 +1,674 @@
+fileFormatVersion: 2
+guid: 5a47c337dac262c4396477a30a066557
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4759102466943144521
+    second: Minecraft_armour_0
+  - first:
+      213: 3675355709060145139
+    second: Minecraft_armour_1
+  - first:
+      213: -4139127414804071409
+    second: Minecraft_armour_2
+  - first:
+      213: 3346009756575891299
+    second: Minecraft_armour_3
+  - first:
+      213: 1548787181596698053
+    second: Minecraft_armour_4
+  - first:
+      213: -2234212415274813758
+    second: Minecraft_armour_5
+  - first:
+      213: -1495020888322873580
+    second: Minecraft_armour_6
+  - first:
+      213: -4406594798227693872
+    second: Minecraft_armour_7
+  - first:
+      213: -2172193720553474978
+    second: Minecraft_armour_8
+  - first:
+      213: 350207006525258660
+    second: Minecraft_armour_9
+  - first:
+      213: -849300998024326728
+    second: Minecraft_armour_10
+  - first:
+      213: -376606428026035523
+    second: Minecraft_armour_11
+  - first:
+      213: -8163508889700134060
+    second: Minecraft_armour_12
+  - first:
+      213: 9093111197207671088
+    second: Minecraft_armour_13
+  - first:
+      213: -6112562996820273729
+    second: Minecraft_armour_14
+  - first:
+      213: -5541444203738814859
+    second: Minecraft_armour_15
+  - first:
+      213: 6597232326360841891
+    second: Minecraft_armour_16
+  - first:
+      213: 4301441765771678576
+    second: Minecraft_armour_17
+  - first:
+      213: -8849584605870734333
+    second: Minecraft_armour_18
+  - first:
+      213: -4110252360039688424
+    second: Minecraft_armour_19
+  - first:
+      213: -8378135210635930509
+    second: Minecraft_armour_20
+  - first:
+      213: -5913364563320166719
+    second: Minecraft_armour_21
+  - first:
+      213: 5009606208347488022
+    second: Minecraft_armour_22
+  - first:
+      213: -930140748974030875
+    second: Minecraft_armour_23
+  - first:
+      213: -3760728740600096945
+    second: Minecraft_armour_24
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 16
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Minecraft_armour_0
+      rect:
+        serializedVersion: 2
+        x: 28
+        y: 444
+        width: 100
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7bd2b28658544fdb0800000000000000
+      internalID: -4759102466943144521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_1
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 444
+        width: 100
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ffdbb56b8c710330800000000000000
+      internalID: 3675355709060145139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_2
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 444
+        width: 100
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f0cb588db8dde86c0800000000000000
+      internalID: -4139127414804071409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_3
+      rect:
+        serializedVersion: 2
+        x: 505
+        y: 443
+        width: 100
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36f72bb452a6f6e20800000000000000
+      internalID: 3346009756575891299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_4
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 443
+        width: 100
+        height: 90
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c5efbf5cb56e7510800000000000000
+      internalID: 1548787181596698053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_5
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 296
+        width: 139
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c6f6ca45ab7ef0e0800000000000000
+      internalID: -2234212415274813758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_6
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 297
+        width: 139
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 417e9bb4c6e904be0800000000000000
+      internalID: -1495020888322873580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_7
+      rect:
+        serializedVersion: 2
+        x: 321
+        y: 298
+        width: 139
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0dedd8ec061a8d2c0800000000000000
+      internalID: -4406594798227693872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_8
+      rect:
+        serializedVersion: 2
+        x: 486
+        y: 298
+        width: 139
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e547317e151dad1e0800000000000000
+      internalID: -2172193720553474978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_9
+      rect:
+        serializedVersion: 2
+        x: 639
+        y: 298
+        width: 139
+        height: 130
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ab7acdba6f2cd400800000000000000
+      internalID: 350207006525258660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_10
+      rect:
+        serializedVersion: 2
+        x: 26
+        y: 153
+        width: 100
+        height: 131
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b11069fd3da634f0800000000000000
+      internalID: -849300998024326728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_11
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 152
+        width: 100
+        height: 131
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db22165f27606caf0800000000000000
+      internalID: -376606428026035523
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_12
+      rect:
+        serializedVersion: 2
+        x: 339
+        y: 153
+        width: 100
+        height: 131
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4531eacbae365be80800000000000000
+      internalID: -8163508889700134060
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_13
+      rect:
+        serializedVersion: 2
+        x: 506
+        y: 154
+        width: 100
+        height: 131
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 031b0bcd478313e70800000000000000
+      internalID: 9093111197207671088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_14
+      rect:
+        serializedVersion: 2
+        x: 657
+        y: 153
+        width: 100
+        height: 131
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb594531750db2ba0800000000000000
+      internalID: -6112562996820273729
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_15
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 38
+        width: 140
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57620854bd5d813b0800000000000000
+      internalID: -5541444203738814859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_17
+      rect:
+        serializedVersion: 2
+        x: 159
+        y: 40
+        width: 140
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07399d6fe7ac1bb30800000000000000
+      internalID: 4301441765771678576
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_20
+      rect:
+        serializedVersion: 2
+        x: 318
+        y: 41
+        width: 141
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3745ad94a62eabb80800000000000000
+      internalID: -8378135210635930509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_21
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 38
+        width: 140
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c62bef82428feda0800000000000000
+      internalID: -5913364563320166719
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Minecraft_armour_23
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 39
+        width: 142
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ef794abae97713f0800000000000000
+      internalID: -930140748974030875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 0ee5d88718be22b459d4d01892ce7c76
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      Minecraft_armour_0: -4759102466943144521
+      Minecraft_armour_1: 3675355709060145139
+      Minecraft_armour_10: -849300998024326728
+      Minecraft_armour_11: -376606428026035523
+      Minecraft_armour_12: -8163508889700134060
+      Minecraft_armour_13: 9093111197207671088
+      Minecraft_armour_14: -6112562996820273729
+      Minecraft_armour_15: -5541444203738814859
+      Minecraft_armour_16: 6597232326360841891
+      Minecraft_armour_17: 4301441765771678576
+      Minecraft_armour_18: -8849584605870734333
+      Minecraft_armour_19: -4110252360039688424
+      Minecraft_armour_2: -4139127414804071409
+      Minecraft_armour_20: -8378135210635930509
+      Minecraft_armour_21: -5913364563320166719
+      Minecraft_armour_22: 5009606208347488022
+      Minecraft_armour_23: -930140748974030875
+      Minecraft_armour_24: -3760728740600096945
+      Minecraft_armour_25: -1679715873
+      Minecraft_armour_26: -108215309
+      Minecraft_armour_3: 3346009756575891299
+      Minecraft_armour_4: 1548787181596698053
+      Minecraft_armour_5: -2234212415274813758
+      Minecraft_armour_6: -1495020888322873580
+      Minecraft_armour_7: -4406594798227693872
+      Minecraft_armour_8: -2172193720553474978
+      Minecraft_armour_9: 350207006525258660
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
