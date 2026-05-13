@@ -1,16 +1,21 @@
 using UnityEngine;
+using System.Collections;
 
 public class Bow : Weapon
 {
     [Header("References")]
     public GameObject arrowPrefab;
     public Transform shootPoint;
+    [SerializeField] private bool hideEquippedWeaponSprites = true;
+    [SerializeField] private float shootReleaseDelay = 0.55f;
 
     private SpriteRenderer mySprite;
+    private Coroutine shootRoutine;
 
     private void Awake()
     {
         mySprite = GetComponent<SpriteRenderer>();
+        HideEquippedWeaponSprites();
     }
 
     private void Update()
@@ -50,11 +55,29 @@ public class Bow : Weapon
     {
         if (Time.time < nextUseTime) return;
         nextUseTime = Time.time + cooldown;
+
+        PlayerMovement.Instance?.PlayShootAnimation();
+
+        if (shootRoutine != null)
+        {
+            StopCoroutine(shootRoutine);
+        }
+
+        shootRoutine = StartCoroutine(ShootAfterDelay());
+    }
+
+    private IEnumerator ShootAfterDelay()
+    {
+        if (shootReleaseDelay > 0f)
+        {
+            yield return new WaitForSeconds(shootReleaseDelay);
+        }
         
         if (arrowPrefab == null || shootPoint == null)
         {
             Debug.LogWarning("Bow: arrowPrefab or shootPoint is null!", this);
-            return;
+            shootRoutine = null;
+            yield break;
         }
 
         // Đảm bảo Z=0 để nhìn thấy arrow (fix lỗi hiển thị trong Hierarchy nhưng mất trong Game)
@@ -80,6 +103,22 @@ public class Bow : Weapon
             {
                 arrowSprite.sortingOrder = 100; // Backup
             }
+        }
+
+        shootRoutine = null;
+    }
+
+    private void HideEquippedWeaponSprites()
+    {
+        if (!hideEquippedWeaponSprites)
+        {
+            return;
+        }
+
+        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            renderers[i].enabled = false;
         }
     }
 }

@@ -8,6 +8,8 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
     [SerializeField] private float attackCooldown = 0.5f;
     [SerializeField] private float colliderDistance = 0.15f;
     [SerializeField] private Vector3 weaponColliderScale = new Vector3(2f, 2f, 1f);
+    [SerializeField] private bool hideEquippedWeaponSprites = true;
+    [SerializeField] private bool spawnSlashEffect = false;
     private float nextAttackTime = 0f;
 
     [SerializeField] private GameObject slashAnimPrefab;
@@ -38,6 +40,8 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
             weaponCollider.localScale = weaponColliderScale;
             weaponCollider.gameObject.SetActive(false);
         }
+
+        HideEquippedWeaponSprites();
     }
     //add vì weaponCollider bị duplicate mỗi lần equip sword
     private void OnDestroy()
@@ -70,10 +74,11 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
         nextAttackTime = Time.time + attackCooldown;
 
+        playerMovement?.PlayAttackAnimation();
         myAnimator.SetTrigger("Attack");
         weaponCollider.gameObject.SetActive(true);
 
-        if (slashAnimPrefab != null && slashAnimSpawnPoint != null)
+        if (spawnSlashEffect && slashAnimPrefab != null && slashAnimSpawnPoint != null)
         {
             slashAnim = Instantiate(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
             slashAnim.transform.parent = this.transform.parent;
@@ -97,6 +102,20 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
         slashRenderer.sortingLayerID = swordRenderer.sortingLayerID;
         slashRenderer.sortingOrder = swordRenderer.sortingOrder;
+    }
+
+    private void HideEquippedWeaponSprites()
+    {
+        if (!hideEquippedWeaponSprites)
+        {
+            return;
+        }
+
+        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            renderers[i].enabled = false;
+        }
     }
 
     public void DoneAttackingAnimEvent()

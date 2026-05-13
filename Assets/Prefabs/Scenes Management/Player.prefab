@@ -95,7 +95,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 8943998719802223876, guid: 1a8965492b61a9a4189a0afa9c9edf80, type: 3}
+  m_Sprite: {fileID: 1142587451260209996, guid: b53186812fa5ba64ebbc5062f6206216, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -119,6 +119,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 10
   aimPivot: {fileID: 0}
+  playerAnimatorController: {fileID: 9100000, guid: 759c8c1defaf2fe438e9bda9467b6cc8, type: 2}
   dashSpeed: 10
   dashDuration: 0.2
   dashCooldown: 1

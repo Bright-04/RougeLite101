@@ -515,5 +515,39 @@ public class EquipmentManager : MonoBehaviour
         {
             mainWeaponInstance.gameObject.SetActive(true);
         }
+
+        UpdatePlayerAnimationProfile();
+    }
+
+    private void UpdatePlayerAnimationProfile()
+    {
+        if (playerMovement == null)
+        {
+            playerMovement = GetComponent<PlayerMovement>();
+        }
+
+        if (playerMovement == null)
+        {
+            return;
+        }
+
+        Weapon activeWeapon = GetWeaponInstance(activeSlot);
+        if (activeWeapon == null)
+        {
+            activeWeapon = mainWeaponInstance != null ? mainWeaponInstance : subWeaponInstance;
+        }
+
+        if (activeWeapon is Sword)
+        {
+            playerMovement.SetAnimationProfile(PlayerMovement.AnimationProfile.Sword);
+        }
+        else if (activeWeapon is Bow)
+        {
+            playerMovement.SetAnimationProfile(PlayerMovement.AnimationProfile.Bow);
+        }
+        else
+        {
+            playerMovement.SetAnimationProfile(PlayerMovement.AnimationProfile.Default);
+        }
     }
 }

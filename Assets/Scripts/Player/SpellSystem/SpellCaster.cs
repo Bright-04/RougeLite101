@@ -3,6 +3,8 @@ using UnityEngine.InputSystem;
 
 public class SpellCaster : MonoBehaviour
 {
+    private const string DefaultCastTrigger = "Cast";
+
     public Spell[] spellSlots; // drag your 3 spells here in inspector
 
     private PlayerStats stats;
@@ -128,8 +130,11 @@ public class SpellCaster : MonoBehaviour
     {
         Vector2 mouseWorldPos = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
 
-        if (!string.IsNullOrEmpty(spell.castAnimation))
-            animator.SetTrigger(spell.castAnimation);
+        if (animator != null)
+        {
+            string castTrigger = string.IsNullOrEmpty(spell.castAnimation) ? DefaultCastTrigger : spell.castAnimation;
+            animator.SetTrigger(castTrigger);
+        }
 
         if (spell.spellPrefab != null)
         {

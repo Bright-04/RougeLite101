@@ -5,23 +5,41 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {   
+    private const string PlayerAnimatorControllerResourcePath = "Player";
+    private const string SwordAnimatorControllerResourcePath = "Player_Sword";
+    private const string BowAnimatorControllerResourcePath = "Player_Bow";
+
+    public enum AnimationProfile
+    {
+        Default,
+        Sword,
+        Bow
+    }
+
     public bool FacingLeft { get { return facingLeft; } set { facingLeft = value; } }
     public Vector2 LastAimDirection => lastAimDirection;
+    public Vector2 LookDirection => lookDirection;
     public Transform AimPivot => aimPivot != null ? aimPivot : transform;
 
     public static PlayerMovement Instance;
 
     [SerializeField] private float moveSpeed = 1f;
     [SerializeField] private Transform aimPivot;
+    [SerializeField] private RuntimeAnimatorController playerAnimatorController;
+    [SerializeField] private RuntimeAnimatorController swordAnimatorController;
+    [SerializeField] private RuntimeAnimatorController bowAnimatorController;
     
     private PlayerControls playerControls;
     private Vector2 movement;
     private Vector2 lastAimDirection = Vector2.right;
+    private Vector2 lookDirection = Vector2.down;
     private Rigidbody2D rb;
     private Animator myAnimator;
     private SpriteRenderer mySpriteRender;
     private Knockback knockback;
     private PlayerStats playerStats;
+    private bool loggedMissingAnimatorController;
+    private AnimationProfile animationProfile = AnimationProfile.Default;
 
     [Header("Dash Settings")]
     [SerializeField] private float dashSpeed = 200f;
@@ -44,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         myAnimator = GetComponent<Animator>();
+        EnsureAnimatorController();
         mySpriteRender = GetComponent<SpriteRenderer>();
         knockback = GetComponent<Knockback>();
         playerStats = GetComponent<PlayerStats>();
@@ -243,8 +262,12 @@ public class PlayerMovement : MonoBehaviour
         // Cố định hoạt ảnh: Nếu đang lướt, không cập nhật moveX/moveY
         if (isDashing) return;
 
-        myAnimator.SetFloat("moveX", movement.x);
-        myAnimator.SetFloat("moveY", movement.y);
+        if (CanPlayAnimator())
+        {
+            myAnimator.SetFloat("moveX", movement.x);
+            myAnimator.SetFloat("moveY", movement.y);
+            myAnimator.SetBool("isMoving", movement.sqrMagnitude > 0.01f);
+        }
     }
 
     private void Move()
@@ -294,17 +317,194 @@ public class PlayerMovement : MonoBehaviour
         }
 
         lastAimDirection = newAimDirection.normalized;
+        lookDirection = QuantizeCardinalDirection(lastAimDirection);
 
-        // Use stable root center for flipping logic to avoid the AimPivot feedback loop vibration!
+        if (CanPlayAnimator())
+        {
+            myAnimator.SetFloat("lookX", lookDirection.x);
+            myAnimator.SetFloat("lookY", lookDirection.y);
+        }
+
+        // Use stable root center for hand/weapon anchoring without flipping the player sprite.
         Vector2 stableAimDirection = mouseWorldPosition - transform.position;
         if (Mathf.Abs(stableAimDirection.x) >= 0.01f)
         {
             FacingLeft = stableAimDirection.x < 0f;
-            if (mySpriteRender != null)
+        }
+    }
+
+    private Vector2 QuantizeCardinalDirection(Vector2 direction)
+    {
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        {
+            return direction.x < 0f ? Vector2.left : Vector2.right;
+        }
+
+        return direction.y < 0f ? Vector2.down : Vector2.up;
+    }
+
+    private void EnsureAnimatorController()
+    {
+        if (myAnimator == null)
+        {
+            return;
+        }
+
+        RuntimeAnimatorController targetController = GetTargetAnimatorController();
+        if (targetController != null)
+        {
+            if (myAnimator.runtimeAnimatorController != targetController)
             {
-                mySpriteRender.flipX = FacingLeft;
+                myAnimator.runtimeAnimatorController = targetController;
+                ReapplyAnimatorParameters();
+            }
+
+            return;
+        }
+
+        if (myAnimator.runtimeAnimatorController != null)
+        {
+            return;
+        }
+
+        if (!loggedMissingAnimatorController)
+        {
+            loggedMissingAnimatorController = true;
+            Debug.LogWarning("PlayerMovement: Animator has no controller assigned and Resources/Player.controller could not be loaded.", this);
+        }
+    }
+
+    private bool CanPlayAnimator()
+    {
+        EnsureAnimatorController();
+        return myAnimator != null && myAnimator.runtimeAnimatorController != null;
+    }
+
+    public void SetSwordAnimationProfile(bool useSwordProfile)
+    {
+        SetAnimationProfile(useSwordProfile ? AnimationProfile.Sword : AnimationProfile.Default);
+    }
+
+    public void SetAnimationProfile(AnimationProfile profile)
+    {
+        if (animationProfile == profile && CanPlayAnimator())
+        {
+            return;
+        }
+
+        animationProfile = profile;
+        EnsureAnimatorController();
+    }
+
+    public void PlayAttackAnimation()
+    {
+        if (CanPlayAnimator() && HasAnimatorParameter("Attack", AnimatorControllerParameterType.Trigger))
+        {
+            myAnimator.ResetTrigger("Attack");
+            myAnimator.SetTrigger("Attack");
+        }
+    }
+
+    public void PlayShootAnimation()
+    {
+        if (CanPlayAnimator() && HasAnimatorParameter("Shoot", AnimatorControllerParameterType.Trigger))
+        {
+            myAnimator.ResetTrigger("Shoot");
+            myAnimator.SetTrigger("Shoot");
+        }
+    }
+
+    private RuntimeAnimatorController GetTargetAnimatorController()
+    {
+        RuntimeAnimatorController baseController = GetBaseAnimatorController();
+        switch (animationProfile)
+        {
+            case AnimationProfile.Sword:
+                if (swordAnimatorController == null)
+                {
+                    swordAnimatorController = Resources.Load<RuntimeAnimatorController>(SwordAnimatorControllerResourcePath);
+                }
+
+                return swordAnimatorController != null ? swordAnimatorController : baseController;
+
+            case AnimationProfile.Bow:
+                if (bowAnimatorController == null)
+                {
+                    bowAnimatorController = Resources.Load<RuntimeAnimatorController>(BowAnimatorControllerResourcePath);
+                }
+
+                return bowAnimatorController != null ? bowAnimatorController : baseController;
+
+            default:
+                return baseController;
+        }
+    }
+
+    private RuntimeAnimatorController GetBaseAnimatorController()
+    {
+        if (playerAnimatorController != null)
+        {
+            return playerAnimatorController;
+        }
+
+        playerAnimatorController = Resources.Load<RuntimeAnimatorController>(PlayerAnimatorControllerResourcePath);
+        if (playerAnimatorController != null)
+        {
+            return playerAnimatorController;
+        }
+
+        return myAnimator != null ? myAnimator.runtimeAnimatorController : null;
+    }
+
+    private void ReapplyAnimatorParameters()
+    {
+        if (myAnimator == null || myAnimator.runtimeAnimatorController == null)
+        {
+            return;
+        }
+
+        if (HasAnimatorParameter("moveX", AnimatorControllerParameterType.Float))
+        {
+            myAnimator.SetFloat("moveX", movement.x);
+        }
+
+        if (HasAnimatorParameter("moveY", AnimatorControllerParameterType.Float))
+        {
+            myAnimator.SetFloat("moveY", movement.y);
+        }
+
+        if (HasAnimatorParameter("isMoving", AnimatorControllerParameterType.Bool))
+        {
+            myAnimator.SetBool("isMoving", movement.sqrMagnitude > 0.01f);
+        }
+
+        if (HasAnimatorParameter("lookX", AnimatorControllerParameterType.Float))
+        {
+            myAnimator.SetFloat("lookX", lookDirection.x);
+        }
+
+        if (HasAnimatorParameter("lookY", AnimatorControllerParameterType.Float))
+        {
+            myAnimator.SetFloat("lookY", lookDirection.y);
+        }
+    }
+
+    private bool HasAnimatorParameter(string parameterName, AnimatorControllerParameterType parameterType)
+    {
+        if (myAnimator == null || myAnimator.runtimeAnimatorController == null)
+        {
+            return false;
+        }
+
+        foreach (AnimatorControllerParameter parameter in myAnimator.parameters)
+        {
+            if (parameter.name == parameterName && parameter.type == parameterType)
+            {
+                return true;
             }
         }
+
+        return false;
     }
 
 }
