@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {   
+    private const string FallbackAnimatorControllerResourcePath = "Player_Rework_4Dir_Walk";
+
     public bool FacingLeft { get { return facingLeft; } set { facingLeft = value; } }
     public Vector2 LastAimDirection => lastAimDirection;
     public Transform AimPivot => aimPivot != null ? aimPivot : transform;
@@ -13,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float moveSpeed = 1f;
     [SerializeField] private Transform aimPivot;
+    [SerializeField] private bool flipSpriteWithAim = true;
+    [SerializeField] private RuntimeAnimatorController fallbackAnimatorController;
     
     private PlayerControls playerControls;
     private Vector2 movement;
@@ -22,6 +26,9 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer mySpriteRender;
     private Knockback knockback;
     private PlayerStats playerStats;
+    private bool hasLastMoveXParameter;
+    private bool hasLastMoveYParameter;
+    private bool warnedMissingAnimatorController;
 
     [Header("Dash Settings")]
     [SerializeField] private float dashSpeed = 200f;
@@ -47,6 +54,8 @@ public class PlayerMovement : MonoBehaviour
         mySpriteRender = GetComponent<SpriteRenderer>();
         knockback = GetComponent<Knockback>();
         playerStats = GetComponent<PlayerStats>();
+        EnsureAnimatorController();
+        CacheAnimatorParameters();
 
         EnsureAimPivot();
     }
@@ -243,8 +252,19 @@ public class PlayerMovement : MonoBehaviour
         // Cố định hoạt ảnh: Nếu đang lướt, không cập nhật moveX/moveY
         if (isDashing) return;
 
+        if (!CanUseAnimatorController())
+        {
+            return;
+        }
+
         myAnimator.SetFloat("moveX", movement.x);
         myAnimator.SetFloat("moveY", movement.y);
+
+        if (movement.sqrMagnitude > 0.01f)
+        {
+            if (hasLastMoveXParameter) myAnimator.SetFloat("lastMoveX", movement.x);
+            if (hasLastMoveYParameter) myAnimator.SetFloat("lastMoveY", movement.y);
+        }
     }
 
     private void Move()
@@ -300,11 +320,73 @@ public class PlayerMovement : MonoBehaviour
         if (Mathf.Abs(stableAimDirection.x) >= 0.01f)
         {
             FacingLeft = stableAimDirection.x < 0f;
-            if (mySpriteRender != null)
+            if (flipSpriteWithAim && mySpriteRender != null)
             {
                 mySpriteRender.flipX = FacingLeft;
             }
         }
+    }
+
+    private void CacheAnimatorParameters()
+    {
+        if (myAnimator == null)
+        {
+            return;
+        }
+
+        foreach (AnimatorControllerParameter parameter in myAnimator.parameters)
+        {
+            if (parameter.name == "lastMoveX")
+            {
+                hasLastMoveXParameter = true;
+            }
+            else if (parameter.name == "lastMoveY")
+            {
+                hasLastMoveYParameter = true;
+            }
+        }
+    }
+
+    private void EnsureAnimatorController()
+    {
+        if (myAnimator == null || myAnimator.runtimeAnimatorController != null)
+        {
+            return;
+        }
+
+        if (fallbackAnimatorController == null)
+        {
+            fallbackAnimatorController = Resources.Load<RuntimeAnimatorController>(FallbackAnimatorControllerResourcePath);
+        }
+
+        if (fallbackAnimatorController == null)
+        {
+            return;
+        }
+
+        myAnimator.runtimeAnimatorController = fallbackAnimatorController;
+        CacheAnimatorParameters();
+    }
+
+    private bool CanUseAnimatorController()
+    {
+        EnsureAnimatorController();
+
+        if (myAnimator == null || myAnimator.runtimeAnimatorController == null)
+        {
+            if (!warnedMissingAnimatorController)
+            {
+                string reason = myAnimator == null
+                    ? "Animator component is missing"
+                    : $"AnimatorController is missing and Resources.Load('{FallbackAnimatorControllerResourcePath}') returned null";
+                Debug.LogWarning($"PlayerMovement: {reason}. Movement animation parameters will be skipped.", this);
+                warnedMissingAnimatorController = true;
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
 }

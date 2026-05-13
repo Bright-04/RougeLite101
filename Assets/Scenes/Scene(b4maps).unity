@@ -791,6 +791,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 4
+  aimPivot: {fileID: 0}
+  flipSpriteWithAim: 0
+  fallbackAnimatorController: {fileID: 9100000, guid: 636595a1eb8e37a4f98ca7a305a7f3a7, type: 2}
+  dashSpeed: 10
+  dashDuration: 0.2
+  dashCooldown: 1
 --- !u!95 &1693237142
 Animator:
   serializedVersion: 7
@@ -801,7 +807,7 @@ Animator:
   m_GameObject: {fileID: 1693237137}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 759c8c1defaf2fe438e9bda9467b6cc8, type: 2}
+  m_Controller: {fileID: 9100000, guid: 636595a1eb8e37a4f98ca7a305a7f3a7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

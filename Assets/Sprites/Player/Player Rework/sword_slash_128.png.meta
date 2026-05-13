@@ -1,0 +1,754 @@
+fileFormatVersion: 2
+guid: a271c716b67bb754889ed1c0d903440a
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5660908666167936682
+    second: sword_slash_128_0
+  - first:
+      213: -5212480923219635530
+    second: sword_slash_128_1
+  - first:
+      213: -4286357794592377159
+    second: sword_slash_128_2
+  - first:
+      213: -2607542992915576369
+    second: sword_slash_128_3
+  - first:
+      213: 2143270917065193588
+    second: sword_slash_128_4
+  - first:
+      213: -6588438641094781808
+    second: sword_slash_128_5
+  - first:
+      213: 5029930800146747373
+    second: sword_slash_128_6
+  - first:
+      213: -974400734534057944
+    second: sword_slash_128_7
+  - first:
+      213: 1350854905627684082
+    second: sword_slash_128_8
+  - first:
+      213: -7209587145386652911
+    second: sword_slash_128_9
+  - first:
+      213: 8099536135474406549
+    second: sword_slash_128_10
+  - first:
+      213: 9053257339038175694
+    second: sword_slash_128_11
+  - first:
+      213: 1500921058580104369
+    second: sword_slash_128_12
+  - first:
+      213: 4708639669663996725
+    second: sword_slash_128_13
+  - first:
+      213: 7063491069617627974
+    second: sword_slash_128_14
+  - first:
+      213: 1764107003600025197
+    second: sword_slash_128_15
+  - first:
+      213: -2605398415158551166
+    second: sword_slash_128_16
+  - first:
+      213: -4469463826607775323
+    second: sword_slash_128_17
+  - first:
+      213: -772151993616947130
+    second: sword_slash_128_18
+  - first:
+      213: 960150790494025359
+    second: sword_slash_128_19
+  - first:
+      213: 6631265105852803499
+    second: sword_slash_128_20
+  - first:
+      213: -336354358568045960
+    second: sword_slash_128_21
+  - first:
+      213: -5490424214245111483
+    second: sword_slash_128_22
+  - first:
+      213: 4166873225412697855
+    second: sword_slash_128_23
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 200
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: sword_slash_128_0
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 417
+        width: 31
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa6ced860769f8e40800000000000000
+      internalID: 5660908666167936682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_1
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 416
+        width: 32
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b25efc973c89a7b0800000000000000
+      internalID: -5212480923219635530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_2
+      rect:
+        serializedVersion: 2
+        x: 293
+        y: 416
+        width: 40
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b63811cb4cc384c0800000000000000
+      internalID: -4286357794592377159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_3
+      rect:
+        serializedVersion: 2
+        x: 421
+        y: 416
+        width: 42
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc945ba967520dbd0800000000000000
+      internalID: -2607542992915576369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_4
+      rect:
+        serializedVersion: 2
+        x: 558
+        y: 416
+        width: 51
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 478b8152b8d6ebd10800000000000000
+      internalID: 2143270917065193588
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_5
+      rect:
+        serializedVersion: 2
+        x: 691
+        y: 416
+        width: 63
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 094961586f92194a0800000000000000
+      internalID: -6588438641094781808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_6
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 288
+        width: 30
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: def0b8bb967edc540800000000000000
+      internalID: 5029930800146747373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_7
+      rect:
+        serializedVersion: 2
+        x: 176
+        y: 286
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 820c73dc1bb3a72f0800000000000000
+      internalID: -974400734534057944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_8
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 288
+        width: 27
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fc280921633fb210800000000000000
+      internalID: 1350854905627684082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_9
+      rect:
+        serializedVersion: 2
+        x: 417
+        y: 286
+        width: 44
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 11b810670b662fb90800000000000000
+      internalID: -7209587145386652911
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_10
+      rect:
+        serializedVersion: 2
+        x: 527
+        y: 287
+        width: 62
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5946468b335576070800000000000000
+      internalID: 8099536135474406549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_11
+      rect:
+        serializedVersion: 2
+        x: 655
+        y: 289
+        width: 62
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec191996591a3ad70800000000000000
+      internalID: 9053257339038175694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_12
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 160
+        width: 31
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1b4029420c754d410800000000000000
+      internalID: 1500921058580104369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_13
+      rect:
+        serializedVersion: 2
+        x: 174
+        y: 160
+        width: 32
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 53b92a505d2785140800000000000000
+      internalID: 4708639669663996725
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_14
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 160
+        width: 42
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 643e3be24bf860260800000000000000
+      internalID: 7063491069617627974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_15
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 161
+        width: 44
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d66bb5f19fd5b7810800000000000000
+      internalID: 1764107003600025197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_16
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 156
+        width: 54
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28ddb1602f3c7dbd0800000000000000
+      internalID: -2605398415158551166
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_17
+      rect:
+        serializedVersion: 2
+        x: 691
+        y: 156
+        width: 54
+        height: 57
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a1e596745649f1c0800000000000000
+      internalID: -4469463826607775323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_18
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 32
+        width: 31
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6482ad35ad3c845f0800000000000000
+      internalID: -772151993616947130
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_19
+      rect:
+        serializedVersion: 2
+        x: 180
+        y: 30
+        width: 28
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f86f43e8e04235d00800000000000000
+      internalID: 960150790494025359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_20
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 32
+        width: 27
+        height: 53
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ba9acc5da7cf60c50800000000000000
+      internalID: 6631265105852803499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_21
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 30
+        width: 44
+        height: 55
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 872b5e23e77055bf0800000000000000
+      internalID: -336354358568045960
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_22
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 31
+        width: 62
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54987b344481ec3b0800000000000000
+      internalID: -5490424214245111483
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: sword_slash_128_23
+      rect:
+        serializedVersion: 2
+        x: 691
+        y: 33
+        width: 62
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ffe5fc81f15b3d930800000000000000
+      internalID: 4166873225412697855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      sword_slash_128_0: 5660908666167936682
+      sword_slash_128_1: -5212480923219635530
+      sword_slash_128_10: 8099536135474406549
+      sword_slash_128_11: 9053257339038175694
+      sword_slash_128_12: 1500921058580104369
+      sword_slash_128_13: 4708639669663996725
+      sword_slash_128_14: 7063491069617627974
+      sword_slash_128_15: 1764107003600025197
+      sword_slash_128_16: -2605398415158551166
+      sword_slash_128_17: -4469463826607775323
+      sword_slash_128_18: -772151993616947130
+      sword_slash_128_19: 960150790494025359
+      sword_slash_128_2: -4286357794592377159
+      sword_slash_128_20: 6631265105852803499
+      sword_slash_128_21: -336354358568045960
+      sword_slash_128_22: -5490424214245111483
+      sword_slash_128_23: 4166873225412697855
+      sword_slash_128_3: -2607542992915576369
+      sword_slash_128_4: 2143270917065193588
+      sword_slash_128_5: -6588438641094781808
+      sword_slash_128_6: 5029930800146747373
+      sword_slash_128_7: -974400734534057944
+      sword_slash_128_8: 1350854905627684082
+      sword_slash_128_9: -7209587145386652911
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
