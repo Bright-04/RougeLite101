@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 5767802927244009029}
   - component: {fileID: 2840665003234925154}
   - component: {fileID: 810006973088245939}
+  - component: {fileID: 2179409548898017371}
   m_Layer: 0
   m_Name: Buff
   m_TagString: Untagged
@@ -69,6 +70,7 @@ Transform:
   - {fileID: 2268970646217918080}
   - {fileID: 4195318746943195221}
   - {fileID: 1017459487955239339}
+  - {fileID: 637065788642860583}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!156049354 &5767802927244009029
@@ -98,14 +100,15 @@ MonoBehaviour:
   center: {fileID: 6956568316789887709}
   playerSpawn: {fileID: 0}
   exitAnchor: {fileID: 0}
-  enemySpawns: []
   spawnProfile: {fileID: 0}
   northSocket: {fileID: 2268970646217918080}
   southSocket: {fileID: 7248144374628942164}
   eastSocket: {fileID: 1017459487955239339}
   westSocket: {fileID: 4195318746943195221}
+  placeHolder: {fileID: 637065788642860583}
   doorPrefab: {fileID: 1068040110909216334, guid: 4fce2b808753ea5409c7349ef03105ce, type: 3}
   wallPrefab: {fileID: 7279526701747705087, guid: f7c925e8ebd78a24285fe89e2d02231f, type: 3}
+  structureRandomizer: {fileID: 0}
 --- !u!61 &810006973088245939
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -152,6 +155,21 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 15.14, y: 15.14}
   m_EdgeRadius: 0
+--- !u!114 &2179409548898017371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2684128205481196928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87407f5349ebd734f8bfa71443a34515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StructureRandomizer
+  structurePrefab:
+  - {fileID: 8771521562973808768, guid: 61d004395e52e674fb5001b04eb89999, type: 3}
+  - {fileID: 8174633738437757284, guid: 2c322266e06719e4a93cf5257b16fe0e, type: 3}
 --- !u!1 &3436814769019911595
 GameObject:
   m_ObjectHideFlags: 0
@@ -2615,6 +2633,37 @@ TilemapRenderer:
   m_SortOrder: 0
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
+--- !u!1 &6750977176164439604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 637065788642860583}
+  m_Layer: 0
+  m_Name: PlaceHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &637065788642860583
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6750977176164439604}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.5, y: -4.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5469954803853890179}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7312110933408554055
 GameObject:
   m_ObjectHideFlags: 0

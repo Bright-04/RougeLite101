@@ -18,6 +18,9 @@ public class ThemeSO : ScriptableObject
     [Header("Buff Rooms")]
     public GameObject[] buffRoomPrefabs;
 
+    [Header("Boss Rooms")]
+    public GameObject[] bossRoomPrefabs;
+
     [Header("Optional map color")]
     public Color mapColor = Color.green;
 

@@ -12,9 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 338117e368fff564395ed01a4d1900ac, type: 3}
   m_Name: bow_basic
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
+  <IsStackable>k__BackingField: 0
+  <MaxStackSize>k__BackingField: 1
+  <Name>k__BackingField: Wooden Bow
+  <Description>k__BackingField: just a normal wooden bow
+  <ItemImage>k__BackingField: {fileID: -7856493677412862020, guid: 027eb54082fb8e341bc8cb53aa1a337c, type: 3}
+  modifiersData: []
   weaponId: bow_basic
-  displayName: Wooden Bow
-  icon: {fileID: -7856493677412862020, guid: 027eb54082fb8e341bc8cb53aa1a337c, type: 3}
   localPositionOffset: {x: 0, y: 0, z: 0}
   localRotationOffset: {x: 0, y: 0, z: 0}
   weaponPrefab: {fileID: 8184291277002341734, guid: 01ae4c397649f6d4da07d86edd0b44d6, type: 3}

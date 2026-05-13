@@ -21,6 +21,8 @@ GameObject:
   - component: {fileID: 6630334986598602266}
   - component: {fileID: 6449599854977480468}
   - component: {fileID: -4104276699102849048}
+  - component: {fileID: 7707758155450303520}
+  - component: {fileID: 3348738501711190917}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -273,9 +275,9 @@ MonoBehaviour:
   handSwitchDeadZoneX: 0.02
   frontOrderOffset: 1
   backOrderOffset: -1
-  weaponRegistry: {fileID: 0}
-  startingMainWeapon: {fileID: 0}
-  startingSubWeapon: {fileID: 0}
+  weaponRegistry: {fileID: 11400000, guid: 33e69cf0b17abfb418c7456f649d3b95, type: 2}
+  startingMainWeapon: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
+  startingSubWeapon: {fileID: 11400000, guid: 68a110418a3886947ba22ae1e05fe483, type: 2}
 --- !u!114 &4215567663166107315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,6 +450,35 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &7707758155450303520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94244de3a45d2514382affb56b8696e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryController
+  inventoryUI: {fileID: 0}
+  safeInventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
+  dungeonInventoryData: {fileID: 11400000, guid: 9563c9a8f6befc0418b7b48ef404a27d, type: 2}
+  initialItems: []
+--- !u!114 &3348738501711190917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29f8eb08454c23d46bad58f2375e8b31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PickUpSystem
+  inventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
 --- !u!1 &3247644244558153244
 GameObject:
   m_ObjectHideFlags: 0

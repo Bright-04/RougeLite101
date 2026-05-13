@@ -131,9 +131,9 @@ public class WeaponPickupModalUI : MonoBehaviour
     {
         if (iconImage != null)
         {
-            if (definition != null && definition.Icon != null)
+            if (definition != null && definition.ItemImage != null)
             {
-                iconImage.sprite = definition.Icon;
+                iconImage.sprite = definition.ItemImage;
                 iconImage.color = Color.white;
             }
             else
@@ -145,7 +145,7 @@ public class WeaponPickupModalUI : MonoBehaviour
 
         if (nameText != null)
         {
-            nameText.text = definition != null ? definition.DisplayName : "Empty";
+            nameText.text = definition != null ? definition.Name : "Empty";
         }
     }
 }

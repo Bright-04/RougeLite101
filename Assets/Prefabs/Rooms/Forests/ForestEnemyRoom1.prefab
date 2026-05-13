@@ -180,15 +180,15 @@ MonoBehaviour:
   center: {fileID: 6145058250317747221}
   playerSpawn: {fileID: 0}
   exitAnchor: {fileID: 0}
-  enemySpawns:
-  - {fileID: 4275165402793379925}
-  spawnProfile: {fileID: 11400000, guid: a4bb9124de893954ba346dbacbfea8ab, type: 2}
+  spawnProfile: {fileID: 0}
   northSocket: {fileID: 4514168389315602798}
   southSocket: {fileID: 4485590131555525349}
   eastSocket: {fileID: 7121299958918177454}
   westSocket: {fileID: 8523891749673857634}
+  placeHolder: {fileID: 0}
   doorPrefab: {fileID: 5105574784040826351, guid: df23c19e4cc03dd4b92d46ef5be97429, type: 3}
   wallPrefab: {fileID: 8552802551600278049, guid: 1f924cc92f96e8e4992ae3825deba427, type: 3}
+  structureRandomizer: {fileID: 0}
 --- !u!156049354 &1484666221311381689
 Grid:
   m_ObjectHideFlags: 0

@@ -18,9 +18,11 @@ MonoBehaviour:
   enemyRoomPrefabs:
   - {fileID: 5961914373149934227, guid: 5c07ba7c450f88146ab2931923285679, type: 3}
   specialRoomPrefabs:
-  - {fileID: 2684128205481196928, guid: 6aa9818eaad24aa4ab408f7afcd2a27a, type: 3}
-  buffRoomPrefabs:
   - {fileID: 8541427450340644458, guid: 7d1aff399f31fb044adf53d15345c201, type: 3}
+  buffRoomPrefabs:
+  - {fileID: 2684128205481196928, guid: 6aa9818eaad24aa4ab408f7afcd2a27a, type: 3}
+  bossRoomPrefabs:
+  - {fileID: 5961914373149934227, guid: 7b51da721d5506040891c702cb456f34, type: 3}
   mapColor: {r: 0, g: 1, b: 0, a: 1}
   corridorPrefab: {fileID: 7870203632754900758, guid: bfd4acb5b47957c4680660d429fbb686, type: 3}
   spawnPacks: []

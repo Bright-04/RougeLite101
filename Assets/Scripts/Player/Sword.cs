@@ -39,6 +39,14 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
             weaponCollider.gameObject.SetActive(false);
         }
     }
+    //add vì weaponCollider bị duplicate mỗi lần equip sword
+    private void OnDestroy()
+    {
+        if (weaponCollider != null)
+        {
+            Destroy(weaponCollider.gameObject);
+        }
+    }
 
     private void Update()
     {

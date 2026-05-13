@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            CleanUpAndDestroy();  //TienHQ: i need this:))
             return;
         }
         else

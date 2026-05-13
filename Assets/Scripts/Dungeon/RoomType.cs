@@ -6,5 +6,6 @@ public enum RoomType
     Enemy,
     Special,
     Buff,
+    Boss,
     Exit
 }

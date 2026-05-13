@@ -6,6 +6,26 @@ A 2D roguelike game built with Unity featuring procedural dungeon generation and
 
 RougeLite101 is a Unity-based roguelike game that combines procedural dungeon generation with handcrafted room design. The game features a player controller, enemy AI systems, spell casting, and a modular room-based dungeon system.
 
+## Recent Updates
+
+### v0.2 - Inventory & Progression Systems
+
+- **Inventory System**: Complete item management with drag-and-drop UI
+- **Weapon Hub**: Centralized weapon pickup and equip system
+- **Stat Modifiers**: Items that modify player stats (health, mana, etc.)
+- **Skill Tree**: Character progression with unlockable skills
+- **Leveling System**: Experience gain and stat upgrades
+- **Structure Randomizer**: Enhanced dungeon generation with randomized layouts
+- **Improved Dungeon Manager**: Better room spawning and enemy management
+
+### v0.1 - Core Systems
+
+- Basic dungeon generation with room templates
+- Player controller with movement and combat
+- Enemy AI with pathfinding
+- Spell casting system
+- Health and damage systems
+
 ## Documentation Structure
 
 This project's documentation is organized into the following categories:
@@ -36,6 +56,7 @@ This project's documentation is organized into the following categories:
 ### 🏰 Dungeon System
 
 - **Procedural Generation**: Automatic room selection and progression
+- **Structure Randomizer**: Randomized room layouts and enemy placements
 - **Manual Room Design**: Create handcrafted rooms using tilemaps
 - **Theme-based Organization**: Group rooms by themes (Forest, Cave, etc.)
 - **Modular Architecture**: Easy to add new rooms and themes
@@ -46,12 +67,26 @@ This project's documentation is organized into the following categories:
 - **Enemy AI**: Multiple enemy types with different behaviors
 - **Spell System**: Casting system with cooldowns and UI
 - **Health & Combat**: Damage system with knockback effects
+- **Weapon System**: Bows, swords, and weapon pickup mechanics
+- **Inventory System**: Item management, equipping, and stat modifiers
+- **Skill Tree & Leveling**: Character progression with skill unlocks
+- **Player Dash**: Dash ability with input and visual effects
+
+### 🎯 Progression Systems
+
+- **AI Director**: Dynamic combat pacing and difficulty scaling
+- **Meta Progression**: Persistent upgrades across runs
+- **Run State Management**: Track run progress and rewards
+- **Save System**: Auto-save and manual save functionality
 
 ### 🛠️ Development Tools
 
 - **Room Creation Helper**: Automated room structure setup
 - **Room Template Validator**: Validation tools for room prefabs
 - **Error Detection**: Comprehensive error checking and auto-fixing
+- **Inventory UI**: Drag-and-drop item management
+- **Weapon HUD**: Real-time weapon status display
+- **Cursor Manager**: Custom cursor system
 
 ## Room Creation Workflow
 
@@ -78,12 +113,19 @@ RougeLite101/
 │   │   ├── Player/           # Player controller and systems
 │   │   ├── Enemies/          # Enemy AI and behaviors
 │   │   ├── UI/               # User interface systems
+│   │   ├── Director/         # AI Director and progression systems
+│   │   ├── SaveSystem/       # Save/load functionality
+│   │   ├── PickUpSystem/     # Item pickup mechanics
+│   │   ├── Model(ScriptableObject)/  # Data models and configurations
+│   │   ├── Modifiers/        # Stat modifiers and rewards
 │   │   ├── Misc/             # Utility scripts
 │   │   └── Editor/           # Development tools
 │   ├── Prefabs/
 │   │   └── Rooms/            # Room prefabs organized by theme
 │   ├── ScriptableObjects/
-│   │   └── Themes/           # Theme configurations
+│   │   ├── Themes/           # Theme configurations
+│   │   ├── Inventory/        # Item definitions
+│   │   └── PlayerStatsModifier/  # Stat modifier configurations
 │   └── Sprites/
 │       └── Tilemap/          # Tilemap assets and tiles
 └── Documentation/            # Project documentation
