@@ -8,7 +8,7 @@ using UnityEngine;
 public class InventorySO : ScriptableObject
 {
     [SerializeField]
-    private List<InventoryItem> inventoryItems;
+    public List<InventoryItem> inventoryItems;
 
     [field: SerializeField]
     public int Size { get; private set; } = 30;
@@ -22,6 +22,31 @@ public class InventorySO : ScriptableObject
         {
             inventoryItems.Add(InventoryItem.GetEmptyItem());
         }
+    }
+
+    public void Clear()
+    {
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            inventoryItems[i] = InventoryItem.GetEmptyItem();
+        }
+
+        InformAboutChange();
+    }
+
+    public void TransferAllTo(InventorySO targetInventory)
+    {
+        foreach (var item in inventoryItems)
+        {
+            if (item.IsEmpty)
+            {
+                continue;
+            }
+
+            targetInventory.AddItem(item);
+        }
+
+        Clear(); // clear dungeon sau khi chuyển
     }
 
     public int AddItem(ItemSO item, int quantity)

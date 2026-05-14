@@ -5,6 +5,8 @@ public class PlayerStats : MonoBehaviour
 {
     [SerializeField] private EquipmentManager equipmentManager;
 
+    [SerializeField] private InventoryController inventoryController;
+
     public float maxHP = 100;
     public float currentHP;
     public float hpRegen = 1;
@@ -37,6 +39,11 @@ public class PlayerStats : MonoBehaviour
         if (equipmentManager == null)
         {
             equipmentManager = FindAnyObjectByType<EquipmentManager>();
+        }
+
+        if (inventoryController == null)
+        {
+            inventoryController = GetComponent<InventoryController>();
         }
 
         currentHP = maxHP;
@@ -102,6 +109,10 @@ public class PlayerStats : MonoBehaviour
     private void Die()
     {
         // TODO: Implement proper death handling (game over screen, restart, etc.)
+        if (inventoryController != null)
+        {
+            inventoryController.OnPlayerDeath();
+        }
         Debug.Log("Player is dead");
     }
 

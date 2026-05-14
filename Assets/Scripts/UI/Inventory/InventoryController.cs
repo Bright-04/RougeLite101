@@ -22,6 +22,8 @@ public class InventoryController : MonoBehaviour
 
     private PlayerControls playerControls;
 
+    private bool isPlayerDead = false;
+
     //[SerializeField]
     //private AudioClip dropClip;
 
@@ -32,9 +34,9 @@ public class InventoryController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
-        //UpdateInventory(SceneManager.GetActiveScene().name);      
 
+        //UpdateInventory(SceneManager.GetActiveScene().name);      
+    
         // Đợi đến Start để đảm bảo InputManager đã Awake
         if (InputManager.Instance == null)
         {
@@ -46,6 +48,17 @@ public class InventoryController : MonoBehaviour
         // Subscribe ESC key
         playerControls.NavigateUI.OpenInventory.performed += OnOpenInventoryPerformed;
         playerControls.UI.CloseInventory.performed += OnCloseInventoryPerformed;
+    }
+
+    public void TransferDungeonToSafe()
+    {
+        dungeonInventoryData.TransferAllTo(safeInventoryData);
+    }
+
+    public void OnPlayerDeath()
+    {
+        isPlayerDead = true;
+        dungeonInventoryData.Clear();
     }
 
     private void PrepareUI()
@@ -69,16 +82,35 @@ public class InventoryController : MonoBehaviour
         // Unsubscribe trước!
         CurrentInventoryData.OnInventoryUpdated -= UpdateInventoryUI;
 
-        CurrentInventoryData.Initialize();
-        CurrentInventoryData.OnInventoryUpdated += UpdateInventoryUI;
-        foreach (InventoryItem item in initialItems)
+        //CHỈ initialize nếu chưa có data
+        if (CurrentInventoryData.inventoryItems == null || CurrentInventoryData.inventoryItems.Count == 0)
         {
-            if (item.IsEmpty)
+            CurrentInventoryData.Initialize();
+
+            foreach (InventoryItem item in initialItems)
             {
-                continue;
+                if (item.IsEmpty)
+                {
+                    continue;
+                }
+                CurrentInventoryData.AddItem(item);
             }
-            CurrentInventoryData.AddItem(item);
         }
+        CurrentInventoryData.OnInventoryUpdated += UpdateInventoryUI;
+
+        //Testing only
+
+        //foreach (InventoryItem item in initialItems)
+        //{
+        //    if (item.IsEmpty)
+        //    {
+        //        continue;
+        //    }
+        //    CurrentInventoryData.AddItem(item);
+        //}
+
+        //force update UI ngay
+        UpdateInventoryUI(CurrentInventoryData.GetCurrentInventoryState());
     }
 
     private void UpdateInventoryUI(Dictionary<int, InventoryItem> inventoryState)
@@ -86,8 +118,7 @@ public class InventoryController : MonoBehaviour
         inventoryUI.ResetAllItems();
         foreach (var item in inventoryState)
         {
-            inventoryUI.UpdateData(item.Key, item.Value.item.ItemImage,
-                item.Value.quantity);
+            inventoryUI.UpdateData(item.Key, item.Value.item.ItemImage, item.Value.quantity);
         }
     }
 
@@ -220,6 +251,19 @@ public class InventoryController : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (scene.name != "Dungeon" && CurrentInventoryData == dungeonInventoryData)
+        {
+            if (!isPlayerDead)
+            {
+                TransferDungeonToSafe();
+                Debug.Log("transfer item from dungeon to safe");
+            }
+            else
+            {
+                Debug.Log("Player died => no transfer");
+                isPlayerDead = false; // reset
+            }
+        }
         // Unsubscribe inventory CŨ trước khi switch
         if (CurrentInventoryData != null)
         {
