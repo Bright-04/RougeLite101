@@ -40,9 +40,14 @@ public class ArmourItemSO : ItemSO, IDestroyableItem, IItemAction
 
     public bool PerformAction(GameObject character)
     {
-        foreach (ModifierData data in modifiersData)
+        ArmourController armourController = character.GetComponent<ArmourController>();
+        if(armourController != null )
         {
-            data.statModifier.AffectCharacter(character, data.value);
+            armourController.Equip(this);
+            foreach (ModifierData data in modifiersData)
+            {
+                data.statModifier.AffectCharacter(character, data.value);
+            }
         }
         return true;
     }

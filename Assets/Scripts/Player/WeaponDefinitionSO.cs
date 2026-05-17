@@ -40,6 +40,11 @@ public class WeaponDefinitionSO : ItemSO, IDestroyableItem, IItemAction
         {
             EquipmentManager.WeaponSlot activeSlot = equipmentManager.GetActiveSlot();
             equipmentManager.ReplaceWeapon(activeSlot, this);
+
+            foreach (ModifierData data in modifiersData)
+            {
+                data.statModifier.AffectCharacter(character, data.value);
+            }
             return true;
         }
         return false;

@@ -43,7 +43,7 @@ public class InventorySO : ScriptableObject
                 continue;
             }
 
-            targetInventory.AddItem(item);
+            targetInventory.AddItem(item.item, item.quantity);
         }
 
         Clear(); // clear dungeon sau khi chuyển

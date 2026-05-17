@@ -35,8 +35,9 @@ public class InventoryController : MonoBehaviour
     void Start()
     {
 
-        //UpdateInventory(SceneManager.GetActiveScene().name);      
-    
+        //UpdateInventory(SceneManager.GetActiveScene().name);
+        //safeInventoryData.Initialize();
+        //dungeonInventoryData.Initialize();
         // Đợi đến Start để đảm bảo InputManager đã Awake
         if (InputManager.Instance == null)
         {
@@ -81,8 +82,6 @@ public class InventoryController : MonoBehaviour
     {
         // Unsubscribe trước!
         CurrentInventoryData.OnInventoryUpdated -= UpdateInventoryUI;
-
-        //CHỈ initialize nếu chưa có data
         if (CurrentInventoryData.inventoryItems == null || CurrentInventoryData.inventoryItems.Count == 0)
         {
             CurrentInventoryData.Initialize();
@@ -97,20 +96,7 @@ public class InventoryController : MonoBehaviour
             }
         }
         CurrentInventoryData.OnInventoryUpdated += UpdateInventoryUI;
-
-        //Testing only
-
-        //foreach (InventoryItem item in initialItems)
-        //{
-        //    if (item.IsEmpty)
-        //    {
-        //        continue;
-        //    }
-        //    CurrentInventoryData.AddItem(item);
-        //}
-
-        //force update UI ngay
-        UpdateInventoryUI(CurrentInventoryData.GetCurrentInventoryState());
+        
     }
 
     private void UpdateInventoryUI(Dictionary<int, InventoryItem> inventoryState)

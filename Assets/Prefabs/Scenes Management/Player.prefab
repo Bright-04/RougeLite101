@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: -4104276699102849048}
   - component: {fileID: 7707758155450303520}
   - component: {fileID: 3348738501711190917}
+  - component: {fileID: 4535893169329268356}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -221,6 +222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   equipmentManager: {fileID: 0}
+  inventoryController: {fileID: 0}
   maxHP: 100
   currentHP: 0
   hpRegen: 1
@@ -478,7 +480,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29f8eb08454c23d46bad58f2375e8b31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUpSystem
-  inventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
+  inventoryController: {fileID: 0}
+  inventoryData: {fileID: 0}
+--- !u!114 &4535893169329268356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ad6b30f2e4fd9c47aab7982ee3891a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArmourController
 --- !u!1 &3247644244558153244
 GameObject:
   m_ObjectHideFlags: 0
