@@ -22,6 +22,30 @@ public class Sword : Weapon //  inherits Weapon so EquipmentManager works
 
     [SerializeField] private Transform weaponHolder;
 
+    public override void Initialize(WeaponDefinitionSO definition)
+    {
+        base.Initialize(definition);
+
+        if (definition == null)
+        {
+            return;
+        }
+
+        attackCooldown = definition.Cooldown;
+        colliderDistance = definition.HitboxDistance;
+        weaponColliderScale = definition.HitboxScale;
+
+        if (weaponCollider != null)
+        {
+            weaponCollider.localScale = weaponColliderScale;
+            DamageSource damageSource = weaponCollider.GetComponent<DamageSource>();
+            if (damageSource != null)
+            {
+                damageSource.SetBaseDamage(definition.BaseDamage);
+            }
+        }
+    }
+
     private void Awake()
     {
         playerMovement = GetComponentInParent<PlayerMovement>();

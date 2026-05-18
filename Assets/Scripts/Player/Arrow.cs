@@ -7,6 +7,17 @@ public class Arrow : MonoBehaviour
     [SerializeField] private float damage = 10f;
     [SerializeField] private float lifetime = 5f;
 
+    public void Initialize(float projectileSpeed, int baseDamage, float projectileRange)
+    {
+        speed = projectileSpeed;
+        damage = baseDamage;
+
+        if (speed > 0f && projectileRange > 0f)
+        {
+            lifetime = projectileRange / speed;
+        }
+    }
+
     private void Start()
     {
         // Tự động hủy sau x giây để dọn dẹp bộ nhớ

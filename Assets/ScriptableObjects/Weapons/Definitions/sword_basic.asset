@@ -24,6 +24,16 @@ MonoBehaviour:
   localPositionOffset: {x: -0.09, y: 0, z: 0}
   localRotationOffset: {x: 0, y: 0, z: 0}
   weaponPrefab: {fileID: 7706408078841532381, guid: cd06504aa93a6fb48ae71d1819c2e8ed, type: 3}
+  weaponType: 0
+  baseDamage: 2
+  cooldown: 0.5
+  range: 1
+  hitboxDistance: 0.15
+  hitboxScale: {x: 2, y: 2, z: 1}
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 15
+  projectileCount: 1
+  spreadAngle: 0
   rarity: Common
   tags:
   - Melee

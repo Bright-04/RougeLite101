@@ -11,6 +11,11 @@ public class DamageSource : MonoBehaviour
 
     private List<Collider2D> alreadyHit = new List<Collider2D>();
 
+    public void SetBaseDamage(int value)
+    {
+        baseDamage = value;
+    }
+
     private void OnEnable()
     {
         // Reset the hit list when the damage source bounds is enabled (e.g. beginning of sword slash)

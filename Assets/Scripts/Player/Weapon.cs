@@ -6,9 +6,13 @@ public abstract class Weapon : MonoBehaviour
     protected float nextUseTime = 0f;
     protected WeaponDefinitionSO weaponDefinition;
 
-    public void Initialize(WeaponDefinitionSO definition)
+    public virtual void Initialize(WeaponDefinitionSO definition)
     {
         weaponDefinition = definition;
+        if (definition != null)
+        {
+            cooldown = definition.Cooldown;
+        }
     }
 
     protected Quaternion GetLocalRotationOffset()

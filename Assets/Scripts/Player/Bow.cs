@@ -7,6 +7,32 @@ public class Bow : Weapon
     public Transform shootPoint;
 
     private SpriteRenderer mySprite;
+    private float projectileSpeed = 15f;
+    private int projectileDamage = 1;
+    private float projectileRange = 10f;
+    private int projectileCount = 1;
+    private float spreadAngle = 0f;
+
+    public override void Initialize(WeaponDefinitionSO definition)
+    {
+        base.Initialize(definition);
+
+        if (definition == null)
+        {
+            return;
+        }
+
+        if (definition.ProjectilePrefab != null)
+        {
+            arrowPrefab = definition.ProjectilePrefab;
+        }
+
+        projectileSpeed = definition.ProjectileSpeed;
+        projectileDamage = definition.BaseDamage;
+        projectileRange = definition.Range;
+        projectileCount = Mathf.Max(1, definition.ProjectileCount);
+        spreadAngle = definition.SpreadAngle;
+    }
 
     private void Awake()
     {
@@ -57,28 +83,43 @@ public class Bow : Weapon
             return;
         }
 
-        // Đảm bảo Z=0 để nhìn thấy arrow (fix lỗi hiển thị trong Hierarchy nhưng mất trong Game)
-        Vector3 spawnPos = new Vector3(shootPoint.position.x, shootPoint.position.y, 0f);
-        GameObject arrow = Instantiate(arrowPrefab, spawnPos, shootPoint.rotation);
-        
-        // Tự động scale lên nếu quá nhỏ (giữ nguyên logic chữa cháy cũ)
-        SpriteRenderer arrowSprite = arrow.GetComponentInChildren<SpriteRenderer>();
-        if (arrowSprite != null)
+        int count = Mathf.Max(1, projectileCount);
+        float angleStep = count > 1 ? spreadAngle / (count - 1) : 0f;
+        float startAngle = count > 1 ? -spreadAngle * 0.5f : 0f;
+
+        for (int i = 0; i < count; i++)
         {
-            if (arrow.transform.localScale.magnitude < 0.5f)
+            Quaternion rotation = shootPoint.rotation * Quaternion.Euler(0f, 0f, startAngle + angleStep * i);
+
+            // Đảm bảo Z=0 để nhìn thấy arrow (fix lỗi hiển thị trong Hierarchy nhưng mất trong Game)
+            Vector3 spawnPos = new Vector3(shootPoint.position.x, shootPoint.position.y, 0f);
+            GameObject arrow = Instantiate(arrowPrefab, spawnPos, rotation);
+
+            Arrow arrowComponent = arrow.GetComponent<Arrow>();
+            if (arrowComponent != null)
             {
-                arrow.transform.localScale = new Vector3(2f, 2f, 1f);
+                arrowComponent.Initialize(projectileSpeed, projectileDamage, projectileRange);
             }
-            
-            // Cập nhật lại SortingLayer để mũi tên luôn nổi giống với Cây Cung
-            if (mySprite != null)
+
+            // Tự động scale lên nếu quá nhỏ (giữ nguyên logic chữa cháy cũ)
+            SpriteRenderer arrowSprite = arrow.GetComponentInChildren<SpriteRenderer>();
+            if (arrowSprite != null)
             {
-                arrowSprite.sortingLayerID = mySprite.sortingLayerID;
-                arrowSprite.sortingOrder = mySprite.sortingOrder + 1;
-            }
-            else
-            {
-                arrowSprite.sortingOrder = 100; // Backup
+                if (arrow.transform.localScale.magnitude < 0.5f)
+                {
+                    arrow.transform.localScale = new Vector3(2f, 2f, 1f);
+                }
+
+                // Cập nhật lại SortingLayer để mũi tên luôn nổi giống với Cây Cung
+                if (mySprite != null)
+                {
+                    arrowSprite.sortingLayerID = mySprite.sortingLayerID;
+                    arrowSprite.sortingOrder = mySprite.sortingOrder + 1;
+                }
+                else
+                {
+                    arrowSprite.sortingOrder = 100; // Backup
+                }
             }
         }
     }
