@@ -39,11 +39,25 @@ public class WeaponDefinitionSO : ItemSO, IDestroyableItem, IItemAction
         if (equipmentManager != null)
         {
             EquipmentManager.WeaponSlot activeSlot = equipmentManager.GetActiveSlot();
-            equipmentManager.ReplaceWeapon(activeSlot, this);
+            equipmentManager.EquipWeapon(this);
 
             foreach (ModifierData data in modifiersData)
             {
                 data.statModifier.AffectCharacter(character, data.value);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public bool ResetModifierData(GameObject character)
+    {
+        EquipmentManager equipmentManager = character.GetComponent<EquipmentManager>();
+        if (equipmentManager != null)
+        {
+            foreach (ModifierData data in modifiersData)
+            {
+                data.statModifier.AffectCharacter(character, -data.value);
             }
             return true;
         }

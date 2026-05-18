@@ -2631,6 +2631,7 @@ GameObject:
   - component: {fileID: 1572245493440877403}
   - component: {fileID: 4237678797950910817}
   - component: {fileID: 4089162622993766842}
+  - component: {fileID: 1251702518444689604}
   m_Layer: 5
   m_Name: MainSlot
   m_TagString: Untagged
@@ -2696,6 +2697,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1251702518444689604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3519083043891875922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b8d8b865df307c49a2b6f627a57f88b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponSlotUI
+  SlotType: 0
+  icon: {fileID: 9155138904880933022}
 --- !u!1 &3581132369305894406
 GameObject:
   m_ObjectHideFlags: 0
@@ -2772,7 +2787,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8789918672019885033}
-  - component: {fileID: 2649222610833932674}
+  - component: {fileID: 2181725877893045027}
   m_Layer: 5
   m_Name: WeaponHUD
   m_TagString: Untagged
@@ -2801,7 +2816,7 @@ RectTransform:
   m_AnchoredPosition: {x: 699, y: -423.3}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2649222610833932674
+--- !u!114 &2181725877893045027
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2813,8 +2828,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd5f92000b3129c438442b021a9326fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHUDUI
-  mainWeaponIcon: {fileID: 9155138904880933022}
-  subWeaponIcon: {fileID: 436846807243929313}
+  mainWeaponSlot: {fileID: 1251702518444689604}
+  subWeaponSlot: {fileID: 7966528828703631135}
+  inventoryController: {fileID: 0}
   emptySlotIcon: {fileID: 0}
 --- !u!1 &3686631411696134729
 GameObject:
@@ -3717,6 +3733,7 @@ GameObject:
   - component: {fileID: 1426753690881810323}
   - component: {fileID: 7783072760517731932}
   - component: {fileID: 1896887344344812643}
+  - component: {fileID: 7966528828703631135}
   m_Layer: 5
   m_Name: SubSlot
   m_TagString: Untagged
@@ -3782,6 +3799,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7966528828703631135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4521473683543321005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b8d8b865df307c49a2b6f627a57f88b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponSlotUI
+  SlotType: 1
+  icon: {fileID: 436846807243929313}
 --- !u!1 &4568037705414387324
 GameObject:
   m_ObjectHideFlags: 0

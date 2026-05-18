@@ -82,21 +82,25 @@ public class ArmourController : MonoBehaviour
         switch (type)
         {
             case ArmourType.Helmet:
+                if (Helmet == null) break;
                 removed = Helmet;
                 Helmet = null;
                 break;
 
             case ArmourType.Chestplate:
+                if (Chestplate == null) break;
                 removed = Chestplate;
                 Chestplate = null;
                 break;
 
             case ArmourType.Leggings:
+                if (Leggings == null) break;
                 removed = Leggings;
                 Leggings = null;
                 break;
 
             case ArmourType.Boots:
+                if (Boots == null) break;
                 removed = Boots;
                 Boots = null;
                 break;
@@ -104,6 +108,7 @@ public class ArmourController : MonoBehaviour
 
         if (removed != null && inventoryController != null)
         {
+            removed.ResetModifierData(gameObject);
             inventoryController.CurrentInventoryData.AddItem(removed, 1);
         }
 

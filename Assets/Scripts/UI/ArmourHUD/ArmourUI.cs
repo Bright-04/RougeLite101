@@ -69,7 +69,11 @@ public class ArmourUI : MonoBehaviour
 
     private void HandleRightClick(ArmourSlotUI slot)
     {
-        armourController.Unequip(slot.ArmourType);
+        if (armourController != null)
+        {
+            armourController.Unequip(slot.ArmourType);
+        }
+      
     }
 
 }

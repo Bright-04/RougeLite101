@@ -28,6 +28,8 @@ public class EquipmentManager : MonoBehaviour
     [SerializeField] private WeaponDefinitionSO startingMainWeapon;
     [SerializeField] private WeaponDefinitionSO startingSubWeapon;
 
+    [SerializeField] private InventoryController inventoryController;
+
     private WeaponDefinitionSO mainWeaponDef;
     private WeaponDefinitionSO subWeaponDef;
     private Weapon mainWeaponInstance;
@@ -72,6 +74,17 @@ public class EquipmentManager : MonoBehaviour
 
     private void Start()
     {
+        if (inventoryController == null)
+        {
+            inventoryController = GetComponent<InventoryController>();
+        }
+
+        if (inventoryController == null)
+        {
+            Debug.LogError("InventoryController not found on " + gameObject.name);
+
+        }
+
         EnsureWeaponMount();
         UpdateVisualMountFromAim();
 
@@ -515,5 +528,59 @@ public class EquipmentManager : MonoBehaviour
         {
             mainWeaponInstance.gameObject.SetActive(true);
         }
+    }
+
+    public void UnequipWeapon(WeaponSlot slot)
+    {
+        WeaponDefinitionSO removed = GetWeaponDefinition(slot);
+
+        if (removed == null) return;
+
+        ClearSlot(slot);
+
+        if (activeSlot == slot)
+        {
+            if (GetWeaponInstance(WeaponSlot.Main) != null)
+            {
+                SetActiveSlot(WeaponSlot.Main, true);
+            }
+            else if (GetWeaponInstance(WeaponSlot.Sub) != null)
+            {
+                SetActiveSlot(WeaponSlot.Sub, true);
+            }
+        }
+        removed.ResetModifierData(gameObject);
+    }
+
+    public void EquipWeapon(WeaponDefinitionSO newWeapon)
+    {
+        if (newWeapon == null) return;
+
+        // còn slot trống
+        if (mainWeaponDef == null)
+        {
+            EquipIntoSlot(WeaponSlot.Main, newWeapon);
+            SetActiveSlot(WeaponSlot.Main, true);
+            return;
+        }
+
+        if (subWeaponDef == null)
+        {
+            EquipIntoSlot(WeaponSlot.Sub, newWeapon);
+            return;
+        }
+
+        // FULL → replace ACTIVE
+        WeaponDefinitionSO oldWeapon = GetWeaponDefinition(activeSlot);
+
+        if (oldWeapon != null)
+        {
+            oldWeapon.ResetModifierData(gameObject);
+            inventoryController.CurrentInventoryData.AddItem(oldWeapon, 1);
+        }
+
+        ReplaceWeapon(activeSlot, newWeapon);
+
+        SetActiveSlot(activeSlot, true);
     }
 }
