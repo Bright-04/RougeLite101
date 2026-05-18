@@ -1,4 +1,4 @@
-﻿%YAML 1.1
+%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!114 &11400000
 MonoBehaviour:
@@ -28,5 +28,8 @@ MonoBehaviour:
   - helmet
   armorType: 1
   defense: 3
+  maxHealthBonus: 6
+  moveSpeedBonus: 0
   blockCooldown: 0
   blockDuration: 0
+

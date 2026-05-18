@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     public static PlayerMovement Instance;
 
     [SerializeField] private float moveSpeed = 1f;
+    [SerializeField] private EquipmentController equipmentController;
     [SerializeField] private Transform aimPivot;
     
     private PlayerControls playerControls;
@@ -22,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer mySpriteRender;
     private Knockback knockback;
     private PlayerStats playerStats;
+    private float armorMoveSpeedBonus;
 
     [Header("Dash Settings")]
     [SerializeField] private float dashSpeed = 200f;
@@ -47,6 +49,11 @@ public class PlayerMovement : MonoBehaviour
         mySpriteRender = GetComponent<SpriteRenderer>();
         knockback = GetComponent<Knockback>();
         playerStats = GetComponent<PlayerStats>();
+        equipmentController = GetComponent<EquipmentController>();
+        if (equipmentController != null)
+        {
+            equipmentController.OnArmorEquipped += OnArmorEquipped;
+        }
 
         EnsureAimPivot();
     }
@@ -84,6 +91,11 @@ public class PlayerMovement : MonoBehaviour
         if (Instance == this)
         {
             Instance = null;
+        }
+
+        if (equipmentController != null)
+        {
+            equipmentController.OnArmorEquipped -= OnArmorEquipped;
         }
     }
 
@@ -249,7 +261,25 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
-        rb.MovePosition(rb.position + movement * (moveSpeed * Time.fixedDeltaTime));
+        rb.MovePosition(rb.position + movement * (GetTotalMoveSpeed() * Time.fixedDeltaTime));
+    }
+
+    private float GetTotalMoveSpeed()
+    {
+        return Mathf.Max(0f, moveSpeed + armorMoveSpeedBonus);
+    }
+
+    private void OnArmorEquipped(EquipmentController.ArmorSlot slot, ArmorDefinitionSO previousArmor, ArmorDefinitionSO newArmor)
+    {
+        if (previousArmor != null)
+        {
+            armorMoveSpeedBonus -= previousArmor.MoveSpeedBonus;
+        }
+
+        if (newArmor != null)
+        {
+            armorMoveSpeedBonus += newArmor.MoveSpeedBonus;
+        }
     }
 
     private void EnsureAimPivot()

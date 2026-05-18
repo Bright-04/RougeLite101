@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class PlayerStats : MonoBehaviour
 {
     [SerializeField] private EquipmentManager equipmentManager;
+    [SerializeField] private EquipmentController equipmentController;
 
     public float maxHP = 100;
     public float currentHP;
@@ -27,6 +28,8 @@ public class PlayerStats : MonoBehaviour
 
     private float damageCooldown = 1.0f; // seconds of invulnerability after taking damage
     private float damageTimer = 0;
+    private float armorMaxHealthBonus;
+    private float armorDefenseBonus;
 
     public float currentExp = 0;
     public float levelUpExp = 10;
@@ -39,9 +42,27 @@ public class PlayerStats : MonoBehaviour
             equipmentManager = FindAnyObjectByType<EquipmentManager>();
         }
 
-        currentHP = maxHP;
+        if (equipmentController == null)
+        {
+            equipmentController = GetComponent<EquipmentController>();
+        }
+
+        if (equipmentController != null)
+        {
+            equipmentController.OnArmorEquipped += OnArmorEquipped;
+        }
+
+        currentHP = GetTotalMaxHP();
         currentMana = maxMana;
         currentStamina = maxStamina;
+    }
+
+    private void OnDestroy()
+    {
+        if (equipmentController != null)
+        {
+            equipmentController.OnArmorEquipped -= OnArmorEquipped;
+        }
     }
 
     private void Update()
@@ -55,14 +76,14 @@ public class PlayerStats : MonoBehaviour
 
     private void Regenerate()
     {
-        currentHP = Mathf.Min(maxHP, currentHP + hpRegen * Time.deltaTime);
+        currentHP = Mathf.Min(GetTotalMaxHP(), currentHP + hpRegen * Time.deltaTime);
         currentMana = Mathf.Min(maxMana, currentMana + manaRegen * Time.deltaTime);
         currentStamina = Mathf.Min(maxStamina, currentStamina + staminaRegen * Time.deltaTime);
     }
 
     public void HealthRestore(float health)
     {
-        currentHP = Mathf.Min(maxHP, currentHP + health);
+        currentHP = Mathf.Min(GetTotalMaxHP(), currentHP + health);
     }
 
     public void ManaRestore(float mana)
@@ -83,10 +104,10 @@ public class PlayerStats : MonoBehaviour
             return;
         }
 
-        float reducedDamage = Mathf.Max(0, damage - defense);
+        float reducedDamage = Mathf.Max(0, damage - GetTotalDefense());
         currentHP -= reducedDamage;
 
-        Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{maxHP}");
+        Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{GetTotalMaxHP()}");
 
         damageTimer = damageCooldown;
 
@@ -126,7 +147,7 @@ public class PlayerStats : MonoBehaviour
 
     private void ResetStatsOnRespawn()
     {
-        currentHP = maxHP;
+        currentHP = GetTotalMaxHP();
         currentMana = maxMana;
         currentStamina = maxStamina;
         damageTimer = 0;
@@ -178,7 +199,7 @@ public class PlayerStats : MonoBehaviour
         luck = data.luck;
 
         // Reset current values to max after loading
-        currentHP = maxHP;
+        currentHP = GetTotalMaxHP();
         currentMana = maxMana;
         currentStamina = maxStamina;
 
@@ -201,5 +222,32 @@ public class PlayerStats : MonoBehaviour
         }
 
         Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
+    }
+
+    public float GetTotalMaxHP()
+    {
+        return maxHP + armorMaxHealthBonus;
+    }
+
+    public float GetTotalDefense()
+    {
+        return defense + armorDefenseBonus;
+    }
+
+    private void OnArmorEquipped(EquipmentController.ArmorSlot slot, ArmorDefinitionSO previousArmor, ArmorDefinitionSO newArmor)
+    {
+        if (previousArmor != null)
+        {
+            armorMaxHealthBonus -= previousArmor.MaxHealthBonus;
+            armorDefenseBonus -= previousArmor.Defense;
+        }
+
+        if (newArmor != null)
+        {
+            armorMaxHealthBonus += newArmor.MaxHealthBonus;
+            armorDefenseBonus += newArmor.Defense;
+        }
+
+        currentHP = Mathf.Min(currentHP, GetTotalMaxHP());
     }
 }

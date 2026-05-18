@@ -86,7 +86,11 @@ public class ProjectileWeapon : Weapon
         {
             Quaternion rotation = shootPoint.rotation * Quaternion.Euler(0f, 0f, startAngle + angleStep * i);
             Vector3 spawnPos = new Vector3(shootPoint.position.x, shootPoint.position.y, 0f);
-            GameObject projectile = Instantiate(projectilePrefab, spawnPos, rotation);
+            GameObject projectile = ProjectilePool.Instance.Get(projectilePrefab, spawnPos, rotation);
+            if (projectile == null)
+            {
+                continue;
+            }
 
             InitializeProjectile(projectile);
             ApplyProjectileSorting(projectile, sortingSource);

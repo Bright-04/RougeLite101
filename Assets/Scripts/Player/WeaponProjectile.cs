@@ -6,9 +6,20 @@ public class WeaponProjectile : MonoBehaviour
     [SerializeField] protected float speed = 15f;
     [SerializeField] protected float damage = 10f;
     [SerializeField] protected float lifetime = 5f;
+    private PooledProjectile pooledProjectile;
+
+    private void Awake()
+    {
+        pooledProjectile = GetComponent<PooledProjectile>();
+    }
 
     public virtual void Initialize(float projectileSpeed, int baseDamage, float projectileRange)
     {
+        if (pooledProjectile == null)
+        {
+            pooledProjectile = GetComponent<PooledProjectile>();
+        }
+
         speed = projectileSpeed;
         damage = baseDamage;
 
@@ -16,11 +27,9 @@ public class WeaponProjectile : MonoBehaviour
         {
             lifetime = projectileRange / speed;
         }
-    }
 
-    protected virtual void Start()
-    {
-        Destroy(gameObject, lifetime);
+        CancelInvoke(nameof(Expire));
+        Invoke(nameof(Expire), lifetime);
     }
 
     protected virtual void Update()
@@ -45,6 +54,25 @@ public class WeaponProjectile : MonoBehaviour
             damageable.TakeDamage((int)damage);
         }
 
-        Destroy(gameObject);
+        Release();
+    }
+
+    protected void Release()
+    {
+        CancelInvoke(nameof(Expire));
+
+        if (pooledProjectile != null)
+        {
+            pooledProjectile.Release();
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    private void Expire()
+    {
+        Release();
     }
 }

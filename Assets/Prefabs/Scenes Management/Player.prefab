@@ -23,6 +23,7 @@ GameObject:
   - component: {fileID: -4104276699102849048}
   - component: {fileID: 7707758155450303520}
   - component: {fileID: 3348738501711190917}
+  - component: {fileID: 2711826306058485091}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -118,6 +119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
+  equipmentController: {fileID: 2711826306058485091}
   aimPivot: {fileID: 0}
   dashSpeed: 10
   dashDuration: 0.2
@@ -221,6 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   equipmentManager: {fileID: 0}
+  equipmentController: {fileID: 2711826306058485091}
   maxHP: 100
   currentHP: 0
   hpRegen: 1
@@ -239,6 +242,22 @@ MonoBehaviour:
   currentExp: 0
   levelUpExp: 10
   level: 0
+--- !u!114 &2711826306058485091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9b2897142874be28493b7fd3862f183, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentController
+  startingShield: {fileID: 0}
+  startingHelmet: {fileID: 0}
+  startingGreaves: {fileID: 0}
+  startingBoots: {fileID: 0}
 --- !u!114 &6817578523957917170
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -84,7 +84,7 @@ public class StatsMenuUI : MonoBehaviour
             abilityPowerText.text = $"Ability Power: {playerStats.abilityPower:F0}";
 
         if (defenseText != null)
-            defenseText.text = $"Defense: {playerStats.defense:F0}";
+            defenseText.text = $"Defense: {playerStats.GetTotalDefense():F0}";
 
         if (critChanceText != null)
             critChanceText.text = $"Crit Chance: {(playerStats.critChance * 100):F1}%";
