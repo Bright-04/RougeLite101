@@ -33,11 +33,7 @@ public class InventoryController : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {
-
-        //UpdateInventory(SceneManager.GetActiveScene().name);
-        //safeInventoryData.Initialize();
-        //dungeonInventoryData.Initialize();
+    {      
         // Đợi đến Start để đảm bảo InputManager đã Awake
         if (InputManager.Instance == null)
         {
@@ -85,18 +81,18 @@ public class InventoryController : MonoBehaviour
         if (CurrentInventoryData.inventoryItems == null || CurrentInventoryData.inventoryItems.Count == 0)
         {
             CurrentInventoryData.Initialize();
-
-            foreach (InventoryItem item in initialItems)
-            {
-                if (item.IsEmpty)
-                {
-                    continue;
-                }
-                CurrentInventoryData.AddItem(item);
-            }
         }
+
         CurrentInventoryData.OnInventoryUpdated += UpdateInventoryUI;
-        
+        //foreach (InventoryItem item in initialItems)
+        //{
+        //    if (item.IsEmpty)
+        //    {
+        //        continue;
+        //    }
+        //    CurrentInventoryData.AddItem(item);
+        //}
+
     }
 
     private void UpdateInventoryUI(Dictionary<int, InventoryItem> inventoryState)
@@ -285,7 +281,8 @@ public class InventoryController : MonoBehaviour
         if (!inventoryUI.IsInventoryActive() && !InputManager.Instance.IsUIActive())
         {
             inventoryUI.ShowInventory();
-            foreach(var item in CurrentInventoryData.GetCurrentInventoryState())
+            inventoryUI.ResetAllItems();
+            foreach (var item in CurrentInventoryData.GetCurrentInventoryState())
             {
                 inventoryUI.UpdateData(item.Key, item.Value.item.ItemImage, item.Value.quantity);
             }

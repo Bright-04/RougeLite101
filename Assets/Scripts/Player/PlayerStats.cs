@@ -34,6 +34,24 @@ public class PlayerStats : MonoBehaviour
     public float levelUpExp = 10;
     public float level = 0;
 
+    //STAT BUFF
+    public float buffMaxHP = 0;
+    public float buffHpRegen = 0;
+
+    public float buffMaxMana = 0;
+    public float buffManaRegen = 0;
+
+    public float buffMaxStamina = 0;
+    public float buffStaminaRegen = 0;
+
+    public float buffAttackDamage = 0; 
+    public float buffAbilityPower = 0;  
+    public float buffDefense = 0;      
+
+    public float buffCritChance = 0; 
+    public float buffCritDamage = 0;
+    public float buffLuck = 0;
+
     private void Start()
     {
         if (equipmentManager == null)
@@ -53,7 +71,12 @@ public class PlayerStats : MonoBehaviour
 
     private void Update()
     {
-        Regenerate();
+        //Regenerate();
+        //if (currentHP <= 0)
+        //{
+        //    Die();
+        //    Respawn();
+        //}
 
         if (damageTimer > 0)
             damageTimer -= Time.deltaTime;
@@ -65,6 +88,80 @@ public class PlayerStats : MonoBehaviour
         currentHP = Mathf.Min(maxHP, currentHP + hpRegen * Time.deltaTime);
         currentMana = Mathf.Min(maxMana, currentMana + manaRegen * Time.deltaTime);
         currentStamina = Mathf.Min(maxStamina, currentStamina + staminaRegen * Time.deltaTime);
+    }
+
+    public void BuffMaxHealth(float health)
+    {
+        buffMaxHP = health;
+        if(currentHP == maxHP)
+        {
+            currentHP = maxHP + buffMaxHP;
+        }
+        maxHP = maxHP + buffMaxHP;
+        
+    }
+
+    public void BuffHpRegen(float regen)
+    {
+        buffHpRegen = regen;
+        hpRegen = hpRegen + buffHpRegen;
+    }
+
+    public void BuffMaxMana(float mana)
+    {
+        buffMaxMana = mana;
+        if (currentMana == maxMana)
+        {
+            currentMana = maxMana + buffMaxMana;
+        }
+        maxMana = maxMana + buffMaxMana;
+
+    }
+
+    public void BuffManaRegen(float regen)
+    {
+        buffManaRegen = regen;
+        manaRegen = manaRegen + buffManaRegen;
+    }
+
+    public void BuffMaxStamina(float stamina)
+    {
+        buffMaxStamina = stamina;
+        if(currentStamina == maxStamina)
+        {
+            currentStamina = maxStamina + buffMaxStamina;
+        }
+        maxStamina = maxStamina + buffMaxStamina;
+    }
+
+    public void BuffStaminaRegen(float regen)
+    {
+        buffStaminaRegen = regen;
+        staminaRegen = staminaRegen + buffStaminaRegen;
+    }
+
+    public void BuffAttackDamage(float damage)
+    {
+        buffAttackDamage = damage;
+        attackDamage = attackDamage + buffAttackDamage;
+    }
+
+    public void BuffAbilityPower(float power)
+    {
+        buffAbilityPower = power;
+        abilityPower = abilityPower + buffAbilityPower;
+    }
+
+    public void BuffCritChance(float crit)
+    {
+        buffCritChance = crit;
+        critChance = critChance + buffCritChance;
+    }
+
+    public void BuffCritDamage(float crit)
+    {
+        buffCritDamage = crit;
+        critDamage = critDamage + buffCritChance;
     }
 
     public void HealthRestore(float health)
@@ -171,22 +268,22 @@ public class PlayerStats : MonoBehaviour
         levelUpExp = data.levelUpExp;
 
         // Core Stats
-        maxHP = data.maxHP;
-        maxMana = data.maxMana;
-        maxStamina = data.maxStamina;
+        maxHP = data.maxHP + buffMaxHP;
+        maxMana = data.maxMana + buffMaxMana;
+        maxStamina = data.maxStamina + buffMaxStamina;
 
         // Regeneration
-        hpRegen = data.hpRegen;
-        manaRegen = data.manaRegen;
-        staminaRegen = data.staminaRegen;
+        hpRegen = data.hpRegen + buffHpRegen;
+        manaRegen = data.manaRegen + buffManaRegen;
+        staminaRegen = data.staminaRegen + buffStaminaRegen;
 
         // Combat Stats
-        attackDamage = data.attackDamage;
-        abilityPower = data.abilityPower;
-        defense = data.defense;
-        critChance = data.critChance;
-        critDamage = data.critDamage;
-        luck = data.luck;
+        attackDamage = data.attackDamage + buffAttackDamage;
+        abilityPower = data.abilityPower + buffAbilityPower;
+        defense = data.defense + buffDefense;
+        critChance = data.critChance + buffCritChance;
+        critDamage = data.critDamage + buffCritDamage;
+        luck = data.luck + buffLuck;
 
         // Reset current values to max after loading
         currentHP = maxHP;

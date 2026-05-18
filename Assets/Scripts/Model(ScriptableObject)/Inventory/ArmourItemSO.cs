@@ -48,7 +48,22 @@ public class ArmourItemSO : ItemSO, IDestroyableItem, IItemAction
             {
                 data.statModifier.AffectCharacter(character, data.value);
             }
+            return true;
         }
-        return true;
+        return false;
+    }
+
+    public bool ResetModifierData(GameObject character)
+    {
+        ArmourController armourController = character.GetComponent<ArmourController>();
+        if (armourController != null)
+        {           
+            foreach (ModifierData data in modifiersData)
+            {
+                data.statModifier.AffectCharacter(character, -data.value);
+            }
+            return true;
+        }
+        return false;
     }
 }

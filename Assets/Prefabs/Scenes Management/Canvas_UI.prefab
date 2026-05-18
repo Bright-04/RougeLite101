@@ -213,6 +213,7 @@ GameObject:
   - component: {fileID: 7858336443565243304}
   - component: {fileID: 8135958477133631972}
   - component: {fileID: 7397744233111018857}
+  - component: {fileID: 4449126095441884496}
   m_Layer: 5
   m_Name: Leggings
   m_TagString: Untagged
@@ -278,6 +279,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4449126095441884496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 214145637021715517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90398afa5a24bca4a9d02236ef792563, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArmourSlotUI
+  <ItemImage>k__BackingField: {fileID: 4330790781961763903}
+  armourType: 2
 --- !u!1 &306146902871595116
 GameObject:
   m_ObjectHideFlags: 0
@@ -2149,6 +2164,7 @@ GameObject:
   - component: {fileID: 7145803836593568969}
   - component: {fileID: 312259775778374338}
   - component: {fileID: 2342471915460706086}
+  - component: {fileID: 7282198951138774172}
   m_Layer: 5
   m_Name: Helmet
   m_TagString: Untagged
@@ -2214,6 +2230,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7282198951138774172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3031915493795532900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90398afa5a24bca4a9d02236ef792563, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArmourSlotUI
+  <ItemImage>k__BackingField: {fileID: 2661956078514868520}
+  armourType: 0
 --- !u!1 &3129487226243956196
 GameObject:
   m_ObjectHideFlags: 0
@@ -2872,6 +2902,7 @@ GameObject:
   - component: {fileID: 2908175200281530946}
   - component: {fileID: 2026456972965846256}
   - component: {fileID: 3304959094026139314}
+  - component: {fileID: 124990732403151756}
   m_Layer: 5
   m_Name: Boots
   m_TagString: Untagged
@@ -2937,6 +2968,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &124990732403151756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3698090529376897809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90398afa5a24bca4a9d02236ef792563, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArmourSlotUI
+  <ItemImage>k__BackingField: {fileID: 6657013753134281613}
+  armourType: 3
 --- !u!1 &3744106877046428165
 GameObject:
   m_ObjectHideFlags: 0
@@ -7113,6 +7158,7 @@ GameObject:
   - component: {fileID: 1679524616867546585}
   - component: {fileID: 7115945996211780503}
   - component: {fileID: 6974499390011306803}
+  - component: {fileID: 251109087246756580}
   m_Layer: 5
   m_Name: Chestplate
   m_TagString: Untagged
@@ -7178,6 +7224,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &251109087246756580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7431730127996276574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90398afa5a24bca4a9d02236ef792563, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ArmourSlotUI
+  <ItemImage>k__BackingField: {fileID: 3059315865974941915}
+  armourType: 1
 --- !u!1 &7554735078179788871
 GameObject:
   m_ObjectHideFlags: 0
@@ -7745,10 +7805,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArmourUI
   armourController: {fileID: 0}
-  helmetIcon: {fileID: 2661956078514868520}
-  chestplateIcon: {fileID: 3059315865974941915}
-  leggingIcon: {fileID: 4330790781961763903}
-  bootsIcon: {fileID: 6657013753134281613}
+  helmetIcon: {fileID: 7282198951138774172}
+  chestplateIcon: {fileID: 251109087246756580}
+  leggingIcon: {fileID: 4449126095441884496}
+  bootsIcon: {fileID: 124990732403151756}
   emptyIcon: {fileID: -8381514443621674195, guid: 5b211418383aaad4ca39f9c2c570e3f0, type: 3}
 --- !u!1 &9078097043056753438
 GameObject:

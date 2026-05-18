@@ -46,22 +46,22 @@ public class PlayerStatsData
         levelUpExp = stats.levelUpExp;
 
         // Core Stats
-        maxHP = stats.maxHP;
-        maxMana = stats.maxMana;
-        maxStamina = stats.maxStamina;
+        maxHP = stats.maxHP - stats.buffMaxHP;
+        maxMana = stats.maxMana - stats.buffMaxMana;
+        maxStamina = stats.maxStamina - stats.buffMaxStamina;
 
         // Regen
-        hpRegen = stats.hpRegen;
-        manaRegen = stats.manaRegen;
-        staminaRegen = stats.staminaRegen;
+        hpRegen = stats.hpRegen - stats.buffHpRegen;
+        manaRegen = stats.manaRegen - stats.buffManaRegen;
+        staminaRegen = stats.staminaRegen - stats.buffStaminaRegen;
 
         // Combat
-        attackDamage = stats.attackDamage;
-        abilityPower = stats.abilityPower;
-        defense = stats.defense;
-        critChance = stats.critChance;
-        critDamage = stats.critDamage;
-        luck = stats.luck;
+        attackDamage = stats.attackDamage - stats.buffAttackDamage;
+        abilityPower = stats.abilityPower - stats.buffAbilityPower;
+        defense = stats.defense - stats.buffDefense;
+        critChance = stats.critChance - stats.buffCritChance;
+        critDamage = stats.critDamage - stats.buffCritDamage;
+        luck = stats.luck - stats.buffLuck;
 
         mainWeaponId = equipment != null ? equipment.GetMainWeaponId() : string.Empty;
         subWeaponId = equipment != null ? equipment.GetSubWeaponId() : string.Empty;

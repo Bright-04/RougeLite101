@@ -17,5 +17,8 @@ MonoBehaviour:
   <Name>k__BackingField: Leather Chestplate
   <Description>k__BackingField: Minecraft Leather Chestplate
   <ItemImage>k__BackingField: {fileID: -2234212415274813758, guid: 5a47c337dac262c4396477a30a066557, type: 3}
-  modifiersData: []
+  modifiersData:
+  - statModifier: {fileID: 11400000, guid: c15721ef4a4061f4b95173f066aa3b46, type: 2}
+    value: 10
   armourType: 1
+  armourSet: 0
