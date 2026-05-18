@@ -257,9 +257,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7706408078841532381}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfb07dbf21e55b744818f89e6076cf7b, type: 3}
+  m_Script: {fileID: 11500000, guid: 8285efc1396647bd99e34110ef72e855, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeleeWeapon
   cooldown: 0.5
   attackCooldown: 0.5
   colliderDistance: 0

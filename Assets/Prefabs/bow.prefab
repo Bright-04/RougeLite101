@@ -133,9 +133,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 8184291277002341734}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2ba1ff359fb16b49a60d6e2a408adcf, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ef44f47efce4e4a9174032aca2e31aa, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Bow
+  m_EditorClassIdentifier: Assembly-CSharp::ProjectileWeapon
   cooldown: 0.5
-  arrowPrefab: {fileID: 4893390792209540543, guid: 6e828ea7c4409a34894ca3990e1a3f6e, type: 3}
+  projectilePrefab: {fileID: 4893390792209540543, guid: 6e828ea7c4409a34894ca3990e1a3f6e, type: 3}
   shootPoint: {fileID: 5029129589810573167}
+  defaultProjectilePrefab: {fileID: 4893390792209540543, guid: 6e828ea7c4409a34894ca3990e1a3f6e, type: 3}
+  defaultShootPoint: {fileID: 5029129589810573167}

@@ -3,20 +3,12 @@ using UnityEngine;
 public enum WeaponType
 {
     Melee,
-    Ranged
+    Projectile
 }
 
 [CreateAssetMenu(fileName = "NewWeapon", menuName = "Weapons/Weapon Definition")]
-public class WeaponDefinitionSO : ItemSO, IDestroyableItem, IItemAction
+public class WeaponDefinitionSO : EquipmentDefinitionSO
 {
-    [Header("Identity")]
-    [SerializeField] private string weaponId;
-    //[SerializeField] private string displayName;
-
-    //[Header("Presentation")]
-    //[SerializeField] 
-    //private Sprite icon;
-
     [Header("Offset")]
     [SerializeField] private Vector3 localPositionOffset = Vector3.zero;
     [SerializeField] private Vector3 localRotationOffset = Vector3.zero;
@@ -40,13 +32,8 @@ public class WeaponDefinitionSO : ItemSO, IDestroyableItem, IItemAction
     [SerializeField] private int projectileCount = 1;
     [SerializeField] private float spreadAngle = 0f;
 
-    [Header("Optional")]
-    [SerializeField] private string rarity;
-    [SerializeField] private string[] tags;
-
-    public string WeaponId => weaponId;
-    //public string Name => Name;
-    //public Sprite ItemImage => ItemImage;
+    public string WeaponId => EquipmentId;
+    public string WeaponClass => EquipmentClass;
     public Vector3 LocalPositionOffset => localPositionOffset;
     public Vector3 LocalRotationOffset => localRotationOffset;
     public GameObject WeaponPrefab => weaponPrefab;
@@ -60,12 +47,8 @@ public class WeaponDefinitionSO : ItemSO, IDestroyableItem, IItemAction
     public float ProjectileSpeed => projectileSpeed;
     public int ProjectileCount => projectileCount;
     public float SpreadAngle => spreadAngle;
-    public string Rarity => rarity;
-    public string[] Tags => tags;
 
-    public string ActionName => "Equip";
-
-    public bool PerformAction(GameObject character)
+    public override bool PerformAction(GameObject character)
     {
         EquipmentManager equipmentManager = character.GetComponent<EquipmentManager>();
         if (equipmentManager != null)
