@@ -15,6 +15,8 @@ public class InventoryController : MonoBehaviour
     private InventorySO safeInventoryData;
     [SerializeField]
     private InventorySO dungeonInventoryData;
+    [SerializeField] private GameObject pickupableItemPrefab;
+    [SerializeField] private Transform playerTransform;
 
     public InventorySO CurrentInventoryData { get; private set;}
 
@@ -165,18 +167,39 @@ public class InventoryController : MonoBehaviour
 
         IDestroyableItem destroyableItem = inventoryItem.item as IDestroyableItem;
         if (destroyableItem != null)
-        {
+        {   
+            
             inventoryUI.AddAction("Drop", () => DropItem(itemIndex, inventoryItem.quantity));
         }
     
     }
 
-    private void DropItem(int itemIndex, int quantity)
+       private void DropItem(int itemIndex, int quantity)
     {
+        InventoryItem inventoryItem = CurrentInventoryData.GetItemAt(itemIndex);
+
+        if (inventoryItem.IsEmpty)
+            return;
+
+        Vector3 dropPosition = playerTransform.position + playerTransform.right * 1f;
+
+        GameObject droppedObj = Instantiate(
+            pickupableItemPrefab,
+            dropPosition,
+            Quaternion.identity
+        );
+
+        Item droppedItem = droppedObj.GetComponent<Item>();
+
+        if (droppedItem != null)
+        {
+            droppedItem.InventoryItem = inventoryItem.item;
+            droppedItem.Quantity = quantity;
+        }
+
         CurrentInventoryData.RemoveItem(itemIndex, quantity);
         inventoryUI.ResetSelection();
-        //audioSource.PlayOneShot(dropClip);
-    }
+    }   
 
     public void PerformAction(int itemIndex)
     {

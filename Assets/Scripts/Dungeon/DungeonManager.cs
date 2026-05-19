@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DungeonManager : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class DungeonManager : MonoBehaviour
     [Header("Floor Progression")]
     public int currentFloor = 1;
     public int bossEveryXFloor = 5;
+    public int maxFloor = 15;
 
     [Header("Themes")]
     public ThemeSO[] themes;
@@ -564,11 +566,21 @@ public class DungeonManager : MonoBehaviour
     {
         currentFloor++;
 
+        if (currentFloor > maxFloor)
+        {
+            Debug.Log("Dungeon completed!");
+
+            SceneManager.LoadScene("GameHome");
+            return;
+        }
+
         Debug.Log("Loading Floor: " + currentFloor);
-        if ((currentFloor-1)%5==0)
+
+        if ((currentFloor - 1) % 5 == 0)
         {
             currentThemeIndex += 1;
         }
+
         GenerateFloor();
     }
 }
