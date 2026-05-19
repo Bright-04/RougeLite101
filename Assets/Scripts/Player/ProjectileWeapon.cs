@@ -183,14 +183,6 @@ public class ProjectileWeapon : Weapon
         aimDirection = currentAimDirection.normalized;
         float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
         aimRotation = Quaternion.Euler(0f, 0f, angle);
-        if (spriteRenderer != null)
-        {
-            bool aimLeft = aimDirection.x < -0.001f;
-            spriteRenderer.flipX = aimLeft && (weaponDefinition.FlipBehavior == WeaponFlipBehavior.FlipXOnAimLeft
-                || weaponDefinition.FlipBehavior == WeaponFlipBehavior.FlipBothOnAimLeft);
-            spriteRenderer.flipY = aimLeft && (weaponDefinition.FlipBehavior == WeaponFlipBehavior.FlipYOnAimLeft
-                || weaponDefinition.FlipBehavior == WeaponFlipBehavior.FlipBothOnAimLeft);
-        }
     }
 
     private Vector3 GetProjectileSpawnPosition()

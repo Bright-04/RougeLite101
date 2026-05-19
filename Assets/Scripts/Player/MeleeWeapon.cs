@@ -186,33 +186,6 @@ public class MeleeWeapon : Weapon
             return;
         }
 
-        float facingMultiplier = playerMovement.FacingLeft ? -1f : 1f;
-
-        if (weaponDefinition != null && transform.parent != null && transform.parent.name.StartsWith("OffsetContainer_"))
-        {
-            Vector3 containerScale = transform.parent.localScale;
-            containerScale.x = facingMultiplier * Mathf.Abs(containerScale.x);
-            transform.parent.localScale = containerScale;
-
-            Vector3 weaponScale = transform.localScale;
-            weaponScale.x = Mathf.Abs(weaponScale.x);
-            transform.localScale = weaponScale;
-
-            Vector3 offset = weaponDefinition.GripPointOffset;
-            offset.x *= facingMultiplier;
-            transform.parent.localPosition = offset;
-
-            Vector3 rotOffset = weaponDefinition.LocalRotationOffset;
-            rotOffset.z *= facingMultiplier;
-            transform.parent.localRotation = Quaternion.Euler(rotOffset);
-        }
-        else
-        {
-            Vector3 weaponScale = transform.localScale;
-            weaponScale.x = facingMultiplier * Mathf.Abs(weaponScale.x);
-            transform.localScale = weaponScale;
-        }
-
         Vector2 normalizedAim = aimDirection.normalized;
         weaponCollider.localPosition = normalizedAim * colliderDistance;
         float aimAngle = Mathf.Atan2(normalizedAim.y, normalizedAim.x) * Mathf.Rad2Deg;

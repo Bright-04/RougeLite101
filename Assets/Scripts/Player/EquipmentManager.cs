@@ -22,7 +22,6 @@ public class EquipmentManager : MonoBehaviour
 
     [Header("Weapon Draw Order")]
     [SerializeField] private int frontOrderOffset = 1;
-    [SerializeField] private int backOrderOffset = -1;
 
     [Header("Data")]
     [SerializeField] private WeaponRegistry weaponRegistry;
@@ -199,6 +198,16 @@ public class EquipmentManager : MonoBehaviour
         }
     }
 
+    public void ReplaceWeaponAndActivate(WeaponSlot targetSlot, WeaponDefinitionSO newWeaponDef)
+    {
+        ReplaceWeapon(targetSlot, newWeaponDef);
+
+        if (GetWeaponInstance(targetSlot) != null)
+        {
+            SetActiveSlot(targetSlot, true);
+        }
+    }
+
     public void SwapActiveSlot()
     {
         WeaponSlot targetSlot = activeSlot == WeaponSlot.Main ? WeaponSlot.Sub : WeaponSlot.Main;
@@ -327,6 +336,10 @@ public class EquipmentManager : MonoBehaviour
         {
             weaponController.SetCurrentWeapon(weaponComponent, definition);
         }
+        if (currentWeaponSortingOrder == int.MinValue)
+        {
+            currentWeaponSortingOrder = (playerSpriteRenderer != null ? playerSpriteRenderer.sortingOrder : 0) + frontOrderOffset;
+        }
         ApplySortingToWeapon(weaponComponent, currentWeaponSortingOrder);
         OnWeaponChanged?.Invoke(slot, definition);
     }
@@ -349,7 +362,7 @@ public class EquipmentManager : MonoBehaviour
         }
 
         UpdateHandAnchor(aimDirection.x);
-        UpdateWeaponSortingOrder(aimDirection.y);
+        UpdateWeaponSortingOrder();
     }
 
     private void UpdateHandAnchor(float aimX)
@@ -371,10 +384,10 @@ public class EquipmentManager : MonoBehaviour
         isUsingLeftHand = shouldUseLeftHand;
     }
 
-    private void UpdateWeaponSortingOrder(float aimY)
+    private void UpdateWeaponSortingOrder()
     {
         int baseOrder = playerSpriteRenderer != null ? playerSpriteRenderer.sortingOrder : 0;
-        int targetOrder = baseOrder + (aimY > 0f ? backOrderOffset : frontOrderOffset);
+        int targetOrder = baseOrder + frontOrderOffset;
 
         if (targetOrder == currentWeaponSortingOrder)
         {
@@ -399,21 +412,11 @@ public class EquipmentManager : MonoBehaviour
             return;
         }
 
-        SpriteRenderer baseRenderer = weapon.GetComponent<SpriteRenderer>();
-        if (baseRenderer == null)
-        {
-            baseRenderer = renderers[0];
-        }
-
-        int delta = targetOrder - baseRenderer.sortingOrder;
-        if (delta == 0)
-        {
-            return;
-        }
-
+        int sortingLayerId = playerSpriteRenderer != null ? playerSpriteRenderer.sortingLayerID : renderers[0].sortingLayerID;
         for (int i = 0; i < renderers.Length; i++)
         {
-            renderers[i].sortingOrder += delta;
+            renderers[i].sortingLayerID = sortingLayerId;
+            renderers[i].sortingOrder = targetOrder;
         }
     }
 
@@ -513,23 +516,36 @@ public class EquipmentManager : MonoBehaviour
     {
         if (mainWeaponInstance != null)
         {
-            mainWeaponInstance.gameObject.SetActive(activeSlot == WeaponSlot.Main);
+            SetWeaponVisualActive(mainWeaponInstance, activeSlot == WeaponSlot.Main);
         }
 
         if (subWeaponInstance != null)
         {
-            subWeaponInstance.gameObject.SetActive(activeSlot == WeaponSlot.Sub);
+            SetWeaponVisualActive(subWeaponInstance, activeSlot == WeaponSlot.Sub);
         }
 
         if (mainWeaponInstance == null && subWeaponInstance != null)
         {
-            subWeaponInstance.gameObject.SetActive(true);
+            SetWeaponVisualActive(subWeaponInstance, true);
         }
 
         if (subWeaponInstance == null && mainWeaponInstance != null)
         {
-            mainWeaponInstance.gameObject.SetActive(true);
+            SetWeaponVisualActive(mainWeaponInstance, true);
         }
+    }
+
+    private static void SetWeaponVisualActive(Weapon weapon, bool active)
+    {
+        if (weapon == null)
+        {
+            return;
+        }
+
+        Transform visualRoot = weapon.transform.parent != null && weapon.transform.parent.name.StartsWith("CurrentWeaponVisual_")
+            ? weapon.transform.parent
+            : weapon.transform;
+        visualRoot.gameObject.SetActive(active);
     }
 
     private static void ResetWeaponVisualTransform(Transform target)

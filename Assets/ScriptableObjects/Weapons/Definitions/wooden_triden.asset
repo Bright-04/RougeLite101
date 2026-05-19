@@ -30,8 +30,8 @@ MonoBehaviour:
   handlingMode: 2
   gripPointOffset: {x: 0, y: 0, z: 0}
   aimPointOffset: {x: 0.28, y: 0, z: 0}
-  localRotationOffset: {x: 0, y: 0, z: 45}
-  visualScale: 4.5
+  localRotationOffset: {x: 0, y: 0, z: -45}
+  visualScale: 1
   localPositionOffset: {x: 0.18, y: 0, z: 0}
   flipBehavior: 0
   projectileSpawnPointOffset: {x: 0, y: 0, z: 0}

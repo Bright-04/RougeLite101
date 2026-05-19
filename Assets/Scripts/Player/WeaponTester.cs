@@ -20,18 +20,14 @@ public class WeaponTester : MonoBehaviour
     private int index = 0;
     private float timer = 0f;
     private bool autoCycle = false;
+    private System.Action<InputAction.CallbackContext> nextActionHandler;
+    private System.Action<InputAction.CallbackContext> prevActionHandler;
+    private System.Action<InputAction.CallbackContext> toggleAutoActionHandler;
+    private System.Action<InputAction.CallbackContext> useActionHandler;
+    private System.Action<InputAction.CallbackContext> spawnDummyActionHandler;
 
     private void Start()
     {
-        if (weaponRegistry == null)
-            weaponRegistry = ScriptableObject.CreateInstance<WeaponRegistry>();
-
-        // Try find existing registry in scene or project by asking EquipmentManager
-        if (weaponRegistry == null && equipmentManager != null)
-        {
-            // nothing to do; EquipmentManager holds a registry reference
-        }
-
         if (weaponRegistry == null)
         {
             // Fallback: try to find any WeaponRegistry asset via Resources (best-effort)
@@ -80,34 +76,42 @@ public class WeaponTester : MonoBehaviour
 
     private void OnEnable()
     {
-        RegisterAction(nextActionRef, () => NextWeapon());
-        RegisterAction(prevActionRef, () => PrevWeapon());
-        RegisterAction(toggleAutoActionRef, () => ToggleAutoCycle());
-        RegisterAction(useActionRef, () => UseCurrentWeapon());
-        RegisterAction(spawnDummyActionRef, () => SpawnDummy());
+        nextActionHandler = _ => NextWeapon();
+        prevActionHandler = _ => PrevWeapon();
+        toggleAutoActionHandler = _ => ToggleAutoCycle();
+        useActionHandler = _ => UseCurrentWeapon();
+        spawnDummyActionHandler = _ => SpawnDummy();
+
+        RegisterAction(nextActionRef, nextActionHandler);
+        RegisterAction(prevActionRef, prevActionHandler);
+        RegisterAction(toggleAutoActionRef, toggleAutoActionHandler);
+        RegisterAction(useActionRef, useActionHandler);
+        RegisterAction(spawnDummyActionRef, spawnDummyActionHandler);
     }
 
     private void OnDisable()
     {
-        UnregisterAction(nextActionRef, () => NextWeapon());
-        UnregisterAction(prevActionRef, () => PrevWeapon());
-        UnregisterAction(toggleAutoActionRef, () => ToggleAutoCycle());
-        UnregisterAction(useActionRef, () => UseCurrentWeapon());
-        UnregisterAction(spawnDummyActionRef, () => SpawnDummy());
+        UnregisterAction(nextActionRef, nextActionHandler);
+        UnregisterAction(prevActionRef, prevActionHandler);
+        UnregisterAction(toggleAutoActionRef, toggleAutoActionHandler);
+        UnregisterAction(useActionRef, useActionHandler);
+        UnregisterAction(spawnDummyActionRef, spawnDummyActionHandler);
     }
 
-    private void RegisterAction(InputActionReference reference, System.Action callback)
+    private void RegisterAction(InputActionReference reference, System.Action<InputAction.CallbackContext> callback)
     {
         if (reference == null || reference.action == null) return;
-        reference.action.performed += ctx => callback();
+        reference.action.performed += callback;
         reference.action.Enable();
     }
 
-    private void UnregisterAction(InputActionReference reference, System.Action callback)
+    private void UnregisterAction(InputActionReference reference, System.Action<InputAction.CallbackContext> callback)
     {
         if (reference == null || reference.action == null) return;
-        // Best-effort removal: remove all performed handlers (cannot remove lambda directly)
-        reference.action.performed -= ctx => callback();
+        if (callback != null)
+        {
+            reference.action.performed -= callback;
+        }
         reference.action.Disable();
     }
 
@@ -166,7 +170,7 @@ public class WeaponTester : MonoBehaviour
         if (weapons.Count == 0 || equipmentManager == null) return;
         var def = weapons[index];
         if (def == null) return;
-        equipmentManager.ReplaceWeapon(EquipmentManager.WeaponSlot.Main, def);
+        equipmentManager.ReplaceWeaponAndActivate(EquipmentManager.WeaponSlot.Main, def);
         Debug.Log($"WeaponTester: Equipped [{index}] {def.name} (id={def.WeaponId})");
     }
 

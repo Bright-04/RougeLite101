@@ -10,6 +10,7 @@ public struct WeaponAlignmentPose
     public Vector2 AimDirection;
     public float AimAngle;
     public Quaternion WeaponRotation;
+    public Vector3 VisualScale;
 }
 
 public static class WeaponAlignmentUtility
@@ -26,6 +27,7 @@ public static class WeaponAlignmentUtility
         Vector3 muzzleTipPoint = weaponPosition + aimRotation * weapon.AimPointOffset;
         Vector3 projectileSpawnPoint = weaponPosition + aimRotation * weapon.ProjectileSpawnPointOffset;
         Quaternion weaponRotation = Quaternion.Euler(0f, 0f, aimAngle + weapon.LocalRotationOffset.z);
+        Vector3 visualScale = CalculateVisualScale(safeAim, weapon);
 
         return new WeaponAlignmentPose
         {
@@ -36,12 +38,44 @@ public static class WeaponAlignmentUtility
             ProjectileSpawnPoint = projectileSpawnPoint,
             AimDirection = safeAim,
             AimAngle = aimAngle,
-            WeaponRotation = weaponRotation
+            WeaponRotation = weaponRotation,
+            VisualScale = visualScale
         };
     }
 
     public static WeaponAlignmentPose CalculatePose(WeaponDefinitionSO definition, Vector3 playerCenter, Vector2 aimDirection)
     {
         return CalculateWeaponPose(playerCenter, aimDirection, definition);
+    }
+
+    public static Vector3 CalculateVisualScale(Vector2 aimDirection, WeaponDefinitionSO weapon)
+    {
+        float scale = weapon != null && weapon.VisualScale > 0f ? weapon.VisualScale : 1f;
+        Vector3 visualScale = Vector3.one * scale;
+
+        if (weapon == null)
+        {
+            return visualScale;
+        }
+
+        bool aimLeft = aimDirection.x < -0.001f;
+        if (!aimLeft)
+        {
+            return visualScale;
+        }
+
+        if (weapon.FlipBehavior == WeaponFlipBehavior.FlipXOnAimLeft
+            || weapon.FlipBehavior == WeaponFlipBehavior.FlipBothOnAimLeft)
+        {
+            visualScale.x *= -1f;
+        }
+
+        if (weapon.FlipBehavior == WeaponFlipBehavior.FlipYOnAimLeft
+            || weapon.FlipBehavior == WeaponFlipBehavior.FlipBothOnAimLeft)
+        {
+            visualScale.y *= -1f;
+        }
+
+        return visualScale;
     }
 }
