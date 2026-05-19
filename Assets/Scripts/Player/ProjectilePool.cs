@@ -48,7 +48,6 @@ public class ProjectilePool : MonoBehaviour
         ObjectPool<GameObject> pool = GetPool(prefab);
         GameObject projectile = pool.Get();
         projectile.transform.SetPositionAndRotation(position, rotation);
-        projectile.SetActive(true);
         return projectile;
     }
 
@@ -77,7 +76,7 @@ public class ProjectilePool : MonoBehaviour
 
         pool = new ObjectPool<GameObject>(
             createFunc: () => CreateProjectile(prefab),
-            actionOnGet: projectile => projectile.SetActive(true),
+            actionOnGet: projectile => { },
             actionOnRelease: projectile => projectile.SetActive(false),
             actionOnDestroy: Destroy,
             collectionCheck: false,

@@ -15,10 +15,14 @@ public class ProjectileWeapon : Weapon
     protected float spreadAngle = 0f;
 
     private SpriteRenderer spriteRenderer;
+    private WeaponController weaponController;
+    private Quaternion aimRotation = Quaternion.identity;
+    private Vector2 aimDirection = Vector2.right;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        weaponController = GetComponentInParent<WeaponController>();
         EnsureDefaults();
     }
 
@@ -47,6 +51,8 @@ public class ProjectileWeapon : Weapon
         projectileRange = definition.Range;
         projectileCount = Mathf.Max(1, definition.ProjectileCount);
         spreadAngle = definition.SpreadAngle;
+
+        UpdateAimState();
     }
 
     public override void Use()
@@ -72,9 +78,9 @@ public class ProjectileWeapon : Weapon
 
     protected void SpawnProjectiles(SpriteRenderer sortingSource = null)
     {
-        if (projectilePrefab == null || shootPoint == null)
+        if (projectilePrefab == null)
         {
-            Debug.LogWarning($"{GetType().Name}: projectilePrefab or shootPoint is null!", this);
+            Debug.LogWarning($"{GetType().Name}: projectilePrefab is null!", this);
             return;
         }
 
@@ -84,8 +90,13 @@ public class ProjectileWeapon : Weapon
 
         for (int i = 0; i < count; i++)
         {
-            Quaternion rotation = shootPoint.rotation * Quaternion.Euler(0f, 0f, startAngle + angleStep * i);
-            Vector3 spawnPos = new Vector3(shootPoint.position.x, shootPoint.position.y, 0f);
+            Quaternion rotation = aimRotation * Quaternion.Euler(0f, 0f, startAngle + angleStep * i);
+            if (projectilePrefab.GetComponent<FireballSpell>() != null)
+            {
+                rotation *= Quaternion.Euler(0f, 0f, 180f);
+            }
+
+            Vector3 spawnPos = GetProjectileSpawnPosition();
             GameObject projectile = ProjectilePool.Instance.Get(projectilePrefab, spawnPos, rotation);
             if (projectile == null)
             {
@@ -94,6 +105,7 @@ public class ProjectileWeapon : Weapon
 
             InitializeProjectile(projectile);
             ApplyProjectileSorting(projectile, sortingSource);
+            projectile.SetActive(true);
         }
     }
 
@@ -152,28 +164,55 @@ public class ProjectileWeapon : Weapon
 
     private void FollowPlayerDirection()
     {
+        UpdateAimState();
+    }
+
+    private void UpdateAimState()
+    {
         if (PlayerMovement.Instance == null)
         {
             return;
         }
 
-        Vector2 aimDirection = PlayerMovement.Instance.LastAimDirection;
-        if (aimDirection.sqrMagnitude < 0.0001f)
+        Vector2 currentAimDirection = PlayerMovement.Instance.LastAimDirection;
+        if (currentAimDirection.sqrMagnitude < 0.0001f)
         {
             return;
         }
 
+        aimDirection = currentAimDirection.normalized;
         float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
-
-        transform.localRotation = Quaternion.Euler(0f, 0f, angle) * GetLocalRotationOffset();
-        if (weaponDefinition != null)
-        {
-            transform.localPosition = Quaternion.Euler(0f, 0f, angle) * weaponDefinition.LocalPositionOffset;
-        }
-
+        aimRotation = Quaternion.Euler(0f, 0f, angle);
         if (spriteRenderer != null)
         {
-            spriteRenderer.flipY = PlayerMovement.Instance.FacingLeft;
+            bool aimLeft = aimDirection.x < -0.001f;
+            spriteRenderer.flipX = aimLeft && (weaponDefinition.FlipBehavior == WeaponFlipBehavior.FlipXOnAimLeft
+                || weaponDefinition.FlipBehavior == WeaponFlipBehavior.FlipBothOnAimLeft);
+            spriteRenderer.flipY = aimLeft && (weaponDefinition.FlipBehavior == WeaponFlipBehavior.FlipYOnAimLeft
+                || weaponDefinition.FlipBehavior == WeaponFlipBehavior.FlipBothOnAimLeft);
         }
+    }
+
+    private Vector3 GetProjectileSpawnPosition()
+    {
+        if (weaponDefinition != null)
+        {
+            if (weaponController == null)
+            {
+                weaponController = GetComponentInParent<WeaponController>();
+            }
+
+            if (weaponController != null)
+            {
+                return weaponController.GetProjectileSpawnPoint(weaponDefinition, aimDirection);
+            }
+        }
+
+        if (shootPoint != null)
+        {
+            return new Vector3(shootPoint.position.x, shootPoint.position.y, 0f);
+        }
+
+        return transform.position;
     }
 }

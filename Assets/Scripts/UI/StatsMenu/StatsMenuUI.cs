@@ -68,7 +68,7 @@ public class StatsMenuUI : MonoBehaviour
 
         // Core Stats với current/max
         if (maxHpText != null)
-            maxHpText.text = $"Max HP: {playerStats.maxHP:F0}";
+            maxHpText.text = $"Max HP: {playerStats.GetTotalMaxHP():F0}";
 
         if (maxManaText != null)
             maxManaText.text = $"Max Mana: {playerStats.maxMana:F0}";

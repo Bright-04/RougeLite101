@@ -4,10 +4,12 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Collider2D))]
 public class WeaponPickup : MonoBehaviour
 {
+    [SerializeField] private EquipmentDefinitionSO equipmentDefinition;
     [SerializeField] private WeaponDefinitionSO weaponDefinition;
     [SerializeField] private SpriteRenderer promptSprite;
 
     private EquipmentManager equipmentManager;
+    private EquipmentController equipmentController;
     private InputAction interactAction;
     private bool playerInRange;
     private bool isConsumed;
@@ -15,9 +17,15 @@ public class WeaponPickup : MonoBehaviour
     private void Start()
     {
         equipmentManager = FindAnyObjectByType<EquipmentManager>();
+        equipmentController = FindAnyObjectByType<EquipmentController>();
         if (equipmentManager == null)
         {
             Debug.LogWarning("WeaponPickup: Could not find EquipmentManager in scene.", this);
+        }
+
+        if (equipmentDefinition == null)
+        {
+            equipmentDefinition = weaponDefinition;
         }
 
         if (InputManager.Instance != null)
@@ -68,12 +76,12 @@ public class WeaponPickup : MonoBehaviour
 
     private void OnInteractPerformed(InputAction.CallbackContext _)
     {
-        if (!playerInRange || isConsumed || weaponDefinition == null || equipmentManager == null)
+        if (!playerInRange || isConsumed || equipmentDefinition == null)
         {
             return;
         }
 
-        bool pickedUpNow = equipmentManager.TryPickupWeapon(weaponDefinition, this);
+        bool pickedUpNow = TryPickupEquipment();
         if (pickedUpNow)
         {
             ConsumeAfterSuccessfulPickup();
@@ -98,5 +106,26 @@ public class WeaponPickup : MonoBehaviour
         {
             promptSprite.enabled = visible;
         }
+    }
+
+    private bool TryPickupEquipment()
+    {
+        if (equipmentDefinition is WeaponDefinitionSO weapon)
+        {
+            return equipmentManager != null && equipmentManager.TryPickupWeapon(weapon, this);
+        }
+
+        if (equipmentDefinition is ArmorDefinitionSO armor)
+        {
+            if (equipmentController == null)
+            {
+                return false;
+            }
+
+            equipmentController.EquipArmor(armor);
+            return true;
+        }
+
+        return false;
     }
 }

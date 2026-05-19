@@ -85,8 +85,7 @@ public class MeleeWeapon : Weapon
 
         if (slashAnimPrefab != null && slashAnimSpawnPoint != null)
         {
-            slashAnim = Instantiate(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity);
-            slashAnim.transform.parent = transform.parent;
+            slashAnim = SlashEffectPool.Instance.Get(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity, transform.parent);
             SyncSlashSortingWithWeapon();
         }
     }
@@ -107,9 +106,10 @@ public class MeleeWeapon : Weapon
         }
 
         slashAnim.transform.rotation = Quaternion.Euler(-180f, 0f, 0f);
-        if (playerMovement != null && playerMovement.FacingLeft)
+        SpriteRenderer slashRenderer = slashAnim.GetComponent<SpriteRenderer>();
+        if (slashRenderer != null)
         {
-            slashAnim.GetComponent<SpriteRenderer>().flipX = true;
+            slashRenderer.flipX = playerMovement != null && playerMovement.FacingLeft;
         }
     }
 
@@ -121,9 +121,10 @@ public class MeleeWeapon : Weapon
         }
 
         slashAnim.transform.rotation = Quaternion.identity;
-        if (playerMovement != null && playerMovement.FacingLeft)
+        SpriteRenderer slashRenderer = slashAnim.GetComponent<SpriteRenderer>();
+        if (slashRenderer != null)
         {
-            slashAnim.GetComponent<SpriteRenderer>().flipX = true;
+            slashRenderer.flipX = playerMovement != null && playerMovement.FacingLeft;
         }
     }
 
@@ -197,7 +198,7 @@ public class MeleeWeapon : Weapon
             weaponScale.x = Mathf.Abs(weaponScale.x);
             transform.localScale = weaponScale;
 
-            Vector3 offset = weaponDefinition.LocalPositionOffset;
+            Vector3 offset = weaponDefinition.GripPointOffset;
             offset.x *= facingMultiplier;
             transform.parent.localPosition = offset;
 

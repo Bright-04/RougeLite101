@@ -53,6 +53,7 @@ public class PlayerMovement : MonoBehaviour
         if (equipmentController != null)
         {
             equipmentController.OnArmorEquipped += OnArmorEquipped;
+            equipmentController.ReplayEquippedArmor();
         }
 
         EnsureAimPivot();

@@ -12,6 +12,7 @@ public class EquipmentController : MonoBehaviour
     }
 
     [Header("Starting Armor")]
+    [SerializeField] private ArmorRegistry armorRegistry;
     [SerializeField] private ArmorDefinitionSO startingShield;
     [SerializeField] private ArmorDefinitionSO startingHelmet;
     [SerializeField] private ArmorDefinitionSO startingGreaves;
@@ -24,8 +25,13 @@ public class EquipmentController : MonoBehaviour
 
     public event Action<ArmorSlot, ArmorDefinitionSO, ArmorDefinitionSO> OnArmorEquipped;
 
-    private void Start()
+    private void Awake()
     {
+        if (armorRegistry != null)
+        {
+            armorRegistry.Initialize();
+        }
+
         EquipStartingArmor(ArmorSlot.Shield, startingShield);
         EquipStartingArmor(ArmorSlot.Helmet, startingHelmet);
         EquipStartingArmor(ArmorSlot.Greaves, startingGreaves);
@@ -66,6 +72,34 @@ public class EquipmentController : MonoBehaviour
         };
     }
 
+    public string GetArmorId(ArmorSlot slot)
+    {
+        ArmorDefinitionSO armor = GetArmor(slot);
+        return armor != null ? armor.EquipmentId : string.Empty;
+    }
+
+    public void LoadArmor(string shieldId, string helmetId, string greavesId, string bootsId)
+    {
+        if (armorRegistry == null)
+        {
+            Debug.LogWarning("EquipmentController: ArmorRegistry is not assigned. Armor load skipped.", this);
+            return;
+        }
+
+        EquipArmor(ArmorSlot.Shield, armorRegistry.GetById(shieldId));
+        EquipArmor(ArmorSlot.Helmet, armorRegistry.GetById(helmetId));
+        EquipArmor(ArmorSlot.Greaves, armorRegistry.GetById(greavesId));
+        EquipArmor(ArmorSlot.Boots, armorRegistry.GetById(bootsId));
+    }
+
+    public void ReplayEquippedArmor()
+    {
+        ReplayArmor(ArmorSlot.Shield);
+        ReplayArmor(ArmorSlot.Helmet);
+        ReplayArmor(ArmorSlot.Greaves);
+        ReplayArmor(ArmorSlot.Boots);
+    }
+
     private void EquipStartingArmor(ArmorSlot slot, ArmorDefinitionSO armor)
     {
         if (armor != null)
@@ -102,6 +136,15 @@ public class EquipmentController : MonoBehaviour
             case ArmorSlot.Boots:
                 equippedBoots = armor;
                 break;
+        }
+    }
+
+    private void ReplayArmor(ArmorSlot slot)
+    {
+        ArmorDefinitionSO armor = GetArmor(slot);
+        if (armor != null)
+        {
+            OnArmorEquipped?.Invoke(slot, null, armor);
         }
     }
 }

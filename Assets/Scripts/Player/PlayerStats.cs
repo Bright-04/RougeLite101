@@ -50,6 +50,7 @@ public class PlayerStats : MonoBehaviour
         if (equipmentController != null)
         {
             equipmentController.OnArmorEquipped += OnArmorEquipped;
+            equipmentController.ReplayEquippedArmor();
         }
 
         currentHP = GetTotalMaxHP();
@@ -206,6 +207,16 @@ public class PlayerStats : MonoBehaviour
         if (equipmentManager == null)
         {
             equipmentManager = FindAnyObjectByType<EquipmentManager>();
+        }
+
+        if (equipmentController == null)
+        {
+            equipmentController = GetComponent<EquipmentController>();
+        }
+
+        if (equipmentController != null)
+        {
+            equipmentController.LoadArmor(data.shieldArmorId, data.helmetArmorId, data.greavesArmorId, data.bootsArmorId);
         }
 
         if (equipmentManager != null)

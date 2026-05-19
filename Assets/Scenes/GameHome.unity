@@ -6326,6 +6326,7 @@ MonoBehaviour:
   enableAutoSave: 1
   playerStats: {fileID: 2681816811590592302}
   equipmentManager: {fileID: 0}
+  equipmentController: {fileID: 0}
 --- !u!4 &1733904191
 Transform:
   m_ObjectHideFlags: 0
@@ -106518,7 +106519,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1918963932709273604, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2681816811590592304}
   m_SourcePrefab: {fileID: 100100000, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
 --- !u!1 &2681816811590592301 stripped
 GameObject:
@@ -106534,6 +106538,38 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea6ed426af4683d42934e666324c15ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2681816811590592304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2681816811590592301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3648ae36e6907f844a1b1f4d486aeb04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponTester
+  weaponRegistry: {fileID: 11400000, guid: 33e69cf0b17abfb418c7456f649d3b95, type: 2}
+  equipmentManager: {fileID: 2681816811590592305}
+  autoCycleInterval: 3
+  testDummyPrefab: {fileID: 8771521562973808768, guid: 61d004395e52e674fb5001b04eb89999, type: 3}
+  nextActionRef: {fileID: 0}
+  prevActionRef: {fileID: 0}
+  toggleAutoActionRef: {fileID: 0}
+  useActionRef: {fileID: 0}
+  spawnDummyActionRef: {fileID: 0}
+--- !u!114 &2681816811590592305 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1339241568981859123, guid: 94a0d711e21967f4b9a7e7a8abe82748, type: 3}
+  m_PrefabInstance: {fileID: 2681816811590592300}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2681816811590592301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d92313cc825427a49b7af3068e8c1a12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &4682170049916571609

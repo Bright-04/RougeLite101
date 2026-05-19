@@ -12,6 +12,7 @@ public class EquipmentManager : MonoBehaviour
     [Header("Runtime References")]
     [SerializeField] private Transform weaponHolder;
     [SerializeField] private Transform aimPivot;
+    [SerializeField] private WeaponController weaponController;
     [SerializeField] private WeaponPickupModalUI weaponPickupModalUI;
 
     [Header("Aim Hand Anchoring")]
@@ -60,6 +61,14 @@ public class EquipmentManager : MonoBehaviour
 
         playerMovement = GetComponent<PlayerMovement>();
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        if (weaponController == null)
+        {
+            weaponController = GetComponent<WeaponController>();
+            if (weaponController == null)
+            {
+                weaponController = gameObject.AddComponent<WeaponController>();
+            }
+        }
 
         if (playerSpriteRenderer != null)
         {
@@ -279,31 +288,23 @@ public class EquipmentManager : MonoBehaviour
             return;
         }
 
-        Transform mount = WeaponMount;
-        if (mount == null)
+        if (weaponController == null)
         {
-            Debug.LogError("EquipmentManager: Weapon mount is not assigned.", this);
+            Debug.LogError("EquipmentManager: WeaponController is not available.", this);
             return;
         }
 
         ClearSlot(slot);
 
-        // CREATE an Offset Container to protect position changes from the Animator!
-        GameObject offsetContainer = new GameObject("OffsetContainer_" + definition.WeaponId);
-        offsetContainer.transform.SetParent(mount, false);
-        offsetContainer.transform.localPosition = definition.LocalPositionOffset;
-        offsetContainer.transform.localRotation = Quaternion.Euler(definition.LocalRotationOffset);
-        offsetContainer.transform.localScale = Vector3.one;
+        Transform visualRoot = weaponController.CreateWeaponVisualRoot(definition.WeaponId);
 
-        GameObject weaponObject = Instantiate(definition.WeaponPrefab, offsetContainer.transform);
-        weaponObject.transform.localPosition = definition.WeaponPrefab.transform.localPosition;
-        weaponObject.transform.localRotation = definition.WeaponPrefab.transform.localRotation;
-        weaponObject.transform.localScale = definition.WeaponPrefab.transform.localScale;
+        GameObject weaponObject = Instantiate(definition.WeaponPrefab, visualRoot);
+        ResetWeaponVisualTransform(weaponObject.transform);
 
         Weapon weaponComponent = weaponObject.GetComponent<Weapon>();
         if (weaponComponent == null)
         {
-            Destroy(offsetContainer); // Destroy wrapper if weapon fails
+            Destroy(visualRoot.gameObject); // Destroy wrapper if weapon fails
             Debug.LogError("EquipmentManager: Equipped prefab does not have a Weapon component!", this);
             return;
         }
@@ -322,6 +323,10 @@ public class EquipmentManager : MonoBehaviour
         }
 
         RefreshWeaponObjectVisibility();
+        if (activeSlot == slot)
+        {
+            weaponController.SetCurrentWeapon(weaponComponent, definition);
+        }
         ApplySortingToWeapon(weaponComponent, currentWeaponSortingOrder);
         OnWeaponChanged?.Invoke(slot, definition);
     }
@@ -451,13 +456,17 @@ public class EquipmentManager : MonoBehaviour
         Weapon weapon = GetWeaponInstance(slot);
         if (weapon != null)
         {
-            // Destroy the offset container (parent) instead of just the weapon!
-            if (weapon.transform.parent != null && weapon.transform.parent.name.StartsWith("OffsetContainer_"))
+            weaponController?.ClearCurrentWeapon(weapon);
+
+            // Destroy the visual root instead of just the weapon.
+            if (weapon.transform.parent != null && weapon.transform.parent.name.StartsWith("CurrentWeaponVisual_"))
             {
+                weapon.transform.parent.gameObject.SetActive(false);
                 Destroy(weapon.transform.parent.gameObject);
             }
             else
             {
+                weapon.gameObject.SetActive(false);
                 Destroy(weapon.gameObject);
             }
         }
@@ -491,6 +500,12 @@ public class EquipmentManager : MonoBehaviour
 
         activeSlot = slot;
         RefreshWeaponObjectVisibility();
+        Weapon activeWeapon = GetWeaponInstance(activeSlot);
+        WeaponDefinitionSO activeDefinition = GetWeaponDefinition(activeSlot);
+        if (weaponController != null)
+        {
+            weaponController.SetCurrentWeapon(activeWeapon, activeDefinition);
+        }
         OnActiveSlotChanged?.Invoke(activeSlot);
     }
 
@@ -515,5 +530,12 @@ public class EquipmentManager : MonoBehaviour
         {
             mainWeaponInstance.gameObject.SetActive(true);
         }
+    }
+
+    private static void ResetWeaponVisualTransform(Transform target)
+    {
+        target.localPosition = Vector3.zero;
+        target.localRotation = Quaternion.identity;
+        target.localScale = Vector3.one;
     }
 }

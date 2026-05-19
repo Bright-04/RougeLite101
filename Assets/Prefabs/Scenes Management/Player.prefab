@@ -254,6 +254,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9b2897142874be28493b7fd3862f183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentController
+  armorRegistry: {fileID: 11400000, guid: fce9a27f1ab243138b1933713990a526, type: 2}
   startingShield: {fileID: 0}
   startingHelmet: {fileID: 0}
   startingGreaves: {fileID: 0}

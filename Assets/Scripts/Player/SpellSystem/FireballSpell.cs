@@ -44,8 +44,7 @@ public class FireballSpell : MonoBehaviour
 
     private void Update()
     {
-        Vector2 direction = initializedByWeapon ? Vector2.right : Vector2.left;
-        transform.Translate(direction * speed * Time.deltaTime);
+        transform.Translate(Vector2.left * speed * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -1,13 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SlashAnim : MonoBehaviour
 {
-    public void DestroySelf()
+    private SlashEffectPool pool;
+
+    public void Initialize(SlashEffectPool owner)
     {
-      
-        Destroy(gameObject);
+        pool = owner;
     }
 
+    private void OnEnable()
+    {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.flipX = false;
+        }
+    }
+
+    public void DestroySelf()
+    {
+        if (pool != null)
+        {
+            pool.Release(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 }

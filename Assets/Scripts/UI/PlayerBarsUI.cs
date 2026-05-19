@@ -45,13 +45,13 @@ public class PlayerUI : MonoBehaviour
         
         if (healthSlider != null)
         {
-            healthSlider.maxValue = playerStats.maxHP;
+            healthSlider.maxValue = playerStats.GetTotalMaxHP();
             healthSlider.value = playerStats.currentHP;
         }
 
         if (hpText != null)
         {
-            hpText.text = $"{Mathf.FloorToInt(playerStats.currentHP)} / {playerStats.maxHP}";
+            hpText.text = $"{Mathf.FloorToInt(playerStats.currentHP)} / {playerStats.GetTotalMaxHP()}";
         }
             
     }
