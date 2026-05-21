@@ -29,7 +29,14 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         ValidateGameView
     }
 
+    private enum PreviewAimMode
+    {
+        FreeAim,
+        EightDirections
+    }
+
     private WorkflowMode workflowMode = WorkflowMode.EditWeaponAlignment;
+    private PreviewAimMode previewAimMode;
     private GameObject previewPlayerPrefab;
     private Sprite previewPlayerSprite;
     private Vector3 previewWeaponAnchorOffset = Vector3.zero;
@@ -49,6 +56,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
     private bool useMainCameraRenderPreview;
     private bool useNormalizedCalibrationScale;
     private bool advancedFoldout;
+    private bool legacyFoldout;
     private Rect lastViewportRect;
     private Rect lastWeaponGuiRect;
     private Rect lastPlayerGuiRect;
@@ -263,7 +271,19 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             "Flip Behavior",
             "Optional local scale flip when aiming left.");
 
-        aimAngle = EditorGUILayout.Slider(new GUIContent("Preview Aim Angle"), aimAngle, -180f, 180f);
+        previewAimMode = (PreviewAimMode)EditorGUILayout.EnumPopup(new GUIContent("Preview Aim Mode"), previewAimMode);
+        if (previewAimMode == PreviewAimMode.EightDirections)
+        {
+            int octant = Mathf.RoundToInt(Mathf.Repeat(aimAngle, 360f) / 45f) % 8;
+            string[] octantLabels = { "Right", "Up Right", "Up", "Up Left", "Left", "Down Left", "Down", "Down Right" };
+            octant = GUILayout.Toolbar(octant, octantLabels);
+            aimAngle = octant * 45f;
+        }
+        else
+        {
+            aimAngle = EditorGUILayout.Slider(new GUIContent("Preview Aim Angle"), aimAngle, -180f, 180f);
+        }
+
         autoTest360Aim = EditorGUILayout.Toggle(new GUIContent("Auto Test 360 Aim"), autoTest360Aim);
         if (autoTest360Aim)
         {
@@ -273,7 +293,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
         DrawFooterStatus();
 
-        advancedFoldout = EditorGUILayout.Foldout(advancedFoldout, "Advanced Debug", true);
+        advancedFoldout = EditorGUILayout.Foldout(advancedFoldout, "Legacy / Advanced", true);
         if (advancedFoldout)
         {
             EditorGUILayout.HelpBox("Diagnostics only. Workflow modes set the trusted preview path automatically; these values are shown here so the editor does not hide what it is doing.", MessageType.Info);
@@ -298,15 +318,17 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             previewPlayerSprite = (Sprite)EditorGUILayout.ObjectField("Fallback Player Sprite", previewPlayerSprite, typeof(Sprite), false);
             previewWeaponAnchorOffset = EditorGUILayout.Vector3Field("Fallback Anchor Offset", previewWeaponAnchorOffset);
 
-            EditorGUILayout.Space(4f);
-            EditorGUILayout.LabelField("Legacy / Hidden Fields", EditorStyles.boldLabel);
-            using (new EditorGUI.DisabledScope(true))
+            legacyFoldout = EditorGUILayout.Foldout(legacyFoldout, "Legacy Fallback Fields", true);
+            if (legacyFoldout)
             {
-                EditorGUILayout.PropertyField(gripPointOffsetProperty, new GUIContent("Grip Point Offset (Legacy Fallback)"));
-                EditorGUILayout.PropertyField(aimPointOffsetProperty, new GUIContent("Muzzle / Tip Point Offset (Legacy Fallback)"));
-                EditorGUILayout.PropertyField(projectileSpawnPointOffsetProperty, new GUIContent("Projectile Spawn Point Offset (Legacy Fallback)"));
-                EditorGUILayout.PropertyField(slashVfxOffsetProperty, new GUIContent("Slash VFX Offset (Legacy Fallback)"));
-                EditorGUILayout.PropertyField(localPositionOffsetProperty, new GUIContent("Local Position Offset (Legacy Unused)"));
+                using (new EditorGUI.DisabledScope(true))
+                {
+                    EditorGUILayout.PropertyField(gripPointOffsetProperty, new GUIContent("Grip Point Offset (Legacy Fallback)"));
+                    EditorGUILayout.PropertyField(aimPointOffsetProperty, new GUIContent("Muzzle / Tip Point Offset (Legacy Fallback)"));
+                    EditorGUILayout.PropertyField(projectileSpawnPointOffsetProperty, new GUIContent("Projectile Spawn Point Offset (Legacy Fallback)"));
+                    EditorGUILayout.PropertyField(slashVfxOffsetProperty, new GUIContent("Slash VFX Offset (Legacy Fallback)"));
+                    EditorGUILayout.PropertyField(localPositionOffsetProperty, new GUIContent("Local Position Offset (Legacy Unused)"));
+                }
             }
 
             EditorGUILayout.Space(4f);
@@ -354,14 +376,18 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         WeaponRig rig = GetWeaponPrefabRig();
         if (rig == null)
         {
-            EditorGUILayout.HelpBox("WeaponPrefab has no WeaponRig. Preview is using legacy WeaponDefinition fallback offsets until the prefab is migrated.", MessageType.Warning);
+            string fallbackLabel = weaponDefinition != null && weaponDefinition.AlignmentPreset != null
+                ? $"WeaponPrefab has no WeaponRig. Preview is using alignment preset '{weaponDefinition.AlignmentPreset.name}'."
+                : "WeaponPrefab has no WeaponRig. Preview is using legacy WeaponDefinition fallback offsets until the prefab is migrated.";
+            EditorGUILayout.HelpBox(fallbackLabel, MessageType.Warning);
             return;
         }
 
-        MessageType messageType = rig.HasAllRequiredPoints ? MessageType.Info : MessageType.Warning;
-        string message = rig.HasAllRequiredPoints
+        bool hasRequiredPoints = weaponDefinition != null ? rig.HasRequiredPointsFor(weaponDefinition) : rig.HasAllRequiredPoints;
+        MessageType messageType = hasRequiredPoints ? MessageType.Info : MessageType.Warning;
+        string message = hasRequiredPoints
             ? "Preview is using WeaponRig child points from the runtime prefab."
-            : "WeaponRig is missing one or more required child points. Runtime will warn and fallback for missing data.";
+            : "WeaponRig is missing required child points for this weapon archetype. Runtime will warn and fallback for missing data.";
         EditorGUILayout.HelpBox(message, messageType);
         EditorGUILayout.ObjectField("Rig", rig, typeof(WeaponRig), true);
     }
@@ -646,6 +672,8 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             DrawAimPoint(aimPoint);
             DrawProjectileSpawnPoint(projectileSpawnPoint);
             DrawSlashOrigin(slashOrigin);
+            DrawSlashArcStart(slashArcStart);
+            DrawSlashArcEnd(slashArcEnd);
         }
 
         if (mode == WeaponHandlingMode.SlashArc)
@@ -2038,6 +2066,8 @@ public class WeaponAlignmentEditorWindow : EditorWindow
     private static void DrawWeaponPosition(Vector2 position) => DrawLabeledDisc(position, 5f, new Color(1f, 0.25f, 1f), "WeaponPosition", new Vector2(8f, -20f));
     private static void DrawProjectileSpawnPoint(Vector2 position) => DrawLabeledDisc(position, 4f, new Color(1f, 0.25f, 0.2f), "ProjectileSpawn", new Vector2(8f, 2f));
     private static void DrawSlashOrigin(Vector2 position) => DrawLabeledDisc(position, 4f, new Color(1f, 0.45f, 0.1f), "SlashOrigin", new Vector2(8f, -20f));
+    private static void DrawSlashArcStart(Vector2 position) => DrawLabeledDisc(position, 4f, new Color(1f, 0.2f, 0.2f), "SlashArcStart", new Vector2(8f, -20f));
+    private static void DrawSlashArcEnd(Vector2 position) => DrawLabeledDisc(position, 4f, new Color(1f, 0.2f, 0.2f), "SlashArcEnd", new Vector2(8f, 2f));
 
     private static void DrawLabeledDisc(Vector2 position, float radius, Color color, string label, Vector2 labelOffset)
     {

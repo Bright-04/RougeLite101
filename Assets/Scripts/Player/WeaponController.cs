@@ -57,11 +57,20 @@ public class WeaponController : MonoBehaviour
         loggedFirstPoseVisibility = false;
         if (currentWeaponRig != null)
         {
-            currentWeaponRig.ValidateRequiredPoints();
+            currentWeaponRig.ValidateRequiredPoints(definition);
+            if (definition != null && definition.UsesLegacyProjectileSpawnOffset && currentWeaponRig.ProjectileSpawnPoint == null)
+            {
+                Debug.LogWarning($"WeaponController: '{definition.name}' is using legacy ProjectileSpawnPointOffset because its active rig has no ProjectileSpawnPoint.", this);
+            }
+            else if (definition != null && definition.UsesLegacyProjectileSpawnOffset)
+            {
+                Debug.LogWarning($"WeaponController: '{definition.name}' still serializes ProjectileSpawnPointOffset, but runtime is expected to use WeaponRig.ProjectileSpawnPoint.", this);
+            }
         }
         else if (definition != null)
         {
-            Debug.LogWarning($"WeaponController: '{definition.name}' is using legacy WeaponDefinition offsets because its prefab has no WeaponRig.", this);
+            string presetLabel = definition.AlignmentPreset != null ? $" preset '{definition.AlignmentPreset.name}'" : " legacy WeaponDefinition offsets";
+            Debug.LogWarning($"WeaponController: '{definition.name}' has no WeaponRig and is using{presetLabel}.", this);
         }
 
         logScaleDebugOnWeaponChange = true;

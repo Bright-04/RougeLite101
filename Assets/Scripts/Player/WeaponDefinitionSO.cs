@@ -25,7 +25,9 @@ public enum WeaponFlipBehavior
 [CreateAssetMenu(fileName = "NewWeapon", menuName = "Weapons/Weapon Definition")]
 public class WeaponDefinitionSO : EquipmentDefinitionSO
 {
-    [Header("Offset")]
+    [Header("Alignment")]
+    [SerializeField] private WeaponArchetype archetype = WeaponArchetype.Generic;
+    [SerializeField] private WeaponAlignmentPreset alignmentPreset;
     [SerializeField] private WeaponHandlingMode handlingMode = WeaponHandlingMode.SlashArc;
     [FormerlySerializedAs("localPositionOffset")]
     [SerializeField] private Vector3 gripPointOffset = Vector3.zero;
@@ -33,6 +35,7 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
     [SerializeField] private Vector3 localRotationOffset = Vector3.zero;
     [FormerlySerializedAs("visualScale")]
     [SerializeField] private float visualScale = 1f;
+    [Header("Legacy Alignment Fallbacks")]
     [FormerlySerializedAs("visualPositionOffset")]
     [SerializeField] private Vector3 localPositionOffset = Vector3.zero;
     [SerializeField] private WeaponFlipBehavior flipBehavior = WeaponFlipBehavior.None;
@@ -60,6 +63,9 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
 
     public string WeaponId => EquipmentId;
     public string WeaponClass => EquipmentClass;
+    public WeaponArchetype Archetype => archetype;
+    public WeaponArchetype ResolvedArchetype => WeaponArchetypeUtility.Resolve(this);
+    public WeaponAlignmentPreset AlignmentPreset => alignmentPreset;
     public WeaponHandlingMode HandlingMode => handlingMode;
     public Vector3 GripPointOffset => gripPointOffset;
     public Vector3 AimPointOffset => aimPointOffset;
@@ -71,6 +77,7 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
     public float AimPointDistance => aimPointOffset.magnitude;
     public WeaponFlipBehavior FlipBehavior => flipBehavior;
     public Vector3 ProjectileSpawnPointOffset => projectileSpawnPointOffset;
+    public bool UsesLegacyProjectileSpawnOffset => projectileSpawnPointOffset.sqrMagnitude > 0.000001f;
     public Vector3 SlashVfxOffset => slashVfxOffset;
     public GameObject WeaponPrefab => weaponPrefab;
     public WeaponType WeaponType => weaponType;

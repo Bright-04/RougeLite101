@@ -58,11 +58,6 @@ public abstract class Weapon : MonoBehaviour
         return weaponDefinition != null ? Quaternion.Euler(weaponDefinition.LocalRotationOffset) : Quaternion.identity;
     }
 
-    protected Vector3 GetVisualPositionOffset()
-    {
-        return weaponDefinition != null ? weaponDefinition.VisualPositionOffset : Vector3.zero;
-    }
-
     private void CaptureInitialTransform()
     {
         if (capturedInitialTransform)

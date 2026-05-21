@@ -12,9 +12,18 @@ public static class WeaponRigAssetBuilder
     private const string DefaultWeaponPath = "Assets/ScriptableObjects/Weapons/Definitions/sword_basic.asset";
     private const string SecondaryWeaponPath = "Assets/ScriptableObjects/Weapons/Definitions/bow_basic.asset";
 
-    [MenuItem("Tools/Weapons/Rebuild Weapon Rig Assets")]
+    [MenuItem("Tools/Weapons/Legacy/Rebuild Shared Weapon Rig Assets")]
     public static void RebuildWeaponRigAssets()
     {
+        if (!EditorUtility.DisplayDialog(
+                "Legacy Weapon Rig Rebuild",
+                "This tool overwrites the shared Sword/Bow rig marker transforms and the alignment test assets. Continue only if you intend to refresh those shared legacy assets.",
+                "Rebuild Shared Assets",
+                "Cancel"))
+        {
+            return;
+        }
+
         EnsureWeaponRigPrefab(SwordPrefabPath, true);
         EnsureWeaponRigPrefab(BowPrefabPath, false);
         EnsureWeaponAlignmentTestPrefab();

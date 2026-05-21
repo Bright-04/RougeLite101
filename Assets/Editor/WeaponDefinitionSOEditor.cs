@@ -12,7 +12,7 @@ public class WeaponDefinitionSOEditor : Editor
         }
 
         EditorGUILayout.HelpBox(
-            "Use the Weapon Alignment Editor before using a weapon in gameplay. Runtime reads the saved alignment data.",
+            "Use the Weapon Alignment Editor as a runtime pose visualizer. WeaponRig child points and WeaponAlignmentUtility are the source of truth.",
             MessageType.Info);
 
         EditorGUILayout.Space(6f);

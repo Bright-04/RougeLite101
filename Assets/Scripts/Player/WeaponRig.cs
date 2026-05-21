@@ -26,13 +26,16 @@ public sealed class WeaponRig : MonoBehaviour
     public Transform SlashArcStart => slashArcStart;
     public Transform SlashArcEnd => slashArcEnd;
 
-    public bool HasAllRequiredPoints =>
+    public bool HasAllNamedPoints =>
         gripPoint != null
         && tipPoint != null
         && projectileSpawnPoint != null
         && slashOrigin != null
         && slashArcStart != null
         && slashArcEnd != null;
+
+    public bool HasAllRequiredPoints =>
+        HasAllNamedPoints;
 
     public Vector3 GripPointLocal => GetLocalPoint(gripPoint, Vector3.zero);
     public Vector3 TipPointLocal => GetLocalPoint(tipPoint, new Vector3(0.45f, 0f, 0f));
@@ -54,17 +57,45 @@ public sealed class WeaponRig : MonoBehaviour
 
     public bool ValidateRequiredPoints(bool logWarnings = true)
     {
-        if (HasAllRequiredPoints)
+        return ValidateRequiredPoints(null, logWarnings);
+    }
+
+    public bool ValidateRequiredPoints(WeaponDefinitionSO definition, bool logWarnings = true)
+    {
+        if (HasRequiredPointsFor(definition))
         {
             return true;
         }
 
         if (logWarnings)
         {
-            Debug.LogWarning($"{nameof(WeaponRig)} '{name}' is missing required point(s): {GetMissingPointsLabel()}.", this);
+            string archetypeLabel = definition != null ? definition.ResolvedArchetype.ToString() : "Generic";
+            Debug.LogWarning($"{nameof(WeaponRig)} '{name}' is missing required point(s) for {archetypeLabel}: {GetMissingPointsLabel(definition)}.", this);
         }
 
         return false;
+    }
+
+    public bool HasRequiredPointsFor(WeaponDefinitionSO definition)
+    {
+        WeaponType weaponType = definition != null ? definition.WeaponType : WeaponType.Melee;
+        WeaponArchetype archetype = definition != null ? definition.ResolvedArchetype : WeaponArchetype.Generic;
+        return HasRequiredPointsFor(archetype, weaponType);
+    }
+
+    public bool HasRequiredPointsFor(WeaponArchetype archetype, WeaponType weaponType)
+    {
+        if (gripPoint == null || tipPoint == null)
+        {
+            return false;
+        }
+
+        if (weaponType == WeaponType.Projectile || archetype == WeaponArchetype.Bow || archetype == WeaponArchetype.Gun || archetype == WeaponArchetype.Wand || archetype == WeaponArchetype.Staff)
+        {
+            return projectileSpawnPoint != null;
+        }
+
+        return slashOrigin != null && slashArcStart != null && slashArcEnd != null;
     }
 
     public void AutoBindRequiredPoints(bool includeInactive)
@@ -126,15 +157,26 @@ public sealed class WeaponRig : MonoBehaviour
         return null;
     }
 
-    private string GetMissingPointsLabel()
+    private string GetMissingPointsLabel(WeaponDefinitionSO definition)
     {
         StringBuilder builder = new StringBuilder();
         AppendMissing(builder, gripPoint, GripPointName);
         AppendMissing(builder, tipPoint, TipPointName);
-        AppendMissing(builder, projectileSpawnPoint, ProjectileSpawnPointName);
-        AppendMissing(builder, slashOrigin, SlashOriginName);
-        AppendMissing(builder, slashArcStart, SlashArcStartName);
-        AppendMissing(builder, slashArcEnd, SlashArcEndName);
+
+        WeaponType weaponType = definition != null ? definition.WeaponType : WeaponType.Melee;
+        WeaponArchetype archetype = definition != null ? definition.ResolvedArchetype : WeaponArchetype.Generic;
+        bool needsProjectile = weaponType == WeaponType.Projectile || archetype == WeaponArchetype.Bow || archetype == WeaponArchetype.Gun || archetype == WeaponArchetype.Wand || archetype == WeaponArchetype.Staff;
+        if (needsProjectile)
+        {
+            AppendMissing(builder, projectileSpawnPoint, ProjectileSpawnPointName);
+        }
+        else
+        {
+            AppendMissing(builder, slashOrigin, SlashOriginName);
+            AppendMissing(builder, slashArcStart, SlashArcStartName);
+            AppendMissing(builder, slashArcEnd, SlashArcEndName);
+        }
+
         return builder.ToString();
     }
 

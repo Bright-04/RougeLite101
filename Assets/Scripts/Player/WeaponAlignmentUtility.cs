@@ -197,15 +197,42 @@ public static class WeaponAlignmentUtility
 
         public static WeaponRigPoints From(WeaponDefinitionSO definition, WeaponRig rig)
         {
-            if (rig != null && rig.HasAllRequiredPoints)
+            if (rig != null && definition != null && rig.HasRequiredPointsFor(definition))
             {
+                Vector3 tipPoint = rig.TipPointLocal;
+                Vector3 projectileSpawnPoint = rig.ProjectileSpawnPoint != null
+                    ? rig.ProjectileSpawnPointLocal
+                    : tipPoint;
+                Vector3 rigSlashOrigin = rig.SlashOrigin != null
+                    ? rig.SlashOriginLocal
+                    : (definition != null ? definition.SlashVfxOffset : Vector3.zero);
+                Vector3 rigSlashArcStart = rig.SlashArcStart != null
+                    ? rig.SlashArcStartLocal
+                    : rigSlashOrigin + new Vector3(0.2f, -0.25f, 0f);
+                Vector3 rigSlashArcEnd = rig.SlashArcEnd != null
+                    ? rig.SlashArcEndLocal
+                    : rigSlashOrigin + new Vector3(0.2f, 0.25f, 0f);
+
                 return new WeaponRigPoints(
                     rig.GripPointLocal,
-                    rig.TipPointLocal,
-                    rig.ProjectileSpawnPointLocal,
-                    rig.SlashOriginLocal,
-                    rig.SlashArcStartLocal,
-                    rig.SlashArcEndLocal);
+                    tipPoint,
+                    projectileSpawnPoint,
+                    rigSlashOrigin,
+                    rigSlashArcStart,
+                    rigSlashArcEnd);
+            }
+
+            if (definition != null
+                && definition.AlignmentPreset != null
+                && definition.AlignmentPreset.TryBuildPoints(definition.ItemImage, out WeaponAlignmentPresetPoints presetPoints))
+            {
+                return new WeaponRigPoints(
+                    presetPoints.GripPoint,
+                    presetPoints.TipPoint,
+                    presetPoints.ProjectileSpawnPoint,
+                    presetPoints.SlashOrigin,
+                    presetPoints.SlashArcStart,
+                    presetPoints.SlashArcEnd);
             }
 
             Vector3 grip = definition != null ? definition.GripPointOffset : Vector3.zero;
