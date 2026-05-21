@@ -552,6 +552,5 @@ public class EquipmentManager : MonoBehaviour
     {
         target.localPosition = Vector3.zero;
         target.localRotation = Quaternion.identity;
-        target.localScale = Vector3.one;
     }
 }

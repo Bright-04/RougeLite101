@@ -34,7 +34,7 @@ MonoBehaviour:
   visualScale: 2
   localPositionOffset: {x: 0, y: 0, z: 0}
   flipBehavior: 0
-  projectileSpawnPointOffset: {x: 0, y: 0, z: 0}
+  projectileSpawnPointOffset: {x: 0.19, y: 0, z: 0}
   slashVfxOffset: {x: 0, y: 0, z: 0}
   weaponPrefab: {fileID: 8184291277002341734, guid: 01ae4c397649f6d4da07d86edd0b44d6, type: 3}
   weaponType: 1

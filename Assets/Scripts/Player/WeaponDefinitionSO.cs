@@ -63,6 +63,7 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
     public WeaponHandlingMode HandlingMode => handlingMode;
     public Vector3 GripPointOffset => gripPointOffset;
     public Vector3 AimPointOffset => aimPointOffset;
+    public Vector3 MuzzleTipPointOffset => aimPointOffset;
     public Vector3 LocalPositionOffset => localPositionOffset;
     public Vector3 LocalRotationOffset => localRotationOffset;
     public float VisualScale => visualScale;

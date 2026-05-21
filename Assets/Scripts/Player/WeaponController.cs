@@ -8,15 +8,21 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private bool showDebugGizmos = true;
     [SerializeField] private bool showDebugReadout = true;
     [SerializeField] private bool logScaleDebugOnWeaponChange = true;
+    [SerializeField] private bool logSharedBoundsDebugChanges;
 
     private PlayerMovement playerMovement;
     private Weapon currentWeapon;
     private WeaponDefinitionSO currentDefinition;
     private Transform currentWeaponVisual;
+    private WeaponRig currentWeaponRig;
     private WeaponAlignmentPose currentPose;
     private Vector2 currentAimDirection = Vector2.right;
+    private string lastSharedBoundsDebugLine;
+    private bool loggedEquipVisibility;
+    private bool loggedFirstPoseVisibility;
 
     public WeaponAlignmentPose CurrentPose => currentPose;
+    public WeaponRig CurrentWeaponRig => currentWeaponRig;
     public Transform WeaponRoot => weaponRoot;
     public Transform WeaponAnchor => weaponAnchor;
 
@@ -46,6 +52,18 @@ public class WeaponController : MonoBehaviour
         currentWeapon = weapon;
         currentDefinition = definition;
         currentWeaponVisual = weapon != null ? weapon.transform.parent : null;
+        currentWeaponRig = weapon != null ? weapon.GetComponentInChildren<WeaponRig>(true) : null;
+        loggedEquipVisibility = false;
+        loggedFirstPoseVisibility = false;
+        if (currentWeaponRig != null)
+        {
+            currentWeaponRig.ValidateRequiredPoints();
+        }
+        else if (definition != null)
+        {
+            Debug.LogWarning($"WeaponController: '{definition.name}' is using legacy WeaponDefinition offsets because its prefab has no WeaponRig.", this);
+        }
+
         logScaleDebugOnWeaponChange = true;
         if (currentWeaponVisual != null)
         {
@@ -53,6 +71,7 @@ public class WeaponController : MonoBehaviour
             SetOnlyActiveWeaponVisual(currentWeaponVisual);
         }
 
+        LogVisibilitySnapshot("equip");
         ApplyCurrentPose();
     }
 
@@ -66,17 +85,26 @@ public class WeaponController : MonoBehaviour
         currentWeapon = null;
         currentDefinition = null;
         currentWeaponVisual = null;
+        currentWeaponRig = null;
+        loggedEquipVisibility = false;
+        loggedFirstPoseVisibility = false;
     }
 
     public Vector3 GetProjectileSpawnPoint(WeaponDefinitionSO definition, Vector2 aimDirection)
     {
-        if (definition == null)
-        {
-            return weaponAnchor != null ? weaponAnchor.position : transform.position;
-        }
+        return CalculatePoseForDefinition(definition, aimDirection).ProjectileSpawnPoint;
+    }
 
+    public WeaponAlignmentPose CalculatePoseForDefinition(WeaponDefinitionSO definition, Vector2 aimDirection)
+    {
         EnsureHierarchy();
-        return WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, aimDirection, definition).ProjectileSpawnPoint;
+        WeaponRig rig = definition == currentDefinition ? currentWeaponRig : null;
+        return WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, aimDirection, definition, rig);
+    }
+
+    public WeaponAlignmentPose CalculateCurrentPose(Vector2 aimDirection)
+    {
+        return CalculatePoseForDefinition(currentDefinition, aimDirection);
     }
 
     public void ApplyCurrentPose()
@@ -88,17 +116,56 @@ public class WeaponController : MonoBehaviour
 
         EnsureHierarchy();
         currentAimDirection = GetAimDirection();
-        currentPose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition);
 
-        currentWeaponVisual.position = currentPose.WeaponPosition;
-        currentWeaponVisual.rotation = currentPose.WeaponRotation;
-        currentWeaponVisual.localScale = currentPose.VisualScale;
+        switch (currentDefinition.HandlingMode)
+        {
+            case WeaponHandlingMode.AimAligned:
+                ApplyAimAlignedPose();
+                break;
+            case WeaponHandlingMode.SlashArc:
+                ApplySlashVisualPoseOrIdlePose();
+                break;
+            case WeaponHandlingMode.Thrust:
+                ApplyThrustVisualPoseOrIdlePose();
+                break;
+            default:
+                ApplyAimAlignedPose();
+                break;
+        }
 
         if (logScaleDebugOnWeaponChange)
         {
             LogScaleDebug();
             logScaleDebugOnWeaponChange = false;
         }
+
+        LogSharedBoundsDebugIfChanged();
+        LogVisibilitySnapshot("first-pose");
+    }
+
+    private void ApplyAimAlignedPose()
+    {
+        currentPose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition, currentWeaponRig);
+        ApplyPoseToCurrentWeaponVisual(currentPose);
+    }
+
+    private void ApplySlashVisualPoseOrIdlePose()
+    {
+        // TODO: SlashArc should use slash-specific idle/swing visual rules instead of aim-aligned behavior.
+        currentPose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition, currentWeaponRig);
+        ApplyPoseToCurrentWeaponVisual(currentPose);
+    }
+
+    private void ApplyThrustVisualPoseOrIdlePose()
+    {
+        // TODO: Thrust should use thrust-specific idle/extension visual rules instead of aim-aligned behavior.
+        currentPose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition, currentWeaponRig);
+        ApplyPoseToCurrentWeaponVisual(currentPose);
+    }
+
+    private void ApplyPoseToCurrentWeaponVisual(WeaponAlignmentPose pose)
+    {
+        WeaponAlignmentUtility.ApplyPoseToVisualTransform(currentWeaponVisual, pose);
     }
 
     private Vector2 GetAimDirection()
@@ -161,7 +228,13 @@ public class WeaponController : MonoBehaviour
             return;
         }
 
+        string activeNames = string.Empty;
+        int activeCount = CountActiveWeaponVisualsRecursive(weaponRoot, ref activeNames);
         SetOnlyActiveWeaponVisualRecursive(weaponRoot, activeVisual);
+        if (activeCount > 1)
+        {
+            Debug.LogWarning($"WeaponController: Found {activeCount} active CurrentWeaponVisual objects under WeaponRoot ({activeNames}). Disabled all except '{activeVisual.name}'.", this);
+        }
     }
 
     private void SetOnlyActiveWeaponVisualRecursive(Transform root, Transform activeVisual)
@@ -178,6 +251,24 @@ public class WeaponController : MonoBehaviour
         }
     }
 
+    private int CountActiveWeaponVisualsRecursive(Transform root, ref string activeNames)
+    {
+        int activeCount = 0;
+        for (int i = 0; i < root.childCount; i++)
+        {
+            Transform child = root.GetChild(i);
+            if (child.name.StartsWith("CurrentWeaponVisual_") && child.gameObject.activeInHierarchy)
+            {
+                activeCount++;
+                activeNames = string.IsNullOrEmpty(activeNames) ? child.name : activeNames + ", " + child.name;
+            }
+
+            activeCount += CountActiveWeaponVisualsRecursive(child, ref activeNames);
+        }
+
+        return activeCount;
+    }
+
     private void LogScaleDebug()
     {
         if (currentDefinition == null || currentWeaponVisual == null)
@@ -186,17 +277,16 @@ public class WeaponController : MonoBehaviour
         }
 
         SpriteRenderer weaponRenderer = currentWeapon != null ? currentWeapon.GetComponentInChildren<SpriteRenderer>(true) : null;
-        SpriteRenderer playerBodyRenderer = GetPlayerBodyRenderer();
+        WeaponRenderBoundsReport boundsReport = WeaponRenderBoundsUtility.CalculateRenderedBoundsRatio(weaponRenderer, transform, WeaponRenderBoundsMode.BodyRendererOnly);
+        SpriteRenderer playerBodyRenderer = boundsReport.PlayerRenderer;
         float weaponPixelsPerUnit = weaponRenderer != null && weaponRenderer.sprite != null ? weaponRenderer.sprite.pixelsPerUnit : 0f;
         float playerPixelsPerUnit = playerBodyRenderer != null && playerBodyRenderer.sprite != null ? playerBodyRenderer.sprite.pixelsPerUnit : 0f;
-        Vector2 weaponRenderedSize = GetRenderedSize(weaponRenderer);
-        Vector2 playerRenderedSize = GetRenderedSize(playerBodyRenderer);
-        Vector2 sizeRatio = new Vector2(
-            playerRenderedSize.x > 0.0001f ? weaponRenderedSize.x / playerRenderedSize.x : 0f,
-            playerRenderedSize.y > 0.0001f ? weaponRenderedSize.y / playerRenderedSize.y : 0f);
+        Debug.Log(WeaponRenderBoundsUtility.FormatSharedBoundsDebug("WeaponController", boundsReport), this);
         Debug.Log(
             $"Weapon scale debug [{currentDefinition.name}] " +
             $"scaleMultiplier={currentDefinition.VisualScale:0.###}, " +
+            $"boundsMode={boundsReport.Mode}, " +
+            $"weaponRendererPath={boundsReport.WeaponRendererPath}, playerBoundsSource={boundsReport.PlayerBoundsSourcePath}, playerRendererCount={boundsReport.PlayerRendererCount}, " +
             $"player.localScale={FormatVector(transform.localScale)}, " +
             $"visual.localScale={FormatVector(currentWeaponVisual.localScale)}, " +
             $"visual.lossyScale={FormatVector(currentWeaponVisual.lossyScale)}, " +
@@ -206,9 +296,103 @@ public class WeaponController : MonoBehaviour
             $"playerBody.localScale={FormatVector(playerBodyRenderer != null ? playerBodyRenderer.transform.localScale : Vector3.zero)}, " +
             $"playerBody.lossyScale={FormatVector(playerBodyRenderer != null ? playerBodyRenderer.transform.lossyScale : Vector3.zero)}, " +
             $"weaponSpritePPU={weaponPixelsPerUnit:0.###}, playerSpritePPU={playerPixelsPerUnit:0.###}, " +
-            $"weaponRenderedSize={FormatVector2(weaponRenderedSize)}, playerRenderedSize={FormatVector2(playerRenderedSize)}, ratio={FormatVector2(sizeRatio)}, " +
+            $"weaponBounds={FormatBounds(boundsReport.WeaponBounds)}, playerBounds={FormatBounds(boundsReport.PlayerBounds)}, " +
+            $"weaponRenderedSize={FormatVector2(boundsReport.WeaponRenderedSize)}, playerRenderedSize={FormatVector2(boundsReport.PlayerRenderedSize)}, ratio={FormatVector2(boundsReport.Ratio)}, " +
             $"weaponRootInsidePlayerHierarchy={IsChildOf(weaponRoot, transform)}, weaponRootInsidePlayerBody={IsChildOf(weaponRoot, playerBodyRenderer != null ? playerBodyRenderer.transform : null)}",
             this);
+    }
+
+    private void LogSharedBoundsDebugIfChanged()
+    {
+        if (!logSharedBoundsDebugChanges || currentWeapon == null)
+        {
+            return;
+        }
+
+        SpriteRenderer weaponRenderer = currentWeapon.GetComponentInChildren<SpriteRenderer>(true);
+        WeaponRenderBoundsReport boundsReport = WeaponRenderBoundsUtility.CalculateRenderedBoundsRatio(weaponRenderer, transform, WeaponRenderBoundsMode.BodyRendererOnly);
+        string line = WeaponRenderBoundsUtility.FormatSharedBoundsDebug("WeaponController", boundsReport);
+        if (line == lastSharedBoundsDebugLine)
+        {
+            return;
+        }
+
+        lastSharedBoundsDebugLine = line;
+        Debug.Log(line, this);
+    }
+
+    private void LogVisibilitySnapshot(string phase)
+    {
+        if (phase == "equip")
+        {
+            if (loggedEquipVisibility)
+            {
+                return;
+            }
+
+            loggedEquipVisibility = true;
+        }
+        else if (phase == "first-pose")
+        {
+            if (loggedFirstPoseVisibility)
+            {
+                return;
+            }
+
+            loggedFirstPoseVisibility = true;
+        }
+
+        if (currentDefinition == null || currentWeaponVisual == null)
+        {
+            return;
+        }
+
+        SpriteRenderer renderer = currentWeapon != null ? currentWeapon.GetComponentInChildren<SpriteRenderer>(true) : null;
+        Transform weaponTransform = currentWeapon != null ? currentWeapon.transform : null;
+        Debug.Log(
+            $"[WeaponVisibility:{phase}] " +
+            $"weaponId={currentDefinition.WeaponId} " +
+            $"definition={currentDefinition.name} " +
+            $"prefab={(currentDefinition.WeaponPrefab != null ? currentDefinition.WeaponPrefab.name : "None")} " +
+            $"visualPath={WeaponRenderBoundsUtility.GetTransformPath(currentWeaponVisual)} " +
+            $"weaponPath={WeaponRenderBoundsUtility.GetTransformPath(weaponTransform)} " +
+            $"visualLocalPosition={FormatVector(currentWeaponVisual.localPosition)} " +
+            $"visualWorldPosition={FormatVector(currentWeaponVisual.position)} " +
+            $"visualLocalRotation={FormatVector(currentWeaponVisual.localEulerAngles)} " +
+            $"visualLocalScale={FormatVector(currentWeaponVisual.localScale)} " +
+            $"poseWeaponPosition={FormatVector(currentPose.WeaponPosition)} " +
+            $"poseGrip={FormatVector(currentPose.GripPoint)} " +
+            $"poseProjectile={FormatVector(currentPose.ProjectileSpawnPoint)} " +
+            $"poseVisualScale={FormatVector(currentPose.VisualScale)} " +
+            $"finitePose={IsFinite(currentPose)} " +
+            $"rendererEnabled={(renderer != null && renderer.enabled)} " +
+            $"sprite={(renderer != null && renderer.sprite != null ? renderer.sprite.name : "None")} " +
+            $"color={(renderer != null ? renderer.color.ToString() : "None")} " +
+            $"sortingLayer={(renderer != null ? renderer.sortingLayerName : "None")} " +
+            $"sortingOrder={(renderer != null ? renderer.sortingOrder.ToString() : "None")} " +
+            $"rendererWorldPosition={FormatVector(renderer != null ? renderer.transform.position : Vector3.zero)} " +
+            $"rendererLossyScale={FormatVector(renderer != null ? renderer.transform.lossyScale : Vector3.zero)} " +
+            $"layer={(renderer != null ? LayerMask.LayerToName(renderer.gameObject.layer) : "None")}",
+            this);
+    }
+
+    private static bool IsFinite(WeaponAlignmentPose pose)
+    {
+        return IsFinite(pose.WeaponAnchorPosition)
+            && IsFinite(pose.GripPoint)
+            && IsFinite(pose.WeaponPosition)
+            && IsFinite(pose.MuzzleTipPoint)
+            && IsFinite(pose.ProjectileSpawnPoint)
+            && IsFinite(pose.SlashOrigin)
+            && IsFinite(pose.SlashArcStart)
+            && IsFinite(pose.SlashArcEnd)
+            && IsFinite(pose.VisualScale)
+            && float.IsFinite(pose.AimAngle);
+    }
+
+    private static bool IsFinite(Vector3 value)
+    {
+        return float.IsFinite(value.x) && float.IsFinite(value.y) && float.IsFinite(value.z);
     }
 
     private void OnGUI()
@@ -253,33 +437,18 @@ public class WeaponController : MonoBehaviour
 
     private SpriteRenderer GetPlayerBodyRenderer()
     {
-        SpriteRenderer ownRenderer = GetComponent<SpriteRenderer>();
-        if (ownRenderer != null)
-        {
-            return ownRenderer;
-        }
-
-        return GetComponentInChildren<SpriteRenderer>();
+        return WeaponRenderBoundsUtility.GetBodyRenderer(transform);
     }
 
     private Vector2 GetRenderedRatio()
     {
-        Vector2 weaponSize = GetRenderedSize(currentWeapon != null ? currentWeapon.GetComponentInChildren<SpriteRenderer>(true) : null);
-        Vector2 playerSize = GetRenderedSize(GetPlayerBodyRenderer());
-        return new Vector2(
-            playerSize.x > 0.0001f ? weaponSize.x / playerSize.x : 0f,
-            playerSize.y > 0.0001f ? weaponSize.y / playerSize.y : 0f);
+        SpriteRenderer weaponRenderer = currentWeapon != null ? currentWeapon.GetComponentInChildren<SpriteRenderer>(true) : null;
+        return WeaponRenderBoundsUtility.CalculateRenderedBoundsRatio(weaponRenderer, transform, WeaponRenderBoundsMode.BodyRendererOnly).Ratio;
     }
 
-    private static Vector2 GetRenderedSize(SpriteRenderer renderer)
+    private static string FormatBounds(Bounds bounds)
     {
-        if (renderer == null)
-        {
-            return Vector2.zero;
-        }
-
-        Bounds bounds = renderer.bounds;
-        return new Vector2(bounds.size.x, bounds.size.y);
+        return $"center {FormatVector(bounds.center)} size {FormatVector(bounds.size)}";
     }
 
     private static bool IsChildOf(Transform child, Transform potentialParent)
@@ -311,7 +480,7 @@ public class WeaponController : MonoBehaviour
         }
 
         EnsureHierarchy();
-        WeaponAlignmentPose pose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition);
+        WeaponAlignmentPose pose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition, currentWeaponRig);
 
         Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(transform.position, 0.05f);
@@ -333,5 +502,30 @@ public class WeaponController : MonoBehaviour
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(pose.ProjectileSpawnPoint, 0.045f);
+
+        Gizmos.color = new Color(1f, 0.45f, 0.1f);
+        Gizmos.DrawWireSphere(pose.SlashOrigin, 0.045f);
+        DrawSlashArcGizmo(pose);
+    }
+
+    private static void DrawSlashArcGizmo(WeaponAlignmentPose pose)
+    {
+        Vector3 startOffset = pose.SlashArcStart - pose.SlashOrigin;
+        Vector3 endOffset = pose.SlashArcEnd - pose.SlashOrigin;
+        if (startOffset.sqrMagnitude < 0.0001f || endOffset.sqrMagnitude < 0.0001f)
+        {
+            Gizmos.DrawLine(pose.SlashArcStart, pose.SlashArcEnd);
+            return;
+        }
+
+        const int segments = 24;
+        Vector3 previous = pose.SlashArcStart;
+        for (int i = 1; i <= segments; i++)
+        {
+            float t = i / (float)segments;
+            Vector3 point = pose.SlashOrigin + Vector3.Slerp(startOffset, endOffset, t);
+            Gizmos.DrawLine(previous, point);
+            previous = point;
+        }
     }
 }

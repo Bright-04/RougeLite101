@@ -15,11 +15,13 @@ public class MeleeWeapon : Weapon
 
     private Animator animator;
     private PlayerMovement playerMovement;
+    private WeaponController weaponController;
     private GameObject slashAnim;
 
     private void Awake()
     {
         playerMovement = GetComponentInParent<PlayerMovement>();
+        weaponController = GetComponentInParent<WeaponController>();
         animator = GetComponent<Animator>();
 
         if (weaponHolder == null)
@@ -83,9 +85,10 @@ public class MeleeWeapon : Weapon
         animator.SetTrigger("Attack");
         weaponCollider.gameObject.SetActive(true);
 
-        if (slashAnimPrefab != null && slashAnimSpawnPoint != null)
+        if (slashAnimPrefab != null)
         {
-            slashAnim = SlashEffectPool.Instance.Get(slashAnimPrefab, slashAnimSpawnPoint.position, Quaternion.identity, transform.parent);
+            Vector3 spawnPosition = GetCurrentSlashPose().SlashOrigin;
+            slashAnim = SlashEffectPool.Instance.Get(slashAnimPrefab, spawnPosition, Quaternion.identity, transform.parent);
             SyncSlashSortingWithWeapon();
         }
     }
@@ -187,10 +190,53 @@ public class MeleeWeapon : Weapon
         }
 
         Vector2 normalizedAim = aimDirection.normalized;
-        weaponCollider.localPosition = normalizedAim * colliderDistance;
-        float aimAngle = Mathf.Atan2(normalizedAim.y, normalizedAim.x) * Mathf.Rad2Deg;
-        weaponCollider.localRotation = Quaternion.Euler(0f, 0f, aimAngle);
-        weaponCollider.localScale = weaponColliderScale;
+
+        WeaponAlignmentPose pose = GetSlashPose(normalizedAim);
+        weaponCollider.position = pose.SlashOrigin;
+        weaponCollider.rotation = Quaternion.Euler(0f, 0f, pose.AimAngle);
+        weaponCollider.localScale = GetHitboxScaleFromSlashArc(pose);
+    }
+
+    private WeaponAlignmentPose GetCurrentSlashPose()
+    {
+        Vector2 aimDirection = playerMovement != null && playerMovement.LastAimDirection.sqrMagnitude > 0.0001f
+            ? playerMovement.LastAimDirection.normalized
+            : Vector2.right;
+
+        return GetSlashPose(aimDirection);
+    }
+
+    private WeaponAlignmentPose GetSlashPose(Vector2 aimDirection)
+    {
+        if (weaponController == null)
+        {
+            weaponController = GetComponentInParent<WeaponController>();
+        }
+
+        if (weaponController != null)
+        {
+            return weaponController.CalculatePoseForDefinition(weaponDefinition, aimDirection);
+        }
+
+        return WeaponAlignmentUtility.CalculateWeaponPose(transform.position, aimDirection, weaponDefinition, GetComponentInChildren<WeaponRig>(true));
+    }
+
+    private Vector3 GetHitboxScaleFromSlashArc(WeaponAlignmentPose pose)
+    {
+        float arcWidth = Vector3.Distance(pose.SlashArcStart, pose.SlashArcEnd);
+        float arcReach = Mathf.Max(
+            Vector3.Distance(pose.SlashOrigin, pose.SlashArcStart),
+            Vector3.Distance(pose.SlashOrigin, pose.SlashArcEnd));
+
+        if (arcWidth < 0.0001f || arcReach < 0.0001f)
+        {
+            return weaponColliderScale;
+        }
+
+        return new Vector3(
+            Mathf.Max(weaponColliderScale.x, arcReach),
+            Mathf.Max(weaponColliderScale.y, arcWidth),
+            weaponColliderScale.z);
     }
 
     private void OnDrawGizmos()
@@ -227,5 +273,10 @@ public class MeleeWeapon : Weapon
         Gizmos.matrix = Matrix4x4.identity;
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(weaponCollider.position, 0.1f);
+#if UNITY_EDITOR
+        UnityEditor.Handles.Label(
+            weaponCollider.position,
+            "WeaponRig melee hitbox");
+#endif
     }
 }

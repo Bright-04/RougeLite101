@@ -50,7 +50,7 @@ public abstract class Weapon : MonoBehaviour
     {
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
-        transform.localScale = Vector3.one;
+        transform.localScale = initialLocalScale;
     }
 
     protected Quaternion GetLocalRotationOffset()

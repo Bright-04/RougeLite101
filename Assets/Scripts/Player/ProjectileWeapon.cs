@@ -198,6 +198,9 @@ public class ProjectileWeapon : Weapon
             {
                 return weaponController.GetProjectileSpawnPoint(weaponDefinition, aimDirection);
             }
+
+            WeaponRig rig = GetComponentInChildren<WeaponRig>(true);
+            return WeaponAlignmentUtility.CalculateWeaponPose(transform.position, aimDirection, weaponDefinition, rig).ProjectileSpawnPoint;
         }
 
         if (shootPoint != null)
