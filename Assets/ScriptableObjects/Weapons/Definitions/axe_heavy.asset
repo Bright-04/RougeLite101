@@ -27,6 +27,8 @@ MonoBehaviour:
   - Melee
   - Heavy
   - 
+  archetype: 3
+  alignmentPreset: {fileID: 11400000, guid: 33333333333333333333333333333333, type: 2}
   handlingMode: 0
   gripPointOffset: {x: -0.09, y: 0, z: 0}
   aimPointOffset: {x: 0.28, y: 0, z: 0}

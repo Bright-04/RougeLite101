@@ -22,8 +22,12 @@ MonoBehaviour:
   series: basic
   tier: 1
   equipmentClass: sword
-  displayName: Iron Sword
-  icon: {fileID: 712035800519618848, guid: c9218c59738d4a34f8c917303348dc7f, type: 3}
+  rarity: Common
+  tags:
+  - Melee
+  - 
+  archetype: 1
+  alignmentPreset: {fileID: 11400000, guid: 11111111111111111111111111111111, type: 2}
   handlingMode: 0
   gripPointOffset: {x: -0.09, y: 0, z: 0}
   aimPointOffset: {x: 0.28, y: 0, z: 0}
@@ -44,9 +48,3 @@ MonoBehaviour:
   projectileSpeed: 15
   projectileCount: 1
   spreadAngle: 0
-  rarity: Common
-  tags:
-  - Melee
-
-
-

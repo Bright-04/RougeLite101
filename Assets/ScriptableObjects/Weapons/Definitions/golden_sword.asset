@@ -22,6 +22,13 @@ MonoBehaviour:
   series: golden
   tier: 6
   equipmentClass: sword
+  rarity: Tier 6
+  tags:
+  - golden
+  - sword
+  - 
+  archetype: 1
+  alignmentPreset: {fileID: 11400000, guid: 11111111111111111111111111111111, type: 2}
   handlingMode: 0
   gripPointOffset: {x: 0, y: 0, z: 0}
   aimPointOffset: {x: 0.28, y: 0, z: 0}
@@ -42,9 +49,3 @@ MonoBehaviour:
   projectileSpeed: 15
   projectileCount: 1
   spreadAngle: 0
-  rarity: Tier 6
-  tags:
-  - golden
-  - sword
-
-

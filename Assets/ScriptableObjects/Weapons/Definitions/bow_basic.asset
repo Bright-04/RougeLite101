@@ -22,6 +22,12 @@ MonoBehaviour:
   series: basic
   tier: 1
   equipmentClass: bow
+  rarity: Common
+  tags:
+  - Ranged
+  - 
+  archetype: 8
+  alignmentPreset: {fileID: 11400000, guid: 66666666666666666666666666666666, type: 2}
   handlingMode: 1
   gripPointOffset: {x: 0.24, y: 0, z: 0}
   aimPointOffset: {x: 0.46, y: 0, z: 0}
@@ -42,9 +48,3 @@ MonoBehaviour:
   projectileSpeed: 15
   projectileCount: 1
   spreadAngle: 0
-  rarity: Common
-  tags:
-  - Ranged
-
-
-

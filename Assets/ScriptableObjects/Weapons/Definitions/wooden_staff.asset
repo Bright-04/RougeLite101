@@ -27,6 +27,8 @@ MonoBehaviour:
   - wooden
   - staff
   - 
+  archetype: 6
+  alignmentPreset: {fileID: 11400000, guid: 77777777777777777777777777777777, type: 2}
   handlingMode: 1
   gripPointOffset: {x: 0.2, y: 0, z: 0}
   aimPointOffset: {x: 0.42, y: 0, z: 0}

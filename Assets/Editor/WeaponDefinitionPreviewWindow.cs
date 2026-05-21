@@ -12,6 +12,8 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private WeaponDefinitionSO weaponDefinition;
     private SerializedObject serializedDefinition;
+    private SerializedProperty archetypeProperty;
+    private SerializedProperty alignmentPresetProperty;
     private SerializedProperty handlingModeProperty;
     private SerializedProperty gripPointOffsetProperty;
     private SerializedProperty aimPointOffsetProperty;
@@ -29,27 +31,58 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         ValidateGameView
     }
 
+    private enum PreviewSurfaceMode
+    {
+        RuntimeView,
+        AuthoringView
+    }
+
     private enum PreviewAimMode
     {
         FreeAim,
         EightDirections
     }
 
+    private enum MarkerDisplayMode
+    {
+        Hidden,
+        DotsOnly,
+        RelevantOnly,
+        AllLabels
+    }
+
+    private enum BoundsOverlayMode
+    {
+        Hidden,
+        SelectedBounds,
+        Both
+    }
+
     private WorkflowMode workflowMode = WorkflowMode.EditWeaponAlignment;
+    private PreviewSurfaceMode previewSurfaceMode = PreviewSurfaceMode.AuthoringView;
     private PreviewAimMode previewAimMode;
+    private MarkerDisplayMode markerDisplayMode = MarkerDisplayMode.RelevantOnly;
     private GameObject previewPlayerPrefab;
     private Sprite previewPlayerSprite;
     private Vector3 previewWeaponAnchorOffset = Vector3.zero;
     private Vector2 settingsScroll;
     private Vector2 viewPan;
     private float viewZoom = 1f;
+    private float authoringPreviewZoom = 1.6f;
+    private float weaponDetailZoom = 8f;
     private float aimAngle;
+    private SpriteBoundsCoordinateSpace previewBoundsMode = SpriteBoundsCoordinateSpace.OpaqueContentBounds;
+    private BoundsOverlayMode boundsOverlayMode = BoundsOverlayMode.Both;
     private bool autoTest360Aim;
     private bool useRuntimePlayerPrefab = true;
+    private bool useRuntimePlayerReference = true;
     private bool showPlayerPreview = true;
     private bool showWeaponAnchor = true;
     private bool showGripAimPoints = true;
     private bool showRuntimePoseDebug = true;
+    private bool showIrrelevantPoints;
+    private bool showWeaponDetailPanel = true;
+    private bool scaleDiagnosticsFoldout = true;
     private bool showWithPlayer = true;
     private bool useActualRuntimeVisualForPreview;
     private bool useGameCameraProjection;
@@ -72,6 +105,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
     private RuntimeVisualSnapshot lastActualRuntimeSnapshot;
     private bool hasLastActualRuntimeSnapshot;
     private string lastEditorSharedBoundsDebugLine;
+    private string lastPreviewBoundsWarning;
 
     private struct RuntimeVisualSnapshot
     {
@@ -203,17 +237,18 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             serializedDefinition.Update();
 
             EditorGUI.BeginChangeCheck();
-            WorkflowMode nextWorkflowMode = (WorkflowMode)EditorGUILayout.EnumPopup(workflowMode, EditorStyles.toolbarPopup, GUILayout.Width(190f));
+            PreviewSurfaceMode nextPreviewSurfaceMode = (PreviewSurfaceMode)EditorGUILayout.EnumPopup(previewSurfaceMode, EditorStyles.toolbarPopup, GUILayout.Width(150f));
             if (EditorGUI.EndChangeCheck())
             {
-                SetWorkflowMode(nextWorkflowMode);
+                SetPreviewSurfaceMode(nextPreviewSurfaceMode);
             }
 
             using (new EditorGUI.DisabledScope(IsMainCameraRenderView()))
             {
-                if (GUILayout.Button("Fit All", EditorStyles.toolbarButton, GUILayout.Width(58f))) FitAll();
-                if (GUILayout.Button("Fit Player", EditorStyles.toolbarButton, GUILayout.Width(72f))) FitPlayer();
-                if (GUILayout.Button("Fit Weapon", EditorStyles.toolbarButton, GUILayout.Width(78f))) FitWeapon();
+                if (GUILayout.Button("Fit Player + Weapon", EditorStyles.toolbarButton, GUILayout.Width(118f))) FitAll();
+                if (GUILayout.Button("Fit Weapon Only", EditorStyles.toolbarButton, GUILayout.Width(108f))) FitWeapon();
+                if (GUILayout.Button("1:1 Runtime Scale", EditorStyles.toolbarButton, GUILayout.Width(108f))) SetOneToOneRuntimeScale();
+                if (GUILayout.Button("Match Runtime Scene Scale", EditorStyles.toolbarButton, GUILayout.Width(144f))) MatchRuntimeSceneScale();
                 if (GUILayout.Button("Reset View", EditorStyles.toolbarButton, GUILayout.Width(78f))) ResetView();
             }
 
@@ -242,25 +277,46 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
         EditorGUILayout.Space(6f);
         DrawPropertyWithHelp(
+            archetypeProperty,
+            "Weapon Archetype",
+            "Explicit archetype used for rig validation, preset assignment, and migration workflow.");
+
+        DrawPropertyWithHelp(
+            alignmentPresetProperty,
+            "Alignment Preset",
+            "Optional normalized sprite-space preset used when a prefab rig is missing or incomplete.");
+
+        DrawPropertyWithHelp(
             handlingModeProperty,
             "Handling Mode",
             "Runtime handling mode for this weapon. MVP visuals still orbit around WeaponAnchor based on aim direction.");
 
         DrawPropertyWithHelp(
             visualScaleProperty,
-            "Scale Multiplier",
-            "Visual weapon size relative to the player. Final runtime appearance must be checked in Validate Game View.");
+            "Runtime Scale Multiplier",
+            "Runtime data. This affects gameplay weapon scale and Runtime View. It is not an editor-only zoom control.");
 
-        if (workflowMode == WorkflowMode.EditWeaponAlignment)
+        if (previewSurfaceMode == PreviewSurfaceMode.AuthoringView)
         {
-            EditorGUILayout.HelpBox("Edit Weapon Alignment is the authoring view. It uses the same pose and visual local-scale semantics as runtime; viewport zoom only changes framing.", MessageType.Info);
-            if (GUILayout.Button("Validate Scale in Game View"))
-            {
-                SetWorkflowMode(WorkflowMode.ValidateGameView);
-            }
+            authoringPreviewZoom = EditorGUILayout.Slider(new GUIContent("Preview Zoom"), authoringPreviewZoom, 0.75f, 4f);
+            EditorGUILayout.HelpBox("Authoring View keeps runtime pose math, but Preview Zoom is editor-only and does not affect runtime scale.", MessageType.Info);
+        }
+        else
+        {
+            EditorGUILayout.HelpBox("Runtime View uses runtime-equivalent pose and runtime scale. Use viewport framing controls to inspect it without changing weapon data.", MessageType.Info);
+        }
+
+        if (workflowMode == WorkflowMode.EditWeaponAlignment && previewSurfaceMode == PreviewSurfaceMode.AuthoringView)
+        {
+            EditorGUILayout.HelpBox("Authoring View is for fast setup and review. It uses the same pose path as runtime, but the extra zoom is preview-only.", MessageType.None);
+        }
+        else if (workflowMode == WorkflowMode.EditWeaponAlignment && GUILayout.Button("Validate Against Game View"))
+        {
+            SetWorkflowMode(WorkflowMode.ValidateGameView);
         }
 
         DrawRigStatus();
+        DrawAuthoringHelp();
 
         DrawPropertyWithHelp(
             localRotationOffsetProperty,
@@ -291,12 +347,33 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             Repaint();
         }
 
+        useRuntimePlayerReference = EditorGUILayout.Toggle(new GUIContent("Use Runtime Player Reference"), useRuntimePlayerReference);
+        showWeaponDetailPanel = EditorGUILayout.Toggle(new GUIContent("Show Weapon Detail Panel"), showWeaponDetailPanel);
+        if (showWeaponDetailPanel)
+        {
+            weaponDetailZoom = EditorGUILayout.Slider(new GUIContent("Detail Zoom"), weaponDetailZoom, 4f, 20f);
+        }
+
+        previewBoundsMode = (SpriteBoundsCoordinateSpace)EditorGUILayout.EnumPopup(new GUIContent("Bounds Mode"), previewBoundsMode);
+        boundsOverlayMode = (BoundsOverlayMode)EditorGUILayout.EnumPopup(new GUIContent("Bounds Overlay"), boundsOverlayMode);
+        markerDisplayMode = (MarkerDisplayMode)EditorGUILayout.EnumPopup(new GUIContent("Marker Display"), markerDisplayMode);
+        showIrrelevantPoints = EditorGUILayout.Toggle("Show Irrelevant Points", showIrrelevantPoints);
+
+        DrawSpriteDiagnostics();
+        DrawScaleDiagnostics();
         DrawFooterStatus();
 
         advancedFoldout = EditorGUILayout.Foldout(advancedFoldout, "Legacy / Advanced", true);
         if (advancedFoldout)
         {
             EditorGUILayout.HelpBox("Diagnostics only. Workflow modes set the trusted preview path automatically; these values are shown here so the editor does not hide what it is doing.", MessageType.Info);
+            EditorGUI.BeginChangeCheck();
+            WorkflowMode nextWorkflowMode = (WorkflowMode)EditorGUILayout.EnumPopup("Diagnostic Mode", workflowMode);
+            if (EditorGUI.EndChangeCheck())
+            {
+                SetWorkflowMode(nextWorkflowMode);
+            }
+
             EditorGUILayout.LabelField("Internal Runtime Options", EditorStyles.boldLabel);
             using (new EditorGUI.DisabledScope(true))
             {
@@ -313,7 +390,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             showPlayerPreview = EditorGUILayout.Toggle("Show Player Preview", showPlayerPreview);
             showWithPlayer = GUILayout.Toolbar(showWithPlayer ? 0 : 1, new[] { "Show With Player", "Show Weapon Only" }) == 0;
             showWeaponAnchor = EditorGUILayout.Toggle("Show Weapon Anchor", showWeaponAnchor);
-            showGripAimPoints = EditorGUILayout.Toggle("Show Grip/Aim Points", showGripAimPoints);
+            showGripAimPoints = EditorGUILayout.Toggle("Show Pose Markers", showGripAimPoints);
             showRuntimePoseDebug = EditorGUILayout.Toggle("Show Runtime Pose Debug", showRuntimePoseDebug);
             previewPlayerSprite = (Sprite)EditorGUILayout.ObjectField("Fallback Player Sprite", previewPlayerSprite, typeof(Sprite), false);
             previewWeaponAnchorOffset = EditorGUILayout.Vector3Field("Fallback Anchor Offset", previewWeaponAnchorOffset);
@@ -342,12 +419,120 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private void DrawWorkflowHeader()
     {
-        EditorGUILayout.LabelField(GetWorkflowTitle(), EditorStyles.boldLabel);
+        EditorGUILayout.LabelField(GetPreviewTitle(), EditorStyles.boldLabel);
         EditorGUILayout.HelpBox(GetWorkflowPurpose(), workflowMode == WorkflowMode.ValidateGameView ? MessageType.Info : MessageType.Warning);
 
         if ((workflowMode == WorkflowMode.PreviewRuntimeObject || workflowMode == WorkflowMode.ValidateGameView) && !EditorApplication.isPlaying)
         {
             EditorGUILayout.HelpBox("Enter Play Mode to use the runtime Player, WeaponRoot, WeaponAnchor, and CurrentWeaponVisual.", MessageType.Warning);
+        }
+    }
+
+    private void DrawAuthoringHelp()
+    {
+        EditorGUILayout.Space(6f);
+        EditorGUILayout.LabelField("Point Guide", EditorStyles.boldLabel);
+        EditorGUILayout.HelpBox(
+            "GripPoint = where the hand holds the weapon\n" +
+            "TipPoint = weapon tip/front\n" +
+            "ProjectileSpawnPoint = where projectiles spawn\n" +
+            "SlashOrigin / SlashArc = melee damage and visual authoring points\n" +
+            "Preview Zoom does not affect runtime",
+            MessageType.None);
+    }
+
+    private void DrawSpriteDiagnostics()
+    {
+        EditorGUILayout.Space(6f);
+        EditorGUILayout.LabelField("Sprite Diagnostics", EditorStyles.boldLabel);
+
+        Sprite sprite = weaponDefinition != null ? weaponDefinition.ItemImage : null;
+        if (sprite == null)
+        {
+            EditorGUILayout.HelpBox("No weapon sprite assigned.", MessageType.Warning);
+            return;
+        }
+
+        SpriteOpaqueBoundsAnalysis analysis = SpriteContentBoundsUtility.Analyze(sprite);
+        Rect rect = sprite.rect;
+        RectInt opaque = analysis.OpaquePixelBounds;
+        EditorGUILayout.LabelField("Sprite Rect", $"{Mathf.RoundToInt(rect.width)} x {Mathf.RoundToInt(rect.height)} px");
+        EditorGUILayout.LabelField("Opaque Content", $"{opaque.width} x {opaque.height} px");
+        EditorGUILayout.LabelField("Content Coverage", $"{analysis.Coverage01 * 100f:0.##}%");
+        EditorGUILayout.LabelField("PPU", sprite.pixelsPerUnit.ToString("0.##"));
+        EditorGUILayout.LabelField("Current Bounds Mode", previewBoundsMode.ToString());
+
+        if (analysis.Coverage01 < 0.4f)
+        {
+            EditorGUILayout.HelpBox("Visible content covers less than 40% of the sprite rect. This sprite may look sparse or small even when the slice bounds are correct.", MessageType.Warning);
+        }
+
+        if (!string.IsNullOrEmpty(analysis.Warning))
+        {
+            EditorGUILayout.HelpBox(analysis.Warning, analysis.UsedFallbackBounds ? MessageType.Warning : MessageType.Info);
+        }
+    }
+
+    private void DrawScaleDiagnostics()
+    {
+        scaleDiagnosticsFoldout = EditorGUILayout.Foldout(scaleDiagnosticsFoldout, "Scale Diagnostics", true);
+        if (!scaleDiagnosticsFoldout || weaponDefinition == null || weaponDefinition.ItemImage == null)
+        {
+            return;
+        }
+
+        Vector2 anchor = GetPreviewWeaponAnchorWorld(out _);
+        Vector2 aim = new Vector2(Mathf.Cos(aimAngle * Mathf.Deg2Rad), Mathf.Sin(aimAngle * Mathf.Deg2Rad));
+        WeaponAlignmentPose pose = CalculatePreviewPose(anchor, aim);
+        Sprite weaponSprite = weaponDefinition.ItemImage;
+        Vector2 weaponBaseWorldSize = weaponSprite.bounds.size;
+        Bounds weaponRenderedBounds = GetWeaponRenderedBounds(weaponSprite, pose);
+        Vector2 finalWeaponWorldSize = ToSize(weaponRenderedBounds);
+        Transform playerRoot = GetConfiguredPreviewPlayerRoot();
+        SpriteRenderer playerRenderer = GetPreviewPlayerRenderer();
+        Vector2 playerWorldSize = playerRenderer != null && playerRenderer.sprite != null
+            ? GetSpriteWorldSize(playerRenderer.sprite, GetPreviewPlayerRendererLossyScale(playerRenderer))
+            : Vector2.zero;
+        Vector2 ratio = CalculateRatio(finalWeaponWorldSize, playerWorldSize);
+
+        EditorGUILayout.LabelField("Preview Player Source", GetPreviewPlayerSourceLabel());
+        EditorGUILayout.LabelField("Sprite Pixel Size", $"{Mathf.RoundToInt(weaponSprite.rect.width)} x {Mathf.RoundToInt(weaponSprite.rect.height)} px");
+        EditorGUILayout.LabelField("Sprite PPU", weaponSprite.pixelsPerUnit.ToString("0.##"));
+        EditorGUILayout.LabelField("Weapon Base World Size", FormatVector2(weaponBaseWorldSize));
+        EditorGUILayout.LabelField("Runtime Scale Multiplier", weaponDefinition.VisualScale.ToString("0.###"));
+        EditorGUILayout.LabelField("Final Weapon World Size", FormatVector2(finalWeaponWorldSize));
+        EditorGUILayout.LabelField("Player Reference World Size", playerRenderer != null ? FormatVector2(playerWorldSize) : "None");
+        EditorGUILayout.LabelField("Weapon To Player Ratio", FormatVector2(ratio));
+        EditorGUILayout.LabelField("Preview Zoom", previewSurfaceMode == PreviewSurfaceMode.AuthoringView ? authoringPreviewZoom.ToString("0.##") : "1");
+        EditorGUILayout.LabelField("Preview Frame Zoom", viewZoom.ToString("0.###"));
+        EditorGUILayout.LabelField("Runtime Parent Scale", FormatVector(GetPreviewWeaponParentScale()));
+
+        if (TryGetScenePixelsPerWorldUnit(out float scenePixelsPerWorldUnit, out string sceneScaleSource))
+        {
+            EditorGUILayout.LabelField("Scene Pixels Per Unit", $"{scenePixelsPerWorldUnit:0.###} ({sceneScaleSource})");
+        }
+
+        if (playerRoot == null)
+        {
+            EditorGUILayout.HelpBox("No player reference is available. Preview falls back to weapon-only behavior.", MessageType.Warning);
+            return;
+        }
+
+        if (EditorApplication.isPlaying && TryGetRuntimeVisualSnapshot(out RuntimeVisualSnapshot runtimeSnapshot))
+        {
+            bool usingRuntimeReference = runtimeSnapshot.Player != null && playerRoot == runtimeSnapshot.Player.transform;
+            if (!usingRuntimeReference)
+            {
+                EditorGUILayout.HelpBox("Preview player reference does not match the active runtime player. Enable 'Use Runtime Player Reference' to compare against the live scene object.", MessageType.Warning);
+            }
+            else
+            {
+                Vector2 runtimePlayerSize = runtimeSnapshot.BoundsReport.PlayerRenderedSize;
+                if (!IsClose(playerWorldSize, runtimePlayerSize, 0.01f))
+                {
+                    EditorGUILayout.HelpBox($"Preview player scale differs from runtime player bounds. Preview {FormatVector2(playerWorldSize)} vs runtime {FormatVector2(runtimePlayerSize)}.", MessageType.Warning);
+                }
+            }
         }
     }
 
@@ -396,7 +581,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
     {
         EditorGUILayout.Space(8f);
         EditorGUILayout.LabelField("Status", EditorStyles.boldLabel);
-        EditorGUILayout.LabelField("Current Mode", GetWorkflowTitle());
+        EditorGUILayout.LabelField("Current Mode", GetPreviewTitle());
         EditorGUILayout.LabelField("Source of Truth", GetSourceOfTruthLabel());
         EditorGUILayout.LabelField("Runtime Availability", GetRuntimeAvailabilityLabel());
         EditorGUILayout.HelpBox(GetValidationReminder(), workflowMode == WorkflowMode.ValidateGameView ? MessageType.Info : MessageType.Warning);
@@ -414,7 +599,9 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             return "Actual runtime object transforms, diagnostic only";
         }
 
-            return "Runtime pose via WeaponAlignmentUtility + WeaponRig";
+        return previewSurfaceMode == PreviewSurfaceMode.RuntimeView
+            ? "Runtime pose via WeaponAlignmentUtility + WeaponRig at runtime-equivalent scale"
+            : "Runtime pose via WeaponAlignmentUtility + WeaponRig with editor-only authoring zoom";
     }
 
     private string GetRuntimeAvailabilityLabel()
@@ -431,7 +618,9 @@ public class WeaponAlignmentEditorWindow : EditorWindow
     {
         return workflowMode switch
         {
-            WorkflowMode.EditWeaponAlignment => "Author alignment here. View zoom changes only the viewport, not saved alignment scale.",
+            WorkflowMode.EditWeaponAlignment => previewSurfaceMode == PreviewSurfaceMode.AuthoringView
+                ? "Authoring View: Preview Zoom and framing are editor-only."
+                : "Runtime View: pose and scale are runtime-equivalent. Framing changes only the viewport.",
             WorkflowMode.PreviewRuntimeObject => "This mode confirms runtime objects and transforms. It is not final Game View validation.",
             WorkflowMode.ValidateGameView => "Official WYSIWYG validation. This mode renders the actual Main Camera into this viewport.",
             _ => string.Empty
@@ -447,6 +636,18 @@ public class WeaponAlignmentEditorWindow : EditorWindow
     {
         workflowMode = nextMode;
         ApplyWorkflowDefaults();
+        Repaint();
+    }
+
+    private void SetPreviewSurfaceMode(PreviewSurfaceMode nextMode)
+    {
+        previewSurfaceMode = nextMode;
+        if (workflowMode == WorkflowMode.PreviewRuntimeObject || workflowMode == WorkflowMode.ValidateGameView)
+        {
+            workflowMode = WorkflowMode.EditWeaponAlignment;
+        }
+
+        ApplyPreviewSurfaceDefaults();
         Repaint();
     }
 
@@ -491,6 +692,30 @@ public class WeaponAlignmentEditorWindow : EditorWindow
                 showRuntimePoseDebug = false;
                 break;
         }
+
+        ApplyPreviewSurfaceDefaults();
+    }
+
+    private void ApplyPreviewSurfaceDefaults()
+    {
+        if (workflowMode != WorkflowMode.EditWeaponAlignment)
+        {
+            return;
+        }
+
+        if (previewSurfaceMode == PreviewSurfaceMode.AuthoringView)
+        {
+            previewBoundsMode = SpriteBoundsCoordinateSpace.OpaqueContentBounds;
+            boundsOverlayMode = BoundsOverlayMode.Both;
+            markerDisplayMode = MarkerDisplayMode.RelevantOnly;
+            showIrrelevantPoints = false;
+        }
+        else
+        {
+            previewBoundsMode = SpriteBoundsCoordinateSpace.FullSpriteBounds;
+            boundsOverlayMode = BoundsOverlayMode.SelectedBounds;
+            markerDisplayMode = MarkerDisplayMode.DotsOnly;
+        }
     }
 
     private bool IsMainCameraRenderView()
@@ -501,6 +726,21 @@ public class WeaponAlignmentEditorWindow : EditorWindow
     private bool IsManualProjectionDiagnostic()
     {
         return workflowMode == WorkflowMode.PreviewRuntimeObject && useActualRuntimeVisualForPreview && useGameCameraProjection && !useMainCameraRenderPreview;
+    }
+
+    private string GetPreviewTitle()
+    {
+        if (workflowMode == WorkflowMode.ValidateGameView)
+        {
+            return "Validate Game View";
+        }
+
+        if (workflowMode == WorkflowMode.PreviewRuntimeObject)
+        {
+            return "Runtime Diagnostic View";
+        }
+
+        return previewSurfaceMode == PreviewSurfaceMode.AuthoringView ? "Authoring View" : "Runtime View";
     }
 
     private string GetWorkflowTitle()
@@ -516,9 +756,15 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private string GetWorkflowPurpose()
     {
+        if (workflowMode == WorkflowMode.EditWeaponAlignment)
+        {
+            return previewSurfaceMode == PreviewSurfaceMode.AuthoringView
+                ? "Editor-focused inspection view. Uses WeaponAlignmentUtility.CalculateWeaponPose() but allows editor-only Preview Zoom and clearer marker defaults."
+                : "Runtime-equivalent inspection view. Uses WeaponAlignmentUtility.CalculateWeaponPose() with runtime scale and only viewport framing adjustments.";
+        }
+
         return workflowMode switch
         {
-            WorkflowMode.EditWeaponAlignment => "Author weapon data in a runtime-equivalent preview. The view camera changes framing only.",
             WorkflowMode.PreviewRuntimeObject => "Diagnostic Play Mode view of the actual runtime Player, WeaponRoot, WeaponAnchor, and CurrentWeaponVisual.",
             WorkflowMode.ValidateGameView => "Official WYSIWYG validation rendered from the actual Main Camera RenderTexture. This should match the Game view.",
             _ => string.Empty
@@ -545,6 +791,8 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         }
 
         serializedDefinition = new SerializedObject(weaponDefinition);
+        archetypeProperty = serializedDefinition.FindProperty("archetype");
+        alignmentPresetProperty = serializedDefinition.FindProperty("alignmentPreset");
         handlingModeProperty = serializedDefinition.FindProperty("handlingMode");
         gripPointOffsetProperty = serializedDefinition.FindProperty("gripPointOffset");
         aimPointOffsetProperty = serializedDefinition.FindProperty("aimPointOffset");
@@ -570,6 +818,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private void DrawPreviewViewport(Rect rect, WeaponHandlingMode mode)
     {
+        lastPreviewBoundsWarning = null;
         lastViewportRect = rect;
         HandleViewportInput(rect);
         EditorGUI.DrawRect(rect, new Color(0.09f, 0.09f, 0.09f));
@@ -583,6 +832,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         }
 
         DrawViewportOverlay(rect);
+        DrawWeaponDetailPanel(rect);
     }
 
     private void DrawPreviewContents(Rect viewportRect, WeaponHandlingMode mode)
@@ -639,6 +889,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         if (!drewRuntime && sprite != null)
         {
             DrawWeaponSprite(sprite, pose);
+            DrawWeaponBoundsOverlays(sprite, pose);
         }
 
         Vector2 weaponAnchorGui = WorldToGui(weaponAnchorWorld);
@@ -655,6 +906,10 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             DrawPlayerCenter(WorldToGui(Vector2.zero));
             DrawWeaponPosition(weaponPoint);
             DrawAimVector(weaponAnchorGui, pose.AimDirection);
+            if (ShouldDrawProjectileLine())
+            {
+                DrawProjectileDirectionLine(projectileSpawnPoint, pose.AimDirection);
+            }
             if (previewPlayerPrefab != null && !foundAnchor)
             {
                 GUI.Label(new Rect(10f, 10f, viewportRect.width - 20f, 18f), "Runtime-created WeaponRoot/WeaponAnchor at Player origin.", EditorStyles.miniLabel);
@@ -668,15 +923,15 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
         if (showGripAimPoints)
         {
-            DrawGripPoint(gripPoint);
-            DrawAimPoint(aimPoint);
-            DrawProjectileSpawnPoint(projectileSpawnPoint);
-            DrawSlashOrigin(slashOrigin);
-            DrawSlashArcStart(slashArcStart);
-            DrawSlashArcEnd(slashArcEnd);
+            DrawFilteredMarker(PreviewMarkerKind.GripPoint, gripPoint);
+            DrawFilteredMarker(PreviewMarkerKind.TipPoint, aimPoint);
+            DrawFilteredMarker(PreviewMarkerKind.ProjectileSpawnPoint, projectileSpawnPoint);
+            DrawFilteredMarker(PreviewMarkerKind.SlashOrigin, slashOrigin);
+            DrawFilteredMarker(PreviewMarkerKind.SlashArcStart, slashArcStart);
+            DrawFilteredMarker(PreviewMarkerKind.SlashArcEnd, slashArcEnd);
         }
 
-        if (mode == WeaponHandlingMode.SlashArc)
+        if (mode == WeaponHandlingMode.SlashArc && ShouldDrawSlashArc())
         {
             DrawSlashArc(slashOrigin, slashArcStart, slashArcEnd);
         }
@@ -760,14 +1015,60 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private void DrawViewportOverlay(Rect rect)
     {
-        GUI.Label(new Rect(rect.x + 10f, rect.y + rect.height - 60f, rect.width - 20f, 18f), BuildPreviewScaleDebug(), EditorStyles.miniLabel);
-        string mode = GetWorkflowTitle();
+        float warningHeight = string.IsNullOrEmpty(lastPreviewBoundsWarning) ? 0f : 18f;
+        GUI.Label(new Rect(rect.x + 10f, rect.y + rect.height - 60f - warningHeight, rect.width - 20f, 18f), BuildPreviewScaleDebug(), EditorStyles.miniLabel);
+        string mode = GetPreviewTitle();
         string description = GetValidationReminder();
         string navigation = IsMainCameraRenderView()
             ? "Fit/zoom disabled"
-            : $"Zoom {viewZoom:0.###} | Pan with middle/right mouse, scroll to zoom";
-        GUI.Label(new Rect(rect.x + 10f, rect.y + rect.height - 42f, rect.width - 20f, 18f), $"{mode} | {navigation}", EditorStyles.miniLabel);
-        GUI.Label(new Rect(rect.x + 10f, rect.y + rect.height - 24f, rect.width - 20f, 18f), description, EditorStyles.miniLabel);
+            : previewSurfaceMode == PreviewSurfaceMode.AuthoringView
+                ? $"Runtime Frame {viewZoom:0.###} x Preview Zoom {authoringPreviewZoom:0.##} | Pan with middle/right mouse, scroll to zoom"
+                : $"Runtime Frame {viewZoom:0.###} | Pan with middle/right mouse, scroll to zoom";
+        GUI.Label(new Rect(rect.x + 10f, rect.y + rect.height - 42f - warningHeight, rect.width - 20f, 18f), $"{mode} | {navigation}", EditorStyles.miniLabel);
+        GUI.Label(new Rect(rect.x + 10f, rect.y + rect.height - 24f - warningHeight, rect.width - 20f, 18f), description, EditorStyles.miniLabel);
+        if (!string.IsNullOrEmpty(lastPreviewBoundsWarning))
+        {
+            GUI.Label(new Rect(rect.x + 10f, rect.y + rect.height - 24f, rect.width - 20f, 18f), lastPreviewBoundsWarning, EditorStyles.miniLabel);
+        }
+    }
+
+    private void DrawWeaponDetailPanel(Rect rect)
+    {
+        if (!showWeaponDetailPanel || weaponDefinition == null || weaponDefinition.ItemImage == null)
+        {
+            return;
+        }
+
+        Sprite sprite = weaponDefinition.ItemImage;
+        const float panelWidth = 220f;
+        const float panelHeight = 220f;
+        Rect panelRect = new Rect(rect.xMax - panelWidth - 12f, rect.y + 12f, panelWidth, panelHeight);
+        EditorGUI.DrawRect(panelRect, new Color(0.07f, 0.07f, 0.07f, 0.94f));
+        GUI.Box(panelRect, GUIContent.none);
+        GUI.Label(new Rect(panelRect.x + 8f, panelRect.y + 6f, panelRect.width - 16f, 18f), "Weapon Detail", EditorStyles.boldLabel);
+        GUI.Label(new Rect(panelRect.x + 8f, panelRect.y + 24f, panelRect.width - 16f, 18f), $"{Mathf.RoundToInt(sprite.rect.width)}x{Mathf.RoundToInt(sprite.rect.height)} px @ {sprite.pixelsPerUnit:0.##} PPU", EditorStyles.miniLabel);
+
+        Rect contentRect = new Rect(panelRect.x + 8f, panelRect.y + 44f, panelRect.width - 16f, panelRect.height - 52f);
+        DrawSpriteDetail(sprite, contentRect);
+    }
+
+    private void DrawSpriteDetail(Sprite sprite, Rect rect)
+    {
+        if (sprite == null || sprite.texture == null)
+        {
+            return;
+        }
+
+        EditorGUI.DrawRect(rect, new Color(0.11f, 0.11f, 0.11f));
+        Rect textureRect = sprite.textureRect;
+        float drawWidth = Mathf.Min(rect.width - 8f, textureRect.width * weaponDetailZoom);
+        float drawHeight = Mathf.Min(rect.height - 8f, textureRect.height * weaponDetailZoom);
+        float scale = Mathf.Min(drawWidth / textureRect.width, drawHeight / textureRect.height);
+        float width = textureRect.width * scale;
+        float height = textureRect.height * scale;
+        Rect drawRect = new Rect(rect.center.x - width * 0.5f, rect.center.y - height * 0.5f, width, height);
+        Rect uv = new Rect(textureRect.x / sprite.texture.width, textureRect.y / sprite.texture.height, textureRect.width / sprite.texture.width, textureRect.height / sprite.texture.height);
+        GUI.DrawTextureWithTexCoords(drawRect, sprite.texture, uv, true);
     }
 
     private Vector3 GetCurrentPoseScale()
@@ -835,6 +1136,32 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         Repaint();
     }
 
+    private void SetOneToOneRuntimeScale()
+    {
+        MatchRuntimeSceneScale();
+    }
+
+    private void MatchRuntimeSceneScale()
+    {
+        if (!TryGetScenePixelsPerWorldUnit(out float scenePixelsPerWorldUnit, out _))
+        {
+            viewZoom = 1f;
+            if (previewSurfaceMode == PreviewSurfaceMode.AuthoringView)
+            {
+                authoringPreviewZoom = 1f;
+            }
+
+            viewPan = Vector2.zero;
+            Repaint();
+            return;
+        }
+
+        authoringPreviewZoom = 1f;
+        viewZoom = Mathf.Clamp(scenePixelsPerWorldUnit / BasePixelsPerWorldUnit, 0.02f, 8f);
+        viewPan = Vector2.zero;
+        Repaint();
+    }
+
     private void FitBounds(Bounds bounds)
     {
         if (lastViewportRect.width <= 1f || lastViewportRect.height <= 1f || bounds.size.sqrMagnitude < 0.0001f)
@@ -846,7 +1173,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         float availableHeight = Mathf.Max(1f, lastViewportRect.height - 80f);
         float zoomX = availableWidth / (bounds.size.x * BasePixelsPerWorldUnit);
         float zoomY = availableHeight / (bounds.size.y * BasePixelsPerWorldUnit);
-        viewZoom = Mathf.Clamp(Mathf.Min(zoomX, zoomY), 0.02f, 8f);
+        viewZoom = Mathf.Clamp(Mathf.Min(zoomX, zoomY) / GetAuthoringZoomFactor(), 0.02f, 8f);
         viewPan = -WorldToGuiOffset(bounds.center);
         Repaint();
     }
@@ -856,17 +1183,17 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         bool hasBounds = false;
         Bounds bounds = new Bounds(Vector3.zero, Vector3.one * 0.1f);
 
-        if (includePlayer && previewPlayerPrefab != null)
+        Transform previewRoot = GetConfiguredPreviewPlayerRoot();
+        if (includePlayer && previewRoot != null)
         {
-            Transform root = previewPlayerPrefab.transform;
-            foreach (SpriteRenderer renderer in previewPlayerPrefab.GetComponentsInChildren<SpriteRenderer>())
+            foreach (SpriteRenderer renderer in previewRoot.GetComponentsInChildren<SpriteRenderer>(true))
             {
-                if (renderer == null || renderer.sprite == null || !renderer.enabled)
+                if (renderer == null || renderer.sprite == null || !renderer.enabled || IsUnderCurrentWeaponVisual(renderer.transform))
                 {
                     continue;
                 }
 
-                Encapsulate(ref bounds, ref hasBounds, GetSpriteBounds(renderer.sprite, renderer.transform.position - root.position, renderer.transform.lossyScale));
+                Encapsulate(ref bounds, ref hasBounds, GetSpriteBounds(renderer.sprite, renderer.transform.position - previewRoot.position, GetPreviewPlayerRendererLossyScale(renderer)));
             }
         }
         else if (includePlayer && previewPlayerSprite != null)
@@ -879,8 +1206,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             Vector2 anchor = GetPreviewWeaponAnchorWorld(out _);
             Vector2 aim = new Vector2(Mathf.Cos(aimAngle * Mathf.Deg2Rad), Mathf.Sin(aimAngle * Mathf.Deg2Rad));
             WeaponAlignmentPose pose = CalculatePreviewPose(anchor, aim);
-            Vector3 scale = GetSimulatedWeaponVisualLossyScale(pose);
-            Encapsulate(ref bounds, ref hasBounds, GetSpriteBounds(weaponDefinition.ItemImage, pose.WeaponPosition, scale));
+            Encapsulate(ref bounds, ref hasBounds, GetWeaponPreviewBounds(weaponDefinition.ItemImage, pose));
             Encapsulate(ref bounds, ref hasBounds, new Bounds(pose.GripPoint, Vector3.one * 0.2f));
             Encapsulate(ref bounds, ref hasBounds, new Bounds(pose.MuzzleTipPoint, Vector3.one * 0.2f));
             Encapsulate(ref bounds, ref hasBounds, new Bounds(pose.ProjectileSpawnPoint, Vector3.one * 0.2f));
@@ -925,6 +1251,65 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             sprite.bounds.size.y * Mathf.Abs(scale.y),
             0.1f);
         return new Bounds(boundsCenter, size);
+    }
+
+    private Bounds GetSpriteBounds(Sprite sprite, Vector3 center, Vector3 scale, SpriteBoundsCoordinateSpace coordinateSpace)
+    {
+        if (sprite == null)
+        {
+            return new Bounds(center, Vector3.zero);
+        }
+
+        if (!SpriteContentBoundsUtility.TryGetLocalBounds(sprite, coordinateSpace, out Bounds localBounds, out string warning))
+        {
+            return GetSpriteBounds(sprite, center, scale);
+        }
+
+        if (!string.IsNullOrEmpty(warning))
+        {
+            lastPreviewBoundsWarning = warning;
+        }
+
+        Vector3 boundsCenter = center + Vector3.Scale(localBounds.center, scale);
+        Vector3 size = new Vector3(
+            localBounds.size.x * Mathf.Abs(scale.x),
+            localBounds.size.y * Mathf.Abs(scale.y),
+            0.1f);
+        return new Bounds(boundsCenter, size);
+    }
+
+    private Bounds GetWeaponPreviewBounds(Sprite sprite, WeaponAlignmentPose pose)
+    {
+        ResolveWeaponRendererPreviewTransform(sprite, pose, out Vector3 rendererPosition, out Quaternion rendererRotation, out Vector3 rendererScale);
+        if (SpriteContentBoundsUtility.TryGetLocalBounds(sprite, previewBoundsMode, out Bounds localBounds, out string warning))
+        {
+            if (!string.IsNullOrEmpty(warning))
+            {
+                lastPreviewBoundsWarning = warning;
+            }
+
+            return GetLocalSpriteRendererWorldBounds(localBounds, rendererPosition, rendererRotation, rendererScale);
+        }
+
+        return GetSpriteRendererLikeWorldBounds(sprite, rendererPosition, rendererRotation, rendererScale);
+    }
+
+    private static Bounds GetLocalSpriteRendererWorldBounds(Bounds localBounds, Vector3 transformWorldPosition, Quaternion rotation, Vector3 lossyScale)
+    {
+        Vector3 min = localBounds.min;
+        Vector3 max = localBounds.max;
+        Bounds bounds = default;
+        bool hasBounds = false;
+        EncapsulatePoint(ref bounds, ref hasBounds, TransformSpriteLocalCorner(min.x, min.y, transformWorldPosition, rotation, lossyScale));
+        EncapsulatePoint(ref bounds, ref hasBounds, TransformSpriteLocalCorner(min.x, max.y, transformWorldPosition, rotation, lossyScale));
+        EncapsulatePoint(ref bounds, ref hasBounds, TransformSpriteLocalCorner(max.x, min.y, transformWorldPosition, rotation, lossyScale));
+        EncapsulatePoint(ref bounds, ref hasBounds, TransformSpriteLocalCorner(max.x, max.y, transformWorldPosition, rotation, lossyScale));
+        if (!hasBounds)
+        {
+            return new Bounds(transformWorldPosition, Vector3.zero);
+        }
+
+        return bounds;
     }
 
     private static Bounds GetSpriteRendererLikeWorldBounds(Sprite sprite, Vector3 transformWorldPosition, Quaternion rotation, Vector3 lossyScale)
@@ -983,8 +1368,9 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         Vector2 transformGuiPosition = WorldToGui(transformWorldPosition);
         Vector2 boundsCenterGuiOffset = WorldToGuiOffset(ToVector2(Vector3.Scale(sprite.bounds.center, lossyScale)));
         Vector2 boundsCenterGui = transformGuiPosition + boundsCenterGuiOffset;
-        float width = sprite.bounds.size.x * BasePixelsPerWorldUnit * viewZoom * Mathf.Abs(lossyScale.x);
-        float height = sprite.bounds.size.y * BasePixelsPerWorldUnit * viewZoom * Mathf.Abs(lossyScale.y);
+        float effectiveZoom = GetEffectiveViewZoom();
+        float width = sprite.bounds.size.x * BasePixelsPerWorldUnit * effectiveZoom * Mathf.Abs(lossyScale.x);
+        float height = sprite.bounds.size.y * BasePixelsPerWorldUnit * effectiveZoom * Mathf.Abs(lossyScale.y);
         return new Rect(boundsCenterGui.x - width * 0.5f, boundsCenterGui.y - height * 0.5f, width, height);
     }
 
@@ -1053,23 +1439,26 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private void DrawPlayerPreview()
     {
-        if (previewPlayerPrefab != null)
+        Transform previewRoot = GetConfiguredPreviewPlayerRoot();
+        if (previewRoot != null)
         {
-            SpriteRenderer[] renderers = previewPlayerPrefab.GetComponentsInChildren<SpriteRenderer>();
+            SpriteRenderer[] renderers = previewRoot.GetComponentsInChildren<SpriteRenderer>(true);
             System.Array.Sort(renderers, CompareSpriteRenderers);
-            Transform root = previewPlayerPrefab.transform;
             bool drewAnySprite = false;
             foreach (SpriteRenderer renderer in renderers)
             {
-                if (renderer == null || !renderer.enabled || renderer.sprite == null)
+                if (renderer == null || !renderer.enabled || renderer.sprite == null || IsUnderCurrentWeaponVisual(renderer.transform))
                 {
                     continue;
                 }
 
-                Vector3 simulatedLossyScale = GetSimulatedPlayerRendererLossyScale(renderer);
-                Rect guiRect = DrawSpriteRendererLikeRuntime(renderer.sprite, ToVector2(renderer.transform.position - root.position), renderer.transform.rotation.eulerAngles.z, simulatedLossyScale);
+                Vector3 simulatedLossyScale = GetPreviewPlayerRendererLossyScale(renderer);
+                Vector2 localPosition = previewRoot == renderer.transform.root
+                    ? ToVector2(renderer.transform.position - previewRoot.position)
+                    : ToVector2(renderer.transform.position - previewRoot.position);
+                Rect guiRect = DrawSpriteRendererLikeRuntime(renderer.sprite, localPosition, renderer.transform.rotation.eulerAngles.z, simulatedLossyScale);
                 EncapsulateGuiRect(ref lastPlayerGuiRect, ref hasLastPlayerGuiRect, guiRect);
-                Encapsulate(ref lastPlayerWorldBounds, ref hasLastPlayerWorldBounds, GetSpriteBounds(renderer.sprite, renderer.transform.position - root.position, simulatedLossyScale));
+                Encapsulate(ref lastPlayerWorldBounds, ref hasLastPlayerWorldBounds, GetSpriteBounds(renderer.sprite, renderer.transform.position - previewRoot.position, simulatedLossyScale));
                 drewAnySprite = true;
             }
 
@@ -1090,29 +1479,18 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private void DrawWeaponSprite(Sprite sprite, WeaponAlignmentPose pose)
     {
-        Vector3 visualLossyScale = GetSimulatedWeaponVisualLossyScale(pose);
-        Vector2 visualPosition = ToVector2(pose.WeaponPosition);
-        float visualRotation = pose.WeaponRotation.eulerAngles.z;
+        ResolveWeaponRendererPreviewTransform(sprite, pose, out Vector3 rendererPosition, out Quaternion rendererRotation, out Vector3 rendererScale);
 
-        SpriteRenderer prefabRenderer = GetWeaponPrefabSpriteRenderer();
-        if (prefabRenderer != null)
+        if (GetWeaponPrefabSpriteRenderer() != null)
         {
-            Transform prefabRoot = weaponDefinition.WeaponPrefab.transform;
-            Transform rendererTransform = prefabRenderer.transform;
-            Vector2 rendererLocalPosition = ToVector2(prefabRoot.InverseTransformPoint(rendererTransform.position));
-            float rendererLocalRotation = (Quaternion.Inverse(prefabRoot.rotation) * rendererTransform.rotation).eulerAngles.z;
-            Vector3 rendererLocalScale = GetRelativeScaleIncludingRoot(prefabRoot, rendererTransform);
-            Quaternion visualRotationQuat = Quaternion.Euler(0f, 0f, visualRotation);
-            Vector2 rendererWorldPosition = visualPosition + ToVector2(visualRotationQuat * Vector3.Scale(rendererLocalPosition, Vector3.Scale(visualLossyScale, prefabRoot.localScale)));
-            Vector3 rendererWorldScale = Vector3.Scale(visualLossyScale, rendererLocalScale);
-            Rect guiRect = DrawSpriteRendererLikeRuntime(sprite, rendererWorldPosition, visualRotation + rendererLocalRotation, rendererWorldScale);
+            Rect guiRect = DrawSpriteRendererLikeRuntime(sprite, ToVector2(rendererPosition), rendererRotation.eulerAngles.z, rendererScale);
             lastWeaponGuiRect = guiRect;
             hasLastWeaponGuiRect = true;
             lastWeaponWorldBounds = GetWeaponRenderedBounds(sprite, pose);
             return;
         }
 
-        Rect fallbackRect = DrawSpriteRendererLikeRuntime(sprite, visualPosition, visualRotation, visualLossyScale);
+        Rect fallbackRect = DrawSpriteRendererLikeRuntime(sprite, ToVector2(rendererPosition), rendererRotation.eulerAngles.z, rendererScale);
         lastWeaponGuiRect = fallbackRect;
         hasLastWeaponGuiRect = true;
         lastWeaponWorldBounds = GetWeaponRenderedBounds(sprite, pose);
@@ -1359,13 +1737,38 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private Transform GetPreviewPlayerRoot()
     {
-        GameObject runtimeOrScenePlayer = GetRuntimePlayerObject();
-        if (runtimeOrScenePlayer != null)
+        return GetConfiguredPreviewPlayerRoot();
+    }
+
+    private Transform GetConfiguredPreviewPlayerRoot()
+    {
+        if (useRuntimePlayerReference)
         {
-            return runtimeOrScenePlayer.transform;
+            GameObject runtimeOrScenePlayer = GetRuntimePlayerObject();
+            if (runtimeOrScenePlayer != null)
+            {
+                return runtimeOrScenePlayer.transform;
+            }
         }
 
         return previewPlayerPrefab != null ? previewPlayerPrefab.transform : null;
+    }
+
+    private string GetPreviewPlayerSourceLabel()
+    {
+        Transform root = GetConfiguredPreviewPlayerRoot();
+        if (root == null)
+        {
+            return "None";
+        }
+
+        GameObject runtimeOrScenePlayer = useRuntimePlayerReference ? GetRuntimePlayerObject() : null;
+        if (runtimeOrScenePlayer != null && root == runtimeOrScenePlayer.transform)
+        {
+            return "Runtime Player";
+        }
+
+        return previewPlayerPrefab != null && root == previewPlayerPrefab.transform ? "Player Prefab" : root.name;
     }
 
     private Transform GetRuntimeEquivalentWeaponAnchor(Transform previewRoot)
@@ -1441,7 +1844,9 @@ public class WeaponAlignmentEditorWindow : EditorWindow
                 : "Scale source: runtime object diagnostic requires Play Mode.";
         }
 
-        return "Scale source: runtime-equivalent authoring preview. View zoom changes only framing.";
+        return previewSurfaceMode == PreviewSurfaceMode.AuthoringView
+            ? "Scale source: runtime pose and runtime scale, plus editor-only Preview Zoom for readability."
+            : "Scale source: runtime-equivalent preview. Only viewport framing changes.";
     }
 
     private void LogEditorSharedBoundsDebug(WeaponRenderBoundsReport boundsReport)
@@ -1538,12 +1943,13 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             PlayerBoundsMode = WeaponRenderBoundsMode.BodyRendererOnly.ToString()
         };
 
-        if (weaponDefinition == null || weaponDefinition.ItemImage == null || previewPlayerPrefab == null)
+        Transform previewRoot = GetConfiguredPreviewPlayerRoot();
+        if (weaponDefinition == null || weaponDefinition.ItemImage == null || previewRoot == null)
         {
             return snapshot;
         }
 
-        SpriteRenderer playerRenderer = WeaponRenderBoundsUtility.GetBodyRenderer(previewPlayerPrefab.transform);
+        SpriteRenderer playerRenderer = WeaponRenderBoundsUtility.GetBodyRenderer(previewRoot);
         if (playerRenderer == null || playerRenderer.sprite == null)
         {
             return snapshot;
@@ -1552,16 +1958,16 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         snapshot.WeaponBounds = GetWeaponRenderedBounds(weaponDefinition.ItemImage, pose);
         snapshot.PlayerBounds = GetSpriteRendererLikeWorldBounds(
             playerRenderer.sprite,
-            playerRenderer.transform.position - previewPlayerPrefab.transform.position,
+            playerRenderer.transform.position - previewRoot.position,
             playerRenderer.transform.rotation,
-            GetSimulatedPlayerRendererLossyScale(playerRenderer));
+            GetPreviewPlayerRendererLossyScale(playerRenderer));
         snapshot.WeaponRenderedSize = ToSize(snapshot.WeaponBounds);
         snapshot.PlayerRenderedSize = ToSize(snapshot.PlayerBounds);
         snapshot.Ratio = CalculateRatio(snapshot.WeaponRenderedSize, snapshot.PlayerRenderedSize);
         snapshot.WeaponRendererSource = GetWeaponPrefabSpriteRenderer() != null
             ? WeaponRenderBoundsUtility.GetTransformPath(GetWeaponPrefabSpriteRenderer().transform)
             : "WeaponDefinition.ItemImage";
-        snapshot.PlayerRendererSource = WeaponRenderBoundsUtility.GetTransformPath(playerRenderer.transform);
+        snapshot.PlayerRendererSource = WeaponRenderBoundsUtility.GetTransformPath(playerRenderer.transform) + $" ({GetPreviewPlayerSourceLabel()})";
         snapshot.IsValid = true;
         return snapshot;
     }
@@ -1610,7 +2016,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         Vector3 weaponVisualLossyScale = GetSimulatedWeaponVisualLossyScale(pose);
         Bounds weaponRenderedBounds = weaponSprite != null ? GetWeaponRenderedBounds(weaponSprite, pose) : new Bounds(Vector3.zero, Vector3.zero);
         Vector2 weaponSize = new Vector2(weaponRenderedBounds.size.x, weaponRenderedBounds.size.y);
-        Vector2 playerSize = playerRenderer != null && playerRenderer.sprite != null ? GetSpriteWorldSize(playerRenderer.sprite, GetSimulatedPlayerRendererLossyScale(playerRenderer)) : Vector2.zero;
+        Vector2 playerSize = playerRenderer != null && playerRenderer.sprite != null ? GetSpriteWorldSize(playerRenderer.sprite, GetPreviewPlayerRendererLossyScale(playerRenderer)) : Vector2.zero;
         Vector2 simulatedRatio = new Vector2(
             playerSize.x > 0.0001f ? weaponSize.x / playerSize.x : 0f,
             playerSize.y > 0.0001f ? weaponSize.y / playerSize.y : 0f);
@@ -1619,11 +2025,12 @@ public class WeaponAlignmentEditorWindow : EditorWindow
             hasLastPlayerGuiRect && lastPlayerGuiRect.width > 0.0001f ? lastWeaponGuiRect.width / lastPlayerGuiRect.width : 0f,
             hasLastPlayerGuiRect && lastPlayerGuiRect.height > 0.0001f ? lastWeaponGuiRect.height / lastPlayerGuiRect.height : 0f);
         Vector2 displayedGuiRatio = hasRuntimeSnapshot ? runtimeSnapshot.GuiRatio : guiRatio;
-        bool hasRuntimeContext = previewPlayerPrefab != null && useRuntimePlayerPrefab;
+        bool hasRuntimeContext = GetConfiguredPreviewPlayerRoot() != null;
 
         EditorGUILayout.Space(4f);
         EditorGUILayout.LabelField("Editor vs Runtime", EditorStyles.boldLabel);
         EditorGUILayout.LabelField("Player Lossy Scale", FormatVector(playerLossyScale));
+        EditorGUILayout.LabelField("Player Source", GetPreviewPlayerSourceLabel());
         EditorGUILayout.LabelField("WeaponRoot Lossy Scale", FormatVector(weaponRootLossyScale));
         EditorGUILayout.LabelField("Weapon Visual Local Scale", FormatVector(weaponVisualLocalScale));
         EditorGUILayout.LabelField("Weapon Visual Lossy Scale", FormatVector(weaponVisualLossyScale));
@@ -1909,18 +2316,18 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         guiRect = default;
         bool hasRect = false;
 
-        if (previewPlayerPrefab != null)
+        Transform previewRoot = GetConfiguredPreviewPlayerRoot();
+        if (previewRoot != null)
         {
-            Transform root = previewPlayerPrefab.transform;
-            foreach (SpriteRenderer renderer in previewPlayerPrefab.GetComponentsInChildren<SpriteRenderer>())
+            foreach (SpriteRenderer renderer in previewRoot.GetComponentsInChildren<SpriteRenderer>(true))
             {
                 if (renderer == null || !renderer.enabled || renderer.sprite == null || IsUnderCurrentWeaponVisual(renderer.transform))
                 {
                     continue;
                 }
 
-                Vector3 simulatedLossyScale = GetSimulatedPlayerRendererLossyScale(renderer);
-                Rect rendererRect = CalculateSpriteGuiRect(renderer.sprite, ToVector2(renderer.transform.position - root.position), simulatedLossyScale);
+                Vector3 simulatedLossyScale = GetPreviewPlayerRendererLossyScale(renderer);
+                Rect rendererRect = CalculateSpriteGuiRect(renderer.sprite, ToVector2(renderer.transform.position - previewRoot.position), simulatedLossyScale);
                 EncapsulateGuiRect(ref guiRect, ref hasRect, rendererRect);
             }
         }
@@ -1935,34 +2342,47 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private Bounds GetWeaponRenderedBounds(Sprite sprite, WeaponAlignmentPose pose)
     {
-        Vector3 visualLossyScale = GetSimulatedWeaponVisualLossyScale(pose);
-        Vector3 rendererPosition = pose.WeaponPosition;
-        Quaternion rendererRotation = pose.WeaponRotation;
-        Vector3 scale = visualLossyScale;
-
-        SpriteRenderer prefabRenderer = GetWeaponPrefabSpriteRenderer();
-        if (prefabRenderer != null)
-        {
-            Transform prefabRoot = weaponDefinition.WeaponPrefab.transform;
-            Transform rendererTransform = prefabRenderer.transform;
-            Vector3 rendererLocalPosition = prefabRoot.InverseTransformPoint(rendererTransform.position);
-            float rendererLocalRotation = (Quaternion.Inverse(prefabRoot.rotation) * rendererTransform.rotation).eulerAngles.z;
-            Vector3 rendererLocalScale = GetRelativeScaleIncludingRoot(prefabRoot, rendererTransform);
-            scale = Vector3.Scale(visualLossyScale, rendererLocalScale);
-            rendererPosition = pose.WeaponPosition + pose.WeaponRotation * Vector3.Scale(rendererLocalPosition, Vector3.Scale(visualLossyScale, prefabRoot.localScale));
-            rendererRotation = pose.WeaponRotation * Quaternion.Euler(0f, 0f, rendererLocalRotation);
-        }
-
-        return GetSpriteRendererLikeWorldBounds(sprite, rendererPosition, rendererRotation, scale);
+        ResolveWeaponRendererPreviewTransform(sprite, pose, out Vector3 rendererPosition, out Quaternion rendererRotation, out Vector3 rendererScale);
+        return GetSpriteRendererLikeWorldBounds(sprite, rendererPosition, rendererRotation, rendererScale);
     }
 
-    private Vector3 GetSimulatedPlayerRendererLossyScale(SpriteRenderer renderer)
+    private void ResolveWeaponRendererPreviewTransform(Sprite sprite, WeaponAlignmentPose pose, out Vector3 rendererPosition, out Quaternion rendererRotation, out Vector3 rendererScale)
     {
-        if (previewPlayerPrefab == null)
+        Vector3 visualLossyScale = GetSimulatedWeaponVisualLossyScale(pose);
+        rendererPosition = pose.WeaponPosition;
+        rendererRotation = pose.WeaponRotation;
+        rendererScale = visualLossyScale;
+
+        SpriteRenderer prefabRenderer = GetWeaponPrefabSpriteRenderer();
+        if (prefabRenderer == null || weaponDefinition == null || weaponDefinition.WeaponPrefab == null)
+        {
+            return;
+        }
+
+        Transform prefabRoot = weaponDefinition.WeaponPrefab.transform;
+        Transform rendererTransform = prefabRenderer.transform;
+        Vector3 rendererLocalPosition = prefabRoot.InverseTransformPoint(rendererTransform.position);
+        float rendererLocalRotation = (Quaternion.Inverse(prefabRoot.rotation) * rendererTransform.rotation).eulerAngles.z;
+        Vector3 rendererLocalScale = GetRelativeScaleIncludingRoot(prefabRoot, rendererTransform);
+        rendererScale = Vector3.Scale(visualLossyScale, rendererLocalScale);
+        rendererPosition = pose.WeaponPosition + pose.WeaponRotation * Vector3.Scale(rendererLocalPosition, Vector3.Scale(visualLossyScale, prefabRoot.localScale));
+        rendererRotation = pose.WeaponRotation * Quaternion.Euler(0f, 0f, rendererLocalRotation);
+    }
+
+    private Vector3 GetPreviewPlayerRendererLossyScale(SpriteRenderer renderer)
+    {
+        Transform previewRoot = GetConfiguredPreviewPlayerRoot();
+        if (renderer == null || previewRoot == null)
         {
             return Vector3.one;
         }
-        return GetSimulatedLossyScale(previewPlayerPrefab.transform, renderer.transform, GetPreviewWeaponParentScale());
+
+        if (useRuntimePlayerReference && GetRuntimePlayerObject() != null && previewRoot == GetRuntimePlayerObject().transform)
+        {
+            return renderer.transform.lossyScale;
+        }
+
+        return GetSimulatedLossyScale(previewRoot, renderer.transform, previewRoot.lossyScale);
     }
 
     private static Vector3 GetSimulatedLossyScale(Transform root, Transform child, Vector3 rootSimulatedLossyScale)
@@ -1979,7 +2399,8 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private SpriteRenderer GetPreviewPlayerRenderer()
     {
-        return previewPlayerPrefab != null ? previewPlayerPrefab.GetComponentInChildren<SpriteRenderer>() : null;
+        Transform previewRoot = GetConfiguredPreviewPlayerRoot();
+        return previewRoot != null ? WeaponRenderBoundsUtility.GetBodyRenderer(previewRoot) : null;
     }
 
     private SpriteRenderer GetWeaponPrefabSpriteRenderer()
@@ -2044,7 +2465,7 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         Handles.BeginGUI();
         Color previous = Handles.color;
         Handles.color = new Color(1f, 1f, 1f, 0.08f);
-        float step = BasePixelsPerWorldUnit * viewZoom;
+        float step = BasePixelsPerWorldUnit * GetEffectiveViewZoom();
         if (step >= 8f)
         {
             Vector2 origin = WorldToGui(Vector2.zero);
@@ -2059,15 +2480,169 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         Handles.EndGUI();
     }
 
-    private static void DrawPlayerCenter(Vector2 position) => DrawLabeledDisc(position, 7f, new Color(1f, 1f, 1f, 0.9f), "PlayerCenter", new Vector2(8f, 4f));
-    private static void DrawGripPoint(Vector2 position) => DrawLabeledDisc(position, 6f, new Color(1f, 0.82f, 0.25f), "GripPoint", new Vector2(8f, -20f));
-    private static void DrawAimPoint(Vector2 position) => DrawLabeledDisc(position, 5f, new Color(0.25f, 1f, 0.45f), "Muzzle/Tip", new Vector2(8f, 2f));
-    private static void DrawWeaponAnchor(Vector2 position) => DrawLabeledDisc(position, 5f, new Color(0.7f, 0.7f, 0.7f), "WeaponAnchor", new Vector2(8f, 2f));
-    private static void DrawWeaponPosition(Vector2 position) => DrawLabeledDisc(position, 5f, new Color(1f, 0.25f, 1f), "WeaponPosition", new Vector2(8f, -20f));
-    private static void DrawProjectileSpawnPoint(Vector2 position) => DrawLabeledDisc(position, 4f, new Color(1f, 0.25f, 0.2f), "ProjectileSpawn", new Vector2(8f, 2f));
-    private static void DrawSlashOrigin(Vector2 position) => DrawLabeledDisc(position, 4f, new Color(1f, 0.45f, 0.1f), "SlashOrigin", new Vector2(8f, -20f));
-    private static void DrawSlashArcStart(Vector2 position) => DrawLabeledDisc(position, 4f, new Color(1f, 0.2f, 0.2f), "SlashArcStart", new Vector2(8f, -20f));
-    private static void DrawSlashArcEnd(Vector2 position) => DrawLabeledDisc(position, 4f, new Color(1f, 0.2f, 0.2f), "SlashArcEnd", new Vector2(8f, 2f));
+    private enum PreviewMarkerKind
+    {
+        GripPoint,
+        TipPoint,
+        ProjectileSpawnPoint,
+        SlashOrigin,
+        SlashArcStart,
+        SlashArcEnd
+    }
+
+    private static void DrawPlayerCenter(Vector2 position) => DrawLabeledDisc(position, 7f, new Color(1f, 1f, 1f, 0.9f), "PC", new Vector2(8f, 4f));
+    private static void DrawWeaponAnchor(Vector2 position) => DrawLabeledDisc(position, 5f, new Color(0.7f, 0.7f, 0.7f), "A", new Vector2(8f, 2f));
+    private static void DrawWeaponPosition(Vector2 position) => DrawLabeledDisc(position, 5f, new Color(1f, 0.25f, 1f), "W", new Vector2(8f, -20f));
+
+    private void DrawFilteredMarker(PreviewMarkerKind kind, Vector2 position)
+    {
+        if (markerDisplayMode == MarkerDisplayMode.Hidden)
+        {
+            return;
+        }
+
+        bool relevant = IsMarkerRelevant(kind);
+        if (!relevant && !showIrrelevantPoints && markerDisplayMode != MarkerDisplayMode.AllLabels)
+        {
+            return;
+        }
+
+        bool showLabel = markerDisplayMode == MarkerDisplayMode.AllLabels
+            || (markerDisplayMode == MarkerDisplayMode.RelevantOnly && relevant && weaponDefinition != null && weaponDefinition.ResolvedArchetype != WeaponArchetype.Generic);
+        if (markerDisplayMode == MarkerDisplayMode.DotsOnly)
+        {
+            showLabel = false;
+        }
+
+        DrawMarker(position, GetMarkerColor(kind, relevant), GetMarkerLabel(kind), GetMarkerLabelOffset(kind), showLabel);
+    }
+
+    private bool IsMarkerRelevant(PreviewMarkerKind kind)
+    {
+        if (weaponDefinition == null)
+        {
+            return true;
+        }
+
+        bool isRanged = IsRangedAuthoringArchetype();
+        bool isMelee = IsMeleeAuthoringArchetype();
+        bool isGeneric = weaponDefinition.ResolvedArchetype == WeaponArchetype.Generic;
+
+        switch (kind)
+        {
+            case PreviewMarkerKind.GripPoint:
+            case PreviewMarkerKind.TipPoint:
+                return true;
+            case PreviewMarkerKind.ProjectileSpawnPoint:
+                return isRanged || (isGeneric && markerDisplayMode == MarkerDisplayMode.AllLabels) || showIrrelevantPoints;
+            case PreviewMarkerKind.SlashOrigin:
+            case PreviewMarkerKind.SlashArcStart:
+            case PreviewMarkerKind.SlashArcEnd:
+                return isMelee || (isGeneric && markerDisplayMode == MarkerDisplayMode.AllLabels) || showIrrelevantPoints;
+            default:
+                return true;
+        }
+    }
+
+    private bool IsRangedAuthoringArchetype()
+    {
+        if (weaponDefinition == null)
+        {
+            return false;
+        }
+
+        WeaponArchetype archetype = weaponDefinition.ResolvedArchetype;
+        return weaponDefinition.WeaponType == WeaponType.Projectile
+            || archetype == WeaponArchetype.Bow
+            || archetype == WeaponArchetype.Gun
+            || archetype == WeaponArchetype.Staff
+            || archetype == WeaponArchetype.Wand;
+    }
+
+    private bool IsMeleeAuthoringArchetype()
+    {
+        if (weaponDefinition == null)
+        {
+            return false;
+        }
+
+        WeaponArchetype archetype = weaponDefinition.ResolvedArchetype;
+        return weaponDefinition.WeaponType == WeaponType.Melee
+            || archetype == WeaponArchetype.Sword
+            || archetype == WeaponArchetype.Dagger
+            || archetype == WeaponArchetype.Axe
+            || archetype == WeaponArchetype.Greatsword
+            || archetype == WeaponArchetype.Spear;
+    }
+
+    private bool ShouldDrawSlashArc()
+    {
+        return markerDisplayMode != MarkerDisplayMode.Hidden
+            && IsMarkerRelevant(PreviewMarkerKind.SlashOrigin)
+            && IsMarkerRelevant(PreviewMarkerKind.SlashArcStart)
+            && IsMarkerRelevant(PreviewMarkerKind.SlashArcEnd);
+    }
+
+    private bool ShouldDrawProjectileLine()
+    {
+        return markerDisplayMode != MarkerDisplayMode.Hidden && IsMarkerRelevant(PreviewMarkerKind.ProjectileSpawnPoint);
+    }
+
+    private static Color GetMarkerColor(PreviewMarkerKind kind, bool relevant)
+    {
+        Color color = kind switch
+        {
+            PreviewMarkerKind.GripPoint => new Color(1f, 0.82f, 0.25f),
+            PreviewMarkerKind.TipPoint => new Color(0.25f, 1f, 0.45f),
+            PreviewMarkerKind.ProjectileSpawnPoint => new Color(1f, 0.25f, 0.2f),
+            _ => new Color(1f, 0.35f, 0.2f)
+        };
+
+        if (!relevant)
+        {
+            color *= 0.6f;
+            color.a = 0.45f;
+        }
+
+        return color;
+    }
+
+    private static string GetMarkerLabel(PreviewMarkerKind kind)
+    {
+        return kind switch
+        {
+            PreviewMarkerKind.GripPoint => "G",
+            PreviewMarkerKind.TipPoint => "T",
+            PreviewMarkerKind.ProjectileSpawnPoint => "P",
+            PreviewMarkerKind.SlashOrigin => "O",
+            PreviewMarkerKind.SlashArcStart => "S1",
+            PreviewMarkerKind.SlashArcEnd => "S2",
+            _ => "?"
+        };
+    }
+
+    private static Vector2 GetMarkerLabelOffset(PreviewMarkerKind kind)
+    {
+        return kind switch
+        {
+            PreviewMarkerKind.GripPoint => new Vector2(6f, -16f),
+            PreviewMarkerKind.TipPoint => new Vector2(6f, 2f),
+            PreviewMarkerKind.ProjectileSpawnPoint => new Vector2(6f, 12f),
+            PreviewMarkerKind.SlashOrigin => new Vector2(6f, -16f),
+            PreviewMarkerKind.SlashArcStart => new Vector2(6f, -16f),
+            PreviewMarkerKind.SlashArcEnd => new Vector2(6f, 2f),
+            _ => new Vector2(6f, 2f)
+        };
+    }
+
+    private static void DrawMarker(Vector2 position, Color color, string label, Vector2 labelOffset, bool showLabel)
+    {
+        DrawDisc(position, 4.5f, color);
+        if (showLabel)
+        {
+            GUI.Label(new Rect(position.x + labelOffset.x, position.y + labelOffset.y, 36f, 18f), label, EditorStyles.miniLabel);
+        }
+    }
 
     private static void DrawLabeledDisc(Vector2 position, float radius, Color color, string label, Vector2 labelOffset)
     {
@@ -2082,6 +2657,69 @@ public class WeaponAlignmentEditorWindow : EditorWindow
         Color previous = Handles.color;
         Handles.color = new Color(0.35f, 0.82f, 1f);
         Handles.DrawAAPolyLine(3f, origin, end);
+        Handles.color = previous;
+        Handles.EndGUI();
+    }
+
+    private void DrawWeaponBoundsOverlays(Sprite sprite, WeaponAlignmentPose pose)
+    {
+        if (sprite == null || boundsOverlayMode == BoundsOverlayMode.Hidden)
+        {
+            return;
+        }
+
+        if (boundsOverlayMode == BoundsOverlayMode.SelectedBounds)
+        {
+            DrawWeaponBoundsOverlay(sprite, pose, previewBoundsMode, previewBoundsMode == SpriteBoundsCoordinateSpace.OpaqueContentBounds
+                ? new Color(0.25f, 1f, 0.9f, 0.9f)
+                : new Color(1f, 1f, 0.3f, 0.9f), previewBoundsMode == SpriteBoundsCoordinateSpace.OpaqueContentBounds ? "Opaque" : "Full");
+        }
+
+        if (boundsOverlayMode == BoundsOverlayMode.Both)
+        {
+            DrawWeaponBoundsOverlay(sprite, pose, SpriteBoundsCoordinateSpace.FullSpriteBounds, new Color(1f, 1f, 0.25f, 0.7f), "Full");
+            DrawWeaponBoundsOverlay(sprite, pose, SpriteBoundsCoordinateSpace.OpaqueContentBounds, new Color(0.25f, 1f, 0.9f, 0.7f), "Opaque");
+        }
+    }
+
+    private void DrawWeaponBoundsOverlay(Sprite sprite, WeaponAlignmentPose pose, SpriteBoundsCoordinateSpace coordinateSpace, Color color, string label)
+    {
+        if (!SpriteContentBoundsUtility.TryGetLocalBounds(sprite, coordinateSpace, out Bounds localBounds, out string warning))
+        {
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(warning))
+        {
+            lastPreviewBoundsWarning = warning;
+        }
+
+        ResolveWeaponRendererPreviewTransform(sprite, pose, out Vector3 rendererPosition, out Quaternion rendererRotation, out Vector3 rendererScale);
+        Vector3 min = localBounds.min;
+        Vector3 max = localBounds.max;
+        Vector2 a = WorldToGui(ToVector2(TransformSpriteLocalCorner(min.x, min.y, rendererPosition, rendererRotation, rendererScale)));
+        Vector2 b = WorldToGui(ToVector2(TransformSpriteLocalCorner(min.x, max.y, rendererPosition, rendererRotation, rendererScale)));
+        Vector2 c = WorldToGui(ToVector2(TransformSpriteLocalCorner(max.x, max.y, rendererPosition, rendererRotation, rendererScale)));
+        Vector2 d = WorldToGui(ToVector2(TransformSpriteLocalCorner(max.x, min.y, rendererPosition, rendererRotation, rendererScale)));
+        Vector2 labelPosition = (a + b + c + d) * 0.25f;
+
+        Handles.BeginGUI();
+        Color previous = Handles.color;
+        Handles.color = color;
+        Handles.DrawAAPolyLine(2f, a, b, c, d, a);
+        Handles.color = previous;
+        Handles.EndGUI();
+
+        GUI.Label(new Rect(labelPosition.x + 6f, labelPosition.y - 16f, 52f, 18f), label, EditorStyles.miniLabel);
+    }
+
+    private static void DrawProjectileDirectionLine(Vector2 origin, Vector2 direction)
+    {
+        Vector2 end = origin + new Vector2(direction.x, -direction.y).normalized * 96f;
+        Handles.BeginGUI();
+        Color previous = Handles.color;
+        Handles.color = new Color(1f, 0.45f, 0.2f, 0.8f);
+        Handles.DrawAAPolyLine(2f, origin, end);
         Handles.color = previous;
         Handles.EndGUI();
     }
@@ -2144,7 +2782,37 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private Vector2 WorldToGuiOffset(Vector2 world)
     {
-        return new Vector2(world.x * BasePixelsPerWorldUnit * viewZoom, -world.y * BasePixelsPerWorldUnit * viewZoom);
+        float effectiveZoom = GetEffectiveViewZoom();
+        return new Vector2(world.x * BasePixelsPerWorldUnit * effectiveZoom, -world.y * BasePixelsPerWorldUnit * effectiveZoom);
+    }
+
+    private float GetEffectiveViewZoom()
+    {
+        return previewSurfaceMode == PreviewSurfaceMode.AuthoringView && workflowMode == WorkflowMode.EditWeaponAlignment
+            ? viewZoom * authoringPreviewZoom
+            : viewZoom;
+    }
+
+    private float GetAuthoringZoomFactor()
+    {
+        return previewSurfaceMode == PreviewSurfaceMode.AuthoringView && workflowMode == WorkflowMode.EditWeaponAlignment
+            ? authoringPreviewZoom
+            : 1f;
+    }
+
+    private bool TryGetScenePixelsPerWorldUnit(out float pixelsPerWorldUnit, out string source)
+    {
+        pixelsPerWorldUnit = 0f;
+        source = "None";
+        Camera camera = GetGamePreviewCamera();
+        if (camera == null || !camera.orthographic || camera.orthographicSize <= 0.0001f || camera.pixelHeight <= 0)
+        {
+            return false;
+        }
+
+        pixelsPerWorldUnit = camera.pixelHeight / (camera.orthographicSize * 2f);
+        source = $"{camera.name} {camera.pixelWidth}x{camera.pixelHeight} ortho {camera.orthographicSize:0.###}";
+        return true;
     }
 
     private Camera GetGamePreviewCamera()

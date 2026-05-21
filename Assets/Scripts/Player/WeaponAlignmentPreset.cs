@@ -4,6 +4,7 @@ using UnityEngine;
 public sealed class WeaponAlignmentPreset : ScriptableObject
 {
     [SerializeField] private WeaponArchetype archetype = WeaponArchetype.Generic;
+    [SerializeField] private SpriteBoundsCoordinateSpace coordinateSpace = SpriteBoundsCoordinateSpace.FullSpriteBounds;
     [SerializeField] private Vector2 normalizedGripPoint = new Vector2(0.2f, 0.5f);
     [SerializeField] private Vector2 normalizedTipPoint = new Vector2(0.85f, 0.5f);
     [SerializeField] private Vector2 normalizedProjectileSpawnPoint = new Vector2(0.9f, 0.5f);
@@ -12,6 +13,7 @@ public sealed class WeaponAlignmentPreset : ScriptableObject
     [SerializeField] private Vector2 normalizedSlashArcEnd = new Vector2(0.7f, 0.8f);
 
     public WeaponArchetype Archetype => archetype;
+    public SpriteBoundsCoordinateSpace CoordinateSpace => coordinateSpace;
 
     public bool TryBuildPoints(Sprite sprite, out WeaponAlignmentPresetPoints points)
     {
@@ -21,7 +23,11 @@ public sealed class WeaponAlignmentPreset : ScriptableObject
             return false;
         }
 
-        Bounds bounds = sprite.bounds;
+        if (!SpriteContentBoundsUtility.TryGetLocalBounds(sprite, coordinateSpace, out Bounds bounds, out _))
+        {
+            return false;
+        }
+
         Vector3 min = bounds.min;
         Vector3 size = bounds.size;
         if (Mathf.Abs(size.x) < 0.0001f || Mathf.Abs(size.y) < 0.0001f)

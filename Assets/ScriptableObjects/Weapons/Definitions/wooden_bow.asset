@@ -27,6 +27,8 @@ MonoBehaviour:
   - wooden
   - bow
   - 
+  archetype: 8
+  alignmentPreset: {fileID: 11400000, guid: 66666666666666666666666666666666, type: 2}
   handlingMode: 1
   gripPointOffset: {x: 0.24, y: 0, z: 0}
   aimPointOffset: {x: 0.19, y: 0, z: 0}

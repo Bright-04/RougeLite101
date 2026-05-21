@@ -22,6 +22,13 @@ MonoBehaviour:
   series: crystal
   tier: 7
   equipmentClass: spear
+  rarity: Tier 7
+  tags:
+  - crystal
+  - spear
+  - 
+  archetype: 5
+  alignmentPreset: {fileID: 11400000, guid: 55555555555555555555555555555555, type: 2}
   handlingMode: 2
   gripPointOffset: {x: 0, y: 0, z: 0}
   aimPointOffset: {x: 0.28, y: 0, z: 0}
@@ -42,9 +49,3 @@ MonoBehaviour:
   projectileSpeed: 15
   projectileCount: 1
   spreadAngle: 0
-  rarity: Tier 7
-  tags:
-  - crystal
-  - spear
-
-

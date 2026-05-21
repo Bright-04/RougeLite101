@@ -8,51 +8,35 @@ public static class WeaponDefinitionValidator
     [MenuItem("Tools/Weapons/Validate Weapon Definitions")]
     public static void ValidateAllWeaponDefinitions()
     {
-        string[] guids = AssetDatabase.FindAssets("t:WeaponDefinitionSO", new[] { "Assets" });
-        List<string> errors = new List<string>();
-        List<string> warnings = new List<string>();
-        List<string> infos = new List<string>();
+        WeaponDefinitionSO[] definitions = LoadAllDefinitions();
+        ValidationSummary summary = BuildSummary(definitions);
+        LogAndDisplaySummary(summary, "Weapon Validation");
+    }
 
-        foreach (string guid in guids)
+    [MenuItem("Tools/Weapons/Validate Selected Weapon Definitions")]
+    public static void ValidateSelectedWeaponDefinitions()
+    {
+        WeaponDefinitionSO[] definitions = Selection.GetFiltered<WeaponDefinitionSO>(SelectionMode.Assets);
+        ValidationSummary summary = BuildSummary(definitions);
+        LogAndDisplaySummary(summary, "Selected Weapon Validation");
+    }
+
+    public static ValidationSummary BuildSummary(IEnumerable<WeaponDefinitionSO> definitions)
+    {
+        ValidationSummary summary = new ValidationSummary();
+        foreach (WeaponDefinitionSO definition in definitions)
         {
-            string path = AssetDatabase.GUIDToAssetPath(guid);
-            WeaponDefinitionSO definition = AssetDatabase.LoadAssetAtPath<WeaponDefinitionSO>(path);
             if (definition == null)
             {
                 continue;
             }
 
-            ValidateDefinition(definition, path, errors, warnings, infos);
+            string path = AssetDatabase.GetAssetPath(definition);
+            summary.ValidatedCount++;
+            ValidateDefinition(definition, path, summary.Errors, summary.Warnings, summary.Infos);
         }
 
-        StringBuilder builder = new StringBuilder();
-        builder.AppendLine($"Validated {guids.Length} WeaponDefinitionSO assets.");
-        builder.AppendLine($"Errors: {errors.Count}");
-        builder.AppendLine($"Warnings: {warnings.Count}");
-        builder.AppendLine($"Info: {infos.Count}");
-
-        AppendSection(builder, "Errors", errors);
-        AppendSection(builder, "Warnings", warnings);
-        AppendSection(builder, "Info", infos);
-
-        string report = builder.ToString().TrimEnd();
-        if (errors.Count > 0)
-        {
-            Debug.LogError(report);
-        }
-        else if (warnings.Count > 0)
-        {
-            Debug.LogWarning(report);
-        }
-        else
-        {
-            Debug.Log(report);
-        }
-
-        EditorUtility.DisplayDialog(
-            "Weapon Validation",
-            $"Validated {guids.Length} definitions.\nErrors: {errors.Count}\nWarnings: {warnings.Count}\nDetails were written to the Console.",
-            "OK");
+        return summary;
     }
 
     private static void ValidateDefinition(
@@ -68,6 +52,14 @@ public static class WeaponDefinitionValidator
         {
             errors.Add($"{label}: Missing weapon sprite.");
         }
+        else
+        {
+            Bounds spriteBounds = definition.ItemImage.bounds;
+            if (Mathf.Abs(spriteBounds.size.x) < 0.0001f || Mathf.Abs(spriteBounds.size.y) < 0.0001f)
+            {
+                errors.Add($"{label}: Weapon sprite has invalid bounds and cannot be used for normalized preset placement.");
+            }
+        }
 
         if (definition.WeaponPrefab == null)
         {
@@ -77,6 +69,17 @@ public static class WeaponDefinitionValidator
         WeaponArchetype archetype = definition.ResolvedArchetype;
         bool needsProjectile = definition.WeaponType == WeaponType.Projectile;
         bool needsMeleeRig = definition.WeaponType == WeaponType.Melee;
+        bool hasExplicitArchetype = definition.Archetype != WeaponArchetype.Generic;
+        bool archetypeWasInferred = definition.Archetype == WeaponArchetype.Generic && archetype != WeaponArchetype.Generic;
+
+        if (!hasExplicitArchetype && archetypeWasInferred)
+        {
+            warnings.Add($"{label}: Missing explicit archetype. Runtime currently infers '{archetype}' from EquipmentClass.");
+        }
+        else if (!hasExplicitArchetype && archetype == WeaponArchetype.Generic)
+        {
+            infos.Add($"{label}: Uses Generic archetype. Assign a more specific archetype if this weapon should use a standard preset.");
+        }
 
         if (definition.AlignmentPreset == null)
         {
@@ -93,6 +96,12 @@ public static class WeaponDefinitionValidator
         }
 
         WeaponRig rig = definition.WeaponPrefab.GetComponentInChildren<WeaponRig>(true);
+        bool hasPresetPointSupport = definition.AlignmentPreset != null
+            && definition.ItemImage != null
+            && definition.AlignmentPreset.TryBuildPoints(definition.ItemImage, out _);
+        bool hasProjectileSupport = false;
+        bool hasSlashSupport = false;
+
         if (rig == null)
         {
             warnings.Add($"{label}: Missing WeaponRig on prefab '{definition.WeaponPrefab.name}'. Runtime will fall back to preset/legacy offsets.");
@@ -104,10 +113,8 @@ public static class WeaponDefinitionValidator
                 warnings.Add($"{label}: WeaponRig on prefab '{definition.WeaponPrefab.name}' is missing required points for archetype '{archetype}'.");
             }
 
-            if (needsProjectile && rig.ProjectileSpawnPoint == null)
-            {
-                errors.Add($"{label}: Ranged weapon prefab '{definition.WeaponPrefab.name}' is missing ProjectileSpawnPoint.");
-            }
+            hasProjectileSupport = rig.ProjectileSpawnPoint != null;
+            hasSlashSupport = rig.SlashOrigin != null && rig.SlashArcStart != null && rig.SlashArcEnd != null;
         }
 
         if (needsProjectile && definition.UsesLegacyProjectileSpawnOffset)
@@ -115,16 +122,26 @@ public static class WeaponDefinitionValidator
             warnings.Add($"{label}: Uses legacy ProjectileSpawnPointOffset fallback. Prefer WeaponRig.ProjectileSpawnPoint.");
         }
 
+        if (needsProjectile && !hasProjectileSupport && !hasPresetPointSupport && !definition.UsesLegacyProjectileSpawnOffset)
+        {
+            errors.Add($"{label}: Ranged weapon has no ProjectileSpawnPoint support from rig, preset, or legacy projectile offset.");
+        }
+
         if (needsMeleeRig)
         {
             MeleeWeapon meleeWeapon = definition.WeaponPrefab.GetComponent<MeleeWeapon>();
             if (meleeWeapon == null)
             {
-                warnings.Add($"{label}: Melee definition is assigned to prefab '{definition.WeaponPrefab.name}' without MeleeWeapon component.");
+                errors.Add($"{label}: Melee definition is assigned to prefab '{definition.WeaponPrefab.name}' without MeleeWeapon component.");
             }
-            else if (!PrefabHasObjectReference(definition.WeaponPrefab, "weaponCollider"))
+            else if (!PrefabHasObjectReference(meleeWeapon, "weaponCollider"))
             {
-                warnings.Add($"{label}: Melee prefab '{definition.WeaponPrefab.name}' does not serialize a weaponCollider reference.");
+                errors.Add($"{label}: Melee prefab '{definition.WeaponPrefab.name}' does not serialize a weaponCollider reference.");
+            }
+
+            if (!hasSlashSupport && !hasPresetPointSupport && definition.SlashVfxOffset == Vector3.zero)
+            {
+                warnings.Add($"{label}: Melee weapon has no explicit slash pose support from rig or preset and is relying on generic fallback slash arc math.");
             }
         }
 
@@ -143,11 +160,61 @@ public static class WeaponDefinitionValidator
         }
     }
 
-    private static bool PrefabHasObjectReference(GameObject prefab, string propertyName)
+    private static bool PrefabHasObjectReference(Object target, string propertyName)
     {
-        SerializedObject serializedObject = new SerializedObject(prefab.GetComponent<MeleeWeapon>());
+        if (target == null)
+        {
+            return false;
+        }
+
+        SerializedObject serializedObject = new SerializedObject(target);
         SerializedProperty property = serializedObject.FindProperty(propertyName);
         return property != null && property.objectReferenceValue != null;
+    }
+
+    private static WeaponDefinitionSO[] LoadAllDefinitions()
+    {
+        string[] guids = AssetDatabase.FindAssets("t:WeaponDefinitionSO", new[] { "Assets" });
+        List<WeaponDefinitionSO> definitions = new List<WeaponDefinitionSO>(guids.Length);
+        for (int i = 0; i < guids.Length; i++)
+        {
+            WeaponDefinitionSO definition = AssetDatabase.LoadAssetAtPath<WeaponDefinitionSO>(AssetDatabase.GUIDToAssetPath(guids[i]));
+            if (definition != null)
+            {
+                definitions.Add(definition);
+            }
+        }
+
+        return definitions.ToArray();
+    }
+
+    private static void LogAndDisplaySummary(ValidationSummary summary, string dialogTitle)
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.AppendLine($"Validated {summary.ValidatedCount} WeaponDefinitionSO assets.");
+        builder.AppendLine($"Errors: {summary.Errors.Count}");
+        builder.AppendLine($"Warnings: {summary.Warnings.Count}");
+        builder.AppendLine($"Info: {summary.Infos.Count}");
+
+        AppendSection(builder, "Errors", summary.Errors);
+        AppendSection(builder, "Warnings", summary.Warnings);
+        AppendSection(builder, "Info", summary.Infos);
+
+        string report = builder.ToString().TrimEnd();
+        if (summary.Errors.Count > 0)
+        {
+            Debug.LogError(report);
+        }
+        else if (summary.Warnings.Count > 0)
+        {
+            Debug.LogWarning(report);
+        }
+        else
+        {
+            Debug.Log(report);
+        }
+
+        Debug.Log($"{dialogTitle}: Validated {summary.ValidatedCount} definitions. Errors={summary.Errors.Count}, Warnings={summary.Warnings.Count}, Info={summary.Infos.Count}.");
     }
 
     private static void AppendSection(StringBuilder builder, string title, List<string> lines)
@@ -163,5 +230,13 @@ public static class WeaponDefinitionValidator
         {
             builder.AppendLine("- " + lines[i]);
         }
+    }
+
+    public sealed class ValidationSummary
+    {
+        public int ValidatedCount;
+        public readonly List<string> Errors = new List<string>();
+        public readonly List<string> Warnings = new List<string>();
+        public readonly List<string> Infos = new List<string>();
     }
 }
