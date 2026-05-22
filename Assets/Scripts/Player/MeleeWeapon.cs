@@ -1,7 +1,22 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeWeapon : Weapon
 {
+    private const float ProceduralSlashWindupDegrees = 28f;
+    private const float ProceduralSlashFollowThroughDegrees = 96f;
+    private const float ProceduralThrustPullbackFactor = 0.1f;
+    private const float ProceduralThrustLungeFactor = 0.35f;
+    private const float ProceduralThrustStretch = 1.12f;
+
+    private enum ProceduralAttackPhase
+    {
+        None,
+        Anticipation,
+        Active,
+        Recovery
+    }
+
     [Header("Melee")]
     [SerializeField] protected float attackCooldown = 0.5f;
     [SerializeField] protected float colliderDistance = 0.15f;
@@ -13,10 +28,17 @@ public class MeleeWeapon : Weapon
 
     protected float nextAttackTime = 0f;
 
+    private readonly HashSet<int> proceduralHitTargets = new HashSet<int>();
+
     private Animator animator;
     private PlayerMovement playerMovement;
     private WeaponController weaponController;
     private GameObject slashAnim;
+    private ProceduralAttackPhase proceduralPhase;
+    private Vector2 proceduralAimDirection = Vector2.right;
+    private float proceduralPhaseStartTime;
+    private int proceduralSlashDirection = 1;
+    private bool proceduralActiveFxSpawned;
 
     private void Awake()
     {
@@ -47,7 +69,16 @@ public class MeleeWeapon : Weapon
 
     private void Update()
     {
-        FollowPlayerDirection();
+        UpdateProceduralAttackState();
+
+        if (!UsesProceduralPresetMelee())
+        {
+            FollowPlayerDirection();
+        }
+        else if (weaponCollider != null)
+        {
+            weaponCollider.gameObject.SetActive(false);
+        }
     }
 
     public override void Initialize(WeaponDefinitionSO definition)
@@ -63,6 +94,11 @@ public class MeleeWeapon : Weapon
         colliderDistance = definition.HitboxDistance;
         weaponColliderScale = definition.HitboxScale;
         ApplyHitboxDefinition(definition);
+
+        if (UsesProceduralPresetMelee() && weaponCollider != null)
+        {
+            weaponCollider.gameObject.SetActive(false);
+        }
     }
 
     public override void Use()
@@ -70,10 +106,47 @@ public class MeleeWeapon : Weapon
         Attack();
     }
 
+    public override bool TryGetPoseAimDirectionOverride(out Vector2 aimDirection)
+    {
+        if (proceduralPhase != ProceduralAttackPhase.None)
+        {
+            aimDirection = proceduralAimDirection;
+            return true;
+        }
+
+        aimDirection = default;
+        return false;
+    }
+
+    public override WeaponAlignmentPose AdjustPose(WeaponAlignmentPose pose)
+    {
+        if (!UsesProceduralPresetMelee() || proceduralPhase == ProceduralAttackPhase.None)
+        {
+            return pose;
+        }
+
+        WeaponRigRuntimeResolution resolution = GetResolvedRig();
+        switch (weaponDefinition.AttackType)
+        {
+            case WeaponAttackType.Slash:
+                return BuildProceduralSlashPose(pose, resolution);
+            case WeaponAttackType.Thrust:
+                return BuildProceduralThrustPose(pose, resolution);
+            default:
+                return pose;
+        }
+    }
+
     private void Attack()
     {
         if (!CanAttack())
         {
+            return;
+        }
+
+        if (UsesProceduralPresetMelee())
+        {
+            BeginProceduralAttack();
             return;
         }
 
@@ -158,6 +231,442 @@ public class MeleeWeapon : Weapon
         }
     }
 
+    private bool UsesProceduralPresetMelee()
+    {
+        if (weaponDefinition == null || !weaponDefinition.IsMeleeAttack)
+        {
+            return false;
+        }
+
+        return GetResolvedRig().ResolvedMode == WeaponRigPointSourceMode.UsePresetRig;
+    }
+
+    private void BeginProceduralAttack()
+    {
+        proceduralHitTargets.Clear();
+        proceduralAimDirection = playerMovement != null && playerMovement.LastAimDirection.sqrMagnitude > 0.0001f
+            ? playerMovement.LastAimDirection.normalized
+            : Vector2.right;
+        proceduralActiveFxSpawned = false;
+
+        if (weaponDefinition != null && weaponDefinition.AttackType == WeaponAttackType.Slash)
+        {
+            proceduralSlashDirection *= -1;
+        }
+
+        EnterProceduralPhase(ProceduralAttackPhase.Anticipation);
+    }
+
+    private void UpdateProceduralAttackState()
+    {
+        if (proceduralPhase == ProceduralAttackPhase.None || weaponDefinition == null)
+        {
+            return;
+        }
+
+        switch (proceduralPhase)
+        {
+            case ProceduralAttackPhase.Anticipation:
+                if (GetCurrentPhaseDuration() <= 0f || GetCurrentPhaseElapsed() >= GetCurrentPhaseDuration())
+                {
+                    EnterProceduralPhase(ProceduralAttackPhase.Active);
+                }
+                break;
+
+            case ProceduralAttackPhase.Active:
+                PerformProceduralHitDetection();
+                if (!proceduralActiveFxSpawned && weaponDefinition.AttackType == WeaponAttackType.Slash)
+                {
+                    SpawnProceduralSlashVfx();
+                    proceduralActiveFxSpawned = true;
+                }
+
+                if (GetCurrentPhaseDuration() <= 0f || GetCurrentPhaseElapsed() >= GetCurrentPhaseDuration())
+                {
+                    EnterProceduralPhase(ProceduralAttackPhase.Recovery);
+                }
+                break;
+
+            case ProceduralAttackPhase.Recovery:
+                if (GetCurrentPhaseDuration() <= 0f || GetCurrentPhaseElapsed() >= GetCurrentPhaseDuration())
+                {
+                    EnterProceduralPhase(ProceduralAttackPhase.None);
+                }
+                break;
+        }
+    }
+
+    private void EnterProceduralPhase(ProceduralAttackPhase nextPhase)
+    {
+        proceduralPhase = nextPhase;
+        proceduralPhaseStartTime = Time.time;
+
+        if (proceduralPhase == ProceduralAttackPhase.None)
+        {
+            proceduralActiveFxSpawned = false;
+        }
+    }
+
+    private void PerformProceduralHitDetection()
+    {
+        WeaponAlignmentPose pose = GetProceduralAttackPose();
+        switch (weaponDefinition.AttackType)
+        {
+            case WeaponAttackType.Slash:
+                PerformSlashHitDetection(pose);
+                break;
+
+            case WeaponAttackType.Thrust:
+                PerformThrustHitDetection(pose);
+                break;
+        }
+    }
+
+    private WeaponAlignmentPose GetProceduralAttackPose()
+    {
+        WeaponAlignmentPose basePose = weaponController != null
+            ? weaponController.CalculatePoseForDefinition(weaponDefinition, proceduralAimDirection)
+            : WeaponAlignmentUtility.CalculateWeaponPose(transform.position, proceduralAimDirection, weaponDefinition, GetComponentInChildren<WeaponRig>(true));
+
+        return AdjustPose(basePose);
+    }
+
+    private void PerformSlashHitDetection(WeaponAlignmentPose pose)
+    {
+        float range = Mathf.Max(0.05f, weaponDefinition.SlashRange);
+        float halfArc = Mathf.Max(1f, weaponDefinition.SlashArcDegrees) * 0.5f;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(pose.SlashOrigin, range);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider2D hit = hits[i];
+            if (!IsValidProceduralTarget(hit, pose.SlashOrigin, out IDamageable damageable, out Component damageableComponent, out Vector2 targetPoint))
+            {
+                continue;
+            }
+
+            Vector2 toTarget = targetPoint - (Vector2)pose.SlashOrigin;
+            if (toTarget.sqrMagnitude > range * range)
+            {
+                continue;
+            }
+
+            if (toTarget.sqrMagnitude > 0.0001f && Vector2.Angle(proceduralAimDirection, toTarget.normalized) > halfArc)
+            {
+                continue;
+            }
+
+            ApplyProceduralDamage(damageable, damageableComponent);
+        }
+    }
+
+    private void PerformThrustHitDetection(WeaponAlignmentPose pose)
+    {
+        float distance = Mathf.Max(0.05f, weaponDefinition.ThrustDistance);
+        float width = Mathf.Max(0.05f, weaponDefinition.ThrustWidth);
+        Vector2 center = (Vector2)pose.WeaponAnchorPosition + proceduralAimDirection * (distance * 0.5f);
+        float angle = Mathf.Atan2(proceduralAimDirection.y, proceduralAimDirection.x) * Mathf.Rad2Deg;
+        Collider2D[] hits = Physics2D.OverlapBoxAll(center, new Vector2(distance, width), angle);
+        for (int i = 0; i < hits.Length; i++)
+        {
+            Collider2D hit = hits[i];
+            if (!IsValidProceduralTarget(hit, center, out IDamageable damageable, out Component damageableComponent, out _))
+            {
+                continue;
+            }
+
+            ApplyProceduralDamage(damageable, damageableComponent);
+        }
+    }
+
+    private bool IsValidProceduralTarget(Collider2D target, Vector2 origin, out IDamageable damageable, out Component damageableComponent, out Vector2 targetPoint)
+    {
+        damageable = null;
+        damageableComponent = null;
+        targetPoint = origin;
+
+        if (target == null)
+        {
+            return false;
+        }
+
+        if (playerMovement != null && target.transform.IsChildOf(playerMovement.transform))
+        {
+            return false;
+        }
+
+        if (!TryResolveDamageable(target, out damageable, out damageableComponent))
+        {
+            return false;
+        }
+
+        int targetId = damageableComponent.gameObject.GetInstanceID();
+        if (proceduralHitTargets.Contains(targetId))
+        {
+            return false;
+        }
+
+        targetPoint = target.ClosestPoint(origin);
+        if ((targetPoint - origin).sqrMagnitude < 0.0001f)
+        {
+            targetPoint = damageableComponent.transform.position;
+        }
+
+        return true;
+    }
+
+    private void ApplyProceduralDamage(IDamageable damageable, Component damageableComponent)
+    {
+        if (damageable == null || damageableComponent == null)
+        {
+            return;
+        }
+
+        proceduralHitTargets.Add(damageableComponent.gameObject.GetInstanceID());
+        damageable.TakeDamage(ComputeFinalDamage());
+
+        if (weaponDefinition != null && weaponDefinition.Knockback > 0f)
+        {
+            Knockback knockback = damageableComponent.GetComponent<Knockback>();
+            if (knockback == null)
+            {
+                knockback = damageableComponent.GetComponentInParent<Knockback>();
+            }
+
+            if (knockback != null)
+            {
+                Transform source = playerMovement != null ? playerMovement.transform : transform;
+                knockback.GetKnockedBack(source, weaponDefinition.Knockback);
+            }
+        }
+    }
+
+    private int ComputeFinalDamage()
+    {
+        float finalDamage = weaponDefinition != null ? weaponDefinition.Damage : 1f;
+        PlayerStats stats = playerMovement != null ? playerMovement.GetComponent<PlayerStats>() : null;
+        if (stats == null && PlayerMovement.Instance != null)
+        {
+            stats = PlayerMovement.Instance.GetComponent<PlayerStats>();
+        }
+
+        if (stats != null)
+        {
+            finalDamage += stats.attackDamage;
+            if (stats.TryCrit())
+            {
+                finalDamage *= stats.GetCritMultiplier();
+            }
+        }
+
+        return Mathf.RoundToInt(finalDamage);
+    }
+
+    private static bool TryResolveDamageable(Collider2D target, out IDamageable damageable, out Component damageableComponent)
+    {
+        damageable = target.GetComponent<IDamageable>();
+        damageableComponent = damageable as Component;
+        if (damageableComponent != null)
+        {
+            return true;
+        }
+
+        damageable = target.GetComponentInParent<IDamageable>();
+        damageableComponent = damageable as Component;
+        return damageableComponent != null;
+    }
+
+    private void SpawnProceduralSlashVfx()
+    {
+        if (slashAnimPrefab == null)
+        {
+            return;
+        }
+
+        WeaponAlignmentPose pose = GetProceduralAttackPose();
+        slashAnim = SlashEffectPool.Instance.Get(slashAnimPrefab, pose.SlashOrigin, pose.WeaponRotation, transform.parent);
+        if (slashAnim == null)
+        {
+            return;
+        }
+
+        Animator slashAnimator = slashAnim.GetComponent<Animator>();
+        if (slashAnimator != null)
+        {
+            slashAnimator.speed = 3f;
+        }
+
+        SpriteRenderer slashRenderer = slashAnim.GetComponent<SpriteRenderer>();
+        if (slashRenderer != null)
+        {
+            slashRenderer.flipX = proceduralSlashDirection < 0;
+        }
+
+        slashAnim.transform.rotation = pose.WeaponRotation * Quaternion.Euler(0f, 0f, proceduralSlashDirection > 0 ? 8f : -8f);
+        slashAnim.transform.localScale = Vector3.one * Mathf.Lerp(0.9f, 1.15f, Mathf.Clamp01((weaponDefinition.SlashRange - 0.75f) / 0.75f));
+        SyncSlashSortingWithWeapon();
+    }
+
+    private WeaponAlignmentPose BuildProceduralSlashPose(WeaponAlignmentPose basePose, WeaponRigRuntimeResolution resolution)
+    {
+        float phaseProgress = GetCurrentPhaseProgress();
+        float angleOffset = 0f;
+        float slashDirection = proceduralSlashDirection;
+
+        switch (proceduralPhase)
+        {
+            case ProceduralAttackPhase.Anticipation:
+                angleOffset = -slashDirection * ProceduralSlashWindupDegrees * EaseOutCubic(phaseProgress);
+                break;
+
+            case ProceduralAttackPhase.Active:
+                angleOffset = Mathf.Lerp(
+                    -slashDirection * ProceduralSlashWindupDegrees,
+                    slashDirection * ProceduralSlashFollowThroughDegrees,
+                    EaseInOutCubic(phaseProgress));
+                break;
+
+            case ProceduralAttackPhase.Recovery:
+                angleOffset = Mathf.Lerp(
+                    slashDirection * ProceduralSlashFollowThroughDegrees,
+                    0f,
+                    EaseOutCubic(phaseProgress));
+                break;
+        }
+
+        Quaternion rotation = basePose.WeaponRotation * Quaternion.Euler(0f, 0f, angleOffset);
+        Vector3 weaponPosition = CalculateGripAnchoredPosition(basePose.WeaponAnchorPosition, rotation, resolution.GripPoint, basePose.VisualScale);
+        return BuildAdjustedPose(basePose, resolution, weaponPosition, rotation, basePose.VisualScale);
+    }
+
+    private WeaponAlignmentPose BuildProceduralThrustPose(WeaponAlignmentPose basePose, WeaponRigRuntimeResolution resolution)
+    {
+        float phaseProgress = GetCurrentPhaseProgress();
+        float thrustDistance = Mathf.Max(0.05f, weaponDefinition.ThrustDistance);
+        float offsetDistance = 0f;
+        float stretchFactor = 1f;
+
+        switch (proceduralPhase)
+        {
+            case ProceduralAttackPhase.Anticipation:
+                offsetDistance = -thrustDistance * ProceduralThrustPullbackFactor * EaseOutCubic(phaseProgress);
+                break;
+
+            case ProceduralAttackPhase.Active:
+                offsetDistance = Mathf.Lerp(
+                    -thrustDistance * ProceduralThrustPullbackFactor,
+                    thrustDistance * ProceduralThrustLungeFactor,
+                    EaseInOutCubic(phaseProgress));
+                stretchFactor = Mathf.Lerp(1f, ProceduralThrustStretch, EaseOutCubic(phaseProgress));
+                break;
+
+            case ProceduralAttackPhase.Recovery:
+                offsetDistance = Mathf.Lerp(
+                    thrustDistance * ProceduralThrustLungeFactor,
+                    0f,
+                    EaseOutCubic(phaseProgress));
+                stretchFactor = Mathf.Lerp(ProceduralThrustStretch, 1f, EaseOutCubic(phaseProgress));
+                break;
+        }
+
+        Vector3 visualScale = basePose.VisualScale;
+        visualScale.x = Mathf.Sign(visualScale.x) * Mathf.Abs(visualScale.x) * stretchFactor;
+
+        Vector3 weaponPosition = CalculateGripAnchoredPosition(basePose.WeaponAnchorPosition, basePose.WeaponRotation, resolution.GripPoint, visualScale);
+        weaponPosition += (Vector3)(proceduralAimDirection * offsetDistance);
+        return BuildAdjustedPose(basePose, resolution, weaponPosition, basePose.WeaponRotation, visualScale);
+    }
+
+    private WeaponAlignmentPose BuildAdjustedPose(
+        WeaponAlignmentPose basePose,
+        WeaponRigRuntimeResolution resolution,
+        Vector3 weaponPosition,
+        Quaternion weaponRotation,
+        Vector3 visualScale)
+    {
+        basePose.WeaponPosition = weaponPosition;
+        basePose.WeaponRotation = weaponRotation;
+        basePose.VisualScale = visualScale;
+        basePose.GripPoint = TransformLocalPoint(weaponPosition, weaponRotation, resolution.GripPoint, visualScale);
+        basePose.MuzzleTipPoint = TransformLocalPoint(weaponPosition, weaponRotation, resolution.TipPoint, visualScale);
+        basePose.ProjectileSpawnPoint = TransformLocalPoint(weaponPosition, weaponRotation, resolution.ProjectileSpawnPoint, visualScale);
+        basePose.SlashOrigin = TransformLocalPoint(weaponPosition, weaponRotation, resolution.SlashOrigin, visualScale);
+        basePose.SlashArcStart = TransformLocalPoint(weaponPosition, weaponRotation, resolution.SlashArcStart, visualScale);
+        basePose.SlashArcEnd = TransformLocalPoint(weaponPosition, weaponRotation, resolution.SlashArcEnd, visualScale);
+        return basePose;
+    }
+
+    private static Vector3 CalculateGripAnchoredPosition(Vector3 anchor, Quaternion rotation, Vector3 gripLocalPoint, Vector3 visualScale)
+    {
+        return anchor - rotation * ScaleLocalPoint(gripLocalPoint, visualScale);
+    }
+
+    private static Vector3 TransformLocalPoint(Vector3 weaponPosition, Quaternion rotation, Vector3 localPoint, Vector3 visualScale)
+    {
+        return weaponPosition + rotation * ScaleLocalPoint(localPoint, visualScale);
+    }
+
+    private static Vector3 ScaleLocalPoint(Vector3 localPoint, Vector3 visualScale)
+    {
+        return Vector3.Scale(localPoint, visualScale);
+    }
+
+    private WeaponRigRuntimeResolution GetResolvedRig()
+    {
+        if (weaponController != null)
+        {
+            return weaponController.CurrentRigResolution;
+        }
+
+        return WeaponAlignmentUtility.ResolveRuntimeRig(weaponDefinition, GetComponentInChildren<WeaponRig>(true));
+    }
+
+    private float GetCurrentPhaseElapsed()
+    {
+        return Time.time - proceduralPhaseStartTime;
+    }
+
+    private float GetCurrentPhaseDuration()
+    {
+        if (weaponDefinition == null)
+        {
+            return 0f;
+        }
+
+        return proceduralPhase switch
+        {
+            ProceduralAttackPhase.Anticipation => weaponDefinition.AnticipationDuration,
+            ProceduralAttackPhase.Active => weaponDefinition.ActiveDuration,
+            ProceduralAttackPhase.Recovery => weaponDefinition.RecoveryDuration,
+            _ => 0f
+        };
+    }
+
+    private float GetCurrentPhaseProgress()
+    {
+        float duration = GetCurrentPhaseDuration();
+        if (duration <= 0.0001f)
+        {
+            return 1f;
+        }
+
+        return Mathf.Clamp01(GetCurrentPhaseElapsed() / duration);
+    }
+
+    private static float EaseOutCubic(float t)
+    {
+        t = Mathf.Clamp01(t);
+        float inverse = 1f - t;
+        return 1f - (inverse * inverse * inverse);
+    }
+
+    private static float EaseInOutCubic(float t)
+    {
+        t = Mathf.Clamp01(t);
+        return t < 0.5f
+            ? 4f * t * t * t
+            : 1f - Mathf.Pow(-2f * t + 2f, 3f) * 0.5f;
+    }
+
     private void SyncSlashSortingWithWeapon()
     {
         if (slashAnim == null)
@@ -165,7 +674,7 @@ public class MeleeWeapon : Weapon
             return;
         }
 
-        SpriteRenderer weaponRenderer = GetComponent<SpriteRenderer>();
+        SpriteRenderer weaponRenderer = DisplayedSpriteRenderer != null ? DisplayedSpriteRenderer : GetComponent<SpriteRenderer>();
         SpriteRenderer slashRenderer = slashAnim.GetComponent<SpriteRenderer>();
         if (weaponRenderer == null || slashRenderer == null)
         {

@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Spear
   m_EditorClassIdentifier: 
   archetype: 5
-  normalizedGripPoint: {x: 0.1, y: 0.5}
-  normalizedTipPoint: {x: 0.98, y: 0.5}
+  coordinateSpace: 0
+  normalizedGripPoint: {x: 0.29, y: 0.28}
+  normalizedTipPoint: {x: 0.95, y: 0.95}
   normalizedProjectileSpawnPoint: {x: 0.99, y: 0.5}
-  normalizedSlashOrigin: {x: 0.58, y: 0.5}
-  normalizedSlashArcStart: {x: 0.86, y: 0.4}
-  normalizedSlashArcEnd: {x: 0.86, y: 0.6}
+  normalizedSlashOrigin: {x: 0.48, y: 0.5}
+  normalizedSlashArcStart: {x: 0.71, y: 0.71}
+  normalizedSlashArcEnd: {x: 1.01, y: 0.44}

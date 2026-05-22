@@ -177,6 +177,17 @@ public abstract class Weapon : MonoBehaviour
         return weaponDefinition != null ? Quaternion.Euler(weaponDefinition.LocalRotationOffset) : Quaternion.identity;
     }
 
+    public virtual bool TryGetPoseAimDirectionOverride(out Vector2 aimDirection)
+    {
+        aimDirection = default;
+        return false;
+    }
+
+    public virtual WeaponAlignmentPose AdjustPose(WeaponAlignmentPose pose)
+    {
+        return pose;
+    }
+
     private void CaptureInitialTransform()
     {
         if (capturedInitialTransform)

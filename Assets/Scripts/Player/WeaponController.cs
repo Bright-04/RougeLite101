@@ -161,22 +161,47 @@ public class WeaponController : MonoBehaviour
         }
 
         EnsureHierarchy();
-        currentAimDirection = GetAimDirection();
-
-        switch (currentDefinition.HandlingMode)
+        if (currentWeapon.TryGetPoseAimDirectionOverride(out Vector2 overriddenAimDirection))
         {
-            case WeaponHandlingMode.AimAligned:
-                ApplyAimAlignedPose();
-                break;
-            case WeaponHandlingMode.SlashArc:
-                ApplySlashVisualPoseOrIdlePose();
-                break;
-            case WeaponHandlingMode.Thrust:
-                ApplyThrustVisualPoseOrIdlePose();
-                break;
-            default:
-                ApplyAimAlignedPose();
-                break;
+            currentAimDirection = overriddenAimDirection.sqrMagnitude > 0.0001f ? overriddenAimDirection.normalized : Vector2.right;
+        }
+        else
+        {
+            currentAimDirection = GetAimDirection();
+        }
+
+        if (currentRigResolution.ResolvedMode == WeaponRigPointSourceMode.UsePresetRig)
+        {
+            switch (currentDefinition.AttackType)
+            {
+                case WeaponAttackType.Slash:
+                    ApplySlashVisualPoseOrIdlePose();
+                    break;
+                case WeaponAttackType.Thrust:
+                    ApplyThrustVisualPoseOrIdlePose();
+                    break;
+                default:
+                    ApplyAimAlignedPose();
+                    break;
+            }
+        }
+        else
+        {
+            switch (currentDefinition.HandlingMode)
+            {
+                case WeaponHandlingMode.AimAligned:
+                    ApplyAimAlignedPose();
+                    break;
+                case WeaponHandlingMode.SlashArc:
+                    ApplySlashVisualPoseOrIdlePose();
+                    break;
+                case WeaponHandlingMode.Thrust:
+                    ApplyThrustVisualPoseOrIdlePose();
+                    break;
+                default:
+                    ApplyAimAlignedPose();
+                    break;
+            }
         }
 
         if (logScaleDebugOnWeaponChange)
@@ -192,20 +217,21 @@ public class WeaponController : MonoBehaviour
     private void ApplyAimAlignedPose()
     {
         currentPose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition, currentWeaponRig);
+        currentPose = currentWeapon != null ? currentWeapon.AdjustPose(currentPose) : currentPose;
         ApplyPoseToCurrentWeaponVisual(currentPose);
     }
 
     private void ApplySlashVisualPoseOrIdlePose()
     {
-        // TODO: SlashArc should use slash-specific idle/swing visual rules instead of aim-aligned behavior.
         currentPose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition, currentWeaponRig);
+        currentPose = currentWeapon != null ? currentWeapon.AdjustPose(currentPose) : currentPose;
         ApplyPoseToCurrentWeaponVisual(currentPose);
     }
 
     private void ApplyThrustVisualPoseOrIdlePose()
     {
-        // TODO: Thrust should use thrust-specific idle/extension visual rules instead of aim-aligned behavior.
         currentPose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition, currentWeaponRig);
+        currentPose = currentWeapon != null ? currentWeapon.AdjustPose(currentPose) : currentPose;
         ApplyPoseToCurrentWeaponVisual(currentPose);
     }
 
