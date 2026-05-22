@@ -29,20 +29,31 @@ MonoBehaviour:
   - 
   archetype: 5
   alignmentPreset: {fileID: 11400000, guid: 55555555555555555555555555555555, type: 2}
-  attackType: 0
+  attackType: 2
   gripPointOffset: {x: 0.03, y: 0, z: 0}
   visualScale: 5
   rotationOffsetDegrees: 0
   damage: 1
   cooldown: 0.6
   knockback: 0
-  anticipationDuration: 0.05
-  activeDuration: 0.08
-  recoveryDuration: 0.12
+  anticipationDuration: 0.045
+  activeDuration: 0.055
+  recoveryDuration: 0.095
   slashArcDegrees: 90
   slashRange: 1.4
   thrustDistance: 1.5
   thrustWidth: 0.4
+  slashVisualExtraAnticipationDegrees: 0
+  slashVisualExtraFollowThroughDegrees: 0
+  thrustVisualPullbackFactor: 0.14
+  thrustVisualLungeFactor: 0.46
+  thrustVisualStretchFactor: 1.16
+  slashVfxLifetime: -1
+  slashVfxStartScaleMultiplier: 0
+  slashVfxEndScaleMultiplier: 0
+  slashVfxFadeOut: 0
+  meleeVisualPulseScaleAmount: 0.05
+  meleeVisualPulseBlend: 0.5
   rigPointSource: 0
   handlingMode: 2
   aimPointOffset: {x: 0, y: 0, z: 0}

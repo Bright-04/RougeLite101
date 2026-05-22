@@ -36,13 +36,24 @@ MonoBehaviour:
   damage: 3
   cooldown: 0.6
   knockback: 7
-  anticipationDuration: 0.05
-  activeDuration: 0.08
-  recoveryDuration: 0.12
+  anticipationDuration: 0.04
+  activeDuration: 0.055
+  recoveryDuration: 0.09
   slashArcDegrees: 92
   slashRange: 1.55
   thrustDistance: 1.65
   thrustWidth: 0.42
+  slashVisualExtraAnticipationDegrees: 0
+  slashVisualExtraFollowThroughDegrees: 0
+  thrustVisualPullbackFactor: 0.16
+  thrustVisualLungeFactor: 0.5
+  thrustVisualStretchFactor: 1.18
+  slashVfxLifetime: -1
+  slashVfxStartScaleMultiplier: 0
+  slashVfxEndScaleMultiplier: 0
+  slashVfxFadeOut: 0
+  meleeVisualPulseScaleAmount: 0.06
+  meleeVisualPulseBlend: 0.55
   rigPointSource: 0
   handlingMode: 2
   aimPointOffset: {x: 0.28, y: 0, z: 0}

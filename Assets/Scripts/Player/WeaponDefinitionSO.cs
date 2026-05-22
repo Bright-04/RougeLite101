@@ -69,6 +69,20 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
     [SerializeField] private float thrustDistance = 1f;
     [SerializeField] private float thrustWidth = 0.35f;
 
+    [Header("Melee Visuals")]
+    [SerializeField] private float slashVisualExtraAnticipationDegrees = 0f;
+    [SerializeField] private float slashVisualExtraFollowThroughDegrees = 0f;
+    [SerializeField] private float thrustVisualPullbackFactor = -1f;
+    [SerializeField] private float thrustVisualLungeFactor = -1f;
+    [SerializeField] private float thrustVisualStretchFactor = -1f;
+    [SerializeField] private float slashVfxLifetime = -1f;
+    [SerializeField] private float slashVfxStartScaleMultiplier = 0f;
+    [SerializeField] private float slashVfxEndScaleMultiplier = 0f;
+    [SerializeField] private bool slashVfxFadeOut;
+    [SerializeField] private float meleeVisualPulseScaleAmount = 0f;
+    [Range(0f, 1f)]
+    [SerializeField] private float meleeVisualPulseBlend = 0f;
+
     [Header("Advanced / Legacy Alignment")]
     [SerializeField] private WeaponRigPointSourceMode rigPointSource = WeaponRigPointSourceMode.UsePresetRig;
     [SerializeField] private WeaponHandlingMode handlingMode = WeaponHandlingMode.SlashArc;
@@ -139,6 +153,17 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
     public float SlashRange => slashRange;
     public float ThrustDistance => thrustDistance;
     public float ThrustWidth => thrustWidth;
+    public float SlashVisualExtraAnticipationDegrees => slashVisualExtraAnticipationDegrees;
+    public float SlashVisualExtraFollowThroughDegrees => slashVisualExtraFollowThroughDegrees;
+    public float ThrustVisualPullbackFactor => thrustVisualPullbackFactor;
+    public float ThrustVisualLungeFactor => thrustVisualLungeFactor;
+    public float ThrustVisualStretchFactor => thrustVisualStretchFactor;
+    public float SlashVfxLifetime => slashVfxLifetime;
+    public float SlashVfxStartScaleMultiplier => slashVfxStartScaleMultiplier;
+    public float SlashVfxEndScaleMultiplier => slashVfxEndScaleMultiplier;
+    public bool SlashVfxFadeOut => slashVfxFadeOut;
+    public float MeleeVisualPulseScaleAmount => meleeVisualPulseScaleAmount;
+    public float MeleeVisualPulseBlend => meleeVisualPulseBlend;
     public float Range => range;
     public float HitboxDistance => hitboxDistance;
     public Vector3 HitboxScale => hitboxScale;

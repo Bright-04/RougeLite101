@@ -8,6 +8,7 @@ public class MeleeWeapon : Weapon
     private const float ProceduralThrustPullbackFactor = 0.1f;
     private const float ProceduralThrustLungeFactor = 0.35f;
     private const float ProceduralThrustStretch = 1.12f;
+    private const float DefaultSlashVfxLifetime = 0.12f;
 
     private enum ProceduralAttackPhase
     {
@@ -39,6 +40,8 @@ public class MeleeWeapon : Weapon
     private float proceduralPhaseStartTime;
     private int proceduralSlashDirection = 1;
     private bool proceduralActiveFxSpawned;
+    private SpriteRenderer pulsedWeaponRenderer;
+    private Vector3 pulsedWeaponRendererBaseScale = Vector3.one;
 
     private void Awake()
     {
@@ -61,6 +64,8 @@ public class MeleeWeapon : Weapon
 
     private void OnDestroy()
     {
+        ResetProceduralWeaponPulse();
+
         if (weaponCollider != null)
         {
             Destroy(weaponCollider.gameObject);
@@ -300,6 +305,8 @@ public class MeleeWeapon : Weapon
                 }
                 break;
         }
+
+        UpdateProceduralWeaponPulse();
     }
 
     private void EnterProceduralPhase(ProceduralAttackPhase nextPhase)
@@ -310,6 +317,7 @@ public class MeleeWeapon : Weapon
         if (proceduralPhase == ProceduralAttackPhase.None)
         {
             proceduralActiveFxSpawned = false;
+            ResetProceduralWeaponPulse();
         }
     }
 
@@ -507,8 +515,31 @@ public class MeleeWeapon : Weapon
             slashRenderer.flipX = proceduralSlashDirection < 0;
         }
 
-        slashAnim.transform.rotation = pose.WeaponRotation * Quaternion.Euler(0f, 0f, proceduralSlashDirection > 0 ? 8f : -8f);
-        slashAnim.transform.localScale = Vector3.one * Mathf.Lerp(0.9f, 1.15f, Mathf.Clamp01((weaponDefinition.SlashRange - 0.75f) / 0.75f));
+        float rangeScale = Mathf.Lerp(0.9f, 1.15f, Mathf.Clamp01((weaponDefinition.SlashRange - 0.75f) / 0.75f));
+        float startScaleMultiplier = weaponDefinition != null && weaponDefinition.SlashVfxStartScaleMultiplier > 0f
+            ? weaponDefinition.SlashVfxStartScaleMultiplier
+            : 1f;
+        float endScaleMultiplier = weaponDefinition != null && weaponDefinition.SlashVfxEndScaleMultiplier > 0f
+            ? weaponDefinition.SlashVfxEndScaleMultiplier
+            : startScaleMultiplier;
+        float lifetime = weaponDefinition != null && weaponDefinition.SlashVfxLifetime > 0f
+            ? weaponDefinition.SlashVfxLifetime
+            : DefaultSlashVfxLifetime;
+        Quaternion slashRotation = pose.WeaponRotation * Quaternion.Euler(0f, 0f, proceduralSlashDirection > 0 ? 12f : -12f);
+        Vector3 startScale = Vector3.one * (rangeScale * startScaleMultiplier);
+        Vector3 endScale = Vector3.one * (rangeScale * endScaleMultiplier);
+
+        SlashAnim proceduralSlashAnim = slashAnim.GetComponent<SlashAnim>();
+        if (proceduralSlashAnim != null)
+        {
+            proceduralSlashAnim.Play(lifetime, startScale, endScale, slashRotation, weaponDefinition != null && weaponDefinition.SlashVfxFadeOut);
+        }
+        else
+        {
+            slashAnim.transform.rotation = slashRotation;
+            slashAnim.transform.localScale = startScale;
+        }
+
         SyncSlashSortingWithWeapon();
     }
 
@@ -517,23 +548,25 @@ public class MeleeWeapon : Weapon
         float phaseProgress = GetCurrentPhaseProgress();
         float angleOffset = 0f;
         float slashDirection = proceduralSlashDirection;
+        float windupDegrees = ProceduralSlashWindupDegrees + Mathf.Max(0f, weaponDefinition.SlashVisualExtraAnticipationDegrees);
+        float followThroughDegrees = ProceduralSlashFollowThroughDegrees + Mathf.Max(0f, weaponDefinition.SlashVisualExtraFollowThroughDegrees);
 
         switch (proceduralPhase)
         {
             case ProceduralAttackPhase.Anticipation:
-                angleOffset = -slashDirection * ProceduralSlashWindupDegrees * EaseOutCubic(phaseProgress);
+                angleOffset = -slashDirection * windupDegrees * EaseOutQuad(phaseProgress);
                 break;
 
             case ProceduralAttackPhase.Active:
                 angleOffset = Mathf.Lerp(
-                    -slashDirection * ProceduralSlashWindupDegrees,
-                    slashDirection * ProceduralSlashFollowThroughDegrees,
-                    EaseInOutCubic(phaseProgress));
+                    -slashDirection * windupDegrees,
+                    slashDirection * followThroughDegrees,
+                    EaseOutQuint(phaseProgress));
                 break;
 
             case ProceduralAttackPhase.Recovery:
                 angleOffset = Mathf.Lerp(
-                    slashDirection * ProceduralSlashFollowThroughDegrees,
+                    slashDirection * followThroughDegrees,
                     0f,
                     EaseOutCubic(phaseProgress));
                 break;
@@ -548,29 +581,38 @@ public class MeleeWeapon : Weapon
     {
         float phaseProgress = GetCurrentPhaseProgress();
         float thrustDistance = Mathf.Max(0.05f, weaponDefinition.ThrustDistance);
+        float pullbackFactor = weaponDefinition.ThrustVisualPullbackFactor > 0f
+            ? weaponDefinition.ThrustVisualPullbackFactor
+            : ProceduralThrustPullbackFactor;
+        float lungeFactor = weaponDefinition.ThrustVisualLungeFactor > 0f
+            ? weaponDefinition.ThrustVisualLungeFactor
+            : ProceduralThrustLungeFactor;
+        float stretchTarget = weaponDefinition.ThrustVisualStretchFactor > 0f
+            ? weaponDefinition.ThrustVisualStretchFactor
+            : ProceduralThrustStretch;
         float offsetDistance = 0f;
         float stretchFactor = 1f;
 
         switch (proceduralPhase)
         {
             case ProceduralAttackPhase.Anticipation:
-                offsetDistance = -thrustDistance * ProceduralThrustPullbackFactor * EaseOutCubic(phaseProgress);
+                offsetDistance = -thrustDistance * pullbackFactor * EaseOutQuad(phaseProgress);
                 break;
 
             case ProceduralAttackPhase.Active:
                 offsetDistance = Mathf.Lerp(
-                    -thrustDistance * ProceduralThrustPullbackFactor,
-                    thrustDistance * ProceduralThrustLungeFactor,
-                    EaseInOutCubic(phaseProgress));
-                stretchFactor = Mathf.Lerp(1f, ProceduralThrustStretch, EaseOutCubic(phaseProgress));
+                    -thrustDistance * pullbackFactor,
+                    thrustDistance * lungeFactor,
+                    EaseOutQuint(phaseProgress));
+                stretchFactor = Mathf.Lerp(1f, stretchTarget, EaseOutQuint(phaseProgress));
                 break;
 
             case ProceduralAttackPhase.Recovery:
                 offsetDistance = Mathf.Lerp(
-                    thrustDistance * ProceduralThrustLungeFactor,
+                    thrustDistance * lungeFactor,
                     0f,
                     EaseOutCubic(phaseProgress));
-                stretchFactor = Mathf.Lerp(ProceduralThrustStretch, 1f, EaseOutCubic(phaseProgress));
+                stretchFactor = Mathf.Lerp(stretchTarget, 1f, EaseOutCubic(phaseProgress));
                 break;
         }
 
@@ -665,12 +707,72 @@ public class MeleeWeapon : Weapon
         return 1f - (inverse * inverse * inverse);
     }
 
+    private static float EaseOutQuad(float t)
+    {
+        t = Mathf.Clamp01(t);
+        return 1f - ((1f - t) * (1f - t));
+    }
+
     private static float EaseInOutCubic(float t)
     {
         t = Mathf.Clamp01(t);
         return t < 0.5f
             ? 4f * t * t * t
             : 1f - Mathf.Pow(-2f * t + 2f, 3f) * 0.5f;
+    }
+
+    private static float EaseOutQuint(float t)
+    {
+        t = Mathf.Clamp01(t);
+        return 1f - Mathf.Pow(1f - t, 5f);
+    }
+
+    private void UpdateProceduralWeaponPulse()
+    {
+        if (proceduralPhase == ProceduralAttackPhase.None || weaponDefinition == null)
+        {
+            ResetProceduralWeaponPulse();
+            return;
+        }
+
+        float pulseBlend = Mathf.Clamp01(weaponDefinition.MeleeVisualPulseBlend);
+        float pulseAmount = Mathf.Max(0f, weaponDefinition.MeleeVisualPulseScaleAmount);
+        if (proceduralPhase != ProceduralAttackPhase.Active || pulseBlend <= 0f || pulseAmount <= 0f)
+        {
+            ApplyProceduralWeaponPulse(1f);
+            return;
+        }
+
+        float pulse = 1f + (Mathf.Sin(GetCurrentPhaseProgress() * Mathf.PI) * pulseAmount * pulseBlend);
+        ApplyProceduralWeaponPulse(pulse);
+    }
+
+    private void ApplyProceduralWeaponPulse(float pulseMultiplier)
+    {
+        SpriteRenderer renderer = DisplayedSpriteRenderer != null ? DisplayedSpriteRenderer : GetComponent<SpriteRenderer>();
+        if (renderer == null)
+        {
+            ResetProceduralWeaponPulse();
+            return;
+        }
+
+        if (pulsedWeaponRenderer != renderer)
+        {
+            ResetProceduralWeaponPulse();
+            pulsedWeaponRenderer = renderer;
+            pulsedWeaponRendererBaseScale = renderer.transform.localScale;
+        }
+
+        renderer.transform.localScale = pulsedWeaponRendererBaseScale * pulseMultiplier;
+    }
+
+    private void ResetProceduralWeaponPulse()
+    {
+        if (pulsedWeaponRenderer != null)
+        {
+            pulsedWeaponRenderer.transform.localScale = pulsedWeaponRendererBaseScale;
+            pulsedWeaponRenderer = null;
+        }
     }
 
     private void SyncSlashSortingWithWeapon()
