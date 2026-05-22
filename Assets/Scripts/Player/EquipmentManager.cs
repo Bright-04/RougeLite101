@@ -36,6 +36,8 @@ public class EquipmentManager : MonoBehaviour
 
     private WeaponDefinitionSO pendingPickupDefinition;
     private WeaponPickup pendingPickupSource;
+    private bool testingWeaponOverrideActive;
+    private UnityEngine.Object testingWeaponOverrideOwner;
 
     private PlayerControls playerControls;
     private InputAction attackAction;
@@ -48,6 +50,7 @@ public class EquipmentManager : MonoBehaviour
 
     public event Action<WeaponSlot, WeaponDefinitionSO> OnWeaponChanged;
     public event Action<WeaponSlot> OnActiveSlotChanged;
+    public bool TestingWeaponOverrideActive => testingWeaponOverrideActive;
 
     private Transform WeaponMount => aimPivot != null ? aimPivot : weaponHolder;
 
@@ -151,6 +154,11 @@ public class EquipmentManager : MonoBehaviour
             return false;
         }
 
+        if (testingWeaponOverrideActive)
+        {
+            return false;
+        }
+
         if (mainWeaponDef == null)
         {
             EquipIntoSlot(WeaponSlot.Main, newWeaponDef);
@@ -178,7 +186,51 @@ public class EquipmentManager : MonoBehaviour
 
     public void ReplaceWeapon(WeaponSlot targetSlot, WeaponDefinitionSO newWeaponDef)
     {
+        ReplaceWeaponInternal(targetSlot, newWeaponDef, bypassTestingOverride: false);
+    }
+
+    public void ReplaceWeaponAndActivate(WeaponSlot targetSlot, WeaponDefinitionSO newWeaponDef)
+    {
+        ReplaceWeaponAndActivateInternal(targetSlot, newWeaponDef, bypassTestingOverride: false);
+    }
+
+    public void ReplaceWeaponAndActivateForTesting(WeaponSlot targetSlot, WeaponDefinitionSO newWeaponDef, UnityEngine.Object overrideOwner)
+    {
+        SetTestingWeaponOverride(true, overrideOwner);
+        ReplaceWeaponAndActivateInternal(targetSlot, newWeaponDef, bypassTestingOverride: true);
+    }
+
+    public void SetTestingWeaponOverride(bool enabled, UnityEngine.Object overrideOwner = null)
+    {
+        if (enabled)
+        {
+            testingWeaponOverrideActive = true;
+            testingWeaponOverrideOwner = overrideOwner;
+            return;
+        }
+
+        if (overrideOwner != null && testingWeaponOverrideOwner != null && overrideOwner != testingWeaponOverrideOwner)
+        {
+            return;
+        }
+
+        testingWeaponOverrideActive = false;
+        testingWeaponOverrideOwner = null;
+    }
+
+    public void ClearTestingWeaponOverride(UnityEngine.Object overrideOwner = null)
+    {
+        SetTestingWeaponOverride(false, overrideOwner);
+    }
+
+    private void ReplaceWeaponInternal(WeaponSlot targetSlot, WeaponDefinitionSO newWeaponDef, bool bypassTestingOverride)
+    {
         if (newWeaponDef == null)
+        {
+            return;
+        }
+
+        if (testingWeaponOverrideActive && !bypassTestingOverride)
         {
             return;
         }
@@ -198,9 +250,9 @@ public class EquipmentManager : MonoBehaviour
         }
     }
 
-    public void ReplaceWeaponAndActivate(WeaponSlot targetSlot, WeaponDefinitionSO newWeaponDef)
+    private void ReplaceWeaponAndActivateInternal(WeaponSlot targetSlot, WeaponDefinitionSO newWeaponDef, bool bypassTestingOverride)
     {
-        ReplaceWeapon(targetSlot, newWeaponDef);
+        ReplaceWeaponInternal(targetSlot, newWeaponDef, bypassTestingOverride);
 
         if (GetWeaponInstance(targetSlot) != null)
         {
@@ -281,6 +333,13 @@ public class EquipmentManager : MonoBehaviour
 
         if (selectedSlot.HasValue)
         {
+            if (testingWeaponOverrideActive)
+            {
+                pendingPickupDefinition = null;
+                pendingPickupSource = null;
+                return;
+            }
+
             ReplaceWeapon(selectedSlot.Value, pendingPickupDefinition);
             pendingPickupSource?.ConsumeAfterSuccessfulPickup();
         }

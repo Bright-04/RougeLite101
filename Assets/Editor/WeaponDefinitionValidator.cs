@@ -21,6 +21,45 @@ public static class WeaponDefinitionValidator
         LogAndDisplaySummary(summary, "Selected Weapon Validation");
     }
 
+    [MenuItem("Tools/Weapons/Clear Legacy Offsets On Selected UsePresetRig Weapons")]
+    public static void ClearLegacyOffsetsOnSelectedUsePresetRigWeapons()
+    {
+        WeaponDefinitionSO[] definitions = Selection.GetFiltered<WeaponDefinitionSO>(SelectionMode.Assets);
+        int changedCount = 0;
+
+        for (int i = 0; i < definitions.Length; i++)
+        {
+            WeaponDefinitionSO definition = definitions[i];
+            if (definition == null || definition.RigPointSource != WeaponRigPointSourceMode.UsePresetRig)
+            {
+                continue;
+            }
+
+            SerializedObject serializedObject = new SerializedObject(definition);
+            bool changed = false;
+            changed |= SetVector3IfNeeded(serializedObject.FindProperty("aimPointOffset"), Vector3.zero);
+            changed |= SetVector3IfNeeded(serializedObject.FindProperty("localPositionOffset"), Vector3.zero);
+            changed |= SetVector3IfNeeded(serializedObject.FindProperty("localRotationOffset"), Vector3.zero);
+            changed |= SetVector3IfNeeded(serializedObject.FindProperty("projectileSpawnPointOffset"), Vector3.zero);
+
+            if (!changed)
+            {
+                continue;
+            }
+
+            serializedObject.ApplyModifiedProperties();
+            EditorUtility.SetDirty(definition);
+            changedCount++;
+        }
+
+        if (changedCount > 0)
+        {
+            AssetDatabase.SaveAssets();
+        }
+
+        Debug.Log($"Clear Legacy Offsets: updated {changedCount} selected UsePresetRig weapon definition(s).");
+    }
+
     public static ValidationSummary BuildSummary(IEnumerable<WeaponDefinitionSO> definitions)
     {
         ValidationSummary summary = new ValidationSummary();
@@ -276,5 +315,21 @@ public static class WeaponDefinitionValidator
         public readonly List<string> Errors = new List<string>();
         public readonly List<string> Warnings = new List<string>();
         public readonly List<string> Infos = new List<string>();
+    }
+
+    private static bool SetVector3IfNeeded(SerializedProperty property, Vector3 targetValue)
+    {
+        if (property == null || property.propertyType != SerializedPropertyType.Vector3)
+        {
+            return false;
+        }
+
+        if ((property.vector3Value - targetValue).sqrMagnitude < 0.000001f)
+        {
+            return false;
+        }
+
+        property.vector3Value = targetValue;
+        return true;
     }
 }

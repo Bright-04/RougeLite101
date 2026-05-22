@@ -103,8 +103,6 @@ public class WeaponController : MonoBehaviour
             currentDisplayedWeaponRenderer = ResolveDisplayedWeaponRenderer();
         }
 
-        WarnOnLegacyFieldsInPresetMode(definition, currentRigResolution);
-        WarnIfVisualScaleCalibrationIsStale(definition, currentRigResolution);
         LogRigSource(definition, currentWeaponRig, currentRigResolution);
 
         logScaleDebugOnWeaponChange = true;

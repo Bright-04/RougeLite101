@@ -9,6 +9,7 @@ public class WeaponTester : MonoBehaviour
     [SerializeField] private EquipmentManager equipmentManager;
     [SerializeField] private float autoCycleInterval = 3f;
     [SerializeField] private GameObject testDummyPrefab;
+    [SerializeField] private bool lockWeaponSelectionWhileTesting = true;
     [Header("Input Actions (optional)")]
     [SerializeField] private InputActionReference nextActionRef;
     [SerializeField] private InputActionReference prevActionRef;
@@ -96,6 +97,11 @@ public class WeaponTester : MonoBehaviour
         UnregisterAction(toggleAutoActionRef, toggleAutoActionHandler);
         UnregisterAction(useActionRef, useActionHandler);
         UnregisterAction(spawnDummyActionRef, spawnDummyActionHandler);
+
+        if (equipmentManager != null)
+        {
+            equipmentManager.ClearTestingWeaponOverride(this);
+        }
     }
 
     private void RegisterAction(InputActionReference reference, System.Action<InputAction.CallbackContext> callback)
@@ -170,7 +176,16 @@ public class WeaponTester : MonoBehaviour
         if (weapons.Count == 0 || equipmentManager == null) return;
         var def = weapons[index];
         if (def == null) return;
-        equipmentManager.ReplaceWeaponAndActivate(EquipmentManager.WeaponSlot.Main, def);
+        if (lockWeaponSelectionWhileTesting)
+        {
+            equipmentManager.ReplaceWeaponAndActivateForTesting(EquipmentManager.WeaponSlot.Main, def, this);
+        }
+        else
+        {
+            equipmentManager.ClearTestingWeaponOverride(this);
+            equipmentManager.ReplaceWeaponAndActivate(EquipmentManager.WeaponSlot.Main, def);
+        }
+
         Debug.Log($"WeaponTester: Equipped [{index}] {def.name} (id={def.WeaponId})");
     }
 
