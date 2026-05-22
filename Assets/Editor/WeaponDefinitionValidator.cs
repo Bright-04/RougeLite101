@@ -69,6 +69,8 @@ public static class WeaponDefinitionValidator
         WeaponArchetype archetype = definition.ResolvedArchetype;
         bool needsProjectile = definition.WeaponType == WeaponType.Projectile;
         bool needsMeleeRig = definition.WeaponType == WeaponType.Melee;
+        bool usesPresetRig = definition.RigPointSource == WeaponRigPointSourceMode.UsePresetRig;
+        bool projectileAttackType = definition.IsProjectileAttack;
         bool hasExplicitArchetype = definition.Archetype != WeaponArchetype.Generic;
         bool archetypeWasInferred = definition.Archetype == WeaponArchetype.Generic && archetype != WeaponArchetype.Generic;
 
@@ -83,11 +85,33 @@ public static class WeaponDefinitionValidator
 
         if (definition.AlignmentPreset == null)
         {
-            warnings.Add($"{label}: Missing alignment preset. Rig or legacy offsets must carry alignment.");
+            warnings.Add(usesPresetRig
+                ? $"{label}: Missing alignment preset. Normal UsePresetRig runtime needs preset points."
+                : $"{label}: Missing alignment preset. Rig or legacy offsets must carry alignment.");
         }
         else if (definition.AlignmentPreset.Archetype != WeaponArchetype.Generic && definition.AlignmentPreset.Archetype != archetype)
         {
             warnings.Add($"{label}: Alignment preset archetype '{definition.AlignmentPreset.Archetype}' does not match resolved archetype '{archetype}'.");
+        }
+
+        if (usesPresetRig && definition.AttackType == WeaponAttackType.None)
+        {
+            warnings.Add($"{label}: UsePresetRig weapon is missing attackType. Normal workflow should explicitly use Slash, Thrust, Projectile, or MagicProjectile.");
+        }
+
+        if (usesPresetRig && definition.UsesLegacyAimPointOffset)
+        {
+            warnings.Add($"{label}: UsePresetRig weapon has non-zero aimPointOffset, but normal runtime ignores it.");
+        }
+
+        if (usesPresetRig && definition.UsesLegacyLocalPositionOffset)
+        {
+            warnings.Add($"{label}: UsePresetRig weapon has non-zero localPositionOffset, but normal runtime ignores it.");
+        }
+
+        if (usesPresetRig && definition.UsesLegacyProjectileSpawnOffset)
+        {
+            warnings.Add($"{label}: UsePresetRig weapon has non-zero ProjectileSpawnPointOffset, but normal runtime ignores it and uses preset P.");
         }
 
         if (definition.WeaponPrefab == null)
@@ -104,11 +128,14 @@ public static class WeaponDefinitionValidator
 
         if (rig == null)
         {
-            warnings.Add($"{label}: Missing WeaponRig on prefab '{definition.WeaponPrefab.name}'. Runtime will fall back to preset/legacy offsets.");
+            if (!usesPresetRig)
+            {
+                warnings.Add($"{label}: Missing WeaponRig on prefab '{definition.WeaponPrefab.name}'. Runtime will fall back to preset/legacy offsets.");
+            }
         }
         else
         {
-            if (!rig.HasRequiredPointsFor(definition))
+            if (!usesPresetRig && !rig.HasRequiredPointsFor(definition))
             {
                 warnings.Add($"{label}: WeaponRig on prefab '{definition.WeaponPrefab.name}' is missing required points for archetype '{archetype}'.");
             }
@@ -120,6 +147,11 @@ public static class WeaponDefinitionValidator
         if (needsProjectile && definition.UsesLegacyProjectileSpawnOffset)
         {
             warnings.Add($"{label}: Uses legacy ProjectileSpawnPointOffset fallback. Prefer WeaponRig.ProjectileSpawnPoint.");
+        }
+
+        if (usesPresetRig && projectileAttackType && !hasPresetPointSupport)
+        {
+            warnings.Add($"{label}: UsePresetRig projectile weapon is missing preset point support for ProjectileSpawnPoint and will not use prefab shoot points.");
         }
 
         if (needsProjectile && !hasProjectileSupport && !hasPresetPointSupport && !definition.UsesLegacyProjectileSpawnOffset)
@@ -151,6 +183,12 @@ public static class WeaponDefinitionValidator
             if (projectileWeapon == null)
             {
                 warnings.Add($"{label}: Projectile definition is assigned to prefab '{definition.WeaponPrefab.name}' without ProjectileWeapon component.");
+            }
+            else if (usesPresetRig
+                && projectileAttackType
+                && (PrefabHasObjectReference(projectileWeapon, "shootPoint") || PrefabHasObjectReference(projectileWeapon, "defaultShootPoint")))
+            {
+                warnings.Add($"{label}: UsePresetRig projectile weapon has prefab shoot point references, but normal runtime ignores them and uses preset P.");
             }
         }
 

@@ -7,6 +7,15 @@ public enum WeaponType
     Projectile
 }
 
+public enum WeaponAttackType
+{
+    None,
+    Slash,
+    Thrust,
+    Projectile,
+    MagicProjectile
+}
+
 public enum WeaponHandlingMode
 {
     SlashArc,
@@ -38,19 +47,34 @@ public enum WeaponVisualScaleSpace
 [CreateAssetMenu(fileName = "NewWeapon", menuName = "Weapons/Weapon Definition")]
 public class WeaponDefinitionSO : EquipmentDefinitionSO
 {
-    [Header("Alignment")]
+    [Header("Normal Workflow")]
     [SerializeField] private WeaponArchetype archetype = WeaponArchetype.Generic;
     [SerializeField] private WeaponAlignmentPreset alignmentPreset;
-    [SerializeField] private WeaponRigPointSourceMode rigPointSource = WeaponRigPointSourceMode.UsePresetRig;
-    [SerializeField] private WeaponHandlingMode handlingMode = WeaponHandlingMode.SlashArc;
+    [SerializeField] private WeaponAttackType attackType = WeaponAttackType.None;
     [FormerlySerializedAs("localPositionOffset")]
     [SerializeField] private Vector3 gripPointOffset = Vector3.zero;
-    [SerializeField] private Vector3 aimPointOffset = new Vector3(0.45f, 0f, 0f);
-    [SerializeField] private Vector3 localRotationOffset = Vector3.zero;
     [FormerlySerializedAs("visualScale")]
     [SerializeField] private float visualScale = 1f;
+    [SerializeField] private float rotationOffsetDegrees = 0f;
+
+    [Header("Normal Combat")]
+    [SerializeField] private int damage = 1;
+    [SerializeField] private float cooldown = 0.5f;
+    [SerializeField] private float knockback = 0f;
+    [SerializeField] private float anticipationDuration = 0.05f;
+    [SerializeField] private float activeDuration = 0.08f;
+    [SerializeField] private float recoveryDuration = 0.12f;
+    [SerializeField] private float slashArcDegrees = 90f;
+    [SerializeField] private float slashRange = 1f;
+    [SerializeField] private float thrustDistance = 1f;
+    [SerializeField] private float thrustWidth = 0.35f;
+
+    [Header("Advanced / Legacy Alignment")]
+    [SerializeField] private WeaponRigPointSourceMode rigPointSource = WeaponRigPointSourceMode.UsePresetRig;
+    [SerializeField] private WeaponHandlingMode handlingMode = WeaponHandlingMode.SlashArc;
+    [SerializeField] private Vector3 aimPointOffset = new Vector3(0.45f, 0f, 0f);
+    [SerializeField] private Vector3 localRotationOffset = Vector3.zero;
     [SerializeField] private WeaponVisualScaleSpace visualScaleSpace = WeaponVisualScaleSpace.LegacyPrefabCalibrated;
-    [Header("Legacy Alignment Fallbacks")]
     [FormerlySerializedAs("visualPositionOffset")]
     [SerializeField] private Vector3 localPositionOffset = Vector3.zero;
     [SerializeField] private WeaponFlipBehavior flipBehavior = WeaponFlipBehavior.None;
@@ -60,10 +84,9 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
     [Header("Runtime")]
     [SerializeField] private GameObject weaponPrefab;
 
-    [Header("Combat")]
+    [Header("Compatibility Combat")]
     [SerializeField] private WeaponType weaponType;
     [SerializeField] private int baseDamage = 1;
-    [SerializeField] private float cooldown = 0.5f;
     [SerializeField] private float range = 1f;
 
     [Header("Melee")]
@@ -81,6 +104,8 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
     public WeaponArchetype Archetype => archetype;
     public WeaponArchetype ResolvedArchetype => WeaponArchetypeUtility.Resolve(this);
     public WeaponAlignmentPreset AlignmentPreset => alignmentPreset;
+    public WeaponAttackType AttackType => attackType;
+    public float RotationOffsetDegrees => rotationOffsetDegrees;
     public WeaponRigPointSourceMode RigPointSource => rigPointSource;
     public WeaponHandlingMode HandlingMode => handlingMode;
     public Vector3 GripPointOffset => gripPointOffset;
@@ -94,14 +119,26 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
     public float AimPointDistance => aimPointOffset.magnitude;
     public WeaponFlipBehavior FlipBehavior => flipBehavior;
     public Vector3 ProjectileSpawnPointOffset => projectileSpawnPointOffset;
+    public bool UsesNormalPresetRuntime => rigPointSource == WeaponRigPointSourceMode.UsePresetRig;
+    public bool IsProjectileAttack => attackType == WeaponAttackType.Projectile || attackType == WeaponAttackType.MagicProjectile;
+    public bool IsMeleeAttack => attackType == WeaponAttackType.Slash || attackType == WeaponAttackType.Thrust;
     public bool UsesLegacyProjectileSpawnOffset => projectileSpawnPointOffset.sqrMagnitude > 0.000001f;
     public bool UsesLegacyAimPointOffset => aimPointOffset.sqrMagnitude > 0.000001f;
     public bool UsesLegacyLocalPositionOffset => localPositionOffset.sqrMagnitude > 0.000001f;
     public Vector3 SlashVfxOffset => slashVfxOffset;
     public GameObject WeaponPrefab => weaponPrefab;
     public WeaponType WeaponType => weaponType;
+    public int Damage => damage > 0 ? damage : baseDamage;
     public int BaseDamage => baseDamage;
     public float Cooldown => cooldown;
+    public float Knockback => knockback;
+    public float AnticipationDuration => anticipationDuration;
+    public float ActiveDuration => activeDuration;
+    public float RecoveryDuration => recoveryDuration;
+    public float SlashArcDegrees => slashArcDegrees;
+    public float SlashRange => slashRange;
+    public float ThrustDistance => thrustDistance;
+    public float ThrustWidth => thrustWidth;
     public float Range => range;
     public float HitboxDistance => hitboxDistance;
     public Vector3 HitboxScale => hitboxScale;

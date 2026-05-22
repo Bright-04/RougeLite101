@@ -104,11 +104,10 @@ public static class WeaponAlignmentUtility
         float aimAngle = Mathf.Atan2(safeAim.y, safeAim.x) * Mathf.Rad2Deg;
         Vector3 anchor = new Vector3(weaponAnchorPosition.x, weaponAnchorPosition.y, 0f);
 
-        Vector3 localRotationOffset = weapon != null ? weapon.LocalRotationOffset : Vector3.zero;
-        Quaternion weaponRotation = Quaternion.Euler(0f, 0f, aimAngle + localRotationOffset.z);
-        Vector3 localVisualScale = CalculateVisualScale(safeAim, weapon);
-        Vector3 visualScale = CalculateRuntimeVisualLossyScale(localVisualScale, rig);
         WeaponRigRuntimeResolution resolution = ResolveRuntimeRig(weapon, rig);
+        Quaternion weaponRotation = Quaternion.Euler(0f, 0f, aimAngle + GetRotationOffsetDegrees(weapon, resolution.ResolvedMode));
+        Vector3 localVisualScale = CalculateVisualScale(safeAim, weapon, resolution.ResolvedMode);
+        Vector3 visualScale = CalculateRuntimeVisualLossyScale(localVisualScale, rig);
 
         // Weapon-local alignment points are transformed the way the rendered sprite is: local point, visual scale, then rotation.
         Vector3 scaledGripOffset = ScaleWeaponLocalPoint(resolution.GripPoint, visualScale);
@@ -196,8 +195,16 @@ public static class WeaponAlignmentUtility
 
     public static Vector3 CalculateVisualScale(Vector2 aimDirection, WeaponDefinitionSO weapon)
     {
+        WeaponRigPointSourceMode resolvedMode = weapon != null
+            ? ResolveRuntimeRig(weapon, null).ResolvedMode
+            : WeaponRigPointSourceMode.LegacyFallback;
+        return CalculateVisualScale(aimDirection, weapon, resolvedMode);
+    }
+
+    public static Vector3 CalculateVisualScale(Vector2 aimDirection, WeaponDefinitionSO weapon, WeaponRigPointSourceMode resolvedMode)
+    {
         float scale = weapon != null && weapon.VisualScale > 0f ? weapon.VisualScale : 1f;
-        if (weapon != null && weapon.RigPointSource == WeaponRigPointSourceMode.UsePresetRig)
+        if (weapon != null && resolvedMode == WeaponRigPointSourceMode.UsePresetRig)
         {
             scale *= weapon.GetUsePresetRigRuntimeScaleCompensation();
         }
@@ -234,6 +241,21 @@ public static class WeaponAlignmentUtility
         }
 
         return visualScale;
+    }
+
+    private static float GetRotationOffsetDegrees(WeaponDefinitionSO weapon, WeaponRigPointSourceMode resolvedMode)
+    {
+        if (weapon == null)
+        {
+            return 0f;
+        }
+
+        if (resolvedMode == WeaponRigPointSourceMode.UsePresetRig)
+        {
+            return weapon.RotationOffsetDegrees;
+        }
+
+        return weapon.LocalRotationOffset.z;
     }
 
     private static Vector3 CalculateRuntimeVisualLossyScale(Vector3 localVisualScale, WeaponRig rig)

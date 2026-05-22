@@ -47,7 +47,7 @@ public class ProjectileWeapon : Weapon
         }
 
         projectileSpeed = definition.ProjectileSpeed;
-        projectileDamage = definition.BaseDamage;
+        projectileDamage = definition.Damage;
         projectileRange = definition.Range;
         projectileCount = Mathf.Max(1, definition.ProjectileCount);
         spreadAngle = definition.SpreadAngle;
@@ -189,6 +189,29 @@ public class ProjectileWeapon : Weapon
     {
         if (weaponDefinition != null)
         {
+            WeaponRig rig = GetComponentInChildren<WeaponRig>(true);
+            WeaponRigRuntimeResolution resolution = WeaponAlignmentUtility.ResolveRuntimeRig(weaponDefinition, rig);
+
+            if (resolution.ResolvedMode == WeaponRigPointSourceMode.UsePresetRig)
+            {
+                if (weaponController == null)
+                {
+                    weaponController = GetComponentInParent<WeaponController>();
+                }
+
+                if (weaponController != null)
+                {
+                    return weaponController.GetProjectileSpawnPoint(weaponDefinition, aimDirection);
+                }
+
+                return WeaponAlignmentUtility.CalculateWeaponPose(transform.position, aimDirection, weaponDefinition, rig).ProjectileSpawnPoint;
+            }
+
+            if (shootPoint != null)
+            {
+                return new Vector3(shootPoint.position.x, shootPoint.position.y, 0f);
+            }
+
             if (weaponController == null)
             {
                 weaponController = GetComponentInParent<WeaponController>();
@@ -199,7 +222,6 @@ public class ProjectileWeapon : Weapon
                 return weaponController.GetProjectileSpawnPoint(weaponDefinition, aimDirection);
             }
 
-            WeaponRig rig = GetComponentInChildren<WeaponRig>(true);
             return WeaponAlignmentUtility.CalculateWeaponPose(transform.position, aimDirection, weaponDefinition, rig).ProjectileSpawnPoint;
         }
 

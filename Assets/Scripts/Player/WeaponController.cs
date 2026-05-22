@@ -331,17 +331,22 @@ public class WeaponController : MonoBehaviour
 
         if (definition.UsesLegacyAimPointOffset)
         {
-            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero aimPointOffset while UsePresetRig is active. Runtime visual placement ignores it.", this);
+            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero aimPointOffset while UsePresetRig is active. Normal runtime ignores this legacy offset.", this);
         }
 
         if (definition.UsesLegacyLocalPositionOffset)
         {
-            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero localPositionOffset while UsePresetRig is active. Runtime visual placement ignores it.", this);
+            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero localPositionOffset while UsePresetRig is active. Normal runtime ignores this legacy offset.", this);
         }
 
         if (definition.UsesLegacyProjectileSpawnOffset)
         {
-            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero ProjectileSpawnPointOffset while UsePresetRig is active. Runtime projectile spawn uses preset ProjectileSpawnPoint.", this);
+            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero ProjectileSpawnPointOffset while UsePresetRig is active. Normal runtime ignores it and uses preset ProjectileSpawnPoint.", this);
+        }
+
+        if (definition.LocalRotationOffset.sqrMagnitude > 0.000001f)
+        {
+            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero localRotationOffset while UsePresetRig is active. Normal runtime rotates only by aim plus rotationOffsetDegrees.", this);
         }
     }
 

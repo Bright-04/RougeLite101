@@ -154,7 +154,7 @@ public class MeleeWeapon : Weapon
         DamageSource damageSource = weaponCollider.GetComponent<DamageSource>();
         if (damageSource != null)
         {
-            damageSource.SetBaseDamage(definition.BaseDamage);
+            damageSource.SetBaseDamage(definition.Damage);
         }
     }
 

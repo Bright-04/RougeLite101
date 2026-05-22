@@ -29,11 +29,22 @@ MonoBehaviour:
   - 
   archetype: 1
   alignmentPreset: {fileID: 11400000, guid: 11111111111111111111111111111111, type: 2}
+  attackType: 1
+  rotationOffsetDegrees: 0
+  damage: 3
   handlingMode: 0
   gripPointOffset: {x: 0, y: 0, z: 0}
   aimPointOffset: {x: 0.28, y: 0, z: 0}
   localRotationOffset: {x: 0, y: 0, z: 0}
   visualScale: 5
+  knockback: 6
+  anticipationDuration: 0.05
+  activeDuration: 0.08
+  recoveryDuration: 0.12
+  slashArcDegrees: 95
+  slashRange: 1
+  thrustDistance: 1
+  thrustWidth: 0.35
   localPositionOffset: {x: 0.1, y: 0.1, z: 0}
   flipBehavior: 0
   projectileSpawnPointOffset: {x: 0, y: 0, z: 0}
