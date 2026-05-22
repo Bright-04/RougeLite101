@@ -1,8 +1,11 @@
 using UnityEngine;
+using System.Text;
 
 [DisallowMultipleComponent]
 public class WeaponController : MonoBehaviour
 {
+    private const float PresetGripValidationTolerance = 0.02f;
+
     [SerializeField] private Transform weaponRoot;
     [SerializeField] private Transform weaponAnchor;
     [SerializeField] private bool showDebugGizmos = true;
@@ -16,8 +19,15 @@ public class WeaponController : MonoBehaviour
     private Transform currentWeaponVisual;
     private WeaponRig currentWeaponRig;
     private WeaponAlignmentPose currentPose;
+    private WeaponRigRuntimeResolution currentRigResolution;
+    private SpriteRenderer currentDisplayedWeaponRenderer;
+    private Vector3 currentActualRenderedGripPoint;
+    private float currentActualRenderedGripDistance;
     private Vector2 currentAimDirection = Vector2.right;
     private string lastSharedBoundsDebugLine;
+    private string currentRigSourceSummary = "None";
+    private string currentProjectileSourceSummary = "None";
+    private string lastPresetGripValidationFailure;
     private bool loggedEquipVisibility;
     private bool loggedFirstPoseVisibility;
 
@@ -25,6 +35,12 @@ public class WeaponController : MonoBehaviour
     public WeaponRig CurrentWeaponRig => currentWeaponRig;
     public Transform WeaponRoot => weaponRoot;
     public Transform WeaponAnchor => weaponAnchor;
+    public Transform CurrentWeaponVisualTransform => currentWeaponVisual;
+    public WeaponRigRuntimeResolution CurrentRigResolution => currentRigResolution;
+    public string CurrentProjectileSource => currentProjectileSourceSummary;
+    public SpriteRenderer CurrentDisplayedWeaponRenderer => currentDisplayedWeaponRenderer;
+    public Vector3 CurrentActualRenderedGripPoint => currentActualRenderedGripPoint;
+    public float CurrentActualRenderedGripDistance => currentActualRenderedGripDistance;
 
     private void Awake()
     {
@@ -52,26 +68,40 @@ public class WeaponController : MonoBehaviour
         currentWeapon = weapon;
         currentDefinition = definition;
         currentWeaponVisual = weapon != null ? weapon.transform.parent : null;
-        currentWeaponRig = weapon != null ? weapon.GetComponentInChildren<WeaponRig>(true) : null;
+        currentWeaponRig = EnsureRuntimeRig(weapon, definition);
+        currentRigResolution = default;
+        currentRigSourceSummary = "None";
+        currentProjectileSourceSummary = "None";
+        currentDisplayedWeaponRenderer = null;
+        currentActualRenderedGripPoint = Vector3.zero;
+        currentActualRenderedGripDistance = 0f;
+        lastPresetGripValidationFailure = null;
         loggedEquipVisibility = false;
         loggedFirstPoseVisibility = false;
         if (currentWeaponRig != null)
         {
+            currentWeaponRig.ApplyDefinitionRig(definition, out currentRigSourceSummary);
             currentWeaponRig.ValidateRequiredPoints(definition);
-            if (definition != null && definition.UsesLegacyProjectileSpawnOffset && currentWeaponRig.ProjectileSpawnPoint == null)
-            {
-                Debug.LogWarning($"WeaponController: '{definition.name}' is using legacy ProjectileSpawnPointOffset because its active rig has no ProjectileSpawnPoint.", this);
-            }
-            else if (definition != null && definition.UsesLegacyProjectileSpawnOffset)
-            {
-                Debug.LogWarning($"WeaponController: '{definition.name}' still serializes ProjectileSpawnPointOffset, but runtime is expected to use WeaponRig.ProjectileSpawnPoint.", this);
-            }
         }
         else if (definition != null)
         {
-            string presetLabel = definition.AlignmentPreset != null ? $" preset '{definition.AlignmentPreset.name}'" : " legacy WeaponDefinition offsets";
-            Debug.LogWarning($"WeaponController: '{definition.name}' has no WeaponRig and is using{presetLabel}.", this);
+            currentRigSourceSummary = definition.AlignmentPreset != null
+                ? $"No runtime WeaponRig component; resolving '{definition.AlignmentPreset.name}' from definition data"
+                : "No runtime WeaponRig component available";
         }
+
+        currentRigResolution = WeaponAlignmentUtility.ResolveRuntimeRig(definition, currentWeaponRig);
+        currentRigSourceSummary = currentRigResolution.RigSourceSummary;
+        currentProjectileSourceSummary = currentRigResolution.ProjectileSource;
+        if (currentWeapon != null)
+        {
+            currentWeapon.ConfigureRigMode(currentRigResolution.ResolvedMode, definition);
+            currentDisplayedWeaponRenderer = ResolveDisplayedWeaponRenderer();
+        }
+
+        WarnOnLegacyFieldsInPresetMode(definition, currentRigResolution);
+        WarnIfVisualScaleCalibrationIsStale(definition, currentRigResolution);
+        LogRigSource(definition, currentWeaponRig, currentRigResolution);
 
         logScaleDebugOnWeaponChange = true;
         if (currentWeaponVisual != null)
@@ -95,6 +125,13 @@ public class WeaponController : MonoBehaviour
         currentDefinition = null;
         currentWeaponVisual = null;
         currentWeaponRig = null;
+        currentRigResolution = default;
+        currentRigSourceSummary = "None";
+        currentProjectileSourceSummary = "None";
+        currentDisplayedWeaponRenderer = null;
+        currentActualRenderedGripPoint = Vector3.zero;
+        currentActualRenderedGripDistance = 0f;
+        lastPresetGripValidationFailure = null;
         loggedEquipVisibility = false;
         loggedFirstPoseVisibility = false;
     }
@@ -175,6 +212,11 @@ public class WeaponController : MonoBehaviour
     private void ApplyPoseToCurrentWeaponVisual(WeaponAlignmentPose pose)
     {
         WeaponAlignmentUtility.ApplyPoseToVisualTransform(currentWeaponVisual, pose);
+        currentRigResolution = WeaponAlignmentUtility.ResolveRuntimeRig(currentDefinition, currentWeaponRig);
+        currentRigSourceSummary = pose.RigSourceSummary;
+        currentProjectileSourceSummary = pose.ProjectileSource;
+        currentDisplayedWeaponRenderer = ResolveDisplayedWeaponRenderer();
+        ValidatePresetGripAlignment(pose);
     }
 
     private Vector2 GetAimDirection()
@@ -228,6 +270,261 @@ public class WeaponController : MonoBehaviour
         target.localPosition = Vector3.zero;
         target.localRotation = Quaternion.identity;
         target.localScale = Vector3.one;
+    }
+
+    private static WeaponRig EnsureRuntimeRig(Weapon weapon, WeaponDefinitionSO definition)
+    {
+        if (weapon == null)
+        {
+            return null;
+        }
+
+        WeaponRig rig = weapon.GetComponentInChildren<WeaponRig>(true);
+        if (rig != null)
+        {
+            return rig;
+        }
+
+        if (definition == null || definition.RigPointSource != WeaponRigPointSourceMode.UsePresetRig)
+        {
+            return null;
+        }
+
+        return weapon.gameObject.AddComponent<WeaponRig>();
+    }
+
+    private void LogRigSource(WeaponDefinitionSO definition, WeaponRig rig, WeaponRigRuntimeResolution resolution)
+    {
+        if (definition == null)
+        {
+            return;
+        }
+
+        Vector3 gripLocal = rig != null ? rig.GripPointLocal : resolution.GripPoint;
+        Vector3 tipLocal = rig != null ? rig.TipPointLocal : resolution.TipPoint;
+        Vector3 projectileLocal = rig != null ? rig.ProjectileSpawnPointLocal : resolution.ProjectileSpawnPoint;
+        Vector3 slashOriginLocal = rig != null ? rig.SlashOriginLocal : resolution.SlashOrigin;
+        Vector3 slashArcStartLocal = rig != null ? rig.SlashArcStartLocal : resolution.SlashArcStart;
+        Vector3 slashArcEndLocal = rig != null ? rig.SlashArcEndLocal : resolution.SlashArcEnd;
+
+        Debug.Log(
+            $"WeaponController rig source [{definition.name}] " +
+            $"requestedMode={resolution.RequestedMode} " +
+            $"resolvedMode={resolution.ResolvedMode} " +
+            $"source={resolution.RigSourceSummary} " +
+            $"projectileSource={resolution.ProjectileSource} " +
+            $"gripLocal={FormatVector(gripLocal)} " +
+            $"tipLocal={FormatVector(tipLocal)} " +
+            $"projectileLocal={FormatVector(projectileLocal)} " +
+            $"slashOriginLocal={FormatVector(slashOriginLocal)} " +
+            $"slashArcStartLocal={FormatVector(slashArcStartLocal)} " +
+            $"slashArcEndLocal={FormatVector(slashArcEndLocal)}",
+            this);
+    }
+
+    private void WarnOnLegacyFieldsInPresetMode(WeaponDefinitionSO definition, WeaponRigRuntimeResolution resolution)
+    {
+        if (definition == null || resolution.ResolvedMode != WeaponRigPointSourceMode.UsePresetRig)
+        {
+            return;
+        }
+
+        if (definition.UsesLegacyAimPointOffset)
+        {
+            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero aimPointOffset while UsePresetRig is active. Runtime visual placement ignores it.", this);
+        }
+
+        if (definition.UsesLegacyLocalPositionOffset)
+        {
+            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero localPositionOffset while UsePresetRig is active. Runtime visual placement ignores it.", this);
+        }
+
+        if (definition.UsesLegacyProjectileSpawnOffset)
+        {
+            Debug.LogWarning($"WeaponController: '{definition.WeaponId}' has non-zero ProjectileSpawnPointOffset while UsePresetRig is active. Runtime projectile spawn uses preset ProjectileSpawnPoint.", this);
+        }
+    }
+
+    private void WarnIfVisualScaleCalibrationIsStale(WeaponDefinitionSO definition, WeaponRigRuntimeResolution resolution)
+    {
+        if (definition == null || resolution.ResolvedMode != WeaponRigPointSourceMode.UsePresetRig)
+        {
+            return;
+        }
+
+        if (definition.VisualScaleSpace != WeaponVisualScaleSpace.LegacyPrefabCalibrated)
+        {
+            return;
+        }
+
+        float recommended = definition.GetNeutralPresetRigRecommendedVisualScale();
+        if (Mathf.Abs(recommended - definition.VisualScale) < 0.05f)
+        {
+            return;
+        }
+
+        Debug.LogWarning(
+            $"WeaponController: '{definition.WeaponId}' visualScale={definition.VisualScale:0.###} still appears legacy-prefab calibrated. " +
+            $"Recommended neutral preset-rig reset is ~{recommended:0.###}.",
+            this);
+    }
+
+    private void ValidatePresetGripAlignment(WeaponAlignmentPose pose)
+    {
+        if (currentDefinition == null || pose.RigSourceMode != WeaponRigPointSourceMode.UsePresetRig)
+        {
+            lastPresetGripValidationFailure = null;
+            currentActualRenderedGripPoint = Vector3.zero;
+            currentActualRenderedGripDistance = 0f;
+            return;
+        }
+
+        float generatedDistance = Vector3.Distance(pose.WeaponAnchorPosition, pose.GripPoint);
+        currentActualRenderedGripPoint = CalculateActualRenderedGripPointWorld();
+        bool hasActualRenderedGrip = currentDisplayedWeaponRenderer != null;
+        currentActualRenderedGripDistance = hasActualRenderedGrip
+            ? Vector3.Distance(pose.WeaponAnchorPosition, currentActualRenderedGripPoint)
+            : float.PositiveInfinity;
+
+        if (generatedDistance <= PresetGripValidationTolerance
+            && currentActualRenderedGripDistance <= PresetGripValidationTolerance)
+        {
+            lastPresetGripValidationFailure = null;
+            return;
+        }
+
+        WeaponRenderBoundsReport boundsReport = currentDisplayedWeaponRenderer != null
+            ? WeaponRenderBoundsUtility.CalculateRenderedBoundsRatio(currentDisplayedWeaponRenderer, transform, WeaponRenderBoundsMode.BodyRendererOnly)
+            : default;
+
+        string failureLine =
+            $"WeaponController preset grip validation failed " +
+            $"weaponId={currentDefinition.WeaponId} " +
+            $"rigMode={pose.RigSourceMode} " +
+            $"H={FormatVector(pose.WeaponAnchorPosition)} " +
+            $"G={FormatVector(pose.GripPoint)} " +
+            $"generatedDistance={generatedDistance:0.###} " +
+            $"actualGrip={FormatVector(currentActualRenderedGripPoint)} " +
+            $"actualDistance={currentActualRenderedGripDistance:0.###} " +
+            $"rendererBoundsCenter={FormatVector(boundsReport.WeaponBounds.center)} " +
+            $"rendererBoundsSize={FormatVector(boundsReport.WeaponBounds.size)} " +
+            $"heightRatio={(boundsReport.IsValid ? boundsReport.Ratio.y.ToString("0.###") : "n/a")} " +
+            $"projectileSource={pose.ProjectileSource}";
+
+        if (failureLine == lastPresetGripValidationFailure)
+        {
+            return;
+        }
+
+        lastPresetGripValidationFailure = failureLine;
+        Debug.LogWarning(failureLine, this);
+    }
+
+    private Vector3 CalculateActualRenderedGripPointWorld()
+    {
+        SpriteRenderer displayedRenderer = currentDisplayedWeaponRenderer != null
+            ? currentDisplayedWeaponRenderer
+            : ResolveDisplayedWeaponRenderer();
+        if (displayedRenderer == null)
+        {
+            return Vector3.zero;
+        }
+
+        return displayedRenderer.transform.TransformPoint(currentRigResolution.GripPoint);
+    }
+
+    private SpriteRenderer ResolveDisplayedWeaponRenderer()
+    {
+        if (currentWeapon != null)
+        {
+            SpriteRenderer displayedRenderer = currentWeapon.DisplayedSpriteRenderer;
+            if (IsUsableDisplayedRenderer(displayedRenderer))
+            {
+                return displayedRenderer;
+            }
+        }
+
+        if (currentWeaponVisual == null)
+        {
+            return null;
+        }
+
+        SpriteRenderer firstActiveRenderer = null;
+        foreach (SpriteRenderer renderer in currentWeaponVisual.GetComponentsInChildren<SpriteRenderer>(true))
+        {
+            if (!IsUsableDisplayedRenderer(renderer))
+            {
+                continue;
+            }
+
+            if (firstActiveRenderer == null)
+            {
+                firstActiveRenderer = renderer;
+            }
+
+            if (currentDefinition != null
+                && currentDefinition.ItemImage != null
+                && renderer.sprite == currentDefinition.ItemImage)
+            {
+                return renderer;
+            }
+        }
+
+        return firstActiveRenderer;
+    }
+
+    private static bool IsUsableDisplayedRenderer(SpriteRenderer renderer)
+    {
+        return renderer != null
+            && renderer.enabled
+            && renderer.gameObject.activeInHierarchy;
+    }
+
+    public string BuildCurrentWeaponHierarchyReport()
+    {
+        if (currentWeaponVisual == null)
+        {
+            return "No active currentWeaponVisual.";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        builder.AppendLine($"WeaponHierarchyReport weaponId={currentDefinition?.WeaponId ?? "None"} rigMode={currentRigResolution.ResolvedMode}");
+        AppendTransformReport(builder, currentWeaponVisual, 0);
+        builder.AppendLine($"AnchorWorld={FormatVector(weaponAnchor != null ? weaponAnchor.position : Vector3.zero)}");
+        builder.AppendLine($"GeneratedGripWorld={FormatVector(currentPose.GripPoint)}");
+        builder.AppendLine($"ActualRenderedGripWorld={FormatVector(currentActualRenderedGripPoint)}");
+        builder.AppendLine($"GeneratedGripDistance={Vector3.Distance(currentPose.WeaponAnchorPosition, currentPose.GripPoint):0.###}");
+        builder.AppendLine($"ActualGripDistance={currentActualRenderedGripDistance:0.###}");
+        return builder.ToString();
+    }
+
+    private void AppendTransformReport(StringBuilder builder, Transform target, int depth)
+    {
+        string indent = new string(' ', depth * 2);
+        builder.Append(indent)
+            .Append(target.name)
+            .Append(" localPos=").Append(FormatVector(target.localPosition))
+            .Append(" localRot=").Append(FormatVector(target.localEulerAngles))
+            .Append(" localScale=").Append(FormatVector(target.localScale))
+            .Append(" worldPos=").Append(FormatVector(target.position))
+            .Append(" worldScale=").Append(FormatVector(target.lossyScale));
+
+        SpriteRenderer spriteRenderer = target.GetComponent<SpriteRenderer>();
+        if (spriteRenderer != null)
+        {
+            builder.Append(" sprite=").Append(spriteRenderer.sprite != null ? spriteRenderer.sprite.name : "None")
+                .Append(" localBoundsCenter=").Append(FormatVector(spriteRenderer.localBounds.center))
+                .Append(" localBoundsSize=").Append(FormatVector(spriteRenderer.localBounds.size))
+                .Append(" worldBoundsCenter=").Append(FormatVector(spriteRenderer.bounds.center))
+                .Append(" worldBoundsSize=").Append(FormatVector(spriteRenderer.bounds.size))
+                .Append(" enabled=").Append(spriteRenderer.enabled);
+        }
+
+        builder.AppendLine();
+        for (int i = 0; i < target.childCount; i++)
+        {
+            AppendTransformReport(builder, target.GetChild(i), depth + 1);
+        }
     }
 
     private void SetOnlyActiveWeaponVisual(Transform activeVisual)
@@ -285,7 +582,9 @@ public class WeaponController : MonoBehaviour
             return;
         }
 
-        SpriteRenderer weaponRenderer = currentWeapon != null ? currentWeapon.GetComponentInChildren<SpriteRenderer>(true) : null;
+        SpriteRenderer weaponRenderer = currentDisplayedWeaponRenderer != null
+            ? currentDisplayedWeaponRenderer
+            : ResolveDisplayedWeaponRenderer();
         WeaponRenderBoundsReport boundsReport = WeaponRenderBoundsUtility.CalculateRenderedBoundsRatio(weaponRenderer, transform, WeaponRenderBoundsMode.BodyRendererOnly);
         SpriteRenderer playerBodyRenderer = boundsReport.PlayerRenderer;
         float weaponPixelsPerUnit = weaponRenderer != null && weaponRenderer.sprite != null ? weaponRenderer.sprite.pixelsPerUnit : 0f;
@@ -318,7 +617,9 @@ public class WeaponController : MonoBehaviour
             return;
         }
 
-        SpriteRenderer weaponRenderer = currentWeapon.GetComponentInChildren<SpriteRenderer>(true);
+        SpriteRenderer weaponRenderer = currentDisplayedWeaponRenderer != null
+            ? currentDisplayedWeaponRenderer
+            : ResolveDisplayedWeaponRenderer();
         WeaponRenderBoundsReport boundsReport = WeaponRenderBoundsUtility.CalculateRenderedBoundsRatio(weaponRenderer, transform, WeaponRenderBoundsMode.BodyRendererOnly);
         string line = WeaponRenderBoundsUtility.FormatSharedBoundsDebug("WeaponController", boundsReport);
         if (line == lastSharedBoundsDebugLine)
@@ -414,11 +715,12 @@ public class WeaponController : MonoBehaviour
         GUI.Label(
             new Rect(12f, 12f, 760f, 150f),
             $"Weapon: {currentDefinition.name}\n" +
+            $"RigMode: {currentPose.RigSourceMode}  RigSource: {currentPose.RigSourceSummary}  ProjectileSource: {currentPose.ProjectileSource}\n" +
             $"Player scale: {FormatVector(transform.lossyScale)}  WeaponRoot scale: {FormatVector(weaponRoot.lossyScale)}  Visual parent scale: {FormatVector(currentWeaponVisual.parent.lossyScale)}\n" +
-            $"Visual localScale: {FormatVector(currentWeaponVisual.localScale)}  Visual lossyScale: {FormatVector(currentWeaponVisual.lossyScale)}\n" +
+            $"Visual localScale: {FormatVector(currentWeaponVisual.localScale)}  Visual lossyScale: {FormatVector(currentWeaponVisual.lossyScale)}  DisplayedRenderer={(currentDisplayedWeaponRenderer != null ? currentDisplayedWeaponRenderer.transform.name : "None")}\n" +
             $"Rendered ratio weapon/player: {FormatVector2(GetRenderedRatio())}\n" +
-            $"Anchor: {FormatVector(weaponAnchor.position)}  Grip: {FormatVector(currentPose.GripPoint)}  WeaponPos: {FormatVector(currentPose.WeaponPosition)}\n" +
-            $"Muzzle: {FormatVector(currentPose.MuzzleTipPoint)}  Projectile: {FormatVector(currentPose.ProjectileSpawnPoint)}  VisualScale: {FormatVector(currentPose.VisualScale)}\n" +
+            $"H: {FormatVector(weaponAnchor.position)}  G: {FormatVector(currentPose.GripPoint)}  H-G: {Vector3.Distance(weaponAnchor.position, currentPose.GripPoint):0.###}  ActualGrip: {FormatVector(currentActualRenderedGripPoint)}  H-ActualGrip: {currentActualRenderedGripDistance:0.###}\n" +
+            $"Muzzle: {FormatVector(currentPose.MuzzleTipPoint)}  P: {FormatVector(currentPose.ProjectileSpawnPoint)}  VisualScale: {FormatVector(currentPose.VisualScale)}\n" +
             GetSortingDebugText());
     }
 

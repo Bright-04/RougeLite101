@@ -14,6 +14,47 @@ public struct WeaponAlignmentPose
     public float AimAngle;
     public Quaternion WeaponRotation;
     public Vector3 VisualScale;
+    public WeaponRigPointSourceMode RigSourceMode;
+    public string RigSourceSummary;
+    public string ProjectileSource;
+}
+
+public readonly struct WeaponRigRuntimeResolution
+{
+    public readonly WeaponRigPointSourceMode RequestedMode;
+    public readonly WeaponRigPointSourceMode ResolvedMode;
+    public readonly string RigSourceSummary;
+    public readonly string ProjectileSource;
+    public readonly Vector3 GripPoint;
+    public readonly Vector3 TipPoint;
+    public readonly Vector3 ProjectileSpawnPoint;
+    public readonly Vector3 SlashOrigin;
+    public readonly Vector3 SlashArcStart;
+    public readonly Vector3 SlashArcEnd;
+
+    public WeaponRigRuntimeResolution(
+        WeaponRigPointSourceMode requestedMode,
+        WeaponRigPointSourceMode resolvedMode,
+        string rigSourceSummary,
+        string projectileSource,
+        Vector3 gripPoint,
+        Vector3 tipPoint,
+        Vector3 projectileSpawnPoint,
+        Vector3 slashOrigin,
+        Vector3 slashArcStart,
+        Vector3 slashArcEnd)
+    {
+        RequestedMode = requestedMode;
+        ResolvedMode = resolvedMode;
+        RigSourceSummary = rigSourceSummary;
+        ProjectileSource = projectileSource;
+        GripPoint = gripPoint;
+        TipPoint = tipPoint;
+        ProjectileSpawnPoint = projectileSpawnPoint;
+        SlashOrigin = slashOrigin;
+        SlashArcStart = slashArcStart;
+        SlashArcEnd = slashArcEnd;
+    }
 }
 
 public static class WeaponAlignmentUtility
@@ -67,17 +108,17 @@ public static class WeaponAlignmentUtility
         Quaternion weaponRotation = Quaternion.Euler(0f, 0f, aimAngle + localRotationOffset.z);
         Vector3 localVisualScale = CalculateVisualScale(safeAim, weapon);
         Vector3 visualScale = CalculateRuntimeVisualLossyScale(localVisualScale, rig);
-        WeaponRigPoints rigPoints = WeaponRigPoints.From(weapon, rig);
+        WeaponRigRuntimeResolution resolution = ResolveRuntimeRig(weapon, rig);
 
         // Weapon-local alignment points are transformed the way the rendered sprite is: local point, visual scale, then rotation.
-        Vector3 scaledGripOffset = ScaleWeaponLocalPoint(rigPoints.GripPoint, visualScale);
+        Vector3 scaledGripOffset = ScaleWeaponLocalPoint(resolution.GripPoint, visualScale);
         Vector3 weaponPosition = anchor - weaponRotation * scaledGripOffset;
-        Vector3 gripPoint = TransformWeaponLocalPoint(weaponPosition, weaponRotation, rigPoints.GripPoint, visualScale);
-        Vector3 muzzleTipPoint = TransformWeaponLocalPoint(weaponPosition, weaponRotation, rigPoints.TipPoint, visualScale);
-        Vector3 projectileSpawnPoint = TransformWeaponLocalPoint(weaponPosition, weaponRotation, rigPoints.ProjectileSpawnPoint, visualScale);
-        Vector3 slashOrigin = TransformWeaponLocalPoint(weaponPosition, weaponRotation, rigPoints.SlashOrigin, visualScale);
-        Vector3 slashArcStart = TransformWeaponLocalPoint(weaponPosition, weaponRotation, rigPoints.SlashArcStart, visualScale);
-        Vector3 slashArcEnd = TransformWeaponLocalPoint(weaponPosition, weaponRotation, rigPoints.SlashArcEnd, visualScale);
+        Vector3 gripPoint = TransformWeaponLocalPoint(weaponPosition, weaponRotation, resolution.GripPoint, visualScale);
+        Vector3 muzzleTipPoint = TransformWeaponLocalPoint(weaponPosition, weaponRotation, resolution.TipPoint, visualScale);
+        Vector3 projectileSpawnPoint = TransformWeaponLocalPoint(weaponPosition, weaponRotation, resolution.ProjectileSpawnPoint, visualScale);
+        Vector3 slashOrigin = TransformWeaponLocalPoint(weaponPosition, weaponRotation, resolution.SlashOrigin, visualScale);
+        Vector3 slashArcStart = TransformWeaponLocalPoint(weaponPosition, weaponRotation, resolution.SlashArcStart, visualScale);
+        Vector3 slashArcEnd = TransformWeaponLocalPoint(weaponPosition, weaponRotation, resolution.SlashArcEnd, visualScale);
 
         return new WeaponAlignmentPose
         {
@@ -92,8 +133,45 @@ public static class WeaponAlignmentUtility
             AimDirection = safeAim,
             AimAngle = aimAngle,
             WeaponRotation = weaponRotation,
-            VisualScale = visualScale
+            VisualScale = visualScale,
+            RigSourceMode = resolution.ResolvedMode,
+            RigSourceSummary = resolution.RigSourceSummary,
+            ProjectileSource = resolution.ProjectileSource
         };
+    }
+
+    public static WeaponRigRuntimeResolution ResolveRuntimeRig(WeaponDefinitionSO definition, WeaponRig rig)
+    {
+        WeaponRigPointSourceMode requestedMode = definition != null
+            ? definition.RigPointSource
+            : WeaponRigPointSourceMode.UsePresetRig;
+
+        switch (requestedMode)
+        {
+            case WeaponRigPointSourceMode.UsePrefabRig:
+                if (TryCreatePrefabRigResolution(definition, rig, requestedMode, out WeaponRigRuntimeResolution prefabResolution))
+                {
+                    return prefabResolution;
+                }
+
+                return CreateLegacyResolution(definition, requestedMode, "UsePrefabRig requested but prefab WeaponRig is incomplete");
+
+            case WeaponRigPointSourceMode.LegacyFallback:
+                return CreateLegacyResolution(definition, requestedMode, "LegacyFallback offsets");
+
+            default:
+                if (TryCreatePresetRigResolution(definition, requestedMode, out WeaponRigRuntimeResolution presetResolution))
+                {
+                    return presetResolution;
+                }
+
+                if (TryCreatePrefabRigResolution(definition, rig, requestedMode, out WeaponRigRuntimeResolution fallbackPrefabResolution))
+                {
+                    return fallbackPrefabResolution;
+                }
+
+                return CreateLegacyResolution(definition, requestedMode, "UsePresetRig requested but preset build failed");
+        }
     }
 
     private static Vector3 TransformWeaponLocalPoint(Vector3 weaponPosition, Quaternion weaponRotation, Vector3 localPoint, Vector3 visualScale)
@@ -119,6 +197,11 @@ public static class WeaponAlignmentUtility
     public static Vector3 CalculateVisualScale(Vector2 aimDirection, WeaponDefinitionSO weapon)
     {
         float scale = weapon != null && weapon.VisualScale > 0f ? weapon.VisualScale : 1f;
+        if (weapon != null && weapon.RigPointSource == WeaponRigPointSourceMode.UsePresetRig)
+        {
+            scale *= weapon.GetUsePresetRigRuntimeScaleCompensation();
+        }
+
         if (!float.IsFinite(scale))
         {
             scale = 1f;
@@ -170,88 +253,104 @@ public static class WeaponAlignmentUtility
         return Vector3.Scale(localVisualScale, visualParent.lossyScale);
     }
 
-    private readonly struct WeaponRigPoints
+    private static bool TryCreatePresetRigResolution(
+        WeaponDefinitionSO definition,
+        WeaponRigPointSourceMode requestedMode,
+        out WeaponRigRuntimeResolution resolution)
     {
-        public readonly Vector3 GripPoint;
-        public readonly Vector3 TipPoint;
-        public readonly Vector3 ProjectileSpawnPoint;
-        public readonly Vector3 SlashOrigin;
-        public readonly Vector3 SlashArcStart;
-        public readonly Vector3 SlashArcEnd;
-
-        private WeaponRigPoints(
-            Vector3 gripPoint,
-            Vector3 tipPoint,
-            Vector3 projectileSpawnPoint,
-            Vector3 slashOrigin,
-            Vector3 slashArcStart,
-            Vector3 slashArcEnd)
+        resolution = default;
+        if (definition == null
+            || definition.AlignmentPreset == null
+            || !definition.AlignmentPreset.TryBuildPoints(definition.ItemImage, out WeaponAlignmentPresetPoints presetPoints))
         {
-            GripPoint = gripPoint;
-            TipPoint = tipPoint;
-            ProjectileSpawnPoint = projectileSpawnPoint;
-            SlashOrigin = slashOrigin;
-            SlashArcStart = slashArcStart;
-            SlashArcEnd = slashArcEnd;
+            return false;
         }
 
-        public static WeaponRigPoints From(WeaponDefinitionSO definition, WeaponRig rig)
+        string presetName = definition.AlignmentPreset != null ? definition.AlignmentPreset.name : "None";
+        resolution = new WeaponRigRuntimeResolution(
+            requestedMode,
+            WeaponRigPointSourceMode.UsePresetRig,
+            $"PresetRig '{presetName}' ({definition.AlignmentPreset.CoordinateSpace})",
+            "PresetRig P",
+            presetPoints.GripPoint,
+            presetPoints.TipPoint,
+            presetPoints.ProjectileSpawnPoint,
+            presetPoints.SlashOrigin,
+            presetPoints.SlashArcStart,
+            presetPoints.SlashArcEnd);
+        return true;
+    }
+
+    private static bool TryCreatePrefabRigResolution(
+        WeaponDefinitionSO definition,
+        WeaponRig rig,
+        WeaponRigPointSourceMode requestedMode,
+        out WeaponRigRuntimeResolution resolution)
+    {
+        resolution = default;
+        if (rig == null || definition == null || !rig.HasRequiredPointsFor(definition))
         {
-            if (rig != null && definition != null && rig.HasRequiredPointsFor(definition))
-            {
-                Vector3 tipPoint = rig.TipPointLocal;
-                Vector3 projectileSpawnPoint = rig.ProjectileSpawnPoint != null
-                    ? rig.ProjectileSpawnPointLocal
-                    : tipPoint;
-                Vector3 rigSlashOrigin = rig.SlashOrigin != null
-                    ? rig.SlashOriginLocal
-                    : (definition != null ? definition.SlashVfxOffset : Vector3.zero);
-                Vector3 rigSlashArcStart = rig.SlashArcStart != null
-                    ? rig.SlashArcStartLocal
-                    : rigSlashOrigin + new Vector3(0.2f, -0.25f, 0f);
-                Vector3 rigSlashArcEnd = rig.SlashArcEnd != null
-                    ? rig.SlashArcEndLocal
-                    : rigSlashOrigin + new Vector3(0.2f, 0.25f, 0f);
-
-                return new WeaponRigPoints(
-                    rig.GripPointLocal,
-                    tipPoint,
-                    projectileSpawnPoint,
-                    rigSlashOrigin,
-                    rigSlashArcStart,
-                    rigSlashArcEnd);
-            }
-
-            if (definition != null
-                && definition.AlignmentPreset != null
-                && definition.AlignmentPreset.TryBuildPoints(definition.ItemImage, out WeaponAlignmentPresetPoints presetPoints))
-            {
-                return new WeaponRigPoints(
-                    presetPoints.GripPoint,
-                    presetPoints.TipPoint,
-                    presetPoints.ProjectileSpawnPoint,
-                    presetPoints.SlashOrigin,
-                    presetPoints.SlashArcStart,
-                    presetPoints.SlashArcEnd);
-            }
-
-            Vector3 grip = definition != null ? definition.GripPointOffset : Vector3.zero;
-            Vector3 tip = definition != null ? definition.MuzzleTipPointOffset : new Vector3(0.45f, 0f, 0f);
-            Vector3 projectile = definition != null ? definition.ProjectileSpawnPointOffset : tip;
-            if (projectile == Vector3.zero)
-            {
-                projectile = tip;
-            }
-
-            Vector3 slashOrigin = definition != null ? definition.SlashVfxOffset : Vector3.zero;
-            return new WeaponRigPoints(
-                grip,
-                tip,
-                projectile,
-                slashOrigin,
-                slashOrigin + new Vector3(0.2f, -0.25f, 0f),
-                slashOrigin + new Vector3(0.2f, 0.25f, 0f));
+            return false;
         }
+
+        Vector3 tipPoint = rig.TipPointLocal;
+        Vector3 projectileSpawnPoint = rig.ProjectileSpawnPoint != null
+            ? rig.ProjectileSpawnPointLocal
+            : tipPoint;
+        Vector3 slashOrigin = rig.SlashOrigin != null
+            ? rig.SlashOriginLocal
+            : (definition != null ? definition.SlashVfxOffset : Vector3.zero);
+        Vector3 slashArcStart = rig.SlashArcStart != null
+            ? rig.SlashArcStartLocal
+            : slashOrigin + new Vector3(0.2f, -0.25f, 0f);
+        Vector3 slashArcEnd = rig.SlashArcEnd != null
+            ? rig.SlashArcEndLocal
+            : slashOrigin + new Vector3(0.2f, 0.25f, 0f);
+
+        resolution = new WeaponRigRuntimeResolution(
+            requestedMode,
+            WeaponRigPointSourceMode.UsePrefabRig,
+            $"PrefabRig '{rig.name}'",
+            rig.ProjectileSpawnPoint != null ? "PrefabRig ProjectileSpawnPoint" : "PrefabRig TipFallback",
+            rig.GripPointLocal,
+            tipPoint,
+            projectileSpawnPoint,
+            slashOrigin,
+            slashArcStart,
+            slashArcEnd);
+        return true;
+    }
+
+    private static WeaponRigRuntimeResolution CreateLegacyResolution(
+        WeaponDefinitionSO definition,
+        WeaponRigPointSourceMode requestedMode,
+        string rigSourceSummary)
+    {
+        Vector3 grip = definition != null ? definition.GripPointOffset : Vector3.zero;
+        Vector3 tip = definition != null ? definition.MuzzleTipPointOffset : new Vector3(0.45f, 0f, 0f);
+        Vector3 projectile = definition != null ? definition.ProjectileSpawnPointOffset : tip;
+        string projectileSource = "Legacy TipFallback";
+        if (projectile == Vector3.zero)
+        {
+            projectile = tip;
+        }
+        else if (definition != null && definition.UsesLegacyProjectileSpawnOffset)
+        {
+            projectileSource = "Legacy ProjectileSpawnPointOffset";
+        }
+
+        Vector3 slashOrigin = definition != null ? definition.SlashVfxOffset : Vector3.zero;
+        return new WeaponRigRuntimeResolution(
+            requestedMode,
+            WeaponRigPointSourceMode.LegacyFallback,
+            rigSourceSummary,
+            projectileSource,
+            grip,
+            tip,
+            projectile,
+            slashOrigin,
+            slashOrigin + new Vector3(0.2f, -0.25f, 0f),
+            slashOrigin + new Vector3(0.2f, 0.25f, 0f));
     }
 }
 

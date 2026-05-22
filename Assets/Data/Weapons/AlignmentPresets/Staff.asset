@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Staff
   m_EditorClassIdentifier: 
   archetype: 6
-  normalizedGripPoint: {x: 0.24, y: 0.5}
-  normalizedTipPoint: {x: 0.88, y: 0.5}
-  normalizedProjectileSpawnPoint: {x: 0.95, y: 0.5}
+  coordinateSpace: 0
+  normalizedGripPoint: {x: 0.4, y: 0.41}
+  normalizedTipPoint: {x: 0.92, y: 0.91}
+  normalizedProjectileSpawnPoint: {x: 0.92, y: 0.91}
   normalizedSlashOrigin: {x: 0.48, y: 0.5}
   normalizedSlashArcStart: {x: 0.7, y: 0.28}
   normalizedSlashArcEnd: {x: 0.7, y: 0.72}

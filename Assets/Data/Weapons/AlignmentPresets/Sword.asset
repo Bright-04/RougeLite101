@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Sword
   m_EditorClassIdentifier: 
   archetype: 1
-  normalizedGripPoint: {x: 0.16, y: 0.5}
-  normalizedTipPoint: {x: 0.9, y: 0.5}
+  coordinateSpace: 0
+  normalizedGripPoint: {x: 0.15, y: 0.16}
+  normalizedTipPoint: {x: 0.95, y: 0.95}
   normalizedProjectileSpawnPoint: {x: 0.93, y: 0.5}
-  normalizedSlashOrigin: {x: 0.55, y: 0.5}
-  normalizedSlashArcStart: {x: 0.76, y: 0.24}
-  normalizedSlashArcEnd: {x: 0.76, y: 0.76}
+  normalizedSlashOrigin: {x: 0.25, y: 0.29}
+  normalizedSlashArcStart: {x: 0.92, y: 0.18}
+  normalizedSlashArcEnd: {x: 0.92, y: 0.97}

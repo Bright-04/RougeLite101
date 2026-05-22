@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Bow
   m_EditorClassIdentifier: 
   archetype: 8
-  normalizedGripPoint: {x: 0.35, y: 0.5}
-  normalizedTipPoint: {x: 0.78, y: 0.5}
-  normalizedProjectileSpawnPoint: {x: 0.92, y: 0.5}
+  coordinateSpace: 0
+  normalizedGripPoint: {x: 0.54, y: 0.5}
+  normalizedTipPoint: {x: 0.22, y: 0.21}
+  normalizedProjectileSpawnPoint: {x: 0.25, y: 0.23}
   normalizedSlashOrigin: {x: 0.4, y: 0.5}
   normalizedSlashArcStart: {x: 0.58, y: 0.24}
   normalizedSlashArcEnd: {x: 0.58, y: 0.76}

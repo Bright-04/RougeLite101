@@ -44,6 +44,41 @@ public sealed class WeaponRig : MonoBehaviour
     public Vector3 SlashArcStartLocal => GetLocalPoint(slashArcStart, new Vector3(0.2f, -0.25f, 0f));
     public Vector3 SlashArcEndLocal => GetLocalPoint(slashArcEnd, new Vector3(0.2f, 0.25f, 0f));
 
+    public bool ApplyDefinitionRig(WeaponDefinitionSO definition, out string sourceSummary)
+    {
+        AutoBindRequiredPoints(true);
+        sourceSummary = "No runtime rig source available";
+
+        if (definition == null)
+        {
+            return false;
+        }
+
+        switch (definition.RigPointSource)
+        {
+            case WeaponRigPointSourceMode.UsePrefabRig:
+                if (HasRequiredPointsFor(definition))
+                {
+                    sourceSummary = $"Prefab rig '{name}'";
+                    return true;
+                }
+                sourceSummary = $"Prefab rig '{name}' is incomplete";
+                return false;
+
+            case WeaponRigPointSourceMode.LegacyFallback:
+                sourceSummary = "LegacyFallback does not generate runtime rig points";
+                return false;
+
+            default:
+                if (TryApplyPresetPoints(definition, out sourceSummary))
+                {
+                    return true;
+                }
+                sourceSummary = "Preset build failed";
+                return false;
+        }
+    }
+
     private void Reset()
     {
         AutoBindRequiredPoints(false);
@@ -108,6 +143,31 @@ public sealed class WeaponRig : MonoBehaviour
         BindIfMissing(ref slashArcEnd, SlashArcEndName, includeInactive);
     }
 
+    private bool TryApplyPresetPoints(WeaponDefinitionSO definition, out string sourceSummary)
+    {
+        sourceSummary = "No alignment preset available";
+        if (definition == null || definition.AlignmentPreset == null || definition.ItemImage == null)
+        {
+            return false;
+        }
+
+        if (!definition.AlignmentPreset.TryBuildPoints(definition.ItemImage, out WeaponAlignmentPresetPoints presetPoints))
+        {
+            sourceSummary = $"Preset '{definition.AlignmentPreset.name}' could not build points from sprite '{definition.ItemImage.name}'";
+            return false;
+        }
+
+        SetPointLocal(ref gripPoint, GripPointName, presetPoints.GripPoint);
+        SetPointLocal(ref tipPoint, TipPointName, presetPoints.TipPoint);
+        SetPointLocal(ref projectileSpawnPoint, ProjectileSpawnPointName, presetPoints.ProjectileSpawnPoint);
+        SetPointLocal(ref slashOrigin, SlashOriginName, presetPoints.SlashOrigin);
+        SetPointLocal(ref slashArcStart, SlashArcStartName, presetPoints.SlashArcStart);
+        SetPointLocal(ref slashArcEnd, SlashArcEndName, presetPoints.SlashArcEnd);
+
+        sourceSummary = $"Preset '{definition.AlignmentPreset.name}' ({definition.AlignmentPreset.CoordinateSpace})";
+        return true;
+    }
+
     private Vector3 GetLocalPoint(Transform point, Vector3 fallback)
     {
         if (point == null)
@@ -131,6 +191,29 @@ public sealed class WeaponRig : MonoBehaviour
         }
 
         field = FindChildRecursive(transform, childName, includeInactive);
+    }
+
+    private void SetPointLocal(ref Transform field, string childName, Vector3 localPosition)
+    {
+        if (field == null)
+        {
+            field = FindChildRecursive(transform, childName, true);
+        }
+
+        if (field == null)
+        {
+            GameObject pointObject = new GameObject(childName);
+            field = pointObject.transform;
+        }
+
+        if (field.parent != transform)
+        {
+            field.SetParent(transform, false);
+        }
+
+        field.localPosition = localPosition;
+        field.localRotation = Quaternion.identity;
+        field.localScale = Vector3.one;
     }
 
     private static Transform FindChildRecursive(Transform parent, string childName, bool includeInactive)

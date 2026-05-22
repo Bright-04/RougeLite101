@@ -29,9 +29,10 @@ MonoBehaviour:
   - 
   archetype: 5
   alignmentPreset: {fileID: 11400000, guid: 55555555555555555555555555555555, type: 2}
+  rigPointSource: 0
   handlingMode: 2
   gripPointOffset: {x: 0.03, y: 0, z: 0}
-  aimPointOffset: {x: 0.28, y: 0, z: 0}
+  aimPointOffset: {x: 0, y: 0, z: 0}
   localRotationOffset: {x: 0, y: 0, z: 0}
   visualScale: 0.5
   localPositionOffset: {x: 0.12, y: 0.12, z: 0}

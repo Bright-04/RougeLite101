@@ -29,11 +29,12 @@ MonoBehaviour:
   - 
   archetype: 6
   alignmentPreset: {fileID: 11400000, guid: 77777777777777777777777777777777, type: 2}
+  rigPointSource: 0
   handlingMode: 1
   gripPointOffset: {x: 0.2, y: 0, z: 0}
   aimPointOffset: {x: 0.42, y: 0, z: 0}
   localRotationOffset: {x: 0, y: 0, z: -45}
-  visualScale: 1
+  visualScale: 5
   localPositionOffset: {x: 0.035, y: 0.02, z: 0}
   flipBehavior: 0
   projectileSpawnPointOffset: {x: 0, y: 0, z: 0}

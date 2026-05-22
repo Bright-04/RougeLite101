@@ -11,6 +11,11 @@ public class WeaponDefinitionSOEditor : Editor
             WeaponAlignmentEditorWindow.Open((WeaponDefinitionSO)target);
         }
 
+        if (GUILayout.Button("Open Batch Scale Calibration"))
+        {
+            WeaponVisualScaleCalibrationWindow.Open();
+        }
+
         EditorGUILayout.HelpBox(
             "Use the Weapon Alignment Editor as a runtime pose visualizer. WeaponRig child points and WeaponAlignmentUtility are the source of truth.",
             MessageType.Info);
