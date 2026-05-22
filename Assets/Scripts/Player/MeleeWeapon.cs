@@ -118,6 +118,12 @@ public class MeleeWeapon : Weapon
         return false;
     }
 
+    public bool TryGetProceduralAttackPhase(out string phaseLabel)
+    {
+        phaseLabel = proceduralPhase.ToString();
+        return proceduralPhase != ProceduralAttackPhase.None;
+    }
+
     public override WeaponAlignmentPose AdjustPose(WeaponAlignmentPose pose)
     {
         if (!UsesProceduralPresetMelee() || proceduralPhase == ProceduralAttackPhase.None)

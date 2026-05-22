@@ -5,10 +5,12 @@ using System.Text;
 public class WeaponController : MonoBehaviour
 {
     private const float PresetGripValidationTolerance = 0.02f;
+    private const float PresetGripValidationWarningCooldown = 0.5f;
 
     [SerializeField] private Transform weaponRoot;
     [SerializeField] private Transform weaponAnchor;
     [SerializeField] private bool showDebugGizmos = true;
+    [SerializeField] private bool showMeleeDebugGizmos = true;
     [SerializeField] private bool showDebugReadout = true;
     [SerializeField] private bool logScaleDebugOnWeaponChange = true;
     [SerializeField] private bool logSharedBoundsDebugChanges;
@@ -28,6 +30,7 @@ public class WeaponController : MonoBehaviour
     private string currentRigSourceSummary = "None";
     private string currentProjectileSourceSummary = "None";
     private string lastPresetGripValidationFailure;
+    private float nextPresetGripValidationWarningTime;
     private bool loggedEquipVisibility;
     private bool loggedFirstPoseVisibility;
 
@@ -76,6 +79,7 @@ public class WeaponController : MonoBehaviour
         currentActualRenderedGripPoint = Vector3.zero;
         currentActualRenderedGripDistance = 0f;
         lastPresetGripValidationFailure = null;
+        nextPresetGripValidationWarningTime = 0f;
         loggedEquipVisibility = false;
         loggedFirstPoseVisibility = false;
         if (currentWeaponRig != null)
@@ -132,6 +136,7 @@ public class WeaponController : MonoBehaviour
         currentActualRenderedGripPoint = Vector3.zero;
         currentActualRenderedGripDistance = 0f;
         lastPresetGripValidationFailure = null;
+        nextPresetGripValidationWarningTime = 0f;
         loggedEquipVisibility = false;
         loggedFirstPoseVisibility = false;
     }
@@ -405,6 +410,7 @@ public class WeaponController : MonoBehaviour
         if (currentDefinition == null || pose.RigSourceMode != WeaponRigPointSourceMode.UsePresetRig)
         {
             lastPresetGripValidationFailure = null;
+            nextPresetGripValidationWarningTime = 0f;
             currentActualRenderedGripPoint = Vector3.zero;
             currentActualRenderedGripDistance = 0f;
             return;
@@ -417,10 +423,17 @@ public class WeaponController : MonoBehaviour
             ? Vector3.Distance(pose.WeaponAnchorPosition, currentActualRenderedGripPoint)
             : float.PositiveInfinity;
 
+        if (TryGetCurrentProceduralAttackPhase(out _))
+        {
+            lastPresetGripValidationFailure = null;
+            return;
+        }
+
         if (generatedDistance <= PresetGripValidationTolerance
             && currentActualRenderedGripDistance <= PresetGripValidationTolerance)
         {
             lastPresetGripValidationFailure = null;
+            nextPresetGripValidationWarningTime = 0f;
             return;
         }
 
@@ -431,6 +444,7 @@ public class WeaponController : MonoBehaviour
         string failureLine =
             $"WeaponController preset grip validation failed " +
             $"weaponId={currentDefinition.WeaponId} " +
+            $"phase=Idle/Orbit " +
             $"rigMode={pose.RigSourceMode} " +
             $"H={FormatVector(pose.WeaponAnchorPosition)} " +
             $"G={FormatVector(pose.GripPoint)} " +
@@ -444,11 +458,30 @@ public class WeaponController : MonoBehaviour
 
         if (failureLine == lastPresetGripValidationFailure)
         {
+            if (Time.unscaledTime < nextPresetGripValidationWarningTime)
+            {
+                return;
+            }
+
+            nextPresetGripValidationWarningTime = Time.unscaledTime + PresetGripValidationWarningCooldown;
             return;
         }
 
         lastPresetGripValidationFailure = failureLine;
+        nextPresetGripValidationWarningTime = Time.unscaledTime + PresetGripValidationWarningCooldown;
         Debug.LogWarning(failureLine, this);
+    }
+
+    private bool TryGetCurrentProceduralAttackPhase(out string phaseLabel)
+    {
+        phaseLabel = "Idle/Orbit";
+
+        if (currentWeapon is MeleeWeapon meleeWeapon && meleeWeapon.TryGetProceduralAttackPhase(out phaseLabel))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private Vector3 CalculateActualRenderedGripPointWorld()
@@ -814,7 +847,17 @@ public class WeaponController : MonoBehaviour
         return false;
     }
 
+    private void OnDrawGizmos()
+    {
+        DrawDebugGizmos(includePlayModeMeleeVolumes: true, selectedOnly: false);
+    }
+
     private void OnDrawGizmosSelected()
+    {
+        DrawDebugGizmos(includePlayModeMeleeVolumes: true, selectedOnly: true);
+    }
+
+    private void DrawDebugGizmos(bool includePlayModeMeleeVolumes, bool selectedOnly)
     {
         if (!showDebugGizmos || currentDefinition == null)
         {
@@ -822,7 +865,11 @@ public class WeaponController : MonoBehaviour
         }
 
         EnsureHierarchy();
-        WeaponAlignmentPose pose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition, currentWeaponRig);
+        WeaponAlignmentPose pose = currentPose;
+        if (!IsFinite(pose) || pose.WeaponAnchorPosition == Vector3.zero)
+        {
+            pose = WeaponAlignmentUtility.CalculateWeaponPose(weaponAnchor.position, currentAimDirection, currentDefinition, currentWeaponRig);
+        }
 
         Gizmos.color = Color.white;
         Gizmos.DrawWireSphere(transform.position, 0.05f);
@@ -848,6 +895,64 @@ public class WeaponController : MonoBehaviour
         Gizmos.color = new Color(1f, 0.45f, 0.1f);
         Gizmos.DrawWireSphere(pose.SlashOrigin, 0.045f);
         DrawSlashArcGizmo(pose);
+
+        if (selectedOnly && currentDefinition.IsMeleeAttack)
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireSphere(pose.GripPoint, 0.035f);
+        }
+
+        if (!includePlayModeMeleeVolumes || !Application.isPlaying || !showMeleeDebugGizmos || !currentDefinition.IsMeleeAttack)
+        {
+            return;
+        }
+
+        DrawMeleeAttackVolumeGizmos(pose);
+    }
+
+    private void DrawMeleeAttackVolumeGizmos(WeaponAlignmentPose pose)
+    {
+        if (currentDefinition.AttackType == WeaponAttackType.Slash)
+        {
+            float range = Mathf.Max(0.05f, currentDefinition.SlashRange);
+            Vector3 origin = pose.SlashOrigin;
+
+            Gizmos.color = new Color(1f, 0.65f, 0.15f, 0.9f);
+            Gizmos.DrawWireSphere(origin, 0.04f);
+            Gizmos.DrawLine(origin, pose.SlashArcStart);
+            Gizmos.DrawLine(origin, pose.SlashArcEnd);
+
+#if UNITY_EDITOR
+            UnityEditor.Handles.color = new Color(1f, 0.75f, 0.2f, 0.9f);
+            UnityEditor.Handles.DrawWireDisc(origin, Vector3.forward, range);
+            UnityEditor.Handles.Label(origin, $"SlashRange r={range:0.###} arc={currentDefinition.SlashArcDegrees:0.#}");
+#endif
+            return;
+        }
+
+        if (currentDefinition.AttackType != WeaponAttackType.Thrust)
+        {
+            return;
+        }
+
+        float distance = Mathf.Max(0.05f, currentDefinition.ThrustDistance);
+        float width = Mathf.Max(0.05f, currentDefinition.ThrustWidth);
+        Vector2 aimDirection = currentAimDirection.sqrMagnitude > 0.0001f ? currentAimDirection.normalized : Vector2.right;
+        Vector3 center = pose.WeaponAnchorPosition + (Vector3)(aimDirection * (distance * 0.5f));
+        Quaternion rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg);
+
+        Matrix4x4 previousMatrix = Gizmos.matrix;
+        Gizmos.color = new Color(0.2f, 0.9f, 1f, 0.9f);
+        Gizmos.matrix = Matrix4x4.TRS(center, rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, new Vector3(distance, width, 0.01f));
+        Gizmos.matrix = previousMatrix;
+        Gizmos.DrawLine(pose.WeaponAnchorPosition, center);
+        Gizmos.DrawWireSphere(pose.WeaponAnchorPosition, 0.04f);
+
+#if UNITY_EDITOR
+        UnityEditor.Handles.color = new Color(0.2f, 0.9f, 1f, 0.9f);
+        UnityEditor.Handles.Label(center, $"ThrustDistance d={distance:0.###} width={width:0.###}");
+#endif
     }
 
     private static void DrawSlashArcGizmo(WeaponAlignmentPose pose)

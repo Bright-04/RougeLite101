@@ -40,9 +40,9 @@ MonoBehaviour:
   activeDuration: 0.08
   recoveryDuration: 0.12
   slashArcDegrees: 90
-  slashRange: 1
-  thrustDistance: 1
-  thrustWidth: 0.35
+  slashRange: 1.4
+  thrustDistance: 1.5
+  thrustWidth: 0.4
   rigPointSource: 0
   handlingMode: 2
   aimPointOffset: {x: 0, y: 0, z: 0}
@@ -55,7 +55,7 @@ MonoBehaviour:
   weaponPrefab: {fileID: 7706408078841532381, guid: cd06504aa93a6fb48ae71d1819c2e8ed, type: 3}
   weaponType: 0
   baseDamage: 3
-  range: 1.35
+  range: 1.5
   hitboxDistance: 0.28
   hitboxScale: {x: 2.7, y: 1.4, z: 1}
   projectilePrefab: {fileID: 0}

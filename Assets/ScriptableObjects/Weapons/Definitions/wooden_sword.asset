@@ -41,8 +41,8 @@ MonoBehaviour:
   anticipationDuration: 0.05
   activeDuration: 0.08
   recoveryDuration: 0.12
-  slashArcDegrees: 95
-  slashRange: 1
+  slashArcDegrees: 100
+  slashRange: 1.18
   thrustDistance: 1
   thrustWidth: 0.35
   localPositionOffset: {x: 0.1, y: 0.1, z: 0}
@@ -53,7 +53,7 @@ MonoBehaviour:
   weaponType: 0
   baseDamage: 3
   cooldown: 0.5
-  range: 1
+  range: 1.18
   hitboxDistance: 0.15
   hitboxScale: {x: 2, y: 2, z: 1}
   projectilePrefab: {fileID: 0}
