@@ -6,7 +6,7 @@ public class RunResultController : MonoBehaviour
     public static RunResultController Instance { get; private set; }
 
     [Header("UI")]
-    [SerializeField] private EndGameResultUI resultUI;
+    [SerializeField] public EndGameResultUI resultUI;
 
     [Header("Star Rating")]
     [SerializeField] private RunStarRatingCalculator starRatingCalculator = new RunStarRatingCalculator();

@@ -986,6 +986,7 @@ GameObject:
   m_Component:
   - component: {fileID: 872004706}
   - component: {fileID: 872004705}
+  - component: {fileID: 872004707}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1024,6 +1025,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &872004707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 872004704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4128cfc09d0ecf648af403e3b60f1aa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunResultController
+  resultUI: {fileID: 0}
+  starRatingCalculator:
+    oneStarMinHpRatio: 0
+    twoStarMinHpRatio: 0.4
+    threeStarMinHpRatio: 0.7
+  hubSceneName: GameHome
+  hubSpawnPosition: {x: 0, y: 9, z: 0}
 --- !u!1 &965928363
 GameObject:
   m_ObjectHideFlags: 0
