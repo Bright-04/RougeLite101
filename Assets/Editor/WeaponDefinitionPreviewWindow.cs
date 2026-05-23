@@ -83,16 +83,13 @@ public class WeaponAlignmentEditorWindow : EditorWindow
     private SpriteBoundsCoordinateSpace previewBoundsMode = SpriteBoundsCoordinateSpace.OpaqueContentBounds;
     private BoundsOverlayMode boundsOverlayMode = BoundsOverlayMode.Both;
     private bool autoTest360Aim;
-    private bool useRuntimePlayerPrefab = true;
     private bool useRuntimePlayerReference = true;
-    private bool showPlayerPreview = false;
     private bool showWeaponAnchor = true;
     private bool showGripAimPoints = true;
     private bool showRuntimePoseDebug = true;
     private bool showIrrelevantPoints;
     private bool showWeaponDetailPanel = true;
     private bool scaleDiagnosticsFoldout;
-    private bool showWithPlayer;
     private bool showWeaponSpriteGhost = true;
     private bool showPlayerGhost;
     private bool showFullPlayerBody;
@@ -932,7 +929,6 @@ public class WeaponAlignmentEditorWindow : EditorWindow
 
     private void ApplyWorkflowDefaults()
     {
-        useRuntimePlayerPrefab = true;
         previewPlayerPrefab = GetRuntimePlayerPrefab();
 
         switch (workflowMode)
@@ -942,8 +938,6 @@ public class WeaponAlignmentEditorWindow : EditorWindow
                 useGameCameraProjection = false;
                 useMainCameraRenderPreview = false;
                 useNormalizedCalibrationScale = false;
-                showPlayerPreview = false;
-                showWithPlayer = false;
                 showWeaponAnchor = true;
                 showGripAimPoints = true;
                 showRuntimePoseDebug = true;
@@ -953,8 +947,6 @@ public class WeaponAlignmentEditorWindow : EditorWindow
                 useGameCameraProjection = false;
                 useMainCameraRenderPreview = false;
                 useNormalizedCalibrationScale = false;
-                showPlayerPreview = true;
-                showWithPlayer = true;
                 showWeaponAnchor = true;
                 showGripAimPoints = true;
                 showRuntimePoseDebug = true;
@@ -964,8 +956,6 @@ public class WeaponAlignmentEditorWindow : EditorWindow
                 useGameCameraProjection = true;
                 useMainCameraRenderPreview = true;
                 useNormalizedCalibrationScale = false;
-                showPlayerPreview = true;
-                showWithPlayer = true;
                 showWeaponAnchor = false;
                 showGripAimPoints = false;
                 showRuntimePoseDebug = false;
