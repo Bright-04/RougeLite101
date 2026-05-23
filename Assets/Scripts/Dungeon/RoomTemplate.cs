@@ -302,6 +302,13 @@ public class RoomTemplate : MonoBehaviour
 
     private void SpawnStructure()
     {
+        // Structure spawning is optional per-room.
+        // If both references are missing, skip quietly.
+        if (placeHolder == null && structureRandomizer == null)
+        {
+            return;
+        }
+
         if (placeHolder == null || structureRandomizer == null)
         {
             Debug.LogWarning($"{gameObject.name}: Missing placeHolder or structureRandomizer.");
