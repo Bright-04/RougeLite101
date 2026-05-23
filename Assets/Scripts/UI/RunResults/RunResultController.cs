@@ -194,6 +194,7 @@ public class RunResultController : MonoBehaviour
     {
         ResetViewState();
         RestoreGameplayState();
+        AutoSaveManager.TrySaveActiveSceneState();
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)

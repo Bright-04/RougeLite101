@@ -162,6 +162,7 @@ public class PlayerStats : MonoBehaviour
 
     private void RespawnToHubFallback()
     {
+        AutoSaveManager.TrySaveActiveSceneState();
         var player = GameObject.FindGameObjectWithTag("Player");
         if (player)
         {

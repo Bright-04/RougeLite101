@@ -8,6 +8,7 @@ public class ChangeSceneOnCollide : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            AutoSaveManager.TrySaveActiveSceneState();
             Debug.Log("Change to " + changeSceneName);
             SceneManager.LoadScene(changeSceneName);
         }

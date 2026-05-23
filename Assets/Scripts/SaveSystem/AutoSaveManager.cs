@@ -111,4 +111,13 @@ public class AutoSaveManager : MonoBehaviour
         SaveGame();
         autoSaveTimer = 0f;
     }
+
+    public static void TrySaveActiveSceneState()
+    {
+        AutoSaveManager saveManager = FindAnyObjectByType<AutoSaveManager>();
+        if (saveManager != null)
+        {
+            saveManager.ManualSave();
+        }
+    }
 }

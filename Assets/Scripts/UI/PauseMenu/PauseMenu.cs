@@ -93,6 +93,7 @@ public class PauseMenu : MonoBehaviour
     {
         Scene activeScene = SceneManager.GetActiveScene();
         Resume();
+        AutoSaveManager.TrySaveActiveSceneState();
         if (activeScene.name == "GameHome")
         {
             GameManager.Instance.CleanupBeforeQuit();

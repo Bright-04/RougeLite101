@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 
+using UnityEngine.SceneManagement;
+
 public class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
@@ -10,20 +12,31 @@ public class InputManager : MonoBehaviour
 
     private void Awake()
     {
-        //logic Singleton
-        // Nếu chưa có instance → đây là instance đầu tiên
-        if (Instance == null)
+        if (Instance != null && Instance != this)
         {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            Scene activeScene = SceneManager.GetActiveScene();
+            bool thisIsInActiveScene = gameObject.scene == activeScene;
+            bool instanceIsInActiveScene = Instance.gameObject.scene == activeScene;
+
+            if (thisIsInActiveScene && !instanceIsInActiveScene)
+            {
+                Destroy(Instance.gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
+
+        Instance = this;
+
+        if (Controls == null)
+        {
             Controls = new PlayerControls();
-            EnableGameplayMaps();
         }
-        else
-        {
-            // Đã có instance rồi → xóa cái mới
-            Destroy(gameObject);
-        }
+
+        EnableGameplayMaps();
     }
     private void OnDestroy()
     {

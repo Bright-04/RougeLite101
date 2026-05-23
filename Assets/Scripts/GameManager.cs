@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,17 +12,29 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            //Destroy(gameObject);
-            CleanUpAndDestroy();  //TienHQ: i need this:))
-            return;
+            Scene activeScene = SceneManager.GetActiveScene();
+            bool thisIsInActiveScene = gameObject.scene == activeScene;
+            bool instanceIsInActiveScene = Instance.gameObject.scene == activeScene;
+
+            if (thisIsInActiveScene && !instanceIsInActiveScene)
+            {
+                Destroy(Instance.gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
         }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            MarkPersistentObjects();
-        }
+
+        Instance = this;
     }
+
+    private void Start()
+    {
+        EnforceSingleSceneRuntime();
+    }
+
     private void OnDestroy()
     {
         if (Instance == this)
@@ -30,14 +43,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void MarkPersistentObjects()
+    private void EnforceSingleSceneRuntime()
     {
-        foreach (GameObject obj in persistentObject)
+        if (SceneManager.sceneCount <= 1)
         {
-            if (obj != null)
+            return;
+        }
+
+        Scene activeScene = SceneManager.GetActiveScene();
+
+        for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
+        {
+            Scene loadedScene = SceneManager.GetSceneAt(i);
+            if (!loadedScene.isLoaded || loadedScene == activeScene)
             {
-                DontDestroyOnLoad(obj);
+                continue;
             }
+
+            Debug.Log($"GameManager: Unloading extra runtime scene '{loadedScene.name}' to keep a single gameplay scene active.");
+            SceneManager.UnloadSceneAsync(loadedScene);
         }
     }
 
