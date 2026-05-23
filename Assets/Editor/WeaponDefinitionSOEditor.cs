@@ -75,6 +75,17 @@ public class WeaponDefinitionSOEditor : Editor
             EditorGUILayout.LabelField("Slash", EditorStyles.boldLabel);
             DrawProperty("slashArcDegrees");
             DrawProperty("slashRange");
+
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.LabelField("Melee Visuals", EditorStyles.boldLabel);
+            DrawProperty("slashVisualExtraAnticipationDegrees");
+            DrawProperty("slashVisualExtraFollowThroughDegrees");
+            DrawProperty("slashVfxLifetime");
+            DrawProperty("slashVfxStartScaleMultiplier");
+            DrawProperty("slashVfxEndScaleMultiplier");
+            DrawProperty("slashVfxFadeOut");
+            DrawProperty("meleeVisualPulseScaleAmount");
+            DrawProperty("meleeVisualPulseBlend");
         }
         else if (attackType == WeaponAttackType.Thrust)
         {
@@ -82,6 +93,14 @@ public class WeaponDefinitionSOEditor : Editor
             EditorGUILayout.LabelField("Thrust", EditorStyles.boldLabel);
             DrawProperty("thrustDistance");
             DrawProperty("thrustWidth");
+
+            EditorGUILayout.Space(4f);
+            EditorGUILayout.LabelField("Melee Visuals", EditorStyles.boldLabel);
+            DrawProperty("thrustVisualPullbackFactor");
+            DrawProperty("thrustVisualLungeFactor");
+            DrawProperty("thrustVisualStretchFactor");
+            DrawProperty("meleeVisualPulseScaleAmount");
+            DrawProperty("meleeVisualPulseBlend");
         }
     }
 

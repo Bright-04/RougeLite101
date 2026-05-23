@@ -40,7 +40,7 @@ MonoBehaviour:
   activeDuration: 0.055
   recoveryDuration: 0.1
   slashArcDegrees: 100
-  slashRange: 1.8
+  slashRange: 2.5
   thrustDistance: 1
   thrustWidth: 0.35
   slashVisualExtraAnticipationDegrees: 6
@@ -48,9 +48,9 @@ MonoBehaviour:
   thrustVisualPullbackFactor: -1
   thrustVisualLungeFactor: -1
   thrustVisualStretchFactor: -1
-  slashVfxLifetime: 0.12
-  slashVfxStartScaleMultiplier: 1.18
-  slashVfxEndScaleMultiplier: 0.82
+  slashVfxLifetime: 0.5
+  slashVfxStartScaleMultiplier: 0.2
+  slashVfxEndScaleMultiplier: 0.2
   slashVfxFadeOut: 1
   meleeVisualPulseScaleAmount: 0.08
   meleeVisualPulseBlend: 0.75
