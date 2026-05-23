@@ -24,6 +24,7 @@ public class ExitDoor : MonoBehaviour
     {
         if (_consumed) return;
         if (!other.CompareTag("Player")) return;
+        if (RunResultController.Instance != null && RunResultController.Instance.IsRunFinished) return;
 
         _consumed = true;
 

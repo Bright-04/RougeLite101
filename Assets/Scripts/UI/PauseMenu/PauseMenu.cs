@@ -47,6 +47,12 @@ public class PauseMenu : MonoBehaviour
 
     public void Pause()
     {
+        if (RunResultController.Instance != null &&
+            (RunResultController.Instance.IsResultActive || RunResultController.Instance.IsRunFinished))
+        {
+            return;
+        }
+
         if (isPaused && !InputManager.Instance.IsUIActive()) return;
 
         isPaused = true;
@@ -70,6 +76,17 @@ public class PauseMenu : MonoBehaviour
         InputManager.Instance.DisableUIMap();
 
         Debug.Log("Game RESUMED");
+    }
+
+    public void HideForSystemOverlay()
+    {
+        if (pauseCanvas == null)
+        {
+            return;
+        }
+
+        isPaused = false;
+        pauseCanvas.SetActive(false);
     }
 
     public void Quit()

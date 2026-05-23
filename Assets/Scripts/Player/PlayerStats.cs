@@ -5,6 +5,7 @@ public class PlayerStats : MonoBehaviour
 {
     [SerializeField] private EquipmentManager equipmentManager;
     [SerializeField] private EquipmentController equipmentController;
+    [SerializeField] private string fallbackHubSceneName = "GameHome";
 
     public float maxHP = 100;
     public float currentHP;
@@ -30,6 +31,7 @@ public class PlayerStats : MonoBehaviour
     private float damageTimer = 0;
     private float armorMaxHealthBonus;
     private float armorDefenseBonus;
+    private bool isDead;
 
     public float currentExp = 0;
     public float levelUpExp = 10;
@@ -68,6 +70,11 @@ public class PlayerStats : MonoBehaviour
 
     private void Update()
     {
+        if (isDead)
+        {
+            return;
+        }
+
         Regenerate();
 
         if (damageTimer > 0)
@@ -99,6 +106,11 @@ public class PlayerStats : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (isDead)
+        {
+            return;
+        }
+
         if (damageTimer > 0)
         {
             Debug.Log("Damage blocked by cooldown");
@@ -115,7 +127,6 @@ public class PlayerStats : MonoBehaviour
         if (currentHP <= 0)
         {
             Die();
-            Respawn();
         }
 
     }
@@ -123,11 +134,33 @@ public class PlayerStats : MonoBehaviour
 
     private void Die()
     {
-        // TODO: Implement proper death handling (game over screen, restart, etc.)
+        if (isDead)
+        {
+            return;
+        }
+
+        isDead = true;
         Debug.Log("Player is dead");
+
+        RunResultController runResultController = RunResultController.Instance != null
+            ? RunResultController.Instance
+            : FindAnyObjectByType<RunResultController>(FindObjectsInactive.Include);
+
+        if (runResultController == null)
+        {
+            Debug.LogError("PlayerStats: RunResultController not found. Falling back to hub return.", this);
+            RespawnToHubFallback();
+            return;
+        }
+
+        if (!runResultController.ShowLose(this))
+        {
+            Debug.LogError("PlayerStats: Failed to show lose result UI. Falling back to hub return.", this);
+            RespawnToHubFallback();
+        }
     }
 
-    private void Respawn()
+    private void RespawnToHubFallback()
     {
         var player = GameObject.FindGameObjectWithTag("Player");
         if (player)
@@ -142,12 +175,13 @@ public class PlayerStats : MonoBehaviour
             ResetStatsOnRespawn();
             player.transform.position = Vector3.zero;
 
-            SceneManager.LoadScene("GameHome");
+            SceneManager.LoadScene(fallbackHubSceneName);
         }
     }
 
     private void ResetStatsOnRespawn()
     {
+        isDead = false;
         currentHP = GetTotalMaxHP();
         currentMana = maxMana;
         currentStamina = maxStamina;

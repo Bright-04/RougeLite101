@@ -86,6 +86,7 @@ public class DungeonManager : MonoBehaviour
         SpawnRooms();
         SpawnCorridors(theme);
         PlacePlayerInSpawnRoom();
+        RunResultController.Instance?.RefreshBossDeathSubscription();
     }
 
     private ThemeSO GetCurrentTheme()
@@ -562,6 +563,12 @@ public class DungeonManager : MonoBehaviour
 
     public void LoadNextFloor()
     {
+        if (RunResultController.Instance != null && RunResultController.Instance.IsRunFinished)
+        {
+            Debug.Log("DungeonManager: Ignoring next floor request because the run is already finished.");
+            return;
+        }
+
         currentFloor++;
 
         Debug.Log("Loading Floor: " + currentFloor);
@@ -570,5 +577,29 @@ public class DungeonManager : MonoBehaviour
             currentThemeIndex += 1;
         }
         GenerateFloor();
+    }
+
+    public bool IsCurrentFloorBossFloor()
+    {
+        return currentFloor % bossEveryXFloor == 0;
+    }
+
+    public EnemyDeathNotifier GetBossDeathNotifier()
+    {
+        foreach (RoomNode node in _roomMap.Values)
+        {
+            if (node.roomType != RoomType.Boss || node.spawnedInstance == null)
+            {
+                continue;
+            }
+
+            EnemyDeathNotifier notifier = node.spawnedInstance.GetComponentInChildren<EnemyDeathNotifier>();
+            if (notifier != null)
+            {
+                return notifier;
+            }
+        }
+
+        return null;
     }
 }
