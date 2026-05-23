@@ -200,6 +200,35 @@ public class EquipmentManager : MonoBehaviour
         ReplaceWeaponAndActivateInternal(targetSlot, newWeaponDef, bypassTestingOverride: true);
     }
 
+    public void RefreshEquippedWeapons(WeaponDefinitionSO changedDefinition)
+    {
+        if (changedDefinition == null)
+        {
+            return;
+        }
+
+        bool refreshedMain = RefreshEquippedWeapon(WeaponSlot.Main, changedDefinition);
+        bool refreshedSub = RefreshEquippedWeapon(WeaponSlot.Sub, changedDefinition);
+        bool refreshedActiveSlot = activeSlot == WeaponSlot.Main ? refreshedMain : refreshedSub;
+
+        if (!refreshedMain && !refreshedSub)
+        {
+            return;
+        }
+
+        RefreshWeaponObjectVisibility();
+
+        if (refreshedActiveSlot)
+        {
+            Weapon activeWeapon = GetWeaponInstance(activeSlot);
+            WeaponDefinitionSO activeDefinition = GetWeaponDefinition(activeSlot);
+            if (activeWeapon != null && activeDefinition != null)
+            {
+                weaponController?.SetCurrentWeapon(activeWeapon, activeDefinition);
+            }
+        }
+    }
+
     public void SetTestingWeaponOverride(bool enabled, UnityEngine.Object overrideOwner = null)
     {
         if (enabled)
@@ -551,6 +580,27 @@ public class EquipmentManager : MonoBehaviour
     private Weapon GetWeaponInstance(WeaponSlot slot)
     {
         return slot == WeaponSlot.Main ? mainWeaponInstance : subWeaponInstance;
+    }
+
+    private bool RefreshEquippedWeapon(WeaponSlot slot, WeaponDefinitionSO changedDefinition)
+    {
+        WeaponDefinitionSO currentDefinition = GetWeaponDefinition(slot);
+        Weapon currentWeapon = GetWeaponInstance(slot);
+
+        if (currentDefinition != changedDefinition || currentWeapon == null)
+        {
+            return false;
+        }
+
+        currentWeapon.Initialize(currentDefinition);
+        OnWeaponChanged?.Invoke(slot, currentDefinition);
+
+        if (slot == activeSlot && weaponController != null)
+        {
+            weaponController.SetCurrentWeapon(currentWeapon, currentDefinition);
+        }
+
+        return true;
     }
 
     private void SetActiveSlot(WeaponSlot slot, bool forceEvent)

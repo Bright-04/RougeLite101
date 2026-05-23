@@ -9,6 +9,10 @@ public static class WeaponRuntimeValidationMenu
     private const string WoodenSwordPath = "Assets/ScriptableObjects/Weapons/Definitions/wooden_sword.asset";
     private const string WoodenStaffPath = "Assets/ScriptableObjects/Weapons/Definitions/wooden_staff.asset";
     private const string WoodenTridenPath = "Assets/ScriptableObjects/Weapons/Definitions/wooden_triden.asset";
+    private const string SilverSwordPath = "Assets/ScriptableObjects/Weapons/Definitions/silver_sword.asset";
+    private const string IronSpearPath = "Assets/ScriptableObjects/Weapons/Definitions/iron_spear.asset";
+    private const string IronBowPath = "Assets/ScriptableObjects/Weapons/Definitions/iron_bow.asset";
+    private const string StaffFirePath = "Assets/ScriptableObjects/Weapons/Definitions/staff_fire.asset";
 
     [MenuItem("Tools/Weapons/Validation/Equip Wooden Bow In Play Mode")]
     private static void EquipWoodenBowInPlayMode() => EquipWeaponInPlayMode(WoodenBowPath);
@@ -21,6 +25,18 @@ public static class WeaponRuntimeValidationMenu
 
     [MenuItem("Tools/Weapons/Validation/Equip Wooden Triden In Play Mode")]
     private static void EquipWoodenTridenInPlayMode() => EquipWeaponInPlayMode(WoodenTridenPath);
+
+    [MenuItem("Tools/Weapons/Validation/Equip Silver Sword In Play Mode")]
+    private static void EquipSilverSwordInPlayMode() => EquipWeaponInPlayMode(SilverSwordPath);
+
+    [MenuItem("Tools/Weapons/Validation/Equip Iron Spear In Play Mode")]
+    private static void EquipIronSpearInPlayMode() => EquipWeaponInPlayMode(IronSpearPath);
+
+    [MenuItem("Tools/Weapons/Validation/Equip Iron Bow In Play Mode")]
+    private static void EquipIronBowInPlayMode() => EquipWeaponInPlayMode(IronBowPath);
+
+    [MenuItem("Tools/Weapons/Validation/Equip Fire Staff In Play Mode")]
+    private static void EquipFireStaffInPlayMode() => EquipWeaponInPlayMode(StaffFirePath);
 
     [MenuItem("Tools/Weapons/Validation/Log Active Weapon Diagnostics")]
     private static void LogActiveWeaponDiagnostics()
@@ -112,6 +128,10 @@ public static class WeaponRuntimeValidationMenu
     [MenuItem("Tools/Weapons/Validation/Equip Wooden Sword In Play Mode", true)]
     [MenuItem("Tools/Weapons/Validation/Equip Wooden Staff In Play Mode", true)]
     [MenuItem("Tools/Weapons/Validation/Equip Wooden Triden In Play Mode", true)]
+    [MenuItem("Tools/Weapons/Validation/Equip Silver Sword In Play Mode", true)]
+    [MenuItem("Tools/Weapons/Validation/Equip Iron Spear In Play Mode", true)]
+    [MenuItem("Tools/Weapons/Validation/Equip Iron Bow In Play Mode", true)]
+    [MenuItem("Tools/Weapons/Validation/Equip Fire Staff In Play Mode", true)]
     [MenuItem("Tools/Weapons/Validation/Log Active Weapon Diagnostics", true)]
     [MenuItem("Tools/Weapons/Validation/Log Active Weapon Hierarchy", true)]
     [MenuItem("Tools/Weapons/Validation/Use Active Weapon", true)]

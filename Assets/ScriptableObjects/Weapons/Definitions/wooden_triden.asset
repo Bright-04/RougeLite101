@@ -41,7 +41,7 @@ MonoBehaviour:
   recoveryDuration: 0.09
   slashArcDegrees: 92
   slashRange: 1.55
-  thrustDistance: 1.65
+  thrustDistance: 3
   thrustWidth: 0.42
   slashVisualExtraAnticipationDegrees: 0
   slashVisualExtraFollowThroughDegrees: 0

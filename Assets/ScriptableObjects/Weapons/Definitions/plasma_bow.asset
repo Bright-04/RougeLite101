@@ -29,11 +29,36 @@ MonoBehaviour:
   - 
   archetype: 8
   alignmentPreset: {fileID: 11400000, guid: 66666666666666666666666666666666, type: 2}
-  handlingMode: 1
+  attackType: 3
   gripPointOffset: {x: 0.24, y: 0, z: 0}
+  visualScale: 4.5
+  rotationOffsetDegrees: 135
+  damage: 17
+  cooldown: 0.55
+  knockback: 1
+  anticipationDuration: 0.05
+  activeDuration: 0.08
+  recoveryDuration: 0.12
+  slashArcDegrees: 90
+  slashRange: 1
+  thrustDistance: 1
+  thrustWidth: 0.35
+  slashVisualExtraAnticipationDegrees: 0
+  slashVisualExtraFollowThroughDegrees: 0
+  thrustVisualPullbackFactor: -1
+  thrustVisualLungeFactor: -1
+  thrustVisualStretchFactor: -1
+  slashVfxLifetime: -1
+  slashVfxStartScaleMultiplier: 0
+  slashVfxEndScaleMultiplier: 0
+  slashVfxFadeOut: 0
+  meleeVisualPulseScaleAmount: 0
+  meleeVisualPulseBlend: 0
+  rigPointSource: 0
+  handlingMode: 1
   aimPointOffset: {x: 0.46, y: 0, z: 0}
   localRotationOffset: {x: 0, y: 0, z: -45}
-  visualScale: 4.5
+  visualScaleSpace: 0
   localPositionOffset: {x: 0, y: 0, z: 0}
   flipBehavior: 0
   projectileSpawnPointOffset: {x: 0, y: 0, z: 0}
@@ -41,7 +66,6 @@ MonoBehaviour:
   weaponPrefab: {fileID: 8184291277002341734, guid: 01ae4c397649f6d4da07d86edd0b44d6, type: 3}
   weaponType: 1
   baseDamage: 17
-  cooldown: 0.55
   range: 13.2
   hitboxDistance: 0.15
   hitboxScale: {x: 2, y: 2, z: 1}

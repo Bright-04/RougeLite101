@@ -19,7 +19,11 @@ public class WeaponDefinitionSOEditor : Editor
         EditorGUILayout.Space(8f);
         DrawAdvancedLegacy();
 
-        serializedObject.ApplyModifiedProperties();
+        if (serializedObject.ApplyModifiedProperties() && EditorApplication.isPlaying)
+        {
+            WeaponDefinitionSO changedDefinition = (WeaponDefinitionSO)target;
+            EditorApplication.delayCall += () => RefreshEquippedWeapons(changedDefinition);
+        }
     }
 
     private void DrawToolbar()
@@ -166,5 +170,21 @@ public class WeaponDefinitionSOEditor : Editor
         }
 
         EditorGUILayout.PropertyField(property, new GUIContent(label), true);
+    }
+
+    private static void RefreshEquippedWeapons(WeaponDefinitionSO changedDefinition)
+    {
+        if (changedDefinition == null)
+        {
+            return;
+        }
+
+        EquipmentManager equipmentManager = Object.FindAnyObjectByType<EquipmentManager>();
+        if (equipmentManager == null)
+        {
+            return;
+        }
+
+        equipmentManager.RefreshEquippedWeapons(changedDefinition);
     }
 }
