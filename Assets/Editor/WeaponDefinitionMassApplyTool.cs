@@ -76,6 +76,25 @@ public static class WeaponDefinitionMassApplyTool
         PrintReport(report, applyChanges: false, validationSummary: report.ValidationSummary);
     }
 
+    [MenuItem(MenuRoot + "Dry Run UsePresetRig Legacy Cleanup")]
+    public static void DryRunUsePresetRigLegacyCleanup()
+    {
+        ExecuteLegacyCleanup(applyChanges: false);
+    }
+
+    [MenuItem(MenuRoot + "Apply UsePresetRig Legacy Cleanup")]
+    public static void ApplyUsePresetRigLegacyCleanup()
+    {
+        ExecuteLegacyCleanup(applyChanges: true);
+    }
+
+    [MenuItem(MenuRoot + "Validate UsePresetRig Legacy Cleanup")]
+    public static void ValidateUsePresetRigLegacyCleanup()
+    {
+        MigrationReport report = BuildValidationOnlyReport();
+        PrintReport(report, applyChanges: false, validationSummary: report.ValidationSummary);
+    }
+
     private static void Execute(bool applyChanges)
     {
         MigrationReport report = new MigrationReport();
@@ -210,6 +229,8 @@ public static class WeaponDefinitionMassApplyTool
         AssetRawState rawState,
         AssetChangeReport report)
     {
+        bool targetUsesPresetRig = DetermineTargetUsesPresetRig(definition, template, rawState);
+
         SetEnumIfMissingOrDefault(serializedObject, rawState, "archetype", (int)template.Archetype, report, (int)WeaponArchetype.Generic);
         SetObjectReferenceIfMissingOrNull(serializedObject, rawState, "alignmentPreset", template.AlignmentPreset, report);
         SetEnumIfMissingOrDefault(serializedObject, rawState, "attackType", (int)profile.AttackType, report, (int)WeaponAttackType.None);
@@ -223,10 +244,13 @@ public static class WeaponDefinitionMassApplyTool
         // Legacy fallback offsets are only filled when the asset predates these fields and the template
         // carries a reusable value for the archetype.
         SetVector3IfMissing(serializedObject, rawState, "gripPointOffset", template.GripPointOffset, report);
-        SetVector3IfMissing(serializedObject, rawState, "aimPointOffset", template.AimPointOffset, report);
-        SetVector3IfMissing(serializedObject, rawState, "localRotationOffset", template.LocalRotationOffset, report);
-        SetVector3IfMissing(serializedObject, rawState, "localPositionOffset", template.LocalPositionOffset, report);
-        SetVector3IfMissing(serializedObject, rawState, "projectileSpawnPointOffset", template.ProjectileSpawnPointOffset, report);
+        if (!targetUsesPresetRig)
+        {
+            SetVector3IfMissing(serializedObject, rawState, "aimPointOffset", template.AimPointOffset, report);
+            SetVector3IfMissing(serializedObject, rawState, "localRotationOffset", template.LocalRotationOffset, report);
+            SetVector3IfMissing(serializedObject, rawState, "localPositionOffset", template.LocalPositionOffset, report);
+            SetVector3IfMissing(serializedObject, rawState, "projectileSpawnPointOffset", template.ProjectileSpawnPointOffset, report);
+        }
         SetVector3IfMissing(serializedObject, rawState, "slashVfxOffset", template.SlashVfxOffset, report);
         SetFloatIfMissingOrInvalid(serializedObject, rawState, "visualScale", template.VisualScale, report, value => value <= 0f || !float.IsFinite(value));
 
@@ -373,6 +397,109 @@ public static class WeaponDefinitionMassApplyTool
         }
 
         return definitions;
+    }
+
+    private static void ExecuteLegacyCleanup(bool applyChanges)
+    {
+        MigrationReport report = new MigrationReport();
+        List<WeaponDefinitionSO> touchedDefinitions = new List<WeaponDefinitionSO>();
+
+        for (int profileIndex = 0; profileIndex < Profiles.Length; profileIndex++)
+        {
+            GroupProfile profile = Profiles[profileIndex];
+            GroupReport groupReport = new GroupReport(profile.GroupName, profile.TemplateName);
+            report.Groups.Add(groupReport);
+
+            for (int assetIndex = 0; assetIndex < profile.WeaponNames.Length; assetIndex++)
+            {
+                string weaponName = profile.WeaponNames[assetIndex];
+                WeaponDefinitionSO definition = FindWeaponDefinition(weaponName, out _);
+                if (definition == null)
+                {
+                    groupReport.MissingAssets.Add(weaponName);
+                    continue;
+                }
+
+                SerializedObject serializedObject = new SerializedObject(definition);
+                serializedObject.Update();
+                AssetChangeReport assetReport = BuildLegacyCleanupReport(profile, definition, serializedObject);
+                groupReport.AssetReports.Add(assetReport);
+
+                if (assetReport.Warnings.Count > 0)
+                {
+                    groupReport.ManualReviewWeaponNames.Add(definition.name);
+                }
+
+                if (!assetReport.WasChanged)
+                {
+                    continue;
+                }
+
+                groupReport.UpdatedWeaponNames.Add(definition.name);
+                touchedDefinitions.Add(definition);
+                if (!applyChanges)
+                {
+                    continue;
+                }
+
+                Undo.RecordObject(definition, "UsePresetRig Legacy Cleanup");
+                serializedObject.ApplyModifiedPropertiesWithoutUndo();
+                EditorUtility.SetDirty(definition);
+            }
+        }
+
+        if (applyChanges && touchedDefinitions.Count > 0)
+        {
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+
+        List<WeaponDefinitionSO> targetDefinitions = LoadTargetDefinitions(report);
+        report.ValidationSummary = WeaponDefinitionValidator.BuildSummary(targetDefinitions);
+        PrintReport(report, applyChanges, report.ValidationSummary);
+    }
+
+    private static AssetChangeReport BuildLegacyCleanupReport(
+        GroupProfile profile,
+        WeaponDefinitionSO definition,
+        SerializedObject serializedObject)
+    {
+        AssetChangeReport report = new AssetChangeReport(profile.GroupName, definition.name);
+
+        if (definition.RigPointSource != WeaponRigPointSourceMode.UsePresetRig)
+        {
+            report.Warnings.Add("Skipped: weapon does not use UsePresetRig.");
+            return report;
+        }
+
+        if (!WeaponDefinitionValidator.HasPresetPointSupport(definition))
+        {
+            report.Warnings.Add("Skipped: preset point support is missing, so cleanup could alter fallback behavior.");
+            return report;
+        }
+
+        ClearVector3IfNonZero(serializedObject.FindProperty("aimPointOffset"), "aimPointOffset", report);
+        ClearVector3IfNonZero(serializedObject.FindProperty("localPositionOffset"), "localPositionOffset", report);
+        ClearVector3IfNonZero(serializedObject.FindProperty("projectileSpawnPointOffset"), "projectileSpawnPointOffset", report);
+        ClearVector3IfNonZero(serializedObject.FindProperty("localRotationOffset"), "localRotationOffset", report);
+
+        if ((profile.AttackType == WeaponAttackType.Projectile || profile.AttackType == WeaponAttackType.MagicProjectile)
+            && PrefabRetainsShootPointReferences(definition))
+        {
+            report.Warnings.Add("Retained prefab shoot point references by design for non-preset compatibility.");
+        }
+
+        return report;
+    }
+
+    private static bool DetermineTargetUsesPresetRig(WeaponDefinitionSO definition, WeaponDefinitionSO template, AssetRawState rawState)
+    {
+        if (rawState.HasField("rigPointSource"))
+        {
+            return definition != null && definition.RigPointSource == WeaponRigPointSourceMode.UsePresetRig;
+        }
+
+        return template != null && template.RigPointSource == WeaponRigPointSourceMode.UsePresetRig;
     }
 
     private static WeaponDefinitionSO FindWeaponDefinition(string assetName, out string assetPath)
@@ -626,6 +753,46 @@ public static class WeaponDefinitionMassApplyTool
             && Mathf.Abs(value.z) < 0.0001f;
     }
 
+    private static void ClearVector3IfNonZero(SerializedProperty property, string propertyName, AssetChangeReport report)
+    {
+        if (property == null || property.propertyType != SerializedPropertyType.Vector3)
+        {
+            report.Warnings.Add($"Property '{propertyName}' was not found.");
+            return;
+        }
+
+        if (IsZeroVector(property.vector3Value))
+        {
+            return;
+        }
+
+        report.RecordCleanup(propertyName, FormatVector(property.vector3Value), FormatVector(Vector3.zero));
+        property.vector3Value = Vector3.zero;
+    }
+
+    private static bool PrefabRetainsShootPointReferences(WeaponDefinitionSO definition)
+    {
+        if (definition == null || definition.WeaponPrefab == null)
+        {
+            return false;
+        }
+
+        ProjectileWeapon projectileWeapon = definition.WeaponPrefab.GetComponent<ProjectileWeapon>();
+        if (projectileWeapon == null)
+        {
+            return false;
+        }
+
+        SerializedObject serializedObject = new SerializedObject(projectileWeapon);
+        return HasObjectReference(serializedObject.FindProperty("shootPoint"))
+            || HasObjectReference(serializedObject.FindProperty("defaultShootPoint"));
+    }
+
+    private static bool HasObjectReference(SerializedProperty property)
+    {
+        return property != null && property.propertyType == SerializedPropertyType.ObjectReference && property.objectReferenceValue != null;
+    }
+
     private static string FormatVector(Vector3 value)
     {
         return $"({value.x:0.###}, {value.y:0.###}, {value.z:0.###})";
@@ -662,6 +829,11 @@ public static class WeaponDefinitionMassApplyTool
             {
                 Debug.LogWarning($"{LogPrefix} Group={group.GroupName} missing assets: {string.Join(", ", group.MissingAssets)}");
             }
+
+            if (group.ManualReviewWeaponNames.Count > 0)
+            {
+                Debug.Log($"{LogPrefix} Group={group.GroupName} manual-review assets: {string.Join(", ", group.ManualReviewWeaponNames)}");
+            }
         }
 
         if (report.MissingTemplates.Count > 0)
@@ -682,7 +854,28 @@ public static class WeaponDefinitionMassApplyTool
             {
                 Debug.LogWarning($"{LogPrefix} Validation warning: {validationSummary.Warnings[i]}");
             }
+
+            foreach (KeyValuePair<string, List<string>> entry in validationSummary.GroupedInfos)
+            {
+                Debug.Log($"{LogPrefix} Validation grouped info: {entry.Key}: {entry.Value.Count} asset(s) [{FormatGroupedAssetNames(entry.Value)}]");
+            }
         }
+    }
+
+    private static string FormatGroupedAssetNames(List<string> assetNames)
+    {
+        const int previewLimit = 8;
+        if (assetNames == null || assetNames.Count == 0)
+        {
+            return "none";
+        }
+
+        if (assetNames.Count <= previewLimit)
+        {
+            return string.Join(", ", assetNames);
+        }
+
+        return string.Join(", ", assetNames.GetRange(0, previewLimit)) + $", +{assetNames.Count - previewLimit} more";
     }
 
     private sealed class GroupProfile
@@ -714,6 +907,7 @@ public static class WeaponDefinitionMassApplyTool
         public readonly string TemplateName;
         public readonly List<string> UpdatedWeaponNames = new List<string>();
         public readonly List<string> MissingAssets = new List<string>();
+        public readonly List<string> ManualReviewWeaponNames = new List<string>();
         public readonly List<AssetChangeReport> AssetReports = new List<AssetChangeReport>();
 
         public GroupReport(string groupName, string templateName)
@@ -742,6 +936,11 @@ public static class WeaponDefinitionMassApplyTool
         {
             string reason = fieldWasMissing ? "missing" : "invalid";
             Changes.Add($"{propertyName}: {beforeValue} -> {afterValue} ({reason})");
+        }
+
+        public void RecordCleanup(string propertyName, string beforeValue, string afterValue)
+        {
+            Changes.Add($"{propertyName}: {beforeValue} -> {afterValue} (cleanup)");
         }
     }
 
