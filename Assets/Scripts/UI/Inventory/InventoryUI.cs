@@ -24,6 +24,9 @@ public class InventoryUI : MonoBehaviour
     [SerializeField]
     private InventoryDescriptionUI itemDescription;
 
+    [SerializeField]
+    public TransferUI transferUI;
+
     public event Action<int> OnDescriptionRequested,
                 OnItemActionRequested,
                 OnStartDragging;
@@ -91,8 +94,7 @@ public class InventoryUI : MonoBehaviour
         itemsList[itemIndex].Select();
     }
 
-    public void UpdateData(int itemIndex,
-        Sprite itemImage, int itemQuantity)
+    public void UpdateData(int itemIndex, Sprite itemImage, int itemQuantity)
     {
         if (itemsList.Count > itemIndex)
         {
@@ -175,12 +177,14 @@ public class InventoryUI : MonoBehaviour
         actionPanel.Toggle(false);
         inventoryActive = false;
         gameObject.SetActive(false);
+        HideTransferUI();
     }
 
     public void ResetSelection()
     {
         itemDescription.ResetDescription();
         DeselectAllItems();
+        HideTransferUI();
     }
 
     //item action panel
@@ -201,7 +205,18 @@ public class InventoryUI : MonoBehaviour
         {
             item.Deselect();
         }
-        actionPanel.Toggle(false);
+        actionPanel.Toggle(false);      
+    }
+
+    //TransferUI
+    public void ShowTransferUI(InventorySO source, InventorySO target, int slotIndex)
+    {
+        transferUI.Open(source, target, slotIndex);
+    }
+
+    public void HideTransferUI()
+    {
+        transferUI.Close();
     }
 
 

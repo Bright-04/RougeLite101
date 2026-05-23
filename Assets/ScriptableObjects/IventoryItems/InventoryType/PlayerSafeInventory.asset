@@ -13,26 +13,26 @@ MonoBehaviour:
   m_Name: PlayerSafeInventory
   m_EditorClassIdentifier: Assembly-CSharp::InventorySO
   inventoryItems:
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
-  - quantity: 0
-    item: {fileID: 0}
+  - quantity: 99
+    item: {fileID: 11400000, guid: 8aaa6e5adba15234198233d86fe4e629, type: 2}
+  - quantity: 1
+    item: {fileID: 11400000, guid: 68a110418a3886947ba22ae1e05fe483, type: 2}
+  - quantity: 1
+    item: {fileID: 11400000, guid: 68a110418a3886947ba22ae1e05fe483, type: 2}
+  - quantity: 1
+    item: {fileID: 11400000, guid: 68a110418a3886947ba22ae1e05fe483, type: 2}
+  - quantity: 1
+    item: {fileID: 11400000, guid: 68a110418a3886947ba22ae1e05fe483, type: 2}
+  - quantity: 1
+    item: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
+  - quantity: 1
+    item: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
+  - quantity: 1
+    item: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
+  - quantity: 1
+    item: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
+  - quantity: 1
+    item: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
   - quantity: 0
     item: {fileID: 0}
   - quantity: 0

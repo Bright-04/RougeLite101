@@ -69,11 +69,13 @@ public class InventoryController : MonoBehaviour
         inventoryUI.OnSwapItems -= HandleSwapItems;
         inventoryUI.OnStartDragging -= HandleDragging;
         inventoryUI.OnItemActionRequested -= HandleItemActionRequest;
+        inventoryUI.transferUI.OnTransferFinished -= HandleDescriptionRequest;
         // Rồi mới subscribe lại
         inventoryUI.OnDescriptionRequested += HandleDescriptionRequest;
         inventoryUI.OnSwapItems += HandleSwapItems;
         inventoryUI.OnStartDragging += HandleDragging;
         inventoryUI.OnItemActionRequested += HandleItemActionRequest;
+        inventoryUI.transferUI.OnTransferFinished += HandleDescriptionRequest;
     }
 
     private void PrepareInventoryData()
@@ -114,9 +116,15 @@ public class InventoryController : MonoBehaviour
             inventoryUI.ResetSelection();
             return;
         }
+
+        if (CurrentInventoryData == safeInventoryData)
+        {
+            inventoryUI.ShowTransferUI(safeInventoryData, dungeonInventoryData, itemIndex);
+        }
         ItemSO item = inventoryItem.item;
         string description = PrepareDescription(inventoryItem);
         inventoryUI.UpdateDescription(itemIndex, item.ItemImage, item.Name, description);
+
 
     }
 
@@ -174,20 +182,15 @@ public class InventoryController : MonoBehaviour
     
     }
 
-       private void DropItem(int itemIndex, int quantity)
+    private void DropItem(int itemIndex, int quantity)
     {
         InventoryItem inventoryItem = CurrentInventoryData.GetItemAt(itemIndex);
 
-        if (inventoryItem.IsEmpty)
-            return;
+        if (inventoryItem.IsEmpty) return;
 
         Vector3 dropPosition = playerTransform.position + playerTransform.right * 1f;
 
-        GameObject droppedObj = Instantiate(
-            pickupableItemPrefab,
-            dropPosition,
-            Quaternion.identity
-        );
+        GameObject droppedObj = Instantiate(pickupableItemPrefab, dropPosition, Quaternion.identity);
 
         Item droppedItem = droppedObj.GetComponent<Item>();
 

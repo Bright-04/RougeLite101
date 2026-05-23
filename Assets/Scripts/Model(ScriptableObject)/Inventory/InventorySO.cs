@@ -49,6 +49,27 @@ public class InventorySO : ScriptableObject
         Clear(); // clear dungeon sau khi chuyển
     }
 
+    public void TransferItemTo(InventorySO targetInventory, int sourceIndex, int amount)
+    {
+        if (sourceIndex < 0 || sourceIndex >= inventoryItems.Count) return;
+
+        InventoryItem sourceItem = inventoryItems[sourceIndex];
+
+        if (sourceItem.IsEmpty) return;
+
+        amount = Mathf.Clamp(amount, 1, sourceItem.quantity);
+
+        // thử add sang inventory target
+        int remaining = targetInventory.AddItem(sourceItem.item, amount);
+
+        int transferredAmount = amount - remaining;
+
+        if (transferredAmount <= 0) return;
+
+        // remove khỏi inventory hiện tại
+        RemoveItem(sourceIndex, transferredAmount);
+    }
+
     public int AddItem(ItemSO item, int quantity)
     {
         if (item.IsStackable == false)
