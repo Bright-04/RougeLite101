@@ -349,7 +349,6 @@ MonoBehaviour:
   amountSlider: {fileID: 4192391115982118967}
   amountText: {fileID: 4713298841957947447}
   transferButton: {fileID: 1078711427826417363}
-  quantityContainer: {fileID: 1995453065039696518}
 --- !u!1 &1244120007679065286
 GameObject:
   m_ObjectHideFlags: 0
@@ -1163,8 +1162,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

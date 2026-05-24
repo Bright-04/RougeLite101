@@ -34,6 +34,8 @@ public class PickUpSystem : MonoBehaviour
         if (item != null)
         {
             nearbyItem = item;
+
+            nearbyItem.ShowPrompt(true);
         }
     }
 
@@ -43,6 +45,7 @@ public class PickUpSystem : MonoBehaviour
 
         if (item != null && item == nearbyItem)
         {
+            nearbyItem.ShowPrompt(false);
             nearbyItem = null;
         }
     }
@@ -61,6 +64,7 @@ public class PickUpSystem : MonoBehaviour
 
         if (reminder == 0)
         {
+            nearbyItem.ShowPrompt(false);
             nearbyItem.DestroyItem();
             nearbyItem = null;
         }

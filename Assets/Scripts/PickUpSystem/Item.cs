@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class Item : MonoBehaviour
 {
@@ -16,9 +17,45 @@ public class Item : MonoBehaviour
     [SerializeField]
     private float duration = 0.3f;
 
+    [SerializeField] private float targetSize = 1f;
+
+    private SpriteRenderer spriteRenderer;
+
+    [SerializeField] private GameObject promptObject;
+    [SerializeField] private TextMeshPro promptText;
+    [SerializeField] private Transform background;
+
     private void Start()
     {
-        GetComponent<SpriteRenderer>().sprite = InventoryItem.ItemImage;
+        //GetComponent<SpriteRenderer>().sprite = InventoryItem.ItemImage;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        spriteRenderer.sprite = InventoryItem.ItemImage;
+
+        NormalizeSpriteSize();
+
+        promptObject.SetActive(false);
+    }
+
+    public void ShowPrompt(bool show)
+    {
+        promptObject.SetActive(show);
+
+        if (show)
+        {
+            promptText.text = $"[F] Pick Up item";
+        }    
+    }
+
+    private void NormalizeSpriteSize()
+    {
+        Bounds bounds = spriteRenderer.sprite.bounds;
+
+        float largestDimension = Mathf.Max(bounds.size.x, bounds.size.y);
+
+        float scale = targetSize / largestDimension;
+
+        transform.localScale = Vector3.one * scale;
     }
 
     public void DestroyItem()
