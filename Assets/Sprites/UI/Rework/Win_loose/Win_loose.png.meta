@@ -271,7 +271,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: panel_win_1star_full
+      name: panel_win_3star_full
       rect:
         serializedVersion: 2
         x: 10
@@ -293,7 +293,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: panel_win_2star_full
+      name: panel_win_1star_full
       rect:
         serializedVersion: 2
         x: 122
@@ -315,11 +315,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: panel_win_3star_full
+      name: panel_win_2star_full
       rect:
         serializedVersion: 2
         x: 234
-        y: 330
+        y: 331
         width: 92
         height: 76
       alignment: 0
@@ -1297,13 +1297,13 @@ TextureImporter:
       panel_lose_full: -2379634636084273098
       panel_lose_text: -136282242600814704
       panel_win_1star_blank: 4312311181721630068
-      panel_win_1star_full: 873281758322039092
+      panel_win_1star_full: 5447700636842586797
       panel_win_1star_text: 5307238418132256239
       panel_win_2star_blank: -5411736391101475037
-      panel_win_2star_full: 5447700636842586797
+      panel_win_2star_full: 5845130427276418741
       panel_win_2star_text: 8164262134821990284
       panel_win_3star_blank: 3928270933840997642
-      panel_win_3star_full: 5845130427276418741
+      panel_win_3star_full: 873281758322039092
       panel_win_3star_text: -4866806673906108959
       txt_try_again: -1724481391923542539
       txt_try_again_02: 9074669791211281896

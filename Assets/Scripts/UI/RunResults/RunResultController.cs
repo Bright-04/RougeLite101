@@ -14,6 +14,7 @@ public class RunResultController : MonoBehaviour
 
     [Header("Scene Flow")]
     [SerializeField] private string hubSceneName = "GameHome";
+    [SerializeField] private string runResultSceneName = "RunResultScene";
     [SerializeField] private Vector3 hubSpawnPosition = new Vector3(0f, 9f, 0f);
 
     public bool IsResultActive { get; private set; }
@@ -81,7 +82,7 @@ public class RunResultController : MonoBehaviour
         }
 
         string summary = RunResultRules.BuildSummaryText(RunResultType.Lose, 0, playerStats);
-        return ShowResult(RunResultType.Lose, 0, summary);
+        return TransitionToRunResultScene(RunResultType.Lose, 0, summary, playerStats);
     }
 
     public bool ShowWin(PlayerStats playerStats)
@@ -100,14 +101,40 @@ public class RunResultController : MonoBehaviour
         int stars = starRatingCalculator.CalculateStars(playerStats);
         string summary = RunResultRules.BuildSummaryText(RunResultType.Win, stars, playerStats);
 
-        if (!ShowResult(RunResultType.Win, stars, summary))
+        return TransitionToRunResultScene(RunResultType.Win, stars, summary, playerStats);
+    }
+
+    public bool TryCompleteRunFromExitPortal()
+    {
+        if (IsRunFinished)
         {
-            Debug.LogError("RunResultController could not display the win screen. Falling back to hub return.", this);
-            ReturnToHub();
+            return true;
+        }
+
+        DungeonManager dungeonManager = FindAnyObjectByType<DungeonManager>();
+        PlayerStats playerStats = FindAnyObjectByType<PlayerStats>();
+
+        if (dungeonManager == null)
+        {
+            Debug.LogError("RunResultController: Cannot complete the run from the exit portal because DungeonManager was not found.", this);
             return false;
         }
 
-        return true;
+        if (!RunResultRules.ShouldCompleteRunFromExitPortal(dungeonManager.currentFloor, dungeonManager.maxFloor))
+        {
+            Debug.LogWarning($"RunResultController: Exit portal completion was requested before the final floor. Current floor {dungeonManager.currentFloor}, max floor {dungeonManager.maxFloor}.", this);
+            return false;
+        }
+
+        if (!RunResultRules.CanShowWin(IsRunFinished, playerStats))
+        {
+            Debug.Log("RunResultController: Ignoring exit portal completion because the player is dead or missing.", this);
+            return false;
+        }
+
+        int stars = starRatingCalculator.CalculateStars(playerStats);
+        string summary = RunResultRules.BuildSummaryText(RunResultType.Win, stars, playerStats);
+        return TransitionToRunResultScene(RunResultType.Win, stars, summary, playerStats);
     }
 
     public void OnRestartPressed()
@@ -167,6 +194,7 @@ public class RunResultController : MonoBehaviour
         // UI reset, scene flow, and persistence orchestration stay here.
         ResetViewState();
         RestoreGameplayState();
+        Time.timeScale = 1f;
         AutoSaveManager.TrySaveActiveSceneState();
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -180,7 +208,7 @@ public class RunResultController : MonoBehaviour
 
     private void RestoreGameplayState()
     {
-        if (Time.timeScale == 0f)
+        if (Time.timeScale != 1f)
         {
             Time.timeScale = 1f;
         }
@@ -210,7 +238,7 @@ public class RunResultController : MonoBehaviour
             return;
         }
 
-        UnsubscribeFromBossEncounter();
+
 
         if (pendingBossClearRoutine != null)
         {
@@ -286,7 +314,29 @@ public class RunResultController : MonoBehaviour
             yield break;
         }
 
-        ShowWin(playerStats);
+        Debug.Log($"RunResultController: Final boss on floor {dungeonManager.currentFloor} cleared. Run will complete when the player enters the exit portal.");
+    }
+
+    private bool TransitionToRunResultScene(RunResultType resultType, int stars, string summary, PlayerStats playerStats)
+    {
+        if (playerStats != null)
+        {
+            playerStats.ResetTransientState();
+        }
+
+        IsRunFinished = true;
+        IsResultActive = true;
+
+        PauseMenu pauseMenu = FindAnyObjectByType<PauseMenu>(FindObjectsInactive.Include);
+        if (pauseMenu != null)
+        {
+            pauseMenu.HideForSystemOverlay();
+        }
+
+        RestoreGameplayState();
+        RunResultSession.SetResult(resultType, stars, summary);
+        SceneManager.LoadScene(runResultSceneName);
+        return true;
     }
 
     private void CancelPendingBossClear()

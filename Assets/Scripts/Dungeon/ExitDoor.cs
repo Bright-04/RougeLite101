@@ -32,11 +32,34 @@ public class ExitDoor : MonoBehaviour
 
         if (_mgr != null)
         {
+            if (RunResultRules.ShouldCompleteRunFromExitPortal(_mgr.currentFloor, _mgr.maxFloor))
+            {
+                RunResultController runResultController = RunResultController.Instance != null
+                    ? RunResultController.Instance
+                    : FindAnyObjectByType<RunResultController>(FindObjectsInactive.Include);
+
+                if (runResultController == null)
+                {
+                    Debug.LogError("ExitDoor: RunResultController reference is missing for final portal completion.", this);
+                    _consumed = false;
+                    return;
+                }
+
+                if (!runResultController.TryCompleteRunFromExitPortal())
+                {
+                    Debug.LogError("ExitDoor: Final portal could not complete the run result handoff.", this);
+                    _consumed = false;
+                }
+
+                return;
+            }
+
             _mgr.LoadNextFloor();
         }
         else
         {
             Debug.LogWarning("ExitDoor: DungeonManager reference is missing.");
+            _consumed = false;
         }
     }
 }

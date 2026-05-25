@@ -35,6 +35,11 @@ public static class RunResultRules
         return currentFloor < maxFloor;
     }
 
+    public static bool ShouldCompleteRunFromExitPortal(int currentFloor, int maxFloor)
+    {
+        return currentFloor >= maxFloor;
+    }
+
     // Handles boss clear decision checks and provides a log message for ignored cases.
     // Returns true if processing should stop (i.e., ignore the boss clear), false otherwise.
     // Also outputs whether the log should be a warning.
