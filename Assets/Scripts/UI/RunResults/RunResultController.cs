@@ -75,12 +75,12 @@ public class RunResultController : MonoBehaviour
 
     public bool ShowLose(PlayerStats playerStats)
     {
-        if (IsRunFinished)
+        if (!RunResultRules.CanShowLose(IsRunFinished))
         {
             return true;
         }
 
-        string summary = BuildSummaryText(playerStats, RunResultType.Lose, 0);
+        string summary = RunResultRules.BuildSummaryText(RunResultType.Lose, 0, playerStats);
         return ShowResult(RunResultType.Lose, 0, summary);
     }
 
@@ -91,14 +91,14 @@ public class RunResultController : MonoBehaviour
             return true;
         }
 
-        if (playerStats == null || playerStats.IsDead)
+        if (!RunResultRules.CanShowWin(IsRunFinished, playerStats))
         {
             Debug.Log("RunResultController: Ignoring win because the player is dead or missing.", this);
             return false;
         }
 
         int stars = starRatingCalculator.CalculateStars(playerStats);
-        string summary = BuildSummaryText(playerStats, RunResultType.Win, stars);
+        string summary = RunResultRules.BuildSummaryText(RunResultType.Win, stars, playerStats);
 
         if (!ShowResult(RunResultType.Win, stars, summary))
         {
@@ -162,26 +162,9 @@ public class RunResultController : MonoBehaviour
         return true;
     }
 
-    private string BuildSummaryText(PlayerStats playerStats, RunResultType resultType, int stars)
-    {
-        if (playerStats == null)
-        {
-            return resultType == RunResultType.Win ? $"Stars Earned: {stars}" : "Try again from the hub.";
-        }
-
-        int currentHp = Mathf.Max(0, Mathf.RoundToInt(playerStats.currentHP));
-        int maxHp = Mathf.Max(1, Mathf.RoundToInt(playerStats.GetTotalMaxHP()));
-
-        if (resultType == RunResultType.Win)
-        {
-            return $"Stars Earned: {stars}\nHP Remaining: {currentHp}/{maxHp}";
-        }
-
-        return $"HP Remaining: {currentHp}/{maxHp}";
-    }
-
     private void ReturnToHub()
     {
+        // UI reset, scene flow, and persistence orchestration stay here.
         ResetViewState();
         RestoreGameplayState();
         AutoSaveManager.TrySaveActiveSceneState();
@@ -222,7 +205,7 @@ public class RunResultController : MonoBehaviour
 
     private void OnBossCleared()
     {
-        if (IsRunFinished)
+        if (RunResultRules.ShouldIgnoreBossClear(IsRunFinished))
         {
             return;
         }
@@ -284,34 +267,22 @@ public class RunResultController : MonoBehaviour
         yield return null;
         pendingBossClearRoutine = null;
 
-        if (IsRunFinished)
-        {
-            yield break;
-        }
-
         DungeonManager dungeonManager = FindAnyObjectByType<DungeonManager>();
-        if (dungeonManager == null)
+        PlayerStats playerStats = FindAnyObjectByType<PlayerStats>();
+
+        if (RunResultRules.TryGetBossClearBlockReason(IsRunFinished, dungeonManager, playerStats, out string logMessage, out bool isWarning))
         {
-            Debug.LogWarning("RunResultController: Boss cleared but DungeonManager was not found.");
+            if (!string.IsNullOrEmpty(logMessage))
+            {
+                if (isWarning) Debug.LogWarning(logMessage, this);
+                else Debug.Log(logMessage);
+            }
             yield break;
         }
 
-        if (!dungeonManager.IsCurrentFloorBossFloor)
-        {
-            Debug.LogWarning($"RunResultController: Ignoring BossCleared on non-boss floor {dungeonManager.currentFloor}.", this);
-            yield break;
-        }
-
-        if (dungeonManager.currentFloor < dungeonManager.maxFloor)
+        if (RunResultRules.ShouldContinueRunAfterBossClear(dungeonManager.currentFloor, dungeonManager.maxFloor))
         {
             Debug.Log($"RunResultController: Boss on floor {dungeonManager.currentFloor} cleared. Continuing run until final floor {dungeonManager.maxFloor}.");
-            yield break;
-        }
-
-        PlayerStats playerStats = FindAnyObjectByType<PlayerStats>();
-        if (playerStats == null || playerStats.IsDead || playerStats.currentHP <= 0f)
-        {
-            Debug.Log("RunResultController: Boss cleared event arrived, but player is already dead.");
             yield break;
         }
 
