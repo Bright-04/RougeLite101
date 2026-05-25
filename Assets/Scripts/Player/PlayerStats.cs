@@ -166,12 +166,7 @@ public class PlayerStats : MonoBehaviour
         var player = GameObject.FindGameObjectWithTag("Player");
         if (player)
         {
-            // Reset any ongoing flash effects
-            var flash = player.GetComponent<Flash>();
-            if (flash != null)
-            {
-                flash.ResetMaterial();
-            }
+            ResetTransientState(player);
 
             ResetStatsOnRespawn();
             player.transform.position = Vector3.zero;
@@ -187,6 +182,31 @@ public class PlayerStats : MonoBehaviour
         currentMana = maxMana;
         currentStamina = maxStamina;
         damageTimer = 0;
+    }
+
+    public void ResetTransientState()
+    {
+        ResetTransientState(gameObject);
+    }
+
+    private static void ResetTransientState(GameObject target)
+    {
+        if (target == null)
+        {
+            return;
+        }
+
+        var flash = target.GetComponent<Flash>();
+        if (flash != null)
+        {
+            flash.ResetMaterial();
+        }
+
+        var knockback = target.GetComponent<Knockback>();
+        if (knockback != null)
+        {
+            knockback.ResetState();
+        }
     }
 
     public bool TryCrit()
@@ -296,4 +316,6 @@ public class PlayerStats : MonoBehaviour
 
         currentHP = Mathf.Min(currentHP, GetTotalMaxHP());
     }
+
+    public bool IsDead => isDead;
 }

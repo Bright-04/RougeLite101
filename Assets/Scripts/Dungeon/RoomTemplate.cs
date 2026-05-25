@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class RoomTemplate : MonoBehaviour
 {
+    // Marked by DungeonManager when this instantiated room is a boss room
+    [HideInInspector]
+    public bool isBossRoom = false;
     private bool hasSpawnedEnemies = false;
     private bool roomLocked = false;
     private bool isSpawningFinished = false;
@@ -277,6 +280,17 @@ public class RoomTemplate : MonoBehaviour
             // Ghi nhận trực tiếp GameObject vào danh sách. Khi nó chết (bị Destroy), list sẽ tự cập nhật thành null.
             activeEnemies.Add(spawnedEn);
 
+            // If this room is a boss room, and the spawned enemy provides an EnemyDeathNotifier,
+            // register it with the BossEncounterController so the run result flow can react to boss death.
+            if (isBossRoom)
+            {
+                var bossNotifier = spawnedEn.GetComponentInChildren<EnemyDeathNotifier>();
+                if (bossNotifier != null)
+                {
+                    BossEncounterController.Instance?.RegisterBoss(bossNotifier);
+                    Debug.Log($"[RoomTemplate] Registered boss notifier from spawned enemy: {spawnedEn.name}");
+                }
+            }
             if (spawnProfile.spawnGradually)
             {
                 float delay = Random.Range(spawnProfile.perSpawnDelayRange.x, spawnProfile.perSpawnDelayRange.y);

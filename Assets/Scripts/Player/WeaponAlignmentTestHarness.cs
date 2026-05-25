@@ -1,4 +1,7 @@
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [ExecuteAlways]
 public sealed class WeaponAlignmentTestHarness : MonoBehaviour
@@ -29,12 +32,34 @@ public sealed class WeaponAlignmentTestHarness : MonoBehaviour
 
     private void OnEnable()
     {
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            EditorApplication.delayCall += () => { if (this != null) SyncSpritePreviews(); };
+        }
+        else
+        {
+            SyncSpritePreviews();
+        }
+#else
         SyncSpritePreviews();
+#endif
     }
 
     private void OnValidate()
     {
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            EditorApplication.delayCall += () => { if (this != null) SyncSpritePreviews(); };
+        }
+        else
+        {
+            SyncSpritePreviews();
+        }
+#else
         SyncSpritePreviews();
+#endif
     }
 
     private void Update()

@@ -21,6 +21,7 @@ public class DungeonManager : MonoBehaviour
     [Header("Floor Progression")]
     public int currentFloor = 1;
     public int bossEveryXFloor = 5;
+    public int maxFloor = 15;
 
     [Header("Themes")]
     public ThemeSO[] themes;
@@ -33,6 +34,7 @@ public class DungeonManager : MonoBehaviour
 
     public float corridorSegmentLength = 7f;
 
+    private BossEncounterController bossEncounterController;
     private System.Random _rng;
     private Dictionary<Vector2Int, RoomNode> _roomMap = new Dictionary<Vector2Int, RoomNode>();
 
@@ -43,6 +45,11 @@ public class DungeonManager : MonoBehaviour
         Vector2Int.left,
         Vector2Int.right
     };
+
+    private void Awake()
+    {
+        bossEncounterController = GetComponent<BossEncounterController>();
+    }
 
     private void Start()
     {
@@ -55,6 +62,7 @@ public class DungeonManager : MonoBehaviour
 
     public void GenerateFloor()
     {
+        bossEncounterController?.ResetEncounter();
         ClearFloor();
         _roomMap.Clear();
 
@@ -86,7 +94,6 @@ public class DungeonManager : MonoBehaviour
         SpawnRooms();
         SpawnCorridors(theme);
         PlacePlayerInSpawnRoom();
-        RunResultController.Instance?.RefreshBossDeathSubscription();
     }
 
     private ThemeSO GetCurrentTheme()
@@ -309,6 +316,17 @@ public class DungeonManager : MonoBehaviour
                 else
                 {
                     Debug.LogWarning($"{roomObj.name} has no ExitDoor component.");
+                }
+            }
+
+            if (node.roomType == RoomType.Boss)
+            {
+                // Mark the spawned room as a boss room so the RoomTemplate can register the
+                // boss notifier when the boss enemy is actually spawned (often spawn happens on player entry).
+                RoomTemplate rt = roomObj.GetComponent<RoomTemplate>();
+                if (rt != null)
+                {
+                    rt.isBossRoom = true;
                 }
             }
 
@@ -571,35 +589,21 @@ public class DungeonManager : MonoBehaviour
 
         currentFloor++;
 
+        if (currentFloor > maxFloor)
+        {
+            Debug.Log("Dungeon completed!");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("GameHome");
+            return;
+        }
+
         Debug.Log("Loading Floor: " + currentFloor);
-        if ((currentFloor-1)%5==0)
+        if ((currentFloor - 1) % 5 == 0)
         {
             currentThemeIndex += 1;
         }
+
         GenerateFloor();
     }
 
-    public bool IsCurrentFloorBossFloor()
-    {
-        return currentFloor % bossEveryXFloor == 0;
-    }
-
-    public EnemyDeathNotifier GetBossDeathNotifier()
-    {
-        foreach (RoomNode node in _roomMap.Values)
-        {
-            if (node.roomType != RoomType.Boss || node.spawnedInstance == null)
-            {
-                continue;
-            }
-
-            EnemyDeathNotifier notifier = node.spawnedInstance.GetComponentInChildren<EnemyDeathNotifier>();
-            if (notifier != null)
-            {
-                return notifier;
-            }
-        }
-
-        return null;
-    }
+    public bool IsCurrentFloorBossFloor => currentFloor > 0 && currentFloor % bossEveryXFloor == 0;
 }

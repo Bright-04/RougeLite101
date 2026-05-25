@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using System.Reflection;
 
 public class ValidateWinTrigger : MonoBehaviour
 {
@@ -17,7 +18,21 @@ public class ValidateWinTrigger : MonoBehaviour
             Debug.LogError("DungeonManager not found.");
             return;
         }
-        var bossNotifier = dm.GetBossDeathNotifier();
+
+        dm.currentFloor = dm.bossEveryXFloor;
+        var startMethod = typeof(DungeonManager).GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Instance);
+        startMethod?.Invoke(dm, null);
+        dm.GenerateFloor();
+
+        var encounter = Object.FindFirstObjectByType<BossEncounterController>();
+        if (encounter == null)
+        {
+            Debug.LogError("BossEncounterController not found.");
+            return;
+        }
+
+        var bossNotifierField = typeof(BossEncounterController).GetField("registeredBossNotifier", BindingFlags.NonPublic | BindingFlags.Instance);
+        var bossNotifier = bossNotifierField?.GetValue(encounter) as EnemyDeathNotifier;
         if (bossNotifier == null)
         {
             Debug.LogError("Boss Death Notifier not found.");

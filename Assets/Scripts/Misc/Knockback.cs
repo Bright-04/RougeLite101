@@ -6,6 +6,7 @@ public class Knockback : MonoBehaviour
     public bool gettingKnockedBack { get; private set; }
     [SerializeField] private float knockBackTime = .2f;
     private Rigidbody2D rb;
+    private Coroutine knockbackRoutine;
 
     private void Awake()
     {
@@ -14,6 +15,12 @@ public class Knockback : MonoBehaviour
 
     public void GetKnockedBack(Transform damageSource, float knockBacThrust)
     {
+        if (knockbackRoutine != null)
+        {
+            StopCoroutine(knockbackRoutine);
+            knockbackRoutine = null;
+        }
+
         gettingKnockedBack = true;
         if (rb != null)
         {
@@ -32,7 +39,7 @@ public class Knockback : MonoBehaviour
             
             Debug.Log($"Knockback applied! Force: {difference}, Velocity: {rb.linearVelocity.magnitude}");
         }
-        StartCoroutine(KnockRoutine());
+        knockbackRoutine = StartCoroutine(KnockRoutine());
     }
 
     private IEnumerator KnockRoutine()
@@ -43,6 +50,24 @@ public class Knockback : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
             rb.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
         }
+        gettingKnockedBack = false;
+        knockbackRoutine = null;
+    }
+
+    public void ResetState()
+    {
+        if (knockbackRoutine != null)
+        {
+            StopCoroutine(knockbackRoutine);
+            knockbackRoutine = null;
+        }
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
+        }
+
         gettingKnockedBack = false;
     }
 }

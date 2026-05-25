@@ -68,6 +68,15 @@ public class SlimeKingAI : MonoBehaviour
 
         if (slimeKingHealth == null)
             Debug.LogError("[SlimeKingAI] Missing SlimeKingHealth!");
+
+        // Use inspector layer name values to initialize playerLayer if unset
+        if (playerLayer == 0 && !string.IsNullOrEmpty(playerLayerName))
+        {
+            playerLayer = LayerMask.GetMask(playerLayerName);
+        }
+
+        // Touch bossLayerName to avoid unused-field warnings and optionally resolve layer index
+        int _bossLayerIndex = LayerMask.NameToLayer(bossLayerName);
     }
 
     private void Start()

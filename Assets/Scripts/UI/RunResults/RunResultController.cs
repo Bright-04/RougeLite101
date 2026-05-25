@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class RunResultController : MonoBehaviour
 {
@@ -18,7 +19,8 @@ public class RunResultController : MonoBehaviour
     public bool IsResultActive { get; private set; }
     public bool IsRunFinished { get; private set; }
 
-    private EnemyDeathNotifier subscribedBossDeathNotifier;
+    private BossEncounterController subscribedBossEncounterController;
+    private Coroutine pendingBossClearRoutine;
 
     private void Awake()
     {
@@ -46,14 +48,15 @@ public class RunResultController : MonoBehaviour
 
     private void Start()
     {
-        RefreshBossDeathSubscription();
+        SubscribeToBossEncounter();
     }
 
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneUnloaded -= OnSceneUnloaded;
-        UnsubscribeBossDeathNotifier();
+        UnsubscribeFromBossEncounter();
+        CancelPendingBossClear();
         RestoreGameplayState();
 
         if (Instance == this)
@@ -88,6 +91,12 @@ public class RunResultController : MonoBehaviour
             return true;
         }
 
+        if (playerStats == null || playerStats.IsDead)
+        {
+            Debug.Log("RunResultController: Ignoring win because the player is dead or missing.", this);
+            return false;
+        }
+
         int stars = starRatingCalculator.CalculateStars(playerStats);
         string summary = BuildSummaryText(playerStats, RunResultType.Win, stars);
 
@@ -99,31 +108,6 @@ public class RunResultController : MonoBehaviour
         }
 
         return true;
-    }
-
-    public void RefreshBossDeathSubscription()
-    {
-        UnsubscribeBossDeathNotifier();
-
-        if (IsRunFinished)
-        {
-            return;
-        }
-
-        DungeonManager dungeonManager = FindAnyObjectByType<DungeonManager>();
-        if (dungeonManager == null || !dungeonManager.IsCurrentFloorBossFloor())
-        {
-            return;
-        }
-
-        EnemyDeathNotifier bossNotifier = dungeonManager.GetBossDeathNotifier();
-        if (bossNotifier == null)
-        {
-            return;
-        }
-
-        subscribedBossDeathNotifier = bossNotifier;
-        subscribedBossDeathNotifier.Died += OnBossDeathNotifierDied;
     }
 
     public void OnRestartPressed()
@@ -152,6 +136,12 @@ public class RunResultController : MonoBehaviour
         if (!resultUI.TryShow(resultType, stars, showNextButton: false, showCloseButton: false, summary))
         {
             return false;
+        }
+
+        PlayerStats playerStats = FindAnyObjectByType<PlayerStats>();
+        if (playerStats != null)
+        {
+            playerStats.ResetTransientState();
         }
 
         IsRunFinished = true;
@@ -220,6 +210,7 @@ public class RunResultController : MonoBehaviour
 
     private void ResetViewState()
     {
+        CancelPendingBossClear();
         IsResultActive = false;
         IsRunFinished = false;
 
@@ -229,37 +220,112 @@ public class RunResultController : MonoBehaviour
         }
     }
 
-    private void OnBossDeathNotifierDied(EnemyDeathNotifier notifier)
+    private void OnBossCleared()
     {
-        if (notifier != subscribedBossDeathNotifier || IsRunFinished)
+        if (IsRunFinished)
         {
             return;
         }
 
-        UnsubscribeBossDeathNotifier();
-        ShowWin(FindAnyObjectByType<PlayerStats>());
+        UnsubscribeFromBossEncounter();
+
+        if (pendingBossClearRoutine != null)
+        {
+            StopCoroutine(pendingBossClearRoutine);
+        }
+
+        pendingBossClearRoutine = StartCoroutine(ResolveBossClearAtEndOfFrame());
     }
 
-    private void UnsubscribeBossDeathNotifier()
+    private void SubscribeToBossEncounter()
     {
-        if (subscribedBossDeathNotifier == null)
+        UnsubscribeFromBossEncounter();
+
+        if (IsRunFinished)
         {
             return;
         }
 
-        subscribedBossDeathNotifier.Died -= OnBossDeathNotifierDied;
-        subscribedBossDeathNotifier = null;
+        BossEncounterController bossEncounterController = BossEncounterController.Instance;
+        if (bossEncounterController == null)
+        {
+            return;
+        }
+
+        subscribedBossEncounterController = bossEncounterController;
+        subscribedBossEncounterController.BossCleared += OnBossCleared;
+    }
+
+    private void UnsubscribeFromBossEncounter()
+    {
+        if (subscribedBossEncounterController == null)
+        {
+            return;
+        }
+
+        subscribedBossEncounterController.BossCleared -= OnBossCleared;
+        subscribedBossEncounterController = null;
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         ResetViewState();
         RestoreGameplayState();
-        RefreshBossDeathSubscription();
+        SubscribeToBossEncounter();
     }
 
     private void OnSceneUnloaded(Scene scene)
     {
-        UnsubscribeBossDeathNotifier();
+        UnsubscribeFromBossEncounter();
+    }
+
+    private IEnumerator ResolveBossClearAtEndOfFrame()
+    {
+        yield return null;
+        pendingBossClearRoutine = null;
+
+        if (IsRunFinished)
+        {
+            yield break;
+        }
+
+        DungeonManager dungeonManager = FindAnyObjectByType<DungeonManager>();
+        if (dungeonManager == null)
+        {
+            Debug.LogWarning("RunResultController: Boss cleared but DungeonManager was not found.");
+            yield break;
+        }
+
+        if (!dungeonManager.IsCurrentFloorBossFloor)
+        {
+            Debug.LogWarning($"RunResultController: Ignoring BossCleared on non-boss floor {dungeonManager.currentFloor}.", this);
+            yield break;
+        }
+
+        if (dungeonManager.currentFloor < dungeonManager.maxFloor)
+        {
+            Debug.Log($"RunResultController: Boss on floor {dungeonManager.currentFloor} cleared. Continuing run until final floor {dungeonManager.maxFloor}.");
+            yield break;
+        }
+
+        PlayerStats playerStats = FindAnyObjectByType<PlayerStats>();
+        if (playerStats == null || playerStats.IsDead || playerStats.currentHP <= 0f)
+        {
+            Debug.Log("RunResultController: Boss cleared event arrived, but player is already dead.");
+            yield break;
+        }
+
+        ShowWin(playerStats);
+    }
+
+    private void CancelPendingBossClear()
+    {
+        if (pendingBossClearRoutine == null)
+        {
+            return;
+        }
+
+        StopCoroutine(pendingBossClearRoutine);
+        pendingBossClearRoutine = null;
     }
 }

@@ -61,6 +61,9 @@ public class EquipmentManager : MonoBehaviour
             weaponRegistry.Initialize();
         }
 
+        // read inspector dead-zone to avoid unused-field warning
+        var _deadZoneUse = handSwitchDeadZoneX;
+
         playerMovement = GetComponent<PlayerMovement>();
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
         if (weaponController == null)
