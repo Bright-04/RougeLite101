@@ -54,6 +54,9 @@ public class EquipmentManager : MonoBehaviour
 
     private Transform WeaponMount => aimPivot != null ? aimPivot : weaponHolder;
 
+    // EquipmentManager remains the serialized MonoBehaviour entry point.
+    // Pure loadout decisions are delegated to WeaponLoadoutRules; this class still owns Unity object orchestration.
+
     private void Awake()
     {
         if (weaponRegistry != null)
@@ -152,30 +155,25 @@ public class EquipmentManager : MonoBehaviour
 
     public bool TryPickupWeapon(WeaponDefinitionSO newWeaponDef, WeaponPickup sourcePickup = null)
     {
-        if (newWeaponDef == null)
+        if (!WeaponLoadoutRules.CanAcceptPickup(newWeaponDef, testingWeaponOverrideActive))
         {
             return false;
         }
 
-        if (testingWeaponOverrideActive)
-        {
-            return false;
-        }
-
-        if (mainWeaponDef == null)
+        if (WeaponLoadoutRules.CanAutoEquipMain(mainWeaponDef))
         {
             EquipIntoSlot(WeaponSlot.Main, newWeaponDef);
             SetActiveSlot(WeaponSlot.Main, true);
             return true;
         }
 
-        if (subWeaponDef == null)
+        if (WeaponLoadoutRules.CanAutoEquipSub(subWeaponDef))
         {
             EquipIntoSlot(WeaponSlot.Sub, newWeaponDef);
             return true;
         }
 
-        if (weaponPickupModalUI != null)
+        if (WeaponLoadoutRules.ShouldShowPickupChoice(weaponPickupModalUI, mainWeaponDef, subWeaponDef))
         {
             pendingPickupDefinition = newWeaponDef;
             pendingPickupSource = sourcePickup;
@@ -257,6 +255,11 @@ public class EquipmentManager : MonoBehaviour
 
     private void ReplaceWeaponInternal(WeaponSlot targetSlot, WeaponDefinitionSO newWeaponDef, bool bypassTestingOverride)
     {
+        if (!WeaponLoadoutRules.CanAcceptPickup(newWeaponDef, testingWeaponOverrideActive) && !bypassTestingOverride)
+        {
+            return;
+        }
+
         if (newWeaponDef == null)
         {
             return;
@@ -271,14 +274,7 @@ public class EquipmentManager : MonoBehaviour
 
         if (GetWeaponInstance(activeSlot) == null)
         {
-            if (mainWeaponDef != null)
-            {
-                SetActiveSlot(WeaponSlot.Main, true);
-            }
-            else if (subWeaponDef != null)
-            {
-                SetActiveSlot(WeaponSlot.Sub, true);
-            }
+            SetActiveSlot(WeaponLoadoutRules.ResolveFallbackActiveSlot(mainWeaponDef, subWeaponDef), true);
         }
     }
 
@@ -327,23 +323,19 @@ public class EquipmentManager : MonoBehaviour
             if (startingSubWeapon != null) EquipIntoSlot(WeaponSlot.Sub, startingSubWeapon);
         }
 
-        WeaponSlot finalActiveSlot = loadedActiveSlot;
-        if (GetWeaponInstance(finalActiveSlot) == null)
-        {
-            finalActiveSlot = mainWeaponDef != null ? WeaponSlot.Main : WeaponSlot.Sub;
-        }
+        WeaponSlot finalActiveSlot = WeaponLoadoutRules.ResolveLoadedActiveSlot(loadedActiveSlot, mainWeaponDef, subWeaponDef);
 
         SetActiveSlot(finalActiveSlot, true);
     }
 
     public string GetMainWeaponId()
     {
-        return mainWeaponDef != null ? mainWeaponDef.WeaponId : string.Empty;
+        return WeaponLoadoutRules.GetStableWeaponId(mainWeaponDef);
     }
 
     public string GetSubWeaponId()
     {
-        return subWeaponDef != null ? subWeaponDef.WeaponId : string.Empty;
+        return WeaponLoadoutRules.GetStableWeaponId(subWeaponDef);
     }
 
     public WeaponSlot GetActiveSlot()
@@ -394,6 +386,7 @@ public class EquipmentManager : MonoBehaviour
             return;
         }
 
+        // Unity orchestration stays here: destroy the old instance, instantiate the prefab, and wire the runtime component.
         ClearSlot(slot);
 
         Transform visualRoot = weaponController.CreateWeaponVisualRoot(definition.WeaponId);
@@ -550,6 +543,7 @@ public class EquipmentManager : MonoBehaviour
         Weapon weapon = GetWeaponInstance(slot);
         if (weapon != null)
         {
+            // Unity orchestration stays here: clear the runtime weapon instance and its visual root.
             weaponController?.ClearCurrentWeapon(weapon);
 
             // Destroy the visual root instead of just the weapon.
@@ -590,7 +584,7 @@ public class EquipmentManager : MonoBehaviour
         WeaponDefinitionSO currentDefinition = GetWeaponDefinition(slot);
         Weapon currentWeapon = GetWeaponInstance(slot);
 
-        if (currentDefinition != changedDefinition || currentWeapon == null)
+        if (!WeaponLoadoutRules.ShouldRefreshEquippedWeapon(currentDefinition, changedDefinition, currentWeapon))
         {
             return false;
         }

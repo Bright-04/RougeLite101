@@ -40,42 +40,36 @@ public class EquipmentController : MonoBehaviour
 
     public void EquipArmor(ArmorDefinitionSO armor)
     {
-        if (armor == null)
+        if (!ArmorLoadoutRules.CanAcceptArmor(armor))
         {
             return;
         }
 
-        EquipArmor(GetSlotForArmor(armor), armor);
+        EquipArmor(ArmorLoadoutRules.GetSlotForArmor(armor), armor);
     }
 
     public void EquipArmor(ArmorSlot slot, ArmorDefinitionSO armor)
     {
         ArmorDefinitionSO previousArmor = GetArmor(slot);
-        if (previousArmor == armor)
+        if (ArmorLoadoutRules.AreSameArmor(previousArmor, armor))
         {
             return;
         }
 
+        // EquipmentController remains the orchestration/state owner for armor slots and runtime notifications.
         SetArmor(slot, armor);
         OnArmorEquipped?.Invoke(slot, previousArmor, armor);
     }
 
     public ArmorDefinitionSO GetArmor(ArmorSlot slot)
     {
-        return slot switch
-        {
-            ArmorSlot.Shield => equippedShield,
-            ArmorSlot.Helmet => equippedHelmet,
-            ArmorSlot.Greaves => equippedGreaves,
-            ArmorSlot.Boots => equippedBoots,
-            _ => null
-        };
+        return ArmorLoadoutRules.GetArmor(slot, equippedShield, equippedHelmet, equippedGreaves, equippedBoots);
     }
 
     public string GetArmorId(ArmorSlot slot)
     {
         ArmorDefinitionSO armor = GetArmor(slot);
-        return armor != null ? armor.EquipmentId : string.Empty;
+        return ArmorLoadoutRules.GetStableArmorId(armor);
     }
 
     public void LoadArmor(string shieldId, string helmetId, string greavesId, string bootsId)
@@ -102,7 +96,7 @@ public class EquipmentController : MonoBehaviour
 
     private void EquipStartingArmor(ArmorSlot slot, ArmorDefinitionSO armor)
     {
-        if (armor != null)
+        if (ArmorLoadoutRules.CanAcceptArmor(armor))
         {
             EquipArmor(slot, armor);
         }
@@ -110,14 +104,7 @@ public class EquipmentController : MonoBehaviour
 
     private ArmorSlot GetSlotForArmor(ArmorDefinitionSO armor)
     {
-        return armor.ArmorType switch
-        {
-            ArmorType.Shield => ArmorSlot.Shield,
-            ArmorType.Helmet => ArmorSlot.Helmet,
-            ArmorType.Greaves => ArmorSlot.Greaves,
-            ArmorType.Boots => ArmorSlot.Boots,
-            _ => ArmorSlot.Shield
-        };
+        return ArmorLoadoutRules.GetSlotForArmor(armor);
     }
 
     private void SetArmor(ArmorSlot slot, ArmorDefinitionSO armor)
