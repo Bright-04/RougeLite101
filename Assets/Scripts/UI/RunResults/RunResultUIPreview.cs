@@ -41,13 +41,13 @@ public class RunResultUIPreview : MonoBehaviour
                 return true;
 
             case RunResultPreviewMode.Victory1Star:
-                return resolvedResultUI.TryShow(RunResultType.Win, 1, showNextButton: false, showCloseButton: false, previewSummary);
+                return resolvedResultUI.TryShow(RunResultType.Win, 1, showNextButton: true, showCloseButton: false, previewSummary);
 
             case RunResultPreviewMode.Victory2Stars:
-                return resolvedResultUI.TryShow(RunResultType.Win, 2, showNextButton: false, showCloseButton: false, previewSummary);
+                return resolvedResultUI.TryShow(RunResultType.Win, 2, showNextButton: true, showCloseButton: false, previewSummary);
 
             case RunResultPreviewMode.Victory3Stars:
-                return resolvedResultUI.TryShow(RunResultType.Win, 3, showNextButton: false, showCloseButton: false, previewSummary);
+                return resolvedResultUI.TryShow(RunResultType.Win, 3, showNextButton: true, showCloseButton: false, previewSummary);
 
             case RunResultPreviewMode.Defeat:
                 return resolvedResultUI.TryShow(RunResultType.Lose, 0, showNextButton: false, showCloseButton: false, previewSummary);

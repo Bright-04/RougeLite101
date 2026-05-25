@@ -6,6 +6,7 @@ public class EndGameResultUI : MonoBehaviour
 {
     [Header("Structure")]
     [SerializeField] private GameObject resultRoot;
+    [SerializeField] private bool usePreparedPanelVisuals;
     [SerializeField] private GameObject winOneStarPanel;
     [SerializeField] private GameObject winTwoStarPanel;
     [SerializeField] private GameObject winThreeStarPanel;
@@ -68,34 +69,64 @@ public class EndGameResultUI : MonoBehaviour
 
         resultRoot.SetActive(true);
         SetPanelState(resultType, clampedStars);
-        titleText.text = isWin ? "Victory" : "Defeat";
-        summaryText.text = string.IsNullOrWhiteSpace(summary)
-            ? (isWin ? "The run is complete." : "The run has ended.")
-            : summary;
 
-        starsRoot.SetActive(isWin);
-        if (loseIconRoot != null)
+        if (usePreparedPanelVisuals)
         {
-            loseIconRoot.SetActive(!isWin);
+            titleText.gameObject.SetActive(false);
+            summaryText.gameObject.SetActive(false);
+        }
+        else
+        {
+            titleText.gameObject.SetActive(true);
+            summaryText.gameObject.SetActive(true);
+            titleText.text = isWin ? "Victory" : "Defeat";
+            summaryText.text = string.IsNullOrWhiteSpace(summary)
+                ? (isWin ? "The run is complete." : "The run has ended.")
+                : summary;
         }
 
-        if (isWin)
+        if (usePreparedPanelVisuals)
         {
-            UpdateStarDisplay(clampedStars);
+            starsRoot.SetActive(false);
+            if (loseIconRoot != null)
+            {
+                loseIconRoot.SetActive(false);
+            }
+        }
+        else
+        {
+            starsRoot.SetActive(isWin);
+            if (loseIconRoot != null)
+            {
+                loseIconRoot.SetActive(!isWin);
+            }
+
+            if (isWin)
+            {
+                UpdateStarDisplay(clampedStars);
+            }
         }
 
         restartButton.gameObject.SetActive(true);
         if (restartButtonText != null)
         {
-            restartButtonText.text = "Return To Hub";
+            restartButtonText.gameObject.SetActive(!usePreparedPanelVisuals);
+            restartButtonText.text = usePreparedPanelVisuals
+                ? string.Empty
+                : "Return To Hub";
         }
 
         if (nextButton != null)
         {
-            nextButton.gameObject.SetActive(showNextButton);
+            bool shouldShowNextButton = usePreparedPanelVisuals
+                ? (isWin && showNextButton)
+                : showNextButton;
+
+            nextButton.gameObject.SetActive(shouldShowNextButton);
             if (nextButtonText != null)
             {
-                nextButtonText.text = "Next";
+                nextButtonText.gameObject.SetActive(!usePreparedPanelVisuals);
+                nextButtonText.text = usePreparedPanelVisuals ? string.Empty : "Next";
             }
         }
 
@@ -111,9 +142,9 @@ public class EndGameResultUI : MonoBehaviour
     {
         bool showLose = resultType == RunResultType.Lose;
         losePanel.SetActive(showLose);
-        winOneStarPanel.SetActive(!showLose && stars <= 1);
+        winOneStarPanel.SetActive(!showLose && stars == 1);
         winTwoStarPanel.SetActive(!showLose && stars == 2);
-        winThreeStarPanel.SetActive(!showLose && stars >= 3);
+        winThreeStarPanel.SetActive(!showLose && stars == 3);
     }
 
     private void UpdateStarDisplay(int activeStars)

@@ -9,6 +9,7 @@ public class RunResultSceneController : MonoBehaviour
     private void Start()
     {
         Time.timeScale = 1f;
+        Debug.Log($"RunResultSceneController: Start with HasResult={RunResultSession.HasResult}, ResultType={RunResultSession.ResultType}, Stars={RunResultSession.Stars}.");
 
         if (!RunResultSession.HasResult)
         {
@@ -29,7 +30,8 @@ public class RunResultSceneController : MonoBehaviour
             return;
         }
 
-        if (!resultUI.TryShow(RunResultSession.ResultType, RunResultSession.Stars, showNextButton: false, showCloseButton: false, RunResultSession.Summary))
+        bool showNextButton = RunResultSession.ResultType == RunResultType.Win;
+        if (!resultUI.TryShow(RunResultSession.ResultType, RunResultSession.Stars, showNextButton, showCloseButton: false, RunResultSession.Summary))
         {
             Debug.LogError("RunResultSceneController: EndGameResultUI failed to show the result. Returning to hub.", this);
             SceneManager.LoadScene(hubSceneName);

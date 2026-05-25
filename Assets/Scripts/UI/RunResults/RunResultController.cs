@@ -134,6 +134,7 @@ public class RunResultController : MonoBehaviour
 
         int stars = starRatingCalculator.CalculateStars(playerStats);
         string summary = RunResultRules.BuildSummaryText(RunResultType.Win, stars, playerStats);
+        Debug.Log($"RunResultController: Completing run from exit portal on floor {dungeonManager.currentFloor}/{dungeonManager.maxFloor} with {stars} stars.", this);
         return TransitionToRunResultScene(RunResultType.Win, stars, summary, playerStats);
     }
 
@@ -335,6 +336,7 @@ public class RunResultController : MonoBehaviour
 
         RestoreGameplayState();
         RunResultSession.SetResult(resultType, stars, summary);
+        Debug.Log($"RunResultController: Loading result scene '{runResultSceneName}' with session resultType={resultType}, stars={stars}, hasSummary={!string.IsNullOrEmpty(summary)}.", this);
         SceneManager.LoadScene(runResultSceneName);
         return true;
     }

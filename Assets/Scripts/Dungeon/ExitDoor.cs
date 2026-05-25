@@ -32,7 +32,10 @@ public class ExitDoor : MonoBehaviour
 
         if (_mgr != null)
         {
-            if (RunResultRules.ShouldCompleteRunFromExitPortal(_mgr.currentFloor, _mgr.maxFloor))
+            bool shouldCompleteRun = RunResultRules.ShouldCompleteRunFromExitPortal(_mgr.currentFloor, _mgr.maxFloor);
+            Debug.Log($"ExitDoor: Entered on floor {_mgr.currentFloor}/{_mgr.maxFloor}. shouldCompleteRun={shouldCompleteRun}");
+
+            if (shouldCompleteRun)
             {
                 RunResultController runResultController = RunResultController.Instance != null
                     ? RunResultController.Instance
