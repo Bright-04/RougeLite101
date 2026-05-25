@@ -32,14 +32,14 @@ MonoBehaviour:
   gripPointOffset: {x: -0.09, y: 0, z: 0}
   visualScale: 1
   rotationOffsetDegrees: 0
-  damage: 2
+  damage: 50
   cooldown: 0.5
   knockback: 6
   anticipationDuration: 0.03
   activeDuration: 0.055
   recoveryDuration: 0.1
   slashArcDegrees: 100
-  slashRange: 2.5
+  slashRange: 15
   thrustDistance: 1
   thrustWidth: 0.35
   slashVisualExtraAnticipationDegrees: 6

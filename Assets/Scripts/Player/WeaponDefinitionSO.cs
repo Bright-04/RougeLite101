@@ -113,6 +113,10 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
     [SerializeField] private int projectileCount = 1;
     [SerializeField] private float spreadAngle = 0f;
 
+    /// <summary>
+    /// Stable authored weapon identity.
+    /// This resolves to the shared equipment identity field so weapons participate in the canonical string-based ID model.
+    /// </summary>
     public string WeaponId => EquipmentId;
     public string WeaponClass => EquipmentClass;
     public WeaponArchetype Archetype => archetype;

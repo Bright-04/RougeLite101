@@ -12,6 +12,10 @@ public abstract class EquipmentDefinitionSO : ItemSO, IDestroyableItem, IItemAct
     [SerializeField] private string rarity;
     [SerializeField] private string[] tags;
 
+    /// <summary>
+    /// Stable authored equipment identity used by registries, save/load, and other serialized lookups.
+    /// Keep this string-based and do not treat ItemSO.ID as a substitute.
+    /// </summary>
     public string EquipmentId => equipmentId;
     public string Series => series;
     public int Tier => tier;

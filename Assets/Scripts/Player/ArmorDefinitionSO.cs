@@ -9,6 +9,10 @@ public enum ArmorType
 }
 
 [CreateAssetMenu(fileName = "NewArmor", menuName = "Equipment/Armor Definition")]
+/// <summary>
+/// Armor definition data uses the inherited EquipmentId as its stable authored identity.
+/// Keep that string-based ID aligned with save/load and registry lookups.
+/// </summary>
 public class ArmorDefinitionSO : EquipmentDefinitionSO
 {
     [Header("Armor")]

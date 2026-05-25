@@ -7,6 +7,10 @@ public abstract class ItemSO : ScriptableObject
     [field: SerializeField]
     public bool IsStackable { get; set; }
 
+    /// <summary>
+    /// Runtime-only identity for the loaded ScriptableObject instance.
+    /// This is backed by GetInstanceID and must not be used for save/load persistence.
+    /// </summary>
     public int ID => GetInstanceID();
 
     [field: SerializeField]

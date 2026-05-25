@@ -32,7 +32,7 @@ MonoBehaviour:
   gripPointOffset: {x: 0.24, y: 0, z: 0}
   visualScale: 1
   rotationOffsetDegrees: 135
-  damage: 10
+  damage: 50
   cooldown: 0.5
   knockback: 1
   anticipationDuration: 0.05
