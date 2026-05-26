@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class Item : MonoBehaviour
 {
     [field: SerializeField]
-    public ItemSO InventoryItem { get; private set; }
+    public ItemSO InventoryItem { get; set; }
 
     [field: SerializeField]
     public int Quantity { get; set; } = 1;
@@ -16,9 +17,69 @@ public class Item : MonoBehaviour
     [SerializeField]
     private float duration = 0.3f;
 
+    [SerializeField]
+    private float targetSize = 1f;
+
+    [SerializeField]
+    private GameObject promptObject;
+
+    [SerializeField]
+    private TextMeshPro promptText;
+
+    private SpriteRenderer spriteRenderer;
+
     private void Start()
     {
-        GetComponent<SpriteRenderer>().sprite = InventoryItem.ItemImage;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        RefreshVisual();
+
+        if (promptObject != null)
+        {
+            promptObject.SetActive(false);
+        }
+    }
+
+    public void ShowPrompt(bool show)
+    {
+        if (promptObject == null)
+        {
+            return;
+        }
+
+        promptObject.SetActive(show);
+        if (show && promptText != null)
+        {
+            promptText.text = "[F] Pick Up item";
+        }
+    }
+
+    private void RefreshVisual()
+    {
+        if (spriteRenderer == null || InventoryItem == null || InventoryItem.ItemImage == null)
+        {
+            return;
+        }
+
+        spriteRenderer.sprite = InventoryItem.ItemImage;
+        NormalizeSpriteSize();
+    }
+
+    private void NormalizeSpriteSize()
+    {
+        if (spriteRenderer == null || spriteRenderer.sprite == null)
+        {
+            return;
+        }
+
+        Bounds bounds = spriteRenderer.sprite.bounds;
+        float largestDimension = Mathf.Max(bounds.size.x, bounds.size.y);
+        if (largestDimension <= 0.0001f)
+        {
+            return;
+        }
+
+        float scale = targetSize / largestDimension;
+        transform.localScale = Vector3.one * scale;
     }
 
     public void DestroyItem()

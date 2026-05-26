@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class EquipmentController : MonoBehaviour
 {
+    [SerializeField] private InventoryController inventoryController;
+
     public enum ArmorSlot
     {
         Shield,
@@ -27,6 +29,11 @@ public class EquipmentController : MonoBehaviour
 
     private void Awake()
     {
+        if (inventoryController == null)
+        {
+            inventoryController = GetComponent<InventoryController>();
+        }
+
         if (armorRegistry != null)
         {
             armorRegistry.Initialize();
@@ -59,6 +66,46 @@ public class EquipmentController : MonoBehaviour
         // EquipmentController remains the orchestration/state owner for armor slots and runtime notifications.
         SetArmor(slot, armor);
         OnArmorEquipped?.Invoke(slot, previousArmor, armor);
+    }
+
+    public bool EquipArmorFromInventory(ArmorDefinitionSO armor)
+    {
+        if (!ArmorLoadoutRules.CanAcceptArmor(armor))
+        {
+            return false;
+        }
+
+        ArmorSlot slot = ArmorLoadoutRules.GetSlotForArmor(armor);
+        ArmorDefinitionSO previousArmor = GetArmor(slot);
+        if (ArmorLoadoutRules.AreSameArmor(previousArmor, armor))
+        {
+            return false;
+        }
+
+        if (previousArmor != null && !TryReturnArmorToInventory(previousArmor))
+        {
+            return false;
+        }
+
+        EquipArmor(slot, armor);
+        return true;
+    }
+
+    public bool UnequipArmor(ArmorSlot slot)
+    {
+        ArmorDefinitionSO equippedArmor = GetArmor(slot);
+        if (equippedArmor == null)
+        {
+            return false;
+        }
+
+        if (!TryReturnArmorToInventory(equippedArmor))
+        {
+            return false;
+        }
+
+        EquipArmor(slot, null);
+        return true;
     }
 
     public ArmorDefinitionSO GetArmor(ArmorSlot slot)
@@ -133,5 +180,26 @@ public class EquipmentController : MonoBehaviour
         {
             OnArmorEquipped?.Invoke(slot, null, armor);
         }
+    }
+
+    private bool TryReturnArmorToInventory(ArmorDefinitionSO armor)
+    {
+        if (armor == null)
+        {
+            return true;
+        }
+
+        if (inventoryController == null)
+        {
+            inventoryController = GetComponent<InventoryController>();
+        }
+
+        InventorySO targetInventory = inventoryController != null ? inventoryController.CurrentInventoryData : null;
+        if (targetInventory == null)
+        {
+            return false;
+        }
+
+        return targetInventory.AddItem(armor, 1) == 0;
     }
 }

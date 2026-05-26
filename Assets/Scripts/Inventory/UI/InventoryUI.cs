@@ -38,11 +38,24 @@ public class InventoryUI : MonoBehaviour
     [SerializeField]
     private ItemActionPanel actionPanel;
 
+    [SerializeField]
+    private TransferUI transferUI;
+
+    public bool HasActionPanel => actionPanel != null;
+    public TransferUI transferUIComponent => transferUI;
+
     private void Awake()
     {
         //HideInventory();
-        mouseFollower.Toggle(false);
-        itemDescription.ResetDescription();
+        if (mouseFollower != null)
+        {
+            mouseFollower.Toggle(false);
+        }
+
+        if (itemDescription != null)
+        {
+            itemDescription.ResetDescription();
+        }
     }
 
 
@@ -128,7 +141,11 @@ public class InventoryUI : MonoBehaviour
 
     private void ResetDraggedItem()
     {
-        mouseFollower.Toggle(false);
+        if (mouseFollower != null)
+        {
+            mouseFollower.Toggle(false);
+        }
+
         currentlyDraggedItemIndex = -1;
     }
 
@@ -146,6 +163,11 @@ public class InventoryUI : MonoBehaviour
 
     public void CreateDraggedItem(Sprite sprite, int quantity)
     {
+        if (mouseFollower == null)
+        {
+            return;
+        }
+
         mouseFollower.Toggle(true);
         mouseFollower.SetData(sprite, quantity);
     }
@@ -163,36 +185,72 @@ public class InventoryUI : MonoBehaviour
     public void ShowInventory()
     {
         inventoryActive = true;
-        itemDescription.ResetDescription();
+        if (itemDescription != null)
+        {
+            itemDescription.ResetDescription();
+        }
+
         gameObject.SetActive(true);
         ResetSelection();
-
-
     }
 
     public void HideInventory()
     {
-        actionPanel.Toggle(false);
+        if (actionPanel != null)
+        {
+            actionPanel.Toggle(false);
+        }
+
+        HideTransferUI();
         inventoryActive = false;
         gameObject.SetActive(false);
     }
 
     public void ResetSelection()
     {
-        itemDescription.ResetDescription();
+        if (itemDescription != null)
+        {
+            itemDescription.ResetDescription();
+        }
+
+        HideTransferUI();
         DeselectAllItems();
     }
 
     //item action panel
     public void AddAction(string actionName, Action performAction)
     {
-        actionPanel.AddButon(actionName, performAction);
+        if (actionPanel != null)
+        {
+            actionPanel.AddButon(actionName, performAction);
+        }
     }
 
     public void ShowItemAction(int itemIndex)
     {
+        if (actionPanel == null)
+        {
+            return;
+        }
+
         actionPanel.Toggle(true);
         actionPanel.transform.position = itemsList[itemIndex].transform.position;
+    }
+
+    public void ShowTransferUI(InventorySO sourceInventory, InventorySO targetInventory, int itemIndex)
+    {
+        if (transferUI != null)
+        {
+            transferUI.Open(sourceInventory, targetInventory, itemIndex);
+        }
+    }
+
+    public void HideTransferUI()
+    {
+        if (transferUI != null)
+        {
+            transferUI.Close();
+        }
     }
 
     private void DeselectAllItems()
@@ -201,7 +259,11 @@ public class InventoryUI : MonoBehaviour
         {
             item.Deselect();
         }
-        actionPanel.Toggle(false);
+
+        if (actionPanel != null)
+        {
+            actionPanel.Toggle(false);
+        }
     }
 
 

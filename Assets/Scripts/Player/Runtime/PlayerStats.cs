@@ -5,6 +5,7 @@ public class PlayerStats : MonoBehaviour
 {
     [SerializeField] private EquipmentManager equipmentManager;
     [SerializeField] private EquipmentController equipmentController;
+    [SerializeField] private InventoryController inventoryController;
     [SerializeField] private string fallbackHubSceneName = "GameHome";
 
     public float maxHP = 100;
@@ -31,6 +32,7 @@ public class PlayerStats : MonoBehaviour
     private float damageTimer = 0;
     private float armorMaxHealthBonus;
     private float armorDefenseBonus;
+    private float itemMaxHealthBonus;
     private bool isDead;
 
     public float currentExp = 0;
@@ -47,6 +49,11 @@ public class PlayerStats : MonoBehaviour
         if (equipmentController == null)
         {
             equipmentController = GetComponent<EquipmentController>();
+        }
+
+        if (inventoryController == null)
+        {
+            inventoryController = GetComponent<InventoryController>();
         }
 
         if (equipmentController != null)
@@ -140,6 +147,11 @@ public class PlayerStats : MonoBehaviour
         }
 
         isDead = true;
+        if (inventoryController != null)
+        {
+            inventoryController.OnPlayerDeath();
+        }
+
         Debug.Log("Player is dead");
 
         RunResultController runResultController = RunResultController.Instance != null
@@ -292,7 +304,7 @@ public class PlayerStats : MonoBehaviour
 
     public float GetTotalMaxHP()
     {
-        return maxHP + armorMaxHealthBonus;
+        return maxHP + armorMaxHealthBonus + itemMaxHealthBonus;
     }
 
     public float GetTotalDefense()
@@ -314,6 +326,12 @@ public class PlayerStats : MonoBehaviour
             armorDefenseBonus += newArmor.Defense;
         }
 
+        currentHP = Mathf.Min(currentHP, GetTotalMaxHP());
+    }
+
+    public void BuffMaxHealth(float amount)
+    {
+        itemMaxHealthBonus += amount;
         currentHP = Mathf.Min(currentHP, GetTotalMaxHP());
     }
 

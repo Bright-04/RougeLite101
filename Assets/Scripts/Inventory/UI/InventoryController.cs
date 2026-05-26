@@ -15,12 +15,17 @@ public class InventoryController : MonoBehaviour
     private InventorySO safeInventoryData;
     [SerializeField]
     private InventorySO dungeonInventoryData;
+    [SerializeField]
+    private GameObject pickupableItemPrefab;
+    [SerializeField]
+    private Transform playerTransform;
 
     public InventorySO CurrentInventoryData { get; private set;}
 
     public List<InventoryItem> initialItems = new List<InventoryItem>();
 
     private PlayerControls playerControls;
+    private bool isPlayerDead;
 
     //[SerializeField]
     //private AudioClip dropClip;
@@ -32,9 +37,6 @@ public class InventoryController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
-        //UpdateInventory(SceneManager.GetActiveScene().name);      
-
         // Đợi đến Start để đảm bảo InputManager đã Awake
         if (InputManager.Instance == null)
         {
@@ -46,6 +48,28 @@ public class InventoryController : MonoBehaviour
         // Subscribe ESC key
         playerControls.NavigateUI.OpenInventory.performed += OnOpenInventoryPerformed;
         playerControls.UI.CloseInventory.performed += OnCloseInventoryPerformed;
+
+        if (playerTransform == null)
+        {
+            playerTransform = transform;
+        }
+
+        if (inventoryUI == null)
+        {
+            inventoryUI = FindFirstObjectByType<InventoryUI>(FindObjectsInactive.Include);
+        }
+
+        if (inventoryUI == null)
+        {
+            Debug.LogError("InventoryUI not found in scene!");
+            return;
+        }
+
+        inventoryUI.ClearInventoryUI();
+        inventoryUI.HideInventory();
+        UpdateInventory(SceneManager.GetActiveScene().name);
+        PrepareUI();
+        PrepareInventoryData();
     }
 
     private void PrepareUI()
@@ -57,28 +81,44 @@ public class InventoryController : MonoBehaviour
         inventoryUI.OnSwapItems -= HandleSwapItems;
         inventoryUI.OnStartDragging -= HandleDragging;
         inventoryUI.OnItemActionRequested -= HandleItemActionRequest;
+        if (inventoryUI.transferUIComponent != null)
+        {
+            inventoryUI.transferUIComponent.OnTransferFinished -= HandleDescriptionRequest;
+        }
+
         // Rồi mới subscribe lại
         inventoryUI.OnDescriptionRequested += HandleDescriptionRequest;
         inventoryUI.OnSwapItems += HandleSwapItems;
         inventoryUI.OnStartDragging += HandleDragging;
         inventoryUI.OnItemActionRequested += HandleItemActionRequest;
+        if (inventoryUI.transferUIComponent != null)
+        {
+            inventoryUI.transferUIComponent.OnTransferFinished += HandleDescriptionRequest;
+        }
     }
 
     private void PrepareInventoryData()
     {
         // Unsubscribe trước!
         CurrentInventoryData.OnInventoryUpdated -= UpdateInventoryUI;
-
-        CurrentInventoryData.Initialize();
-        CurrentInventoryData.OnInventoryUpdated += UpdateInventoryUI;
-        foreach (InventoryItem item in initialItems)
+        if (!CurrentInventoryData.IsInitialized)
         {
-            if (item.IsEmpty)
+            CurrentInventoryData.Initialize();
+            if (CurrentInventoryData == safeInventoryData)
             {
-                continue;
+                foreach (InventoryItem item in initialItems)
+                {
+                    if (item.IsEmpty)
+                    {
+                        continue;
+                    }
+
+                    CurrentInventoryData.AddItem(item);
+                }
             }
-            CurrentInventoryData.AddItem(item);
         }
+
+        CurrentInventoryData.OnInventoryUpdated += UpdateInventoryUI;
     }
 
     private void UpdateInventoryUI(Dictionary<int, InventoryItem> inventoryState)
@@ -99,6 +139,16 @@ public class InventoryController : MonoBehaviour
             inventoryUI.ResetSelection();
             return;
         }
+
+        if (CurrentInventoryData == safeInventoryData)
+        {
+            inventoryUI.ShowTransferUI(safeInventoryData, dungeonInventoryData, itemIndex);
+        }
+        else
+        {
+            inventoryUI.HideTransferUI();
+        }
+
         ItemSO item = inventoryItem.item;
         string description = PrepareDescription(inventoryItem);
         inventoryUI.UpdateDescription(itemIndex, item.ItemImage, item.Name, description);
@@ -141,6 +191,23 @@ public class InventoryController : MonoBehaviour
             return;
         }
 
+        if (!inventoryUI.HasActionPanel)
+        {
+            IItemAction immediateAction = inventoryItem.item as IItemAction;
+            if (immediateAction != null)
+            {
+                PerformAction(itemIndex);
+                return;
+            }
+
+            if (inventoryItem.item is IDestroyableItem)
+            {
+                DropItem(itemIndex, inventoryItem.quantity);
+            }
+
+            return;
+        }
+
         IItemAction itemAction = inventoryItem.item as IItemAction;
         if (itemAction != null)
         {
@@ -160,7 +227,32 @@ public class InventoryController : MonoBehaviour
 
     private void DropItem(int itemIndex, int quantity)
     {
-        CurrentInventoryData.RemoveItem(itemIndex, quantity);
+        InventoryItem inventoryItem = CurrentInventoryData.GetItemAt(itemIndex);
+        if (inventoryItem.IsEmpty)
+        {
+            return;
+        }
+
+        if (pickupableItemPrefab == null)
+        {
+            Debug.LogWarning("InventoryController: pickableItemPrefab is not assigned, drop cancelled.", this);
+            return;
+        }
+
+        Transform dropOrigin = playerTransform != null ? playerTransform : transform;
+        Vector3 dropPosition = dropOrigin.position + dropOrigin.right * 1f;
+        GameObject droppedObject = Instantiate(pickupableItemPrefab, dropPosition, Quaternion.identity);
+        Item droppedItem = droppedObject.GetComponent<Item>();
+        if (droppedItem == null)
+        {
+            Debug.LogWarning("InventoryController: pickableItemPrefab does not contain Item component, drop cancelled.", this);
+            Destroy(droppedObject);
+            return;
+        }
+
+        droppedItem.InventoryItem = inventoryItem.item;
+        droppedItem.Quantity = Mathf.Min(quantity, inventoryItem.quantity);
+        CurrentInventoryData.RemoveItem(itemIndex, droppedItem.Quantity);
         inventoryUI.ResetSelection();
         //audioSource.PlayOneShot(dropClip);
     }
@@ -174,16 +266,20 @@ public class InventoryController : MonoBehaviour
         }
         
 
-        IDestroyableItem destroyableItem = inventoryItem.item as IDestroyableItem;
-        if (destroyableItem != null)
-        {
-            CurrentInventoryData.RemoveItem(itemIndex, 1);
-        }
-
         IItemAction itemAction = inventoryItem.item as IItemAction;
         if (itemAction != null)
         {
-            itemAction.PerformAction(gameObject);
+            bool actionPerformed = itemAction.PerformAction(gameObject);
+            if (!actionPerformed)
+            {
+                return;
+            }
+
+            if (inventoryItem.item is IDestroyableItem)
+            {
+                CurrentInventoryData.RemoveItem(itemIndex, 1);
+            }
+
             //audioSource.PlayOneShot(itemAction.actionSFX);
             if (CurrentInventoryData.GetItemAt(itemIndex).IsEmpty)
             {
@@ -220,6 +316,18 @@ public class InventoryController : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (scene.name != "Dungeon" && CurrentInventoryData == dungeonInventoryData)
+        {
+            if (isPlayerDead)
+            {
+                isPlayerDead = false;
+            }
+            else
+            {
+                TransferDungeonToSafe();
+            }
+        }
+
         // Unsubscribe inventory CŨ trước khi switch
         if (CurrentInventoryData != null)
         {
@@ -274,5 +382,16 @@ public class InventoryController : MonoBehaviour
             InputManager.Instance.DisableUIMap();
             Debug.Log("CLOSE inventory");
         }
+    }
+
+    public void TransferDungeonToSafe()
+    {
+        dungeonInventoryData.TransferAllTo(safeInventoryData);
+    }
+
+    public void OnPlayerDeath()
+    {
+        isPlayerDead = true;
+        dungeonInventoryData.Clear();
     }
 }

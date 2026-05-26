@@ -27,6 +27,7 @@ public class EquipmentManager : MonoBehaviour
     [SerializeField] private WeaponRegistry weaponRegistry;
     [SerializeField] private WeaponDefinitionSO startingMainWeapon;
     [SerializeField] private WeaponDefinitionSO startingSubWeapon;
+    [SerializeField] private InventoryController inventoryController;
 
     private WeaponDefinitionSO mainWeaponDef;
     private WeaponDefinitionSO subWeaponDef;
@@ -69,6 +70,10 @@ public class EquipmentManager : MonoBehaviour
 
         playerMovement = GetComponent<PlayerMovement>();
         playerSpriteRenderer = GetComponent<SpriteRenderer>();
+        if (inventoryController == null)
+        {
+            inventoryController = GetComponent<InventoryController>();
+        }
         if (weaponController == null)
         {
             weaponController = GetComponent<WeaponController>();
@@ -199,6 +204,37 @@ public class EquipmentManager : MonoBehaviour
     {
         SetTestingWeaponOverride(true, overrideOwner);
         ReplaceWeaponAndActivateInternal(targetSlot, newWeaponDef, bypassTestingOverride: true);
+    }
+
+    public bool EquipWeapon(WeaponDefinitionSO newWeaponDef)
+    {
+        if (!WeaponLoadoutRules.CanAcceptPickup(newWeaponDef, testingWeaponOverrideActive))
+        {
+            return false;
+        }
+
+        if (WeaponLoadoutRules.CanAutoEquipMain(mainWeaponDef))
+        {
+            EquipIntoSlot(WeaponSlot.Main, newWeaponDef);
+            SetActiveSlot(WeaponSlot.Main, true);
+            return true;
+        }
+
+        if (WeaponLoadoutRules.CanAutoEquipSub(subWeaponDef))
+        {
+            EquipIntoSlot(WeaponSlot.Sub, newWeaponDef);
+            return true;
+        }
+
+        WeaponDefinitionSO previousWeapon = GetWeaponDefinition(activeSlot);
+        if (!TryReturnWeaponToInventory(previousWeapon))
+        {
+            return false;
+        }
+
+        ReplaceWeapon(activeSlot, newWeaponDef);
+        SetActiveSlot(activeSlot, true);
+        return true;
     }
 
     public void RefreshEquippedWeapons(WeaponDefinitionSO changedDefinition)
@@ -658,5 +694,26 @@ public class EquipmentManager : MonoBehaviour
     {
         target.localPosition = Vector3.zero;
         target.localRotation = Quaternion.identity;
+    }
+
+    private bool TryReturnWeaponToInventory(WeaponDefinitionSO weapon)
+    {
+        if (weapon == null)
+        {
+            return true;
+        }
+
+        if (inventoryController == null)
+        {
+            inventoryController = GetComponent<InventoryController>();
+        }
+
+        InventorySO targetInventory = inventoryController != null ? inventoryController.CurrentInventoryData : null;
+        if (targetInventory == null)
+        {
+            return false;
+        }
+
+        return targetInventory.AddItem(weapon, 1) == 0;
     }
 }

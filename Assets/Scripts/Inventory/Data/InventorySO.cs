@@ -13,6 +13,8 @@ public class InventorySO : ScriptableObject
     [field: SerializeField]
     public int Size { get; private set; } = 30;
 
+    public bool IsInitialized => inventoryItems != null && inventoryItems.Count == Size;
+
     public event Action<Dictionary<int, InventoryItem>> OnInventoryUpdated;
 
     public void Initialize()
@@ -26,6 +28,8 @@ public class InventorySO : ScriptableObject
 
     public int AddItem(ItemSO item, int quantity)
     {
+        EnsureInitialized();
+
         if (item.IsStackable == false)
         {
             while (quantity > 0 && IsInventoryFull() == false)
@@ -43,6 +47,8 @@ public class InventorySO : ScriptableObject
 
     private int AddStackableItem(ItemSO item, int quantity)
     {
+        EnsureInitialized();
+
         for (int i = 0; i < inventoryItems.Count; i++)
         {
             if (inventoryItems[i].IsEmpty)
@@ -100,6 +106,8 @@ public class InventorySO : ScriptableObject
 
     public Dictionary<int, InventoryItem> GetCurrentInventoryState()
     {
+        EnsureInitialized();
+
         Dictionary<int, InventoryItem> returnValue =
             new Dictionary<int, InventoryItem>();
 
@@ -114,6 +122,7 @@ public class InventorySO : ScriptableObject
 
     public InventoryItem GetItemAt(int itemIndex)
     {
+        EnsureInitialized();
         return inventoryItems[itemIndex];
     }
 
@@ -124,6 +133,7 @@ public class InventorySO : ScriptableObject
 
     public void SwapItems(int itemIndex_1, int itemIndex_2)
     {
+        EnsureInitialized();
         InventoryItem item1 = inventoryItems[itemIndex_1];
         inventoryItems[itemIndex_1] = inventoryItems[itemIndex_2];
         inventoryItems[itemIndex_2] = item1;
@@ -137,6 +147,8 @@ public class InventorySO : ScriptableObject
 
     public void RemoveItem(int itemIndex, int amount)
     {
+        EnsureInitialized();
+
         if (inventoryItems.Count > itemIndex)
         {
             if (inventoryItems[itemIndex].IsEmpty)
@@ -156,6 +168,96 @@ public class InventorySO : ScriptableObject
                 
 
             InformAboutChange();
+        }
+    }
+
+    public void Clear()
+    {
+        EnsureInitialized();
+
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            inventoryItems[i] = InventoryItem.GetEmptyItem();
+        }
+
+        InformAboutChange();
+    }
+
+    public void TransferAllTo(InventorySO targetInventory)
+    {
+        if (targetInventory == null || targetInventory == this)
+        {
+            return;
+        }
+
+        EnsureInitialized();
+        targetInventory.EnsureInitialized();
+
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            InventoryItem item = inventoryItems[i];
+            if (item.IsEmpty)
+            {
+                continue;
+            }
+
+            int remainder = targetInventory.AddItem(item.item, item.quantity);
+            int transferredAmount = item.quantity - remainder;
+            if (transferredAmount <= 0)
+            {
+                continue;
+            }
+
+            inventoryItems[i] = remainder > 0
+                ? item.ChangeQuantity(remainder)
+                : InventoryItem.GetEmptyItem();
+        }
+
+        InformAboutChange();
+    }
+
+    public void TransferItemTo(InventorySO targetInventory, int sourceIndex, int amount)
+    {
+        if (targetInventory == null || targetInventory == this || amount <= 0)
+        {
+            return;
+        }
+
+        EnsureInitialized();
+        targetInventory.EnsureInitialized();
+
+        if (sourceIndex < 0 || sourceIndex >= inventoryItems.Count)
+        {
+            return;
+        }
+
+        InventoryItem sourceItem = inventoryItems[sourceIndex];
+        if (sourceItem.IsEmpty)
+        {
+            return;
+        }
+
+        int clampedAmount = Mathf.Min(amount, sourceItem.quantity);
+        int remainder = targetInventory.AddItem(sourceItem.item, clampedAmount);
+        int transferredAmount = clampedAmount - remainder;
+        if (transferredAmount <= 0)
+        {
+            return;
+        }
+
+        int remainingQuantity = sourceItem.quantity - transferredAmount;
+        inventoryItems[sourceIndex] = remainingQuantity > 0
+            ? sourceItem.ChangeQuantity(remainingQuantity)
+            : InventoryItem.GetEmptyItem();
+
+        InformAboutChange();
+    }
+
+    private void EnsureInitialized()
+    {
+        if (!IsInitialized)
+        {
+            Initialize();
         }
     }
 }

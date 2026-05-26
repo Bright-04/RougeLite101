@@ -181,9 +181,7 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
         EquipmentManager equipmentManager = character.GetComponent<EquipmentManager>();
         if (equipmentManager != null)
         {
-            EquipmentManager.WeaponSlot activeSlot = equipmentManager.GetActiveSlot();
-            equipmentManager.ReplaceWeapon(activeSlot, this);
-            return true;
+            return equipmentManager.EquipWeapon(this);
         }
         return false;
     }

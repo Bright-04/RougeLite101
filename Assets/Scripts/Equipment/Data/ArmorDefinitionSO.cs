@@ -38,7 +38,6 @@ public class ArmorDefinitionSO : EquipmentDefinitionSO
             return false;
         }
 
-        equipmentController.EquipArmor(this);
-        return true;
+        return equipmentController.EquipArmorFromInventory(this);
     }
 }
