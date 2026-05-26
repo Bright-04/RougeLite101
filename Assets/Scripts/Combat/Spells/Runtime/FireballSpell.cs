@@ -1,4 +1,5 @@
 using UnityEngine;
+using RougeLite.Combat.Damage;
 
 public class FireballSpell : MonoBehaviour
 {

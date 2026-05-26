@@ -1,4 +1,5 @@
 using UnityEngine;
+using RougeLite.Combat.Damage;
 
 [RequireComponent(typeof(EnemyDeathNotifier))]
 [RequireComponent(typeof(EnemyDeathAnimation))]

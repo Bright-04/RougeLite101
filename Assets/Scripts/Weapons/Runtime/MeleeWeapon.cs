@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using RougeLite.Combat.Damage;
 
 public class MeleeWeapon : Weapon
 {

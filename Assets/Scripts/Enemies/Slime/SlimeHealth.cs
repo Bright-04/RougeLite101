@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using RougeLite.Combat.Damage;
 
 [RequireComponent(typeof(EnemyDeathNotifier))]
 public class SlimeHealth : MonoBehaviour, IDamageable

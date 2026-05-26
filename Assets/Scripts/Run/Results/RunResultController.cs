@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using RougeLite.Run;
 
 public class RunResultController : MonoBehaviour
 {

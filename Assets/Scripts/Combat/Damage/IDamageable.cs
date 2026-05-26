@@ -3,7 +3,10 @@ using UnityEngine;
 /// <summary>
 /// Interface for any enemy that can take damage
 /// </summary>
-public interface IDamageable
+namespace RougeLite.Combat.Damage
 {
-    void TakeDamage(int damage);
+    public interface IDamageable
+    {
+        void TakeDamage(int damage);
+    }
 }

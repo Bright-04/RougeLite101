@@ -1,4 +1,5 @@
 using UnityEngine;
+using RougeLite.Run;
 
 public enum RunResultPreviewMode
 {

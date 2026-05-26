@@ -1,5 +1,8 @@
-public enum RunResultType
+namespace RougeLite.Run
 {
-    Win,
-    Lose
+    public enum RunResultType
+    {
+        Win,
+        Lose
+    }
 }

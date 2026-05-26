@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using RougeLite.Run;
 
 // Pure decision rules only.
 // No Unity object orchestration, scene loading, UI toggles, coroutine control, or save/load side effects belongs here.

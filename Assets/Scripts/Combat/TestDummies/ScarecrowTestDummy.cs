@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using RougeLite.Combat.Damage;
 
 [DisallowMultipleComponent]
 public sealed class ScarecrowTestDummy : MonoBehaviour, IDamageable
