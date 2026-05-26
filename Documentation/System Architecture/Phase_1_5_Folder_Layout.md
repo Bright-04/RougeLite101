@@ -1,5 +1,9 @@
 # Phase 1.5 Folder Layout Note
 
+_Branch documentation version: pre-RL20.06 / partially outdated_
+
+> Note: This document records the Phase 1.5 checkpoint and includes historical context. Later follow-up items were completed in subsequent phases.
+
 ## Purpose
 
 This note records the post-Phase-1 domain-oriented script layout and the items that were intentionally deferred during stabilization.
@@ -40,7 +44,7 @@ The following items remain intentionally deferred and should not be moved casual
 
 ## Stabilization Follow-Up
 
-`Assets/Scripts/Dungeon/RoomS` is currently treated as a stabilization follow-up item rather than an empty-folder cleanup target. Git still tracks room scripts beneath that path, so it needs a dedicated casing or naming migration plan instead of deletion during Phase 1.5.
+`Assets/Scripts/Dungeon/RoomS` was treated as a stabilization follow-up item during Phase 1.5. That folder was later normalized to `Assets/Scripts/Dungeon/Rooms` in a subsequent safe refactor phase.
 
 ## Phase 2 Direction
 
@@ -49,5 +53,5 @@ Safe future candidates include:
 - gradual namespace adoption by domain
 - planned class renames with Unity serialization migration
 - clearer controller and manager responsibility boundaries
-- a separate asset-only migration for `IventoryItems` naming cleanup
+- `Assets/ScriptableObjects/IventoryItems` was later corrected to `Assets/ScriptableObjects/InventoryItems`
 - deferred editor utility organization once the runtime layout is stable

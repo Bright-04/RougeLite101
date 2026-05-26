@@ -1,5 +1,7 @@
 # Manager / Controller Responsibility Map
 
+_Branch documentation version: RL20.06-RefactoringSystem_
+
 This map documents the current responsibilities of the main manager/controller classes so future cleanup can separate ownership from orchestration without breaking serialization.
 
 | Class | Current role | Classification | Why renaming is unsafe right now | Suggested future name |

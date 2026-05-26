@@ -1,5 +1,9 @@
 # System Architecture Overview
 
+_Branch documentation version: pre-RL20.06 / partially outdated_
+
+> Note: This document contains older architecture references and should be used as background context, not as the current folder-ownership guide.
+
 ## Core Systems
 
 ### Dungeon Generation System
@@ -20,12 +24,12 @@
 
 ### Player Systems
 
-#### PlayerController
+#### Player Runtime
 
-- Input handling using Unity's Input System
-- 2D movement with Rigidbody2D
-- Animation control and sprite flipping
-- Singleton pattern for global access
+- **InputManager**: Owns Input System action maps and gameplay/UI switching
+- **PlayerMovement**: Handles movement, aim direction, dash, and runtime facing
+- **PlayerStats**: Owns health, damage-related stats, and combat-facing player state
+- Runtime player behavior is split across components rather than a single `PlayerController` owner
 
 #### PlayerStats
 
@@ -51,16 +55,17 @@
 
 ### UI Systems
 
-- **UIManager**: Health, mana, and stamina display
+- **PlayerUI**: Health, mana, and stamina display
 - **SpellCasterUI**: Spell slot UI with cooldown visualization
+- **WeaponHUDUI**: Equipped-weapon HUD presentation
 - Real-time stat updates
 
 ## Design Patterns Used
 
 ### Singleton Pattern
 
-- PlayerController: Global player access
-- UIManager: Centralized UI management
+- GameManager: Global runtime access
+- InputManager: Centralized input access
 
 ### Component Pattern
 

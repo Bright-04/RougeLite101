@@ -1,5 +1,7 @@
 # Item / Equipment Identity Map
 
+_Branch documentation version: RL20.06-RefactoringSystem_
+
 This project currently uses two different identity layers. That is intentional for now, but it must stay explicit so runtime inventory matching is not confused with save/load identity.
 
 ## Current Identity Model

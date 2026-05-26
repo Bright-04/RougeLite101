@@ -1,5 +1,7 @@
 # Documentation Index
 
+_Branch documentation version: RL20.06-RefactoringSystem_
+
 Welcome to the RougeLite101 documentation! This folder contains all the guides, references, and technical documentation for the project.
 
 ## 📁 Folder Structure
@@ -26,11 +28,14 @@ Quick reference materials for rapid development and design.
 
 Technical documentation about the game's systems and architecture.
 
+- **[Current_Project_Organization.md](./System%20Architecture/Current_Project_Organization.md)**
+  - Current folder ownership baseline for `RL20.06-RefactoringSystem`
+  - Domain ownership rules and system flow reference
+  - Current namespace status and deferred refactor boundary
+
 - **[System_Overview.md](./System%20Architecture/System_Overview.md)**
-  - Core system descriptions
-  - Design patterns used
-  - Data flow and architecture decisions
-  - Extension points for new features
+  - Older architecture background and data-flow reference
+  - Historical design patterns and extension-point notes
 
 - **[Unity_Meta_File_Guide.md](./System%20Architecture/Unity_Meta_File_Guide.md)**
   - Unity .meta file management
@@ -47,8 +52,8 @@ Technical documentation about the game's systems and architecture.
 
 ### For Programmers
 
-1. Read [System_Overview.md](./System%20Architecture/System_Overview.md) to understand the architecture
-2. Review the code structure and design patterns
+1. Read [Current_Project_Organization.md](./System%20Architecture/Current_Project_Organization.md) for the current architecture baseline
+2. Use [System_Overview.md](./System%20Architecture/System_Overview.md) as older background context where needed
 3. Use the validation tools to ensure code quality
 
 ### For New Team Members
@@ -83,7 +88,8 @@ When updating documentation:
 - **Main Project**: [README.md](../README.md)
 - **Room Creation**: [Manual_Tilemap_Room_Guide.md](./Level%20Design/Manual_Tilemap_Room_Guide.md)
 - **Quick Reference**: [Tilemap_Quick_Reference.md](./Quick%20References/Tilemap_Quick_Reference.md)
-- **Technical Docs**: [System_Overview.md](./System%20Architecture/System_Overview.md)
+- **Current Architecture**: [Current_Project_Organization.md](./System%20Architecture/Current_Project_Organization.md)
+- **Architecture Background**: [System_Overview.md](./System%20Architecture/System_Overview.md)
 - **License Information**: [LICENSE_INFO.md](./LICENSE_INFO.md)
 
 ## Legal

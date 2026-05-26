@@ -1,5 +1,7 @@
 # Manual Tilemap Room Design Guide for RougeLite101
 
+_Branch documentation version: branch-neutral reference_
+
 ### Phase 1: Create the Room Scene
 
 1. **Create New Scene**

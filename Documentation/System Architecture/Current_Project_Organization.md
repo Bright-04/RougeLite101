@@ -1,5 +1,7 @@
 # Current Project Organization
 
+_Branch documentation version: RL20.06-RefactoringSystem_
+
 ## Status
 
 Current checkpoint: post-folder reorganization and low-risk namespace pass.
