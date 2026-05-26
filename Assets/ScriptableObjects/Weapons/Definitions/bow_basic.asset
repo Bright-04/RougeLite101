@@ -31,7 +31,7 @@ MonoBehaviour:
   attackType: 3
   gripPointOffset: {x: 0.24, y: 0, z: 0}
   visualScale: 1
-  rotationOffsetDegrees: 135
+  rotationOffsetDegrees: 0
   damage: 50
   cooldown: 0.5
   knockback: 1
@@ -65,10 +65,10 @@ MonoBehaviour:
   weaponPrefab: {fileID: 8184291277002341734, guid: 01ae4c397649f6d4da07d86edd0b44d6, type: 3}
   weaponType: 1
   baseDamage: 10
-  range: 10
+  range: 50
   hitboxDistance: 0.15
   hitboxScale: {x: 2, y: 2, z: 1}
   projectilePrefab: {fileID: 4893390792209540543, guid: 6e828ea7c4409a34894ca3990e1a3f6e, type: 3}
-  projectileSpeed: 15
+  projectileSpeed: 20
   projectileCount: 1
   spreadAngle: 0
