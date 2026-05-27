@@ -32,6 +32,7 @@ public class Item : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         RefreshVisual();
+        EnsurePromptReferences();
 
         if (promptObject != null)
         {
@@ -51,6 +52,34 @@ public class Item : MonoBehaviour
         {
             promptText.text = "[F] Pick Up item";
         }
+    }
+
+    private void EnsurePromptReferences()
+    {
+        if (promptObject != null && promptText != null)
+        {
+            return;
+        }
+
+        // Legacy scene pickups can be missing the prompt wiring even though the prefab has it.
+        GameObject fallbackPrompt = new GameObject("PromptText");
+        fallbackPrompt.transform.SetParent(transform, false);
+        fallbackPrompt.transform.localPosition = new Vector3(0f, 1.2f, 0f);
+
+        TextMeshPro fallbackText = fallbackPrompt.AddComponent<TextMeshPro>();
+        fallbackText.font = TMP_Settings.defaultFontAsset;
+        fallbackText.fontSize = 3f;
+        fallbackText.alignment = TextAlignmentOptions.Center;
+        fallbackText.text = "[F] Pick Up item";
+
+        MeshRenderer renderer = fallbackText.GetComponent<MeshRenderer>();
+        if (renderer != null)
+        {
+            renderer.sortingOrder = 20;
+        }
+
+        promptObject = fallbackPrompt;
+        promptText = fallbackText;
     }
 
     private void RefreshVisual()
