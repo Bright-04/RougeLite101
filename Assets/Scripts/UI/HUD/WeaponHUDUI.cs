@@ -4,60 +4,176 @@ using UnityEngine.UI;
 public class WeaponHUDUI : MonoBehaviour
 {
     private EquipmentManager equipmentManager;
+    private WeaponSlotUI mainSlotUI;
+    private WeaponSlotUI subSlotUI;
+    private bool isSubscribed;
+    private bool missingSlotRootLogged;
 
     [Header("Icon Displays")]
-    [SerializeField] private Image mainWeaponIcon; // Ô UI to (Main)
-    [SerializeField] private Image subWeaponIcon;  // Ô UI nhỏ (Sub)
+    [SerializeField] private Image mainWeaponIcon; // Active weapon visual
+    [SerializeField] private Image subWeaponIcon;  // Inactive weapon visual
 
     [Header("Settings")]
     [SerializeField] private Sprite emptySlotIcon;
 
-    private void Start()
+    private void OnEnable()
     {
-        equipmentManager = FindAnyObjectByType<EquipmentManager>();
-
-        if (equipmentManager != null)
-        {
-            // Cả hai sự kiện đều kích hoạt việc vẽ lại toàn bộ icon
-            equipmentManager.OnWeaponChanged += (slot, def) => RefreshAllIcons();
-            equipmentManager.OnActiveSlotChanged += (slot) => RefreshAllIcons();
-
-            RefreshAllIcons();
-        }
+        EnsureReferences();
+        SubscribeEvents();
+        RefreshAllIcons();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
+        UnsubscribeEvents();
+    }
+
+    private void EnsureReferences()
+    {
+        if (equipmentManager == null)
+        {
+            equipmentManager = FindAnyObjectByType<EquipmentManager>();
+        }
+
+        mainSlotUI = ResolveSlotUI(mainWeaponIcon);
+        subSlotUI = ResolveSlotUI(subWeaponIcon);
+    }
+
+    private WeaponSlotUI ResolveSlotUI(Image icon)
+    {
+        if (icon == null || icon.transform.parent == null)
+        {
+            if (!missingSlotRootLogged)
+            {
+                Debug.LogWarning($"WeaponHUDUI on '{name}' is missing an icon reference or slot root parent.", this);
+                missingSlotRootLogged = true;
+            }
+
+            return null;
+        }
+
+        WeaponSlotUI slotUI = icon.transform.parent.GetComponent<WeaponSlotUI>();
+        if (slotUI == null && Application.isPlaying)
+        {
+            slotUI = icon.transform.parent.gameObject.AddComponent<WeaponSlotUI>();
+        }
+
+        return slotUI;
+    }
+
+    private void SubscribeEvents()
+    {
+        if (isSubscribed)
+        {
+            return;
+        }
+
         if (equipmentManager != null)
         {
-            equipmentManager.OnWeaponChanged -= (slot, def) => RefreshAllIcons();
-            equipmentManager.OnActiveSlotChanged -= (slot) => RefreshAllIcons();
+            equipmentManager.OnWeaponChanged += HandleWeaponChanged;
+            equipmentManager.OnActiveSlotChanged += HandleActiveSlotChanged;
         }
+
+        if (mainSlotUI != null)
+        {
+            mainSlotUI.OnRightClick += HandleSlotRightClick;
+        }
+
+        if (subSlotUI != null)
+        {
+            subSlotUI.OnRightClick += HandleSlotRightClick;
+        }
+
+        isSubscribed = true;
+    }
+
+    private void UnsubscribeEvents()
+    {
+        if (!isSubscribed)
+        {
+            return;
+        }
+
+        if (equipmentManager != null)
+        {
+            equipmentManager.OnWeaponChanged -= HandleWeaponChanged;
+            equipmentManager.OnActiveSlotChanged -= HandleActiveSlotChanged;
+        }
+
+        if (mainSlotUI != null)
+        {
+            mainSlotUI.OnRightClick -= HandleSlotRightClick;
+        }
+
+        if (subSlotUI != null)
+        {
+            subSlotUI.OnRightClick -= HandleSlotRightClick;
+        }
+
+        isSubscribed = false;
+    }
+
+    private void HandleWeaponChanged(EquipmentManager.WeaponSlot slot, WeaponDefinitionSO definition)
+    {
+        RefreshAllIcons();
+    }
+
+    private void HandleActiveSlotChanged(EquipmentManager.WeaponSlot slot)
+    {
+        RefreshAllIcons();
+    }
+
+    private void HandleSlotRightClick(WeaponSlotUI slotUI)
+    {
+        if (equipmentManager == null || slotUI == null)
+        {
+            return;
+        }
+
+        EquipmentManager.WeaponSlot targetSlot = ResolveTargetSlot(slotUI);
+        if (equipmentManager.GetWeaponDefinition(targetSlot) == null)
+        {
+            return;
+        }
+
+        equipmentManager.UnequipWeapon(targetSlot);
+    }
+
+    private EquipmentManager.WeaponSlot ResolveTargetSlot(WeaponSlotUI slotUI)
+    {
+        EquipmentManager.WeaponSlot activeSlot = equipmentManager.GetActiveSlot();
+        EquipmentManager.WeaponSlot inactiveSlot = activeSlot == EquipmentManager.WeaponSlot.Main
+            ? EquipmentManager.WeaponSlot.Sub
+            : EquipmentManager.WeaponSlot.Main;
+
+        return slotUI == mainSlotUI ? activeSlot : inactiveSlot;
     }
 
     private void RefreshAllIcons()
     {
-        if (equipmentManager == null) return;
+        if (equipmentManager == null)
+        {
+            return;
+        }
 
-        // Xác định Weapon nào đang là "Active" trên tay người chơi
         EquipmentManager.WeaponSlot activeSlot = equipmentManager.GetActiveSlot();
-        EquipmentManager.WeaponSlot inactiveSlot = (activeSlot == EquipmentManager.WeaponSlot.Main) 
-            ? EquipmentManager.WeaponSlot.Sub 
+        EquipmentManager.WeaponSlot inactiveSlot = activeSlot == EquipmentManager.WeaponSlot.Main
+            ? EquipmentManager.WeaponSlot.Sub
             : EquipmentManager.WeaponSlot.Main;
 
         WeaponDefinitionSO activeDef = equipmentManager.GetWeaponDefinition(activeSlot);
         WeaponDefinitionSO inactiveDef = equipmentManager.GetWeaponDefinition(inactiveSlot);
 
-        // Ô chính luôn hiện vũ khí đang Active
         SetIcon(mainWeaponIcon, activeDef);
-
-        // Ô phụ hiện vũ khí còn lại (nếu có)
         SetIcon(subWeaponIcon, inactiveDef);
     }
 
     private void SetIcon(Image targetIcon, WeaponDefinitionSO weaponDef)
     {
-        if (targetIcon == null) return;
+        if (targetIcon == null)
+        {
+            return;
+        }
 
         if (weaponDef != null && weaponDef.ItemImage != null)
         {
@@ -67,8 +183,7 @@ public class WeaponHUDUI : MonoBehaviour
         else
         {
             targetIcon.sprite = emptySlotIcon;
-            // Nếu không có icon và không có hình mặc định, làm Icon tàng hình
-            targetIcon.color = (emptySlotIcon != null) ? Color.white : new Color(1, 1, 1, 0);
+            targetIcon.color = emptySlotIcon != null ? Color.white : new Color(1f, 1f, 1f, 0f);
         }
     }
 }

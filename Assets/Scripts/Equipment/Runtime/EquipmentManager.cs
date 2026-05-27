@@ -384,6 +384,35 @@ public class EquipmentManager : MonoBehaviour
         return slot == WeaponSlot.Main ? mainWeaponDef : subWeaponDef;
     }
 
+    public bool UnequipWeapon(WeaponSlot slot)
+    {
+        WeaponDefinitionSO removedWeapon = GetWeaponDefinition(slot);
+        if (removedWeapon == null)
+        {
+            return false;
+        }
+
+        if (!TryReturnWeaponToInventory(removedWeapon))
+        {
+            return false;
+        }
+
+        bool removedActiveSlot = activeSlot == slot;
+        ClearSlot(slot);
+
+        if (removedActiveSlot)
+        {
+            WeaponSlot nextActiveSlot = mainWeaponDef != null
+                ? WeaponSlot.Main
+                : subWeaponDef != null
+                    ? WeaponSlot.Sub
+                    : slot;
+            SetActiveSlot(nextActiveSlot, true);
+        }
+
+        return true;
+    }
+
     private void OnPickupResolved(WeaponSlot? selectedSlot)
     {
         if (pendingPickupDefinition == null)

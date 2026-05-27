@@ -455,6 +455,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1657207077487482425, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
+      propertyPath: emptySlotIcon
+      value: 
+      objectReference: {fileID: 3336594861599217744, guid: 175e1dd81b8c2904e94c3144c554233f, type: 3}
     - target: {fileID: 2071752024522555375, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
       propertyPath: m_Name
       value: Canvas_UI
@@ -507,6 +511,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3684138622896676449, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5420733637838965252, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -514,6 +522,10 @@ PrefabInstance:
     - target: {fileID: 5420733637838965252, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5714066726200902643, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8395987557781366439, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
       propertyPath: m_AnchorMax.y
@@ -540,7 +552,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 3684138622896676449, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0d5a34d98fbce6458ec2e04cba573f0, type: 3}
@@ -5456,6 +5469,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoSaveInterval: 60
   enableAutoSave: 1
+  logSaveLoadInfo: 0
   playerStats: {fileID: 2681816811590592302}
   equipmentManager: {fileID: 0}
   equipmentController: {fileID: 0}
