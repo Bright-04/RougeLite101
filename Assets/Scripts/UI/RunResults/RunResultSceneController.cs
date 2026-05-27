@@ -6,11 +6,15 @@ public class RunResultSceneController : MonoBehaviour
 {
     [SerializeField] private EndGameResultUI resultUI;
     [SerializeField] private string hubSceneName = "GameHome";
+    [SerializeField] private bool logRunResultSummary = false;
 
     private void Start()
     {
         Time.timeScale = 1f;
-        Debug.Log($"RunResultSceneController: Start with HasResult={RunResultSession.HasResult}, ResultType={RunResultSession.ResultType}, Stars={RunResultSession.Stars}.");
+        if (logRunResultSummary)
+        {
+            Debug.Log($"RunResultSceneController: Start with HasResult={RunResultSession.HasResult}, ResultType={RunResultSession.ResultType}, Stars={RunResultSession.Stars}.");
+        }
 
         if (!RunResultSession.HasResult)
         {

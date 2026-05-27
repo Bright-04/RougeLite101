@@ -5,6 +5,7 @@ public class AutoSaveManager : MonoBehaviour
     [Header("Auto Save Settings")]
     [SerializeField] private float autoSaveInterval = 60f;
     [SerializeField] private bool enableAutoSave = true;
+    [SerializeField] private bool logSaveLoadInfo = false;
 
     [Header("References")]
     [SerializeField] private PlayerStats playerStats;
@@ -58,7 +59,10 @@ public class AutoSaveManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        Debug.Log("Game đang tắt... Đang save...");
+        if (logSaveLoadInfo)
+        {
+            Debug.Log("Game đang tắt... Đang save...");
+        }
         SaveGame();
     }
 
@@ -66,7 +70,10 @@ public class AutoSaveManager : MonoBehaviour
     {
         if (pauseStatus)
         {
-            Debug.Log("Game bị pause... Đang save...");
+            if (logSaveLoadInfo)
+            {
+                Debug.Log("Game bị pause... Đang save...");
+            }
             SaveGame();
         }
     }
@@ -75,8 +82,11 @@ public class AutoSaveManager : MonoBehaviour
     {
         if (playerStats != null)
         {
-            SaveSystem.SavePlayerStats(playerStats, equipmentManager, equipmentController);
-            Debug.Log($"Game saved at {System.DateTime.Now:HH:mm:ss}");
+            SaveSystem.SavePlayerStats(playerStats, equipmentManager, equipmentController, logSaveLoadInfo);
+            if (logSaveLoadInfo)
+            {
+                Debug.Log($"Game saved at {System.DateTime.Now:HH:mm:ss}");
+            }
         }
         else
         {
@@ -86,14 +96,17 @@ public class AutoSaveManager : MonoBehaviour
 
     public void LoadGame()
     {
-        PlayerStatsData data = SaveSystem.LoadPlayerStats();
+        PlayerStatsData data = SaveSystem.LoadPlayerStats(logSaveLoadInfo);
 
         if (data != null)
         {
             if (playerStats != null)
             {
                 playerStats.LoadFromData(data);
-                Debug.Log("Game loaded successfully!");
+                if (logSaveLoadInfo)
+                {
+                    Debug.Log("Game loaded successfully!");
+                }
             }
             else
             {
@@ -102,7 +115,10 @@ public class AutoSaveManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("Không có save file. Starting new game...");
+            if (logSaveLoadInfo)
+            {
+                Debug.Log("Không có save file. Starting new game...");
+            }
         }
     }
 

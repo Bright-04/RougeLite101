@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using System.Text;
 
 [DisallowMultipleComponent]
@@ -11,9 +12,12 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private Transform weaponAnchor;
     [SerializeField] private bool showDebugGizmos = true;
     [SerializeField] private bool showMeleeDebugGizmos = true;
-    [SerializeField] private bool showDebugReadout = true;
-    [SerializeField] private bool logScaleDebugOnWeaponChange = true;
-    [SerializeField] private bool logSharedBoundsDebugChanges;
+    [FormerlySerializedAs("showDebugReadout")]
+    [SerializeField] private bool showWeaponDebugOverlay = false;
+    [SerializeField] private bool logRigDebug = false;
+    [SerializeField] private bool logVisibilityDebug = false;
+    [SerializeField] private bool logScaleDebug = false;
+    [SerializeField] private bool logSharedBoundsDebug = false;
 
     private PlayerMovement playerMovement;
     private Weapon currentWeapon;
@@ -33,6 +37,7 @@ public class WeaponController : MonoBehaviour
     private float nextPresetGripValidationWarningTime;
     private bool loggedEquipVisibility;
     private bool loggedFirstPoseVisibility;
+    private bool logScaleDebugOnWeaponChange;
 
     public WeaponAlignmentPose CurrentPose => currentPose;
     public WeaponRig CurrentWeaponRig => currentWeaponRig;
@@ -103,16 +108,22 @@ public class WeaponController : MonoBehaviour
             currentDisplayedWeaponRenderer = ResolveDisplayedWeaponRenderer();
         }
 
-        LogRigSource(definition, currentWeaponRig, currentRigResolution);
+        if (logRigDebug)
+        {
+            LogRigSource(definition, currentWeaponRig, currentRigResolution);
+        }
 
-        logScaleDebugOnWeaponChange = true;
+        logScaleDebugOnWeaponChange = logScaleDebug;
         if (currentWeaponVisual != null)
         {
             ResetTransform(currentWeaponVisual);
             SetOnlyActiveWeaponVisual(currentWeaponVisual);
         }
 
-        LogVisibilitySnapshot("equip");
+        if (logVisibilityDebug)
+        {
+            LogVisibilitySnapshot("equip");
+        }
         ApplyCurrentPose();
     }
 
@@ -137,6 +148,7 @@ public class WeaponController : MonoBehaviour
         nextPresetGripValidationWarningTime = 0f;
         loggedEquipVisibility = false;
         loggedFirstPoseVisibility = false;
+        logScaleDebugOnWeaponChange = false;
     }
 
     public Vector3 GetProjectileSpawnPoint(WeaponDefinitionSO definition, Vector2 aimDirection)
@@ -207,14 +219,21 @@ public class WeaponController : MonoBehaviour
             }
         }
 
-        if (logScaleDebugOnWeaponChange)
+        if (logScaleDebug && logScaleDebugOnWeaponChange)
         {
             LogScaleDebug();
             logScaleDebugOnWeaponChange = false;
         }
 
-        LogSharedBoundsDebugIfChanged();
-        LogVisibilitySnapshot("first-pose");
+        if (logSharedBoundsDebug)
+        {
+            LogSharedBoundsDebugIfChanged();
+        }
+
+        if (logVisibilityDebug)
+        {
+            LogVisibilitySnapshot("first-pose");
+        }
     }
 
     private void ApplyAimAlignedPose()
@@ -639,7 +658,7 @@ public class WeaponController : MonoBehaviour
 
     private void LogScaleDebug()
     {
-        if (currentDefinition == null || currentWeaponVisual == null)
+        if (!logScaleDebug || currentDefinition == null || currentWeaponVisual == null)
         {
             return;
         }
@@ -674,7 +693,7 @@ public class WeaponController : MonoBehaviour
 
     private void LogSharedBoundsDebugIfChanged()
     {
-        if (!logSharedBoundsDebugChanges || currentWeapon == null)
+        if (!logSharedBoundsDebug || currentWeapon == null)
         {
             return;
         }
@@ -695,6 +714,11 @@ public class WeaponController : MonoBehaviour
 
     private void LogVisibilitySnapshot(string phase)
     {
+        if (!logVisibilityDebug)
+        {
+            return;
+        }
+
         if (phase == "equip")
         {
             if (loggedEquipVisibility)
@@ -769,7 +793,7 @@ public class WeaponController : MonoBehaviour
 
     private void OnGUI()
     {
-        if (!showDebugReadout || currentDefinition == null || currentWeaponVisual == null || weaponRoot == null || weaponAnchor == null)
+        if (!showWeaponDebugOverlay || currentDefinition == null || currentWeaponVisual == null || weaponRoot == null || weaponAnchor == null)
         {
             return;
         }

@@ -6,6 +6,9 @@ public class PauseMenu : MonoBehaviour
 {
     [Header("UI References")]
     public GameObject pauseCanvas;
+
+    [Header("Debug")]
+    [SerializeField] private bool logPauseState = false;
    
     private PlayerControls playerControls;
     private bool isPaused;
@@ -29,8 +32,6 @@ public class PauseMenu : MonoBehaviour
 
         // Subscribe ESC key
         playerControls.NavigateUI.OpenPauseMenu.performed += OnOpenPausePerformed;
-        
-        Debug.Log("PauseMenu initialized!");
     }
 
     private void OnDestroy()
@@ -61,7 +62,10 @@ public class PauseMenu : MonoBehaviour
         // Disable gameplay inputs
         InputManager.Instance.EnableUIMap();
         
-        Debug.Log("Game PAUSED");
+        if (logPauseState)
+        {
+            Debug.Log("Game PAUSED");
+        }
     }
 
     
@@ -75,7 +79,10 @@ public class PauseMenu : MonoBehaviour
         // Enable gameplay inputs
         InputManager.Instance.DisableUIMap();
 
-        Debug.Log("Game RESUMED");
+        if (logPauseState)
+        {
+            Debug.Log("Game RESUMED");
+        }
     }
 
     public void HideForSystemOverlay()

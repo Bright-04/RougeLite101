@@ -25,7 +25,7 @@ public static class SaveSystem
         return Path.Combine(playerPath, "playerStats.sav");
     }
 
-    public static void SavePlayerStats(PlayerStats playerStats, EquipmentManager equipmentManager, EquipmentController equipmentController)
+    public static void SavePlayerStats(PlayerStats playerStats, EquipmentManager equipmentManager, EquipmentController equipmentController, bool logInfo = false)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         string path = GetPlayerStatsPath();
@@ -36,10 +36,13 @@ public static class SaveSystem
         formatter.Serialize(stream, playerStatsData);
         stream.Close();
 
-        Debug.Log("Player stats saved to: " + path);
+        if (logInfo)
+        {
+            Debug.Log("Player stats saved to: " + path);
+        }
     }
 
-    public static PlayerStatsData LoadPlayerStats()
+    public static PlayerStatsData LoadPlayerStats(bool logInfo = false)
     {
         string path = GetPlayerStatsPath();
 
@@ -51,7 +54,10 @@ public static class SaveSystem
             PlayerStatsData data = formatter.Deserialize(stream) as PlayerStatsData;
             stream.Close();
 
-            Debug.Log("Player stats loaded from: " + path);
+            if (logInfo)
+            {
+                Debug.Log("Player stats loaded from: " + path);
+            }
             return data;
         }
         else

@@ -20,6 +20,9 @@ public class InventoryController : MonoBehaviour
     [SerializeField]
     private Transform playerTransform;
 
+    [Header("Debug")]
+    [SerializeField] private bool logInventorySwitches = false;
+
     public InventorySO CurrentInventoryData { get; private set;}
 
     public List<InventoryItem> initialItems = new List<InventoryItem>();
@@ -355,7 +358,10 @@ public class InventoryController : MonoBehaviour
     private void UpdateInventory(string sceneName)
     {
         CurrentInventoryData = sceneName == "Dungeon" ? dungeonInventoryData : safeInventoryData;
-        Debug.Log($"Inventory switch to: {CurrentInventoryData.name}");
+        if (logInventorySwitches)
+        {
+            Debug.Log($"Inventory switch to: {CurrentInventoryData.name}");
+        }
     }
 
     private void OnOpenInventoryPerformed(InputAction.CallbackContext ctx)
@@ -369,7 +375,10 @@ public class InventoryController : MonoBehaviour
             }
             // Disable gameplay inputs
             InputManager.Instance.EnableUIMap();
-            Debug.Log("OPEN inventory");
+            if (logInventorySwitches)
+            {
+                Debug.Log("OPEN inventory");
+            }
         }
     }
 
@@ -380,7 +389,10 @@ public class InventoryController : MonoBehaviour
             inventoryUI.HideInventory();
             // Enable gameplay inputs
             InputManager.Instance.DisableUIMap();
-            Debug.Log("CLOSE inventory");
+            if (logInventorySwitches)
+            {
+                Debug.Log("CLOSE inventory");
+            }
         }
     }
 

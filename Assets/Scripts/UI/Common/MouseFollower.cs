@@ -9,6 +9,7 @@ public class MouseFollower : MonoBehaviour
     private Camera mainCam;
     [SerializeField]
     private InventoryItemUI item;
+    [SerializeField] private bool logToggleTrace = false;
 
     public void Awake()
     {
@@ -35,7 +36,10 @@ public class MouseFollower : MonoBehaviour
 
     public void Toggle(bool val)
     {
-        Debug.Log($"Item toggled {val}");
+        if (logToggleTrace)
+        {
+            Debug.Log($"Item toggled {val}");
+        }
         gameObject.SetActive(val);
     }
 }
