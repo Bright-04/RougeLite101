@@ -45,13 +45,13 @@ public class PlayerUI : MonoBehaviour
         
         if (healthSlider != null)
         {
-            healthSlider.maxValue = playerStats.GetTotalMaxHP();
-            healthSlider.value = playerStats.currentHP;
+            healthSlider.maxValue = playerStats.GetMaxHP();
+            healthSlider.value = playerStats.GetCurrentHP();
         }
 
         if (hpText != null)
         {
-            hpText.text = $"{Mathf.FloorToInt(playerStats.currentHP)} / {playerStats.GetTotalMaxHP()}";
+            hpText.text = $"{Mathf.FloorToInt(playerStats.GetCurrentHP())} / {playerStats.GetMaxHP()}";
         }
             
     }
@@ -62,13 +62,13 @@ public class PlayerUI : MonoBehaviour
 
         if (manaSlider != null)
         {
-            manaSlider.maxValue = playerStats.maxMana;
-            manaSlider.value = playerStats.currentMana;
+            manaSlider.maxValue = playerStats.GetMaxMana();
+            manaSlider.value = playerStats.GetCurrentMana();
         }
 
         if (manaText != null)
         {
-            manaText.text = $"{Mathf.FloorToInt(playerStats.currentMana)} / {playerStats.maxMana}";
+            manaText.text = $"{Mathf.FloorToInt(playerStats.GetCurrentMana())} / {playerStats.GetMaxMana()}";
         }
             
     }

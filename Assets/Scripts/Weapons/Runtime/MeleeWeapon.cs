@@ -466,10 +466,10 @@ public class MeleeWeapon : Weapon
 
         if (stats != null)
         {
-            finalDamage += stats.attackDamage;
+            finalDamage += stats.GetAttackDamage();
             if (stats.TryCrit())
             {
-                finalDamage *= stats.GetCritMultiplier();
+                finalDamage *= stats.GetCritDamage();
             }
         }
 

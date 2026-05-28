@@ -61,55 +61,55 @@ public class StatsMenuUI : MonoBehaviour
 
         // Level & Experience
         if (levelText != null)
-            levelText.text = $"Level: {playerStats.level}";
+            levelText.text = $"Level: {playerStats.GetLevel()}";
 
         if (expText != null)
-            expText.text = $"EXP: {playerStats.currentExp:F0} / {playerStats.levelUpExp:F0}";
+            expText.text = $"EXP: {playerStats.GetCurrentExp():F0} / {playerStats.GetLevelUpExp():F0}";
 
         // Core Stats
         if (maxHpText != null)
-            maxHpText.text = $"Max HP: {playerStats.GetTotalMaxHP():F0}";
+            maxHpText.text = $"Max HP: {playerStats.GetMaxHP():F0}";
 
         if (maxManaText != null)
-            maxManaText.text = $"Max Mana: {playerStats.maxMana:F0}";
+            maxManaText.text = $"Max Mana: {playerStats.GetMaxMana():F0}";
 
         if (maxStaminaText != null)
-            maxStaminaText.text = $"Max Stamina: {playerStats.maxStamina:F0}";
+            maxStaminaText.text = $"Max Stamina: {playerStats.GetMaxStamina():F0}";
 
         // Combat Stats
         if (attackDamageText != null)
-            attackDamageText.text = $"Attack Damage: {playerStats.GetTotalAttackDamage():F0}";
+            attackDamageText.text = $"Attack Damage: {playerStats.GetAttackDamage():F0}";
 
         if (abilityPowerText != null)
-            abilityPowerText.text = $"Ability Power: {playerStats.GetTotalAbilityPower():F0}";
+            abilityPowerText.text = $"Ability Power: {playerStats.GetAbilityPower():F0}";
 
         if (defenseText != null)
-            defenseText.text = $"Defense: {playerStats.GetTotalDefense():F0}";
+            defenseText.text = $"Defense: {playerStats.GetDefense():F0}";
 
         if (critChanceText != null)
-            critChanceText.text = $"Crit Chance: {(playerStats.GetTotalCritChance() * 100f):F1}%";
+            critChanceText.text = $"Crit Chance: {(playerStats.GetCritChance() * 100f):F1}%";
 
         if (critDamageText != null)
-            critDamageText.text = $"Crit Damage: {(playerStats.GetTotalCritDamage() * 100f):F0}%";
+            critDamageText.text = $"Crit Damage: {(playerStats.GetCritDamage() * 100f):F0}%";
 
         if (luckText != null)
-            luckText.text = $"Luck: {playerStats.luck:F0}";
+            luckText.text = $"Luck: {playerStats.GetLuck():F0}";
 
         // Regeneration Stats
         if (hpRegenText != null)
-            hpRegenText.text = $"HP Regen: {playerStats.hpRegen:F1}/s";
+            hpRegenText.text = $"HP Regen: {playerStats.GetRegenHP():F1}/s";
 
         if (manaRegenText != null)
-            manaRegenText.text = $"Mana Regen: {playerStats.manaRegen:F1}/s";
+            manaRegenText.text = $"Mana Regen: {playerStats.GetRegenMana():F1}/s";
 
         if (staminaRegenText != null)
-            staminaRegenText.text = $"Stamina Regen: {playerStats.staminaRegen:F1}/s";
+            staminaRegenText.text = $"Stamina Regen: {playerStats.GetRegenStamina():F1}/s";
 
         // EXP Bar
         if (expBar != null)
         {
-            expBar.maxValue = playerStats.levelUpExp;
-            expBar.value = playerStats.currentExp;
+            expBar.maxValue = playerStats.GetLevelUpExp();
+            expBar.value = playerStats.GetCurrentExp();
         }
     }
 }

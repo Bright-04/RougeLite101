@@ -52,8 +52,8 @@ public class ExpManager : MonoBehaviour
     {
         if (playerStats != null)
         {
-            playerStats.currentExp += amount;
-            while(playerStats.currentExp >= playerStats.levelUpExp)
+            playerStats.IncreaseExp(amount);
+            while(playerStats.GetCurrentExp() >= playerStats.GetLevelUpExp())
             {
                 LevelUp();
             }
@@ -62,9 +62,7 @@ public class ExpManager : MonoBehaviour
 
     private void LevelUp()
     {
-        playerStats.level++;
-        playerStats.currentExp -=playerStats.levelUpExp;
-        playerStats.levelUpExp = Mathf.RoundToInt(playerStats.levelUpExp * expMultiplier);
+        playerStats.IncreaseLevel(expMultiplier);
 
         // Tăng stats
         IncreaseStats();
@@ -75,20 +73,20 @@ public class ExpManager : MonoBehaviour
     private void IncreaseStats()
     {
         // Tăng max stats
-        playerStats.maxHP += hpGrowth;
-        playerStats.maxMana += manaGrowth;
-        playerStats.maxStamina += staminaGrowth;
+        playerStats.LevelUpHP(hpGrowth);
+        playerStats.LevelUpMana(manaGrowth);
+        playerStats.LevelUpStamina(staminaGrowth);
 
         // Tăng combat stats
-        playerStats.attackDamage += attackDamageGrowth;
-        playerStats.abilityPower += abilityPowerGrowth;
-        playerStats.defense += defenseGrowth;
+        playerStats.LevelUpAttackDamage(attackDamageGrowth);
+        playerStats.LevelUpAbilityPower(abilityPowerGrowth);
+        playerStats.LevelUpDefense(defenseGrowth);
 
         // Tăng regen
-        playerStats.hpRegen += hpRegenGrowth;
-        playerStats.manaRegen += manaRegenGrowth;
-        playerStats.staminaRegen += staminaRegenGrowth;
+        playerStats.LevelUpHPRegen(hpRegenGrowth);
+        playerStats.LevelUpManaRegen(manaRegenGrowth);
+        playerStats.LevelUpStaminaRegen(staminaRegenGrowth);
 
-        Debug.Log($"Stats increased! HP: {playerStats.maxHP}, ATK: {playerStats.attackDamage}");
+        Debug.Log($"Stats increased!");
     }
 }

@@ -32,22 +32,6 @@ public class SpellCaster : MonoBehaviour
         
     }
 
-    //private void OnEnable()
-    //{
-    //    if (playerControls != null)
-    //    {
-    //        playerControls.Combat.SpellCasting.performed += OnSpellCastingPerformed;
-    //    }
-            
-    //}
-    //private void OnDisable()
-    //{
-    //    if (playerControls != null)
-    //    {
-    //        playerControls.Combat.SpellCasting.performed -= OnSpellCastingPerformed;
-    //    }
-    //}
-
     private void OnDestroy()
     {
         if (playerControls != null)
@@ -71,18 +55,6 @@ public class SpellCaster : MonoBehaviour
         return 0;
     }
 
-    //private void OnSpellCastingPerformed(InputAction.CallbackContext context)
-    //{
-    //    var controlPath = context.control.path;
-    //    Debug.Log($"SpellCasting triggered by control: {controlPath}");
-
-    //    if (controlPath == "<Keyboard>/1")
-    //        TryCastSpell(0);
-    //    else if (controlPath == "<Keyboard>/2")
-    //        TryCastSpell(1);
-    //    else if (controlPath == "<Keyboard>/3")
-    //        TryCastSpell(2);
-    //}
     private void OnSpellCastingPerformed(InputAction.CallbackContext context)
     {
         // Kiểm tra xem UI có đang active không
@@ -113,7 +85,7 @@ public class SpellCaster : MonoBehaviour
             return;
         }
 
-        if (stats.currentMana < spell.manaCost)
+        if (stats.GetCurrentMana() < spell.manaCost)
         {
             return;
         }

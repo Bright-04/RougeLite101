@@ -26,44 +26,31 @@ public class Item : MonoBehaviour
     private TextMeshPro promptText;
 
     private SpriteRenderer spriteRenderer;
-    private bool hasWarnedMissingPrompt;
 
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-        RefreshVisual();
+        spriteRenderer.sprite = InventoryItem.ItemImage;
+        NormalizeSpriteSize();
 
-        if (promptObject != null)
-        {
-            promptObject.SetActive(false);
-        }
+        promptObject.SetActive(false);
     }
 
     public void ShowPrompt(bool show)
     {
-        if (promptObject == null)
+        if (show)
         {
-            if (!hasWarnedMissingPrompt)
-            {
-                Debug.LogWarning($"Item '{gameObject.name}' is missing promptObject. Pickup prompt will not be shown.", this);
-                hasWarnedMissingPrompt = true;
-            }
-            return;
+            promptText.text = $"[F] Pick Up item";
         }
 
         promptObject.SetActive(show);
     }
 
-    private void RefreshVisual()
+    public void InformInventoryIsFull()
     {
-        if (spriteRenderer == null || InventoryItem == null || InventoryItem.ItemImage == null)
-        {
-            return;
-        }
-
-        spriteRenderer.sprite = InventoryItem.ItemImage;
-        NormalizeSpriteSize();
+        promptText.text = $"Inventory is Full";
     }
+
 
     private void NormalizeSpriteSize()
     {
@@ -73,13 +60,11 @@ public class Item : MonoBehaviour
         }
 
         Bounds bounds = spriteRenderer.sprite.bounds;
+
         float largestDimension = Mathf.Max(bounds.size.x, bounds.size.y);
-        if (largestDimension <= 0.0001f)
-        {
-            return;
-        }
 
         float scale = targetSize / largestDimension;
+
         transform.localScale = Vector3.one * scale;
     }
 

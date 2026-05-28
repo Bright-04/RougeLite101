@@ -42,11 +42,11 @@ public class DamageSource : MonoBehaviour
             PlayerStats stats = PlayerMovement.Instance.GetComponent<PlayerStats>();
             if (stats != null)
             {
-                finalDamage += stats.attackDamage;
+                finalDamage += stats.GetAttackDamage();
 
                 if (stats.TryCrit())
                 {
-                    finalDamage *= stats.GetCritMultiplier();
+                    finalDamage *= stats.GetCritDamage();
                 }
             }
 

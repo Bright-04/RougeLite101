@@ -4,46 +4,55 @@ using UnityEngine.SceneManagement;
 public class PlayerStats : MonoBehaviour
 {
     [SerializeField] private EquipmentManager equipmentManager;
-    [SerializeField] private EquipmentController equipmentController;
     [SerializeField] private InventoryController inventoryController;
     [SerializeField] private string fallbackHubSceneName = "GameHome";
 
-    public float maxHP = 100;
-    public float currentHP;
-    public float hpRegen = 1;
+    private float maxHP = 100;
+    private float currentHP;
+    private float hpRegen = 1;
 
-    public float maxMana = 100;
-    public float currentMana;
-    public float manaRegen = 1;
+    private float maxMana = 100;
+    private float currentMana;
+    private float manaRegen = 1;
 
-    public float maxStamina = 50;
-    public float currentStamina = 50;
-    public float staminaRegen = 2;
+    private float maxStamina = 50;
+    private float currentStamina = 50;
+    private float staminaRegen = 2;
 
-    public float attackDamage = 2; // AD
-    public float abilityPower = 5;  // AP
-    public float defense = 0;       // DEF - Changed from 2 to 0 so enemies can deal damage
+    private float attackDamage = 2; // AD
+    private float abilityPower = 5;  // AP
+    private float defense = 0;       // DEF - Changed from 2 to 0 so enemies can deal damage
 
-    public float critChance = 0.1f; // 10%
-    public float critDamage = 1.5f; // 1.5x
-    public float luck = 0;
+    private float critChance = 0.1f; // 10%
+    private float critDamage = 1.5f; // 1.5x
+    private float luck = 0;
 
     private float damageCooldown = 1.0f; // seconds of invulnerability after taking damage
     private float damageTimer = 0;
-    private float armorMaxHealthBonus;
-    private float armorDefenseBonus;
-    private float itemMaxHealthBonus;
-    private bool isDead;
+    private bool isDead = false;
+    public bool IsDead => isDead;
 
-    private float buffAttackDamageBonus;
-    private float buffAbilityPowerBonus;
-    private float buffDefenseBonus;
-    private float buffCritChanceBonus;
-    private float buffCritDamageBonus;
+    private float currentExp = 0;
+    private float levelUpExp = 10;
+    private float level = 0;
 
-    public float currentExp = 0;
-    public float levelUpExp = 10;
-    public float level = 0;
+    //STAT BUFF
+    private float buffMaxHP = 0;
+    private float buffHpRegen = 0;
+
+    private float buffMaxMana = 0;
+    private float buffManaRegen = 0;
+
+    private float buffMaxStamina = 0;
+    private float buffStaminaRegen = 0;
+
+    private float buffAttackDamage = 0;
+    private float buffAbilityPower = 0;
+    private float buffDefense = 0;
+
+    private float buffCritChance = 0;
+    private float buffCritDamage = 0;
+    private float buffLuck = 0;
 
     private void Start()
     {
@@ -52,34 +61,18 @@ public class PlayerStats : MonoBehaviour
             equipmentManager = FindAnyObjectByType<EquipmentManager>();
         }
 
-        if (equipmentController == null)
-        {
-            equipmentController = GetComponent<EquipmentController>();
-        }
-
         if (inventoryController == null)
         {
             inventoryController = GetComponent<InventoryController>();
         }
 
-        if (equipmentController != null)
-        {
-            equipmentController.OnArmorEquipped += OnArmorEquipped;
-            equipmentController.ReplayEquippedArmor();
-        }
 
-        currentHP = GetTotalMaxHP();
+        currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
     }
 
-    private void OnDestroy()
-    {
-        if (equipmentController != null)
-        {
-            equipmentController.OnArmorEquipped -= OnArmorEquipped;
-        }
-    }
+   
 
     private void Update()
     {
@@ -97,14 +90,286 @@ public class PlayerStats : MonoBehaviour
 
     private void Regenerate()
     {
-        currentHP = Mathf.Min(GetTotalMaxHP(), currentHP + hpRegen * Time.deltaTime);
+        currentHP = Mathf.Min(maxHP, currentHP + hpRegen * Time.deltaTime);
         currentMana = Mathf.Min(maxMana, currentMana + manaRegen * Time.deltaTime);
         currentStamina = Mathf.Min(maxStamina, currentStamina + staminaRegen * Time.deltaTime);
     }
 
+    //Get functions
+    public float GetMaxHP()
+    {
+        return maxHP;
+    }
+
+    public float GetNoBuffMaxHP()
+    {
+        return maxHP - buffMaxHP;
+    }
+
+    public float GetCurrentHP()
+    {
+        return currentHP;
+    }
+
+    public float GetRegenHP()
+    {
+        return hpRegen;
+    }
+
+    public float GetNoBuffRegenHP()
+    {
+        return hpRegen - buffHpRegen;
+    }
+
+    public float GetMaxMana()
+    {
+        return maxMana;
+    }
+
+    public float GetNoBuffMaxMana()
+    {
+        return maxMana - buffMaxMana;
+    }
+
+    public float GetCurrentMana()
+    {
+        return currentMana;
+    }
+
+    public float GetRegenMana()
+    {
+        return manaRegen;
+    }
+
+    public float GetNoBuffRegenMana()
+    {
+        return manaRegen - buffManaRegen;
+    }
+
+    public float GetMaxStamina()
+    {
+        return maxStamina;
+    }
+
+    public float GetNoBuffMaxStamina()
+    {
+        return maxStamina - buffMaxStamina;
+    }
+
+    public float GetCurrentStamina()
+    {
+        return currentStamina;
+    }
+
+    public float GetRegenStamina()
+    {
+        return staminaRegen;
+    }
+
+    public float GetNoBuffRegenStamina()
+    {
+        return staminaRegen - buffStaminaRegen;
+    }
+
+    public float GetDefense()
+    {
+        return defense;
+    }
+
+    public float GetAttackDamage()
+    {
+        return attackDamage;
+    }
+
+    public float GetAbilityPower()
+    {
+        return abilityPower;
+    }
+
+    public float GetCritChance()
+    {
+        return critChance;
+    }
+
+    public float GetCritDamage()
+    {
+        return critDamage;
+    }
+
+    public float GetLuck()
+    {
+        return luck;
+    }
+
+    public float GetCurrentExp()
+    {
+        return currentExp;
+    }
+
+    public float GetLevelUpExp()
+    {
+        return levelUpExp;
+    }
+
+    public float GetLevel()
+    {
+        return level;
+    }
+
+    //WinFlowValidator
+    public void WinFlowSetCurrentHP(float hpRatio)
+    {
+        currentHP = maxHP * hpRatio;
+    }
+    //level up stat functions
+    public void LevelUpHP(float hpGrowth)
+    {
+        maxHP += hpGrowth;
+    }
+
+    public void LevelUpMana(float manaGrowth)
+    {
+        maxMana += manaGrowth;
+    }
+
+    public void LevelUpStamina(float staminaGrowth)
+    {
+        maxStamina += staminaGrowth;
+    }
+
+    public void LevelUpAttackDamage(float attackDamageGrowth)
+    {
+        attackDamage += attackDamageGrowth;
+    }
+
+    public void LevelUpAbilityPower(float abilityPowerGrowth)
+    {
+        abilityPower += abilityPowerGrowth;
+    }
+
+    public void LevelUpDefense(float defenseGrowth)
+    {
+        defense += defenseGrowth;
+    }
+
+    public void LevelUpHPRegen(float hpRegenGrowth)
+    {
+        hpRegen += hpRegenGrowth;
+    }
+
+    public void LevelUpManaRegen(float manaRegenGrowth)
+    {
+        manaRegen += manaRegenGrowth;
+    }
+
+    public void LevelUpStaminaRegen(float staminaRegenGrowth)
+    {
+        staminaRegen += staminaRegenGrowth;
+    }
+
+    public void IncreaseLevel(float expMultiplier)
+    {
+        level++;
+        currentExp -= levelUpExp;
+        levelUpExp = Mathf.RoundToInt(levelUpExp * expMultiplier);
+    }
+
+    public void IncreaseExp(float amount)
+    {
+        currentExp += amount;
+    }
+    
+    //buff functions
+    public void BuffMaxHealth(float health)
+    {
+        buffMaxHP = health;
+        if (currentHP == maxHP)
+        {
+            currentHP = maxHP + buffMaxHP;
+        }
+        maxHP = maxHP + buffMaxHP;
+
+    }
+
+    public void BuffHpRegen(float regen)
+    {
+        buffHpRegen = regen;
+        hpRegen = hpRegen + buffHpRegen;
+    }
+
+    public void BuffMaxMana(float mana)
+    {
+        buffMaxMana = mana;
+        if (currentMana == maxMana)
+        {
+            currentMana = maxMana + buffMaxMana;
+        }
+        maxMana = maxMana + buffMaxMana;
+
+    }
+
+    public void BuffManaRegen(float regen)
+    {
+        buffManaRegen = regen;
+        manaRegen = manaRegen + buffManaRegen;
+    }
+
+    public void BuffMaxStamina(float stamina)
+    {
+        buffMaxStamina = stamina;
+        if (currentStamina == maxStamina)
+        {
+            currentStamina = maxStamina + buffMaxStamina;
+        }
+        maxStamina = maxStamina + buffMaxStamina;
+    }
+
+    public void BuffStaminaRegen(float regen)
+    {
+        buffStaminaRegen = regen;
+        staminaRegen = staminaRegen + buffStaminaRegen;
+    }
+
+    public void BuffAttackDamage(float damage)
+    {
+        buffAttackDamage = damage;
+        attackDamage = attackDamage + buffAttackDamage;
+    }
+
+    public void BuffAbilityPower(float power)
+    {
+        buffAbilityPower = power;
+        abilityPower = abilityPower + buffAbilityPower;
+    }
+
+    public void BuffCritChance(float crit)
+    {
+        buffCritChance = crit;
+        critChance = critChance + buffCritChance;
+    }
+
+    public void BuffCritDamage(float crit)
+    {
+        buffCritDamage = crit;
+        critDamage = critDamage + buffCritDamage;
+    }
+
+    public void BuffDefense(float def)
+    {
+        buffDefense = def;
+        defense = defense + buffDefense;
+    }
+
+    public void BuffLuck(float val)
+    {
+        buffLuck = val;
+        luck = Mathf.Max(100, luck + val);
+    }
+    
+    //restore effect
     public void HealthRestore(float health)
     {
-        currentHP = Mathf.Min(GetTotalMaxHP(), currentHP + health);
+        currentHP = Mathf.Min(maxHP, currentHP + health);
     }
 
     public void ManaRestore(float mana)
@@ -130,10 +395,10 @@ public class PlayerStats : MonoBehaviour
             return;
         }
 
-        float reducedDamage = Mathf.Max(0, damage - GetTotalDefense());
+        float reducedDamage = Mathf.Max(0, damage - defense);
         currentHP -= reducedDamage;
 
-        Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{GetTotalMaxHP()}");
+        Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{maxHP}");
 
         damageTimer = damageCooldown;
 
@@ -196,7 +461,7 @@ public class PlayerStats : MonoBehaviour
     private void ResetStatsOnRespawn()
     {
         isDead = false;
-        currentHP = GetTotalMaxHP();
+        currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
         damageTimer = 0;
@@ -229,13 +494,17 @@ public class PlayerStats : MonoBehaviour
 
     public bool TryCrit()
     {
-        return Random.value < GetTotalCritChance();
+        return Random.value < critChance;
     }
 
-    public float GetCritMultiplier()
-    {   
-        return GetTotalCritDamage();
-    }
+
+    
+
+    //public float GetCritMultiplier()
+    //{   
+    //    return critDamage;
+    //}
+
 
     public void UseMana(float amount)
     {
@@ -255,25 +524,25 @@ public class PlayerStats : MonoBehaviour
         levelUpExp = data.levelUpExp;
 
         // Core Stats
-        maxHP = data.maxHP;
-        maxMana = data.maxMana;
-        maxStamina = data.maxStamina;
+        maxHP = data.maxHP + buffMaxHP;
+        maxMana = data.maxMana + buffMaxMana;
+        maxStamina = data.maxStamina + buffMaxStamina;
 
         // Regeneration
-        hpRegen = data.hpRegen;
-        manaRegen = data.manaRegen;
-        staminaRegen = data.staminaRegen;
+        hpRegen = data.hpRegen + buffHpRegen;
+        manaRegen = data.manaRegen + buffManaRegen;
+        staminaRegen = data.staminaRegen + buffStaminaRegen;
 
         // Combat Stats
-        attackDamage = data.attackDamage;
-        abilityPower = data.abilityPower;
-        defense = data.defense;
-        critChance = data.critChance;
-        critDamage = data.critDamage;
-        luck = data.luck;
+        attackDamage = data.attackDamage + buffAttackDamage;
+        abilityPower = data.abilityPower + buffAbilityPower;
+        defense = data.defense + buffDefense;
+        critChance = data.critChance + buffCritChance;
+        critDamage = data.critDamage + buffCritDamage;
+        luck = data.luck + buffLuck;
 
         // Reset current values to max after loading
-        currentHP = GetTotalMaxHP();
+        currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
 
@@ -282,15 +551,15 @@ public class PlayerStats : MonoBehaviour
             equipmentManager = FindAnyObjectByType<EquipmentManager>();
         }
 
-        if (equipmentController == null)
-        {
-            equipmentController = GetComponent<EquipmentController>();
-        }
+        //if (equipmentController == null)
+        //{
+        //    equipmentController = GetComponent<EquipmentController>();
+        //}
 
-        if (equipmentController != null)
-        {
-            equipmentController.LoadArmor(data.shieldArmorId, data.helmetArmorId, data.greavesArmorId, data.bootsArmorId);
-        }
+        //if (equipmentController != null)
+        //{
+        //    equipmentController.LoadArmor(data.shieldArmorId, data.helmetArmorId, data.greavesArmorId, data.bootsArmorId);
+        //}
 
         if (equipmentManager != null)
         {
@@ -307,84 +576,4 @@ public class PlayerStats : MonoBehaviour
 
         Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
     }
-
-    public float GetTotalMaxHP()
-    {
-        return maxHP + armorMaxHealthBonus + itemMaxHealthBonus;
-    }
-
-    public float GetTotalDefense()
-    {
-        return defense + armorDefenseBonus + buffDefenseBonus;
-    }
-
-    public float GetTotalAttackDamage()
-    {
-        return attackDamage + buffAttackDamageBonus;
-    }
-
-    public float GetTotalAbilityPower()
-    {
-        return abilityPower + buffAbilityPowerBonus;
-    }
-
-    public float GetTotalCritChance()
-    {
-        return critChance + buffCritChanceBonus;
-    }
-
-    public float GetTotalCritDamage()
-    {
-       return critDamage + buffCritDamageBonus;
-    }
-
-    private void OnArmorEquipped(EquipmentController.ArmorSlot slot, ArmorDefinitionSO previousArmor, ArmorDefinitionSO newArmor)
-    {
-        if (previousArmor != null)
-        {
-            armorMaxHealthBonus -= previousArmor.MaxHealthBonus;
-            armorDefenseBonus -= previousArmor.Defense;
-        }
-
-        if (newArmor != null)
-        {
-            armorMaxHealthBonus += newArmor.MaxHealthBonus;
-            armorDefenseBonus += newArmor.Defense;
-        }
-
-        currentHP = Mathf.Min(currentHP, GetTotalMaxHP());
-    }
-
-    public void BuffMaxHealth(float amount)
-    {
-        itemMaxHealthBonus += amount;
-        currentHP = Mathf.Min(currentHP, GetTotalMaxHP());
-    }
-    public void BuffAttackDamage(float amount)
-    {
-        buffAttackDamageBonus += amount;
-    }
-
-    public void BuffAbilityPower(float amount)
-    {
-        buffAbilityPowerBonus += amount;
-    }
-
-    public void BuffDefense(float amount)
-    {
-        buffDefenseBonus += amount;
-    }
-
-    public void BuffCritChance(float amount)
-    {
-        
-        buffCritChanceBonus += amount/100;
-
-    }
-
-    public void BuffCritDamage(float amount)
-    {
-        buffCritDamageBonus += amount/100;
-    }
-    public bool IsDead => isDead;
 }

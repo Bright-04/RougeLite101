@@ -14,8 +14,8 @@ public class RunStarRatingCalculator
             return 1;
         }
 
-        float maxHp = Mathf.Max(1f, playerStats.GetTotalMaxHP());
-        float remainingHpRatio = Mathf.Clamp01(playerStats.currentHP / maxHp);
+        float maxHp = Mathf.Max(1f, playerStats.GetMaxHP());
+        float remainingHpRatio = Mathf.Clamp01(playerStats.GetCurrentHP() / maxHp);
         int stars = remainingHpRatio >= oneStarMinHpRatio ? 1 : 0;
 
         if (remainingHpRatio >= twoStarMinHpRatio)

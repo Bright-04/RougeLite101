@@ -46,27 +46,27 @@ public class PlayerStatsData
     public PlayerStatsData(PlayerStats stats, EquipmentManager equipment, EquipmentController equipmentController)
     {
         // Level
-        level = stats.level;
-        currentExp = stats.currentExp;
-        levelUpExp = stats.levelUpExp;
+        level = stats.GetLevel();
+        currentExp = stats.GetCurrentExp();
+        levelUpExp = stats.GetLevelUpExp();
 
         // Core Stats
-        maxHP = stats.maxHP;
-        maxMana = stats.maxMana;
-        maxStamina = stats.maxStamina;
+        maxHP = stats.GetNoBuffMaxHP();
+        maxMana = stats.GetNoBuffMaxMana();
+        maxStamina = stats.GetNoBuffMaxStamina();
 
         // Regen
-        hpRegen = stats.hpRegen;
-        manaRegen = stats.manaRegen;
-        staminaRegen = stats.staminaRegen;
+        hpRegen = stats.GetNoBuffRegenHP();
+        manaRegen = stats.GetNoBuffRegenMana();
+        staminaRegen = stats.GetNoBuffRegenStamina();
 
         // Combat
-        attackDamage = stats.attackDamage;
-        abilityPower = stats.abilityPower;
-        defense = stats.defense;
-        critChance = stats.critChance;
-        critDamage = stats.critDamage;
-        luck = stats.luck;
+        attackDamage = stats.GetAttackDamage();
+        abilityPower = stats.GetAbilityPower();
+        defense = stats.GetDefense();
+        critChance = stats.GetCritChance();
+        critDamage = stats.GetCritDamage();
+        luck = stats.GetLuck();
 
         mainWeaponId = equipment != null ? equipment.GetMainWeaponId() : string.Empty;
         subWeaponId = equipment != null ? equipment.GetSubWeaponId() : string.Empty;

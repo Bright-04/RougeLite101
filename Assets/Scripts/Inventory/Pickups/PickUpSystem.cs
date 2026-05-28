@@ -10,7 +10,7 @@ public class PickUpSystem : MonoBehaviour
     private InventorySO inventoryData;
 
     private Item nearbyItem;
-    private InputAction interactAction;
+    private PlayerControls playerControls;
 
     private void Start()
     {
@@ -25,18 +25,16 @@ public class PickUpSystem : MonoBehaviour
             return;
         }
 
-        interactAction = InputManager.Instance.Controls.asset.FindAction("Combat/Interact");
-        if (interactAction != null)
-        {
-            interactAction.performed += OnInteractPerformed;
-        }
+        playerControls = InputManager.Instance.Controls;
+
+        playerControls.Combat.Interact.performed += OnPickupPerformed;
     }
 
     private void OnDestroy()
     {
-        if (interactAction != null)
+        if (playerControls != null)
         {
-            interactAction.performed -= OnInteractPerformed;
+            playerControls.Combat.Interact.performed -= OnPickupPerformed;
         }
     }
 
@@ -45,11 +43,6 @@ public class PickUpSystem : MonoBehaviour
         Item item = collision.GetComponent<Item>();
         if (item != null)
         {
-            if (nearbyItem != null && nearbyItem != item)
-            {
-                nearbyItem.ShowPrompt(false);
-            }
-
             nearbyItem = item;
             nearbyItem.ShowPrompt(true);
         }
@@ -58,31 +51,21 @@ public class PickUpSystem : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         Item item = collision.GetComponent<Item>();
-        if (item == null || item != nearbyItem)
+        if (item != null && item == nearbyItem)
         {
-            return;
+            nearbyItem.ShowPrompt(false);
+            nearbyItem = null;
         }
-
-        nearbyItem.ShowPrompt(false);
-        nearbyItem = null;
     }
 
-    private void OnInteractPerformed(InputAction.CallbackContext _)
+    private void OnPickupPerformed(InputAction.CallbackContext ctx)
     {
         if (nearbyItem == null)
         {
             return;
         }
 
-        if (inventoryController != null && inventoryController.CurrentInventoryData != null)
-        {
-            inventoryData = inventoryController.CurrentInventoryData;
-        }
-
-        if (inventoryData == null)
-        {
-            return;
-        }
+        inventoryData = inventoryController.CurrentInventoryData;    
 
         ItemSO inventoryItem = nearbyItem.InventoryItem;
         if (inventoryItem == null)
@@ -100,15 +83,15 @@ public class PickUpSystem : MonoBehaviour
         }
 
         int effectiveQuantity = nearbyItem.Quantity;
-        if (inventoryItem.IsStackable == false && effectiveQuantity > 1)
-        {
-            // Normal world Item pickups represent a single world pickup. Future bundle/chest rewards
-            // should use a separate reward container system instead of non-stackable Item.Quantity > 1.
-            Debug.LogWarning(
-                $"PickUpSystem: Pickup '{nearbyItem.gameObject.name}' authored non-stackable item '{inventoryItem.name}' with Quantity {nearbyItem.Quantity}; clamping pickup to 1.",
-                nearbyItem);
-            effectiveQuantity = 1;
-        }
+        //if (inventoryItem.IsStackable == false && effectiveQuantity > 1)
+        //{
+        //    // Normal world Item pickups represent a single world pickup. Future bundle/chest rewards
+        //    // should use a separate reward container system instead of non-stackable Item.Quantity > 1.
+        //    Debug.LogWarning(
+        //        $"PickUpSystem: Pickup '{nearbyItem.gameObject.name}' authored non-stackable item '{inventoryItem.name}' with Quantity {nearbyItem.Quantity}; clamping pickup to 1.",
+        //        nearbyItem);
+        //    effectiveQuantity = 1;
+        //}
 
         // World weapons use the same generic item pickup path as any other item and enter InventorySO first.
         int reminder = inventoryData.AddItem(inventoryItem, effectiveQuantity);
@@ -120,6 +103,7 @@ public class PickUpSystem : MonoBehaviour
         }
         else
         {
+            nearbyItem.InformInventoryIsFull();
             nearbyItem.Quantity = reminder;
         }
     }

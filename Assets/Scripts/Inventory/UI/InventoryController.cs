@@ -20,9 +20,6 @@ public class InventoryController : MonoBehaviour
     [SerializeField]
     private Transform playerTransform;
 
-    [Header("Debug")]
-    [SerializeField] private bool logInventorySwitches = false;
-
     public InventorySO CurrentInventoryData { get; private set;}
 
     public List<InventoryItem> initialItems = new List<InventoryItem>();
@@ -51,28 +48,6 @@ public class InventoryController : MonoBehaviour
         // Subscribe ESC key
         playerControls.NavigateUI.OpenInventory.performed += OnOpenInventoryPerformed;
         playerControls.UI.CloseInventory.performed += OnCloseInventoryPerformed;
-
-        if (playerTransform == null)
-        {
-            playerTransform = transform;
-        }
-
-        if (inventoryUI == null)
-        {
-            inventoryUI = FindFirstObjectByType<InventoryUI>(FindObjectsInactive.Include);
-        }
-
-        if (inventoryUI == null)
-        {
-            Debug.LogError("InventoryUI not found in scene!");
-            return;
-        }
-
-        inventoryUI.ClearInventoryUI();
-        inventoryUI.HideInventory();
-        UpdateInventory(SceneManager.GetActiveScene().name);
-        PrepareUI();
-        PrepareInventoryData();
     }
 
     private void PrepareUI()
@@ -174,11 +149,6 @@ public class InventoryController : MonoBehaviour
 
     private void HandleSwapItems(int itemIndex_1, int itemIndex_2)
     {
-        if (CurrentInventoryData == null)
-        {
-            return;
-        }
-
         CurrentInventoryData.SwapItems(itemIndex_1, itemIndex_2);
     }
     private void HandleDragging(int itemIndex)
@@ -234,20 +204,7 @@ public class InventoryController : MonoBehaviour
     }
 
     private void DropItem(int itemIndex, int quantity)
-    {
-        if (CurrentInventoryData == null)
-        {
-            Debug.LogWarning("InventoryController: Cannot drop item because CurrentInventoryData is null.", this);
-            return;
-        }
-
-        Dictionary<int, InventoryItem> inventoryState = CurrentInventoryData.GetCurrentInventoryState();
-        if (itemIndex < 0 || itemIndex >= CurrentInventoryData.Size || !inventoryState.ContainsKey(itemIndex))
-        {
-            Debug.LogWarning($"InventoryController: Cannot drop invalid inventory index {itemIndex}.", this);
-            return;
-        }
-
+    {       
         InventoryItem inventoryItem = CurrentInventoryData.GetItemAt(itemIndex);
         if (inventoryItem.IsEmpty)
         {
@@ -258,61 +215,19 @@ public class InventoryController : MonoBehaviour
         {
             Debug.LogError("Missing pickupableItemPrefab.", this);
             return;
-        }
-
-        if (inventoryItem.item == null)
-        {
-            Debug.LogWarning("Cannot drop inventory slot with null item.", this);
-            return;
-        }
-
-        int effectiveDropAmount = Mathf.Min(quantity, inventoryItem.quantity);
-        if (effectiveDropAmount <= 0)
-        {
-            Debug.LogWarning(
-                $"InventoryController: Cannot drop item '{inventoryItem.item.name}' with invalid quantity {quantity}.",
-                this);
-            return;
-        }
-
-        if (!inventoryItem.item.IsStackable && effectiveDropAmount > 1)
-        {
-            Debug.LogWarning(
-                $"Dropping non-stackable item '{inventoryItem.item.name}' with amount {effectiveDropAmount}. Clamping to 1.",
-                this);
-            effectiveDropAmount = 1;
-        }
+        }          
 
         Transform dropOrigin = playerTransform != null ? playerTransform : transform;
-        Vector3 dropPosition = dropOrigin.position + dropOrigin.right * 1f;
-        UnityEngine.Object prefabObject = pickupableItemPrefab;
-        UnityEngine.Object spawnedObject = UnityEngine.Object.Instantiate(prefabObject, dropPosition, Quaternion.identity);
-        GameObject spawned = spawnedObject as GameObject;
-        if (spawned == null)
-        {
-            string spawnedType = spawnedObject != null ? spawnedObject.GetType().FullName : "null";
-            string spawnedName = spawnedObject != null ? spawnedObject.name : "null";
-            Debug.LogError(
-                $"InventoryController: Drop spawn did not produce a GameObject. Runtime type: {spawnedType}, name: {spawnedName}.",
-                this);
-            if (spawnedObject != null)
-            {
-                Destroy(spawnedObject);
-            }
-            return;
-        }
+        Vector3 dropPosition = dropOrigin.position + dropOrigin.right * 1f;     
+        GameObject spawnedObject = Instantiate(pickupableItemPrefab, dropPosition, Quaternion.identity);
 
-        Item droppedItem = spawned.GetComponent<Item>();
-        if (droppedItem == null)
+        Item droppedItem = spawnedObject.GetComponent<Item>();
+        if (droppedItem != null)
         {
-            Debug.LogError("Drop prefab must contain an Item component.", spawned);
-            Destroy(spawned);
-            return;
+            droppedItem.InventoryItem = inventoryItem.item;
+            droppedItem.Quantity = quantity;
         }
-
-        droppedItem.InventoryItem = inventoryItem.item;
-        droppedItem.Quantity = effectiveDropAmount;
-        CurrentInventoryData.RemoveItem(itemIndex, effectiveDropAmount);
+        CurrentInventoryData.RemoveItem(itemIndex, quantity);
         inventoryUI.ResetSelection();
         //audioSource.PlayOneShot(dropClip);
     }
@@ -378,13 +293,15 @@ public class InventoryController : MonoBehaviour
     {
         if (scene.name != "Dungeon" && CurrentInventoryData == dungeonInventoryData)
         {
-            if (isPlayerDead)
+            if (!isPlayerDead)
             {
-                isPlayerDead = false;
+                TransferDungeonToSafe();
+                Debug.Log("transfer item from dungeon to safe");
             }
             else
             {
-                TransferDungeonToSafe();
+                Debug.Log("Player died => no transfer");
+                isPlayerDead = false; // reset
             }
         }
 
@@ -415,10 +332,7 @@ public class InventoryController : MonoBehaviour
     private void UpdateInventory(string sceneName)
     {
         CurrentInventoryData = sceneName == "Dungeon" ? dungeonInventoryData : safeInventoryData;
-        if (logInventorySwitches)
-        {
-            Debug.Log($"Inventory switch to: {CurrentInventoryData.name}");
-        }
+        Debug.Log($"Inventory switch to: {CurrentInventoryData.name}");
     }
 
     private void OnOpenInventoryPerformed(InputAction.CallbackContext ctx)
@@ -432,10 +346,7 @@ public class InventoryController : MonoBehaviour
             }
             // Disable gameplay inputs
             InputManager.Instance.EnableUIMap();
-            if (logInventorySwitches)
-            {
-                Debug.Log("OPEN inventory");
-            }
+            Debug.Log("OPEN inventory");
         }
     }
 
@@ -446,10 +357,7 @@ public class InventoryController : MonoBehaviour
             inventoryUI.HideInventory();
             // Enable gameplay inputs
             InputManager.Instance.DisableUIMap();
-            if (logInventorySwitches)
-            {
-                Debug.Log("CLOSE inventory");
-            }
+            Debug.Log("CLOSE inventory");
         }
     }
 

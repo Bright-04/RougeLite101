@@ -25,7 +25,7 @@ public static class WinFlowValidator {
 
         // Helper to trigger win and log stars based on HP ratio
         void TestWin(float hpRatio, string label) {
-            playerStats.currentHP = playerStats.GetTotalMaxHP() * hpRatio;
+            playerStats.WinFlowSetCurrentHP(hpRatio);
             int bossClearedCount = 0;
             void OnBossCleared() => bossClearedCount++;
             encounter.BossCleared += OnBossCleared;

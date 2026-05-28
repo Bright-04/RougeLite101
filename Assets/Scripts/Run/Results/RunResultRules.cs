@@ -73,7 +73,7 @@ public static class RunResultRules
         }
 
         // Player dead or null.
-        if (playerStats == null || playerStats.IsDead || playerStats.currentHP <= 0f)
+        if (playerStats == null || playerStats.IsDead || playerStats.GetCurrentHP() <= 0f)
         {
             logMessage = "RunResultController: Boss cleared event arrived, but player is already dead.";
             // This was originally a Debug.Log (not warning).
@@ -97,7 +97,7 @@ public static class RunResultRules
             return false;
         }
 
-        return playerStats != null && !playerStats.IsDead && playerStats.currentHP > 0f;
+        return playerStats != null && !playerStats.IsDead && playerStats.GetCurrentHP() > 0f;
     }
 
     public static string BuildSummaryText(RunResultType resultType, int stars, PlayerStats playerStats)
@@ -107,8 +107,8 @@ public static class RunResultRules
             return resultType == RunResultType.Win ? $"Stars Earned: {stars}" : "Try again from the hub.";
         }
 
-        int currentHp = Mathf.Max(0, Mathf.RoundToInt(playerStats.currentHP));
-        int maxHp = Mathf.Max(1, Mathf.RoundToInt(playerStats.GetTotalMaxHP()));
+        int currentHp = Mathf.Max(0, Mathf.RoundToInt(playerStats.GetCurrentHP()));
+        int maxHp = Mathf.Max(1, Mathf.RoundToInt(playerStats.GetMaxHP()));
 
         if (resultType == RunResultType.Win)
         {
