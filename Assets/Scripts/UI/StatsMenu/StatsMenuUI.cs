@@ -66,7 +66,7 @@ public class StatsMenuUI : MonoBehaviour
         if (expText != null)
             expText.text = $"EXP: {playerStats.currentExp:F0} / {playerStats.levelUpExp:F0}";
 
-        // Core Stats với current/max
+        // Core Stats
         if (maxHpText != null)
             maxHpText.text = $"Max HP: {playerStats.GetTotalMaxHP():F0}";
 
@@ -78,19 +78,19 @@ public class StatsMenuUI : MonoBehaviour
 
         // Combat Stats
         if (attackDamageText != null)
-            attackDamageText.text = $"Attack Damage: {playerStats.attackDamage:F0}";
+            attackDamageText.text = $"Attack Damage: {playerStats.GetTotalAttackDamage():F0}";
 
         if (abilityPowerText != null)
-            abilityPowerText.text = $"Ability Power: {playerStats.abilityPower:F0}";
+            abilityPowerText.text = $"Ability Power: {playerStats.GetTotalAbilityPower():F0}";
 
         if (defenseText != null)
             defenseText.text = $"Defense: {playerStats.GetTotalDefense():F0}";
 
         if (critChanceText != null)
-            critChanceText.text = $"Crit Chance: {(playerStats.critChance * 100):F1}%";
+            critChanceText.text = $"Crit Chance: {(playerStats.GetTotalCritChance() * 100f):F1}%";
 
         if (critDamageText != null)
-            critDamageText.text = $"Crit Damage: {(playerStats.critDamage * 100):F0}%";
+            critDamageText.text = $"Crit Damage: {(playerStats.GetTotalCritDamage() * 100f):F0}%";
 
         if (luckText != null)
             luckText.text = $"Luck: {playerStats.luck:F0}";
@@ -105,7 +105,7 @@ public class StatsMenuUI : MonoBehaviour
         if (staminaRegenText != null)
             staminaRegenText.text = $"Stamina Regen: {playerStats.staminaRegen:F1}/s";
 
-        // Update Progress Bars
+        // EXP Bar
         if (expBar != null)
         {
             expBar.maxValue = playerStats.levelUpExp;

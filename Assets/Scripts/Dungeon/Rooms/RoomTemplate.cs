@@ -325,7 +325,8 @@ public class RoomTemplate : MonoBehaviour
 
         if (placeHolder == null || structureRandomizer == null)
         {
-            Debug.LogWarning($"{gameObject.name}: Missing placeHolder or structureRandomizer.");
+          
+         //   Debug.LogWarning($"{gameObject.name}: Missing placeHolder or structureRandomizer.");
             return;
         }
 
@@ -333,7 +334,7 @@ public class RoomTemplate : MonoBehaviour
 
         if (prefab == null)
         {
-            Debug.LogWarning($"{gameObject.name}: StructureRandomizer returned null.");
+           // Debug.LogWarning($"{gameObject.name}: StructureRandomizer returned null.");
             return;
         }
 

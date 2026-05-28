@@ -35,6 +35,12 @@ public class PlayerStats : MonoBehaviour
     private float itemMaxHealthBonus;
     private bool isDead;
 
+    private float buffAttackDamageBonus;
+    private float buffAbilityPowerBonus;
+    private float buffDefenseBonus;
+    private float buffCritChanceBonus;
+    private float buffCritDamageBonus;
+
     public float currentExp = 0;
     public float levelUpExp = 10;
     public float level = 0;
@@ -223,12 +229,12 @@ public class PlayerStats : MonoBehaviour
 
     public bool TryCrit()
     {
-        return Random.value < critChance;
+        return Random.value < GetTotalCritChance();
     }
 
     public float GetCritMultiplier()
-    {
-        return critDamage;
+    {   
+        return GetTotalCritDamage();
     }
 
     public void UseMana(float amount)
@@ -309,7 +315,27 @@ public class PlayerStats : MonoBehaviour
 
     public float GetTotalDefense()
     {
-        return defense + armorDefenseBonus;
+        return defense + armorDefenseBonus + buffDefenseBonus;
+    }
+
+    public float GetTotalAttackDamage()
+    {
+        return attackDamage + buffAttackDamageBonus;
+    }
+
+    public float GetTotalAbilityPower()
+    {
+        return abilityPower + buffAbilityPowerBonus;
+    }
+
+    public float GetTotalCritChance()
+    {
+        return critChance + buffCritChanceBonus;
+    }
+
+    public float GetTotalCritDamage()
+    {
+       return critDamage + buffCritDamageBonus;
     }
 
     private void OnArmorEquipped(EquipmentController.ArmorSlot slot, ArmorDefinitionSO previousArmor, ArmorDefinitionSO newArmor)
@@ -334,6 +360,31 @@ public class PlayerStats : MonoBehaviour
         itemMaxHealthBonus += amount;
         currentHP = Mathf.Min(currentHP, GetTotalMaxHP());
     }
+    public void BuffAttackDamage(float amount)
+    {
+        buffAttackDamageBonus += amount;
+    }
 
+    public void BuffAbilityPower(float amount)
+    {
+        buffAbilityPowerBonus += amount;
+    }
+
+    public void BuffDefense(float amount)
+    {
+        buffDefenseBonus += amount;
+    }
+
+    public void BuffCritChance(float amount)
+    {
+        
+        buffCritChanceBonus += amount/100;
+
+    }
+
+    public void BuffCritDamage(float amount)
+    {
+        buffCritDamageBonus += amount/100;
+    }
     public bool IsDead => isDead;
 }
