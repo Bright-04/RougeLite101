@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 
 public class Item : MonoBehaviour
@@ -27,12 +26,12 @@ public class Item : MonoBehaviour
     private TextMeshPro promptText;
 
     private SpriteRenderer spriteRenderer;
+    private bool hasWarnedMissingPrompt;
 
     private void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         RefreshVisual();
-        EnsurePromptReferences();
 
         if (promptObject != null)
         {
@@ -44,42 +43,15 @@ public class Item : MonoBehaviour
     {
         if (promptObject == null)
         {
+            if (!hasWarnedMissingPrompt)
+            {
+                Debug.LogWarning($"Item '{gameObject.name}' is missing promptObject. Pickup prompt will not be shown.", this);
+                hasWarnedMissingPrompt = true;
+            }
             return;
         }
 
         promptObject.SetActive(show);
-        if (show && promptText != null)
-        {
-            promptText.text = "[F] Pick Up item";
-        }
-    }
-
-    private void EnsurePromptReferences()
-    {
-        if (promptObject != null && promptText != null)
-        {
-            return;
-        }
-
-        // Legacy scene pickups can be missing the prompt wiring even though the prefab has it.
-        GameObject fallbackPrompt = new GameObject("PromptText");
-        fallbackPrompt.transform.SetParent(transform, false);
-        fallbackPrompt.transform.localPosition = new Vector3(0f, 1.2f, 0f);
-
-        TextMeshPro fallbackText = fallbackPrompt.AddComponent<TextMeshPro>();
-        fallbackText.font = TMP_Settings.defaultFontAsset;
-        fallbackText.fontSize = 3f;
-        fallbackText.alignment = TextAlignmentOptions.Center;
-        fallbackText.text = "[F] Pick Up item";
-
-        MeshRenderer renderer = fallbackText.GetComponent<MeshRenderer>();
-        if (renderer != null)
-        {
-            renderer.sortingOrder = 20;
-        }
-
-        promptObject = fallbackPrompt;
-        promptText = fallbackText;
     }
 
     private void RefreshVisual()

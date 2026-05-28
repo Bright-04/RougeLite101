@@ -19,11 +19,6 @@ public static class WeaponLoadoutRules
         return subWeaponDef == null;
     }
 
-    public static bool ShouldShowPickupChoice(WeaponPickupModalUI modal, WeaponDefinitionSO mainWeaponDef, WeaponDefinitionSO subWeaponDef)
-    {
-        return modal != null && mainWeaponDef != null && subWeaponDef != null;
-    }
-
     public static string GetStableWeaponId(WeaponDefinitionSO definition)
     {
         return definition != null ? definition.WeaponId : string.Empty;

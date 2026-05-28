@@ -131,7 +131,7 @@ public class InventoryUI : MonoBehaviour
     private void HandleSwap(InventoryItemUI inventoryItemUI)
     {
         int index = itemsList.IndexOf(inventoryItemUI);
-        if (index == -1)
+        if (currentlyDraggedItemIndex < 0 || index == -1)
         {         
             return;
         }

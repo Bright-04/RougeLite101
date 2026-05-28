@@ -174,6 +174,11 @@ public class InventoryController : MonoBehaviour
 
     private void HandleSwapItems(int itemIndex_1, int itemIndex_2)
     {
+        if (CurrentInventoryData == null)
+        {
+            return;
+        }
+
         CurrentInventoryData.SwapItems(itemIndex_1, itemIndex_2);
     }
     private void HandleDragging(int itemIndex)
@@ -230,6 +235,19 @@ public class InventoryController : MonoBehaviour
 
     private void DropItem(int itemIndex, int quantity)
     {
+        if (CurrentInventoryData == null)
+        {
+            Debug.LogWarning("InventoryController: Cannot drop item because CurrentInventoryData is null.", this);
+            return;
+        }
+
+        Dictionary<int, InventoryItem> inventoryState = CurrentInventoryData.GetCurrentInventoryState();
+        if (itemIndex < 0 || itemIndex >= CurrentInventoryData.Size || !inventoryState.ContainsKey(itemIndex))
+        {
+            Debug.LogWarning($"InventoryController: Cannot drop invalid inventory index {itemIndex}.", this);
+            return;
+        }
+
         InventoryItem inventoryItem = CurrentInventoryData.GetItemAt(itemIndex);
         if (inventoryItem.IsEmpty)
         {
@@ -238,24 +256,63 @@ public class InventoryController : MonoBehaviour
 
         if (pickupableItemPrefab == null)
         {
-            Debug.LogWarning("InventoryController: pickableItemPrefab is not assigned, drop cancelled.", this);
+            Debug.LogError("Missing pickupableItemPrefab.", this);
             return;
+        }
+
+        if (inventoryItem.item == null)
+        {
+            Debug.LogWarning("Cannot drop inventory slot with null item.", this);
+            return;
+        }
+
+        int effectiveDropAmount = Mathf.Min(quantity, inventoryItem.quantity);
+        if (effectiveDropAmount <= 0)
+        {
+            Debug.LogWarning(
+                $"InventoryController: Cannot drop item '{inventoryItem.item.name}' with invalid quantity {quantity}.",
+                this);
+            return;
+        }
+
+        if (!inventoryItem.item.IsStackable && effectiveDropAmount > 1)
+        {
+            Debug.LogWarning(
+                $"Dropping non-stackable item '{inventoryItem.item.name}' with amount {effectiveDropAmount}. Clamping to 1.",
+                this);
+            effectiveDropAmount = 1;
         }
 
         Transform dropOrigin = playerTransform != null ? playerTransform : transform;
         Vector3 dropPosition = dropOrigin.position + dropOrigin.right * 1f;
-        GameObject droppedObject = Instantiate(pickupableItemPrefab, dropPosition, Quaternion.identity);
-        Item droppedItem = droppedObject.GetComponent<Item>();
+        UnityEngine.Object prefabObject = pickupableItemPrefab;
+        UnityEngine.Object spawnedObject = UnityEngine.Object.Instantiate(prefabObject, dropPosition, Quaternion.identity);
+        GameObject spawned = spawnedObject as GameObject;
+        if (spawned == null)
+        {
+            string spawnedType = spawnedObject != null ? spawnedObject.GetType().FullName : "null";
+            string spawnedName = spawnedObject != null ? spawnedObject.name : "null";
+            Debug.LogError(
+                $"InventoryController: Drop spawn did not produce a GameObject. Runtime type: {spawnedType}, name: {spawnedName}.",
+                this);
+            if (spawnedObject != null)
+            {
+                Destroy(spawnedObject);
+            }
+            return;
+        }
+
+        Item droppedItem = spawned.GetComponent<Item>();
         if (droppedItem == null)
         {
-            Debug.LogWarning("InventoryController: pickableItemPrefab does not contain Item component, drop cancelled.", this);
-            Destroy(droppedObject);
+            Debug.LogError("Drop prefab must contain an Item component.", spawned);
+            Destroy(spawned);
             return;
         }
 
         droppedItem.InventoryItem = inventoryItem.item;
-        droppedItem.Quantity = Mathf.Min(quantity, inventoryItem.quantity);
-        CurrentInventoryData.RemoveItem(itemIndex, droppedItem.Quantity);
+        droppedItem.Quantity = effectiveDropAmount;
+        CurrentInventoryData.RemoveItem(itemIndex, effectiveDropAmount);
         inventoryUI.ResetSelection();
         //audioSource.PlayOneShot(dropClip);
     }

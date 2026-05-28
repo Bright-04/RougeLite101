@@ -224,6 +224,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   equipmentManager: {fileID: 0}
   equipmentController: {fileID: 2711826306058485091}
+  inventoryController: {fileID: 0}
+  fallbackHubSceneName: GameHome
   maxHP: 100
   currentHP: 0
   hpRegen: 1
@@ -242,23 +244,6 @@ MonoBehaviour:
   currentExp: 0
   levelUpExp: 10
   level: 0
---- !u!114 &2711826306058485091
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918963932709273604}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9b2897142874be28493b7fd3862f183, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EquipmentController
-  armorRegistry: {fileID: 11400000, guid: fce9a27f1ab243138b1933713990a526, type: 2}
-  startingShield: {fileID: 0}
-  startingHelmet: {fileID: 0}
-  startingGreaves: {fileID: 0}
-  startingBoots: {fileID: 0}
 --- !u!114 &6817578523957917170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,15 +274,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponHolder: {fileID: 1156744918522932290}
   aimPivot: {fileID: 0}
-  weaponPickupModalUI: {fileID: 0}
+  weaponController: {fileID: 0}
   rightHandLocalOffset: {x: 0.08, y: -0.01, z: 0}
   leftHandLocalOffset: {x: -0.08, y: -0.01, z: 0}
   handSwitchDeadZoneX: 0.02
   frontOrderOffset: 1
-  backOrderOffset: -1
   weaponRegistry: {fileID: 11400000, guid: 33e69cf0b17abfb418c7456f649d3b95, type: 2}
   startingMainWeapon: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
   startingSubWeapon: {fileID: 11400000, guid: 68a110418a3886947ba22ae1e05fe483, type: 2}
+  inventoryController: {fileID: 0}
 --- !u!114 &4215567663166107315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -485,8 +470,9 @@ MonoBehaviour:
   inventoryUI: {fileID: 0}
   safeInventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
   dungeonInventoryData: {fileID: 11400000, guid: 9563c9a8f6befc0418b7b48ef404a27d, type: 2}
-  pickupableItemPrefab: {fileID: 100100000, guid: 51d1448ffc34f7a4ab1e0c113caf8ddf, type: 3}
+  pickupableItemPrefab: {fileID: 2507520823584168888, guid: 51d1448ffc34f7a4ab1e0c113caf8ddf, type: 3}
   playerTransform: {fileID: 113293529403524740}
+  logInventorySwitches: 0
   initialItems: []
 --- !u!114 &3348738501711190917
 MonoBehaviour:
@@ -500,7 +486,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29f8eb08454c23d46bad58f2375e8b31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUpSystem
+  inventoryController: {fileID: 0}
   inventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
+--- !u!114 &2711826306058485091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9b2897142874be28493b7fd3862f183, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentController
+  inventoryController: {fileID: 0}
+  armorRegistry: {fileID: 11400000, guid: fce9a27f1ab243138b1933713990a526, type: 2}
+  startingShield: {fileID: 0}
+  startingHelmet: {fileID: 0}
+  startingGreaves: {fileID: 0}
+  startingBoots: {fileID: 0}
 --- !u!1 &3247644244558153244
 GameObject:
   m_ObjectHideFlags: 0

@@ -134,11 +134,27 @@ public class InventorySO : ScriptableObject
     public void SwapItems(int itemIndex_1, int itemIndex_2)
     {
         EnsureInitialized();
+        if (itemIndex_1 == itemIndex_2)
+        {
+            return;
+        }
+
+        if (!IsValidIndex(itemIndex_1) || !IsValidIndex(itemIndex_2))
+        {
+            Debug.LogWarning(
+                $"InventorySO: Ignoring invalid swap indices {itemIndex_1} and {itemIndex_2}. Inventory size: {inventoryItems.Count}.",
+                this);
+            return;
+        }
+
         InventoryItem item1 = inventoryItems[itemIndex_1];
         inventoryItems[itemIndex_1] = inventoryItems[itemIndex_2];
         inventoryItems[itemIndex_2] = item1;
         InformAboutChange();
     }
+
+    private bool IsValidIndex(int index)
+        => index >= 0 && index < inventoryItems.Count;
 
     private void InformAboutChange()
     {

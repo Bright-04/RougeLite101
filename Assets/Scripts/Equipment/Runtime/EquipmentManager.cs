@@ -13,7 +13,6 @@ public class EquipmentManager : MonoBehaviour
     [SerializeField] private Transform weaponHolder;
     [SerializeField] private Transform aimPivot;
     [SerializeField] private WeaponController weaponController;
-    [SerializeField] private WeaponPickupModalUI weaponPickupModalUI;
 
     [Header("Aim Hand Anchoring")]
     [SerializeField] private Vector3 rightHandLocalOffset = new Vector3(0.08f, -0.01f, 0f);
@@ -34,9 +33,6 @@ public class EquipmentManager : MonoBehaviour
     private Weapon mainWeaponInstance;
     private Weapon subWeaponInstance;
     private WeaponSlot activeSlot = WeaponSlot.Main;
-
-    private WeaponDefinitionSO pendingPickupDefinition;
-    private WeaponPickup pendingPickupSource;
     private bool testingWeaponOverrideActive;
     private UnityEngine.Object testingWeaponOverrideOwner;
 
@@ -156,38 +152,6 @@ public class EquipmentManager : MonoBehaviour
     private void OnSwapWeaponPerformed(InputAction.CallbackContext context)
     {
         SwapActiveSlot();
-    }
-
-    public bool TryPickupWeapon(WeaponDefinitionSO newWeaponDef, WeaponPickup sourcePickup = null)
-    {
-        if (!WeaponLoadoutRules.CanAcceptPickup(newWeaponDef, testingWeaponOverrideActive))
-        {
-            return false;
-        }
-
-        if (WeaponLoadoutRules.CanAutoEquipMain(mainWeaponDef))
-        {
-            EquipIntoSlot(WeaponSlot.Main, newWeaponDef);
-            SetActiveSlot(WeaponSlot.Main, true);
-            return true;
-        }
-
-        if (WeaponLoadoutRules.CanAutoEquipSub(subWeaponDef))
-        {
-            EquipIntoSlot(WeaponSlot.Sub, newWeaponDef);
-            return true;
-        }
-
-        if (WeaponLoadoutRules.ShouldShowPickupChoice(weaponPickupModalUI, mainWeaponDef, subWeaponDef))
-        {
-            pendingPickupDefinition = newWeaponDef;
-            pendingPickupSource = sourcePickup;
-            weaponPickupModalUI.Show(newWeaponDef, mainWeaponDef, subWeaponDef, OnPickupResolved);
-            return false;
-        }
-
-        ReplaceWeapon(activeSlot, newWeaponDef);
-        return true;
     }
 
     public void ReplaceWeapon(WeaponSlot targetSlot, WeaponDefinitionSO newWeaponDef)
@@ -411,30 +375,6 @@ public class EquipmentManager : MonoBehaviour
         }
 
         return true;
-    }
-
-    private void OnPickupResolved(WeaponSlot? selectedSlot)
-    {
-        if (pendingPickupDefinition == null)
-        {
-            return;
-        }
-
-        if (selectedSlot.HasValue)
-        {
-            if (testingWeaponOverrideActive)
-            {
-                pendingPickupDefinition = null;
-                pendingPickupSource = null;
-                return;
-            }
-
-            ReplaceWeapon(selectedSlot.Value, pendingPickupDefinition);
-            pendingPickupSource?.ConsumeAfterSuccessfulPickup();
-        }
-
-        pendingPickupDefinition = null;
-        pendingPickupSource = null;
     }
 
     private void EquipIntoSlot(WeaponSlot slot, WeaponDefinitionSO definition)
