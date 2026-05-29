@@ -29,4 +29,9 @@ public abstract class EquipmentDefinitionSO : ItemSO, IDestroyableItem, IItemAct
     {
         return false;
     }
+
+    public virtual bool ResetModifierData()
+    {
+        return false;
+    }
 }

@@ -373,7 +373,7 @@ public class EquipmentManager : MonoBehaviour
                     : slot;
             SetActiveSlot(nextActiveSlot, true);
         }
-
+        removedWeapon.ResetModifierData(gameObject);
         return true;
     }
 
