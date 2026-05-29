@@ -60,7 +60,7 @@ public class Chest : MonoBehaviour
 
         opened = true;
 
-        ItemSO chosenItem = GetRandomItemByRarity();
+        ItemSO chosenItem = GetRandomItemByRarity(player);
 
         GameObject obj = Instantiate(
             pickableItemPrefab,
@@ -87,7 +87,7 @@ public class Chest : MonoBehaviour
 
         if (playerStats != null)
         {
-            rollCount += Mathf.FloorToInt(playerStats.luck);
+            rollCount += Mathf.FloorToInt(playerStats.GetLuck());
         }
 
         Rarity bestRarity = Rarity.Common;
