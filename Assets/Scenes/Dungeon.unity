@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoSaveInterval: 60
   enableAutoSave: 1
+  logSaveLoadInfo: 0
   playerStats: {fileID: 292091129}
   equipmentManager: {fileID: 0}
   equipmentController: {fileID: 0}

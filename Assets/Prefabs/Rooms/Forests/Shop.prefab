@@ -31,6 +31,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1854132070933963667}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5487860243092462095
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1012559169679819645}
+  m_Layer: 0
+  m_Name: PlaceHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1012559169679819645
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5487860243092462095}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 950.5, y: 616.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1854132070933963667}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5874012571350045480
 GameObject:
   m_ObjectHideFlags: 0
@@ -2568,6 +2599,7 @@ GameObject:
   - component: {fileID: 206051684855897782}
   - component: {fileID: 1211929326194615746}
   - component: {fileID: 6224641414965327268}
+  - component: {fileID: 3961670578245039590}
   m_Layer: 0
   m_Name: Shop
   m_TagString: Untagged
@@ -2594,6 +2626,7 @@ Transform:
   - {fileID: 4553942552544969021}
   - {fileID: 8779429156943972643}
   - {fileID: 441487182308780278}
+  - {fileID: 1012559169679819645}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!156049354 &206051684855897782
@@ -2620,17 +2653,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee257c6fa44c094cab63d0a5fd656e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossRoom: 0
   center: {fileID: 3636666740146240477}
   playerSpawn: {fileID: 0}
   exitAnchor: {fileID: 0}
-  enemySpawns: []
   spawnProfile: {fileID: 0}
   northSocket: {fileID: 4553942552544969021}
   southSocket: {fileID: 2206511313689911364}
   eastSocket: {fileID: 441487182308780278}
   westSocket: {fileID: 8779429156943972643}
+  placeHolder: {fileID: 1012559169679819645}
   doorPrefab: {fileID: 1068040110909216334, guid: 4fce2b808753ea5409c7349ef03105ce, type: 3}
   wallPrefab: {fileID: 7279526701747705087, guid: f7c925e8ebd78a24285fe89e2d02231f, type: 3}
+  structureRandomizer: {fileID: 0}
 --- !u!61 &6224641414965327268
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2677,3 +2712,17 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 15.14, y: 15.14}
   m_EdgeRadius: 0
+--- !u!114 &3961670578245039590
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8541427450340644458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87407f5349ebd734f8bfa71443a34515, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StructureRandomizer
+  structurePrefab:
+  - {fileID: 251155834864777876, guid: 08fe4c7e0634d36478a516b2bb6dc20d, type: 3}

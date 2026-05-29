@@ -28,6 +28,12 @@ public abstract class ItemSO : ScriptableObject
 
     [SerializeField]
     public List<ModifierData> modifiersData = new List<ModifierData>();
+
+    [SerializeField]
+    private Rarity rarity;
+
+    public Rarity Rarity => rarity;
+
 }
 
 [Serializable]
