@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d62b0026f3a049f9baeabacf1a0e0af7, type: 3}
-  m_Name: bronze_shield
+  m_Name: LeatherHelmetSO
   m_EditorClassIdentifier: Assembly-CSharp::ArmorDefinitionSO
   <IsStackable>k__BackingField: 0
   <MaxStackSize>k__BackingField: 1
-  <Name>k__BackingField: Bronze Shield
-  <Description>k__BackingField: A tier 2 bronze shield.
-  <ItemImage>k__BackingField: {fileID: 671422403, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
-  modifiersData: []
+  <Name>k__BackingField: Leather helmet
+  <Description>k__BackingField: Leather helmet
+  <ItemImage>k__BackingField: {fileID: -4759102466943144521, guid: 5a47c337dac262c4396477a30a066557, type: 3}
+  modifiersData:
+  - statModifier: {fileID: 11400000, guid: f1fa5a31f0a30e1418c6e63144e9b296, type: 2}
+    value: 67
   rarity: 0
-  equipmentId: bronze_shield
-  series: bronze
-  equipmentClass: shield
-  tags:
-  - bronze
-  - shield
+  equipmentId: Leather_helmet
+  series: 
+  equipmentClass: 
+  tags: []
   armorType: 0

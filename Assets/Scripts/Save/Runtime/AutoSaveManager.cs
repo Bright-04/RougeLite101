@@ -10,7 +10,7 @@ public class AutoSaveManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerStats playerStats;
     [SerializeField] private EquipmentManager equipmentManager;
-    [SerializeField] private EquipmentController equipmentController;
+    //[SerializeField] private EquipmentController equipmentController;
 
     private float autoSaveTimer = 0f;
 
@@ -35,10 +35,10 @@ public class AutoSaveManager : MonoBehaviour
             }
         }
 
-        if (equipmentController == null)
-        {
-            equipmentController = FindAnyObjectByType<EquipmentController>();
-        }
+        //if (equipmentController == null)
+        //{
+        //    equipmentController = FindAnyObjectByType<EquipmentController>();
+        //}
 
         LoadGame();
     }
@@ -82,7 +82,7 @@ public class AutoSaveManager : MonoBehaviour
     {
         if (playerStats != null)
         {
-            SaveSystem.SavePlayerStats(playerStats, equipmentManager, equipmentController, logSaveLoadInfo);
+            SaveSystem.SavePlayerStats(playerStats, equipmentManager, logSaveLoadInfo);
             if (logSaveLoadInfo)
             {
                 Debug.Log($"Game saved at {System.DateTime.Now:HH:mm:ss}");

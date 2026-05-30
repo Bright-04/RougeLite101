@@ -8,10 +8,10 @@ public class ArmourSlotUI : MonoBehaviour, IPointerClickHandler
     [field: SerializeField]
     public Image ItemImage { get; private set; }
 
-    [SerializeField]
-    private EquipmentController.ArmorSlot armorSlot;
+    [Header("Armour Type")]
+    [SerializeField] private ArmorType armorType;
 
-    public EquipmentController.ArmorSlot ArmorSlot => armorSlot;
+    public ArmorType ArmorType => armorType;
 
     public event Action<ArmourSlotUI> OnRightMouseBtnClickArmourSlot;
 

@@ -43,7 +43,7 @@ public class PlayerStatsData
     // <summary>
     /// Constructor từ PlayerStats
     /// </summary>
-    public PlayerStatsData(PlayerStats stats, EquipmentManager equipment, EquipmentController equipmentController)
+    public PlayerStatsData(PlayerStats stats, EquipmentManager equipment)
     {
         // Level
         level = stats.GetLevel();
@@ -61,23 +61,23 @@ public class PlayerStatsData
         staminaRegen = stats.GetNoBuffRegenStamina();
 
         // Combat
-        attackDamage = stats.GetAttackDamage();
-        abilityPower = stats.GetAbilityPower();
-        defense = stats.GetDefense();
-        critChance = stats.GetCritChance();
-        critDamage = stats.GetCritDamage();
-        luck = stats.GetLuck();
+        attackDamage = stats.GetNoBuffAttackDamage();
+        abilityPower = stats.GetNoBuffAbilityPower();
+        defense = stats.GetNoBuffDefense();
+        critChance = stats.GetNoBuffCritChance();
+        critDamage = stats.GetNoBuffCritDamage();
+        luck = stats.GetNoBuffLuck();
 
         mainWeaponId = equipment != null ? equipment.GetMainWeaponId() : string.Empty;
         subWeaponId = equipment != null ? equipment.GetSubWeaponId() : string.Empty;
         activeSlot = equipment != null ? (int)equipment.GetActiveSlot() : 0;
 
-        if (equipmentController != null)
-        {
-            shieldArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Shield);
-            helmetArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Helmet);
-            greavesArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Greaves);
-            bootsArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Boots);
-        }
+        //if (equipmentController != null)
+        //{
+        //    shieldArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Shield);
+        //    helmetArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Helmet);
+        //    greavesArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Greaves);
+        //    bootsArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Boots);
+        //}
     }
 }

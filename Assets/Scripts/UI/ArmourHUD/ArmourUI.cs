@@ -1,105 +1,78 @@
 using UnityEngine;
+using UnityEngine.UI;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public class ArmourUI : MonoBehaviour
 {
-    [SerializeField] private EquipmentController equipmentController;
+    [SerializeField] private ArmorController armorController;
 
     [Header("Icon Displays")]
-    [SerializeField] private ArmourSlotUI shieldIcon;
     [SerializeField] private ArmourSlotUI helmetIcon;
-    [SerializeField] private ArmourSlotUI greavesIcon;
+    [SerializeField] private ArmourSlotUI chestplateIcon;
+    [SerializeField] private ArmourSlotUI leggingIcon;
     [SerializeField] private ArmourSlotUI bootsIcon;
 
     [SerializeField] private Sprite emptyIcon;
 
     private void Start()
     {
-        if (equipmentController == null)
+        if (armorController == null)
         {
-            equipmentController = FindFirstObjectByType<EquipmentController>(FindObjectsInactive.Include);
+            armorController = FindFirstObjectByType<ArmorController>(FindObjectsInactive.Include);
         }
-
-        if (equipmentController == null)
+        if (armorController == null)
         {
-            Debug.LogError("ArmourUI: EquipmentController not found.");
+            Debug.LogError("ArmourController not found.");
             return;
         }
-
-        equipmentController.OnArmorEquipped += OnArmorEquipped;
-        RegisterSlotEvents();
+        armorController.OnArmourChanged += RefreshUI;
         RefreshUI();
+
+        helmetIcon.OnRightMouseBtnClickArmourSlot += HandleRightClick;
+        chestplateIcon.OnRightMouseBtnClickArmourSlot += HandleRightClick;
+        leggingIcon.OnRightMouseBtnClickArmourSlot += HandleRightClick;
+        bootsIcon.OnRightMouseBtnClickArmourSlot += HandleRightClick;
     }
 
     private void OnDestroy()
     {
-        if (equipmentController != null)
+        if (armorController != null)
         {
-            equipmentController.OnArmorEquipped -= OnArmorEquipped;
+            armorController.OnArmourChanged -= RefreshUI;
         }
-
-        UnregisterSlotEvents();
-    }
-
-    private void OnArmorEquipped(EquipmentController.ArmorSlot slot, ArmorDefinitionSO previousArmor, ArmorDefinitionSO newArmor)
-    {
-        RefreshUI();
+        helmetIcon.OnRightMouseBtnClickArmourSlot -= HandleRightClick;
+        chestplateIcon.OnRightMouseBtnClickArmourSlot -= HandleRightClick;
+        leggingIcon.OnRightMouseBtnClickArmourSlot -= HandleRightClick;
+        bootsIcon.OnRightMouseBtnClickArmourSlot -= HandleRightClick;
     }
 
     private void RefreshUI()
     {
-        UpdateSlot(shieldIcon, equipmentController.GetArmor(EquipmentController.ArmorSlot.Shield));
-        UpdateSlot(helmetIcon, equipmentController.GetArmor(EquipmentController.ArmorSlot.Helmet));
-        UpdateSlot(greavesIcon, equipmentController.GetArmor(EquipmentController.ArmorSlot.Greaves));
-        UpdateSlot(bootsIcon, equipmentController.GetArmor(EquipmentController.ArmorSlot.Boots));
+        UpdateSlot(helmetIcon.ItemImage, armorController.Helmet);
+        UpdateSlot(chestplateIcon.ItemImage, armorController.Chestplate);
+        UpdateSlot(leggingIcon.ItemImage, armorController.Leggings);
+        UpdateSlot(bootsIcon.ItemImage, armorController.Boots);
     }
 
-    private void UpdateSlot(ArmourSlotUI slotUI, ArmorDefinitionSO armor)
+    private void UpdateSlot(Image slot, ArmorDefinitionSO armour)
     {
-        if (slotUI == null || slotUI.ItemImage == null)
+        if (armour == null)
         {
+            slot.sprite = emptyIcon;
             return;
         }
 
-        slotUI.ItemImage.sprite = armor != null ? armor.ItemImage : emptyIcon;
+        slot.sprite = armour.ItemImage;
     }
 
-    private void HandleRightClick(ArmourSlotUI slotUI)
+    private void HandleRightClick(ArmourSlotUI slot)
     {
-        if (equipmentController != null && slotUI != null)
+        if (armorController != null)
         {
-            equipmentController.UnequipArmor(slotUI.ArmorSlot);
+            armorController.Unequip(slot.ArmorType);
         }
-    }
 
-    private void RegisterSlotEvents()
-    {
-        Subscribe(shieldIcon);
-        Subscribe(helmetIcon);
-        Subscribe(greavesIcon);
-        Subscribe(bootsIcon);
-    }
-
-    private void UnregisterSlotEvents()
-    {
-        Unsubscribe(shieldIcon);
-        Unsubscribe(helmetIcon);
-        Unsubscribe(greavesIcon);
-        Unsubscribe(bootsIcon);
-    }
-
-    private void Subscribe(ArmourSlotUI slotUI)
-    {
-        if (slotUI != null)
-        {
-            slotUI.OnRightMouseBtnClickArmourSlot += HandleRightClick;
-        }
-    }
-
-    private void Unsubscribe(ArmourSlotUI slotUI)
-    {
-        if (slotUI != null)
-        {
-            slotUI.OnRightMouseBtnClickArmourSlot -= HandleRightClick;
-        }
     }
 }

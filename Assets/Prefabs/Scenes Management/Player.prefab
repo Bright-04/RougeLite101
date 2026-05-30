@@ -23,7 +23,7 @@ GameObject:
   - component: {fileID: -4104276699102849048}
   - component: {fileID: 7707758155450303520}
   - component: {fileID: 3348738501711190917}
-  - component: {fileID: 2711826306058485091}
+  - component: {fileID: 8703753072280480964}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -119,7 +119,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 10
-  equipmentController: {fileID: 2711826306058485091}
   aimPivot: {fileID: 0}
   dashSpeed: 10
   dashDuration: 0.2
@@ -223,7 +222,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   equipmentManager: {fileID: 0}
-  equipmentController: {fileID: 2711826306058485091}
   inventoryController: {fileID: 0}
   fallbackHubSceneName: GameHome
   maxHP: 100
@@ -241,9 +239,26 @@ MonoBehaviour:
   critChance: 0.1
   critDamage: 1.5
   luck: 0
+  damageCooldown: 1
+  damageTimer: 0
+  isDead: 0
+  moveSpeed: 1
   currentExp: 0
   levelUpExp: 10
   level: 0
+  buffMaxHP: 0
+  buffHpRegen: 0
+  buffMaxMana: 0
+  buffManaRegen: 0
+  buffMaxStamina: 0
+  buffStaminaRegen: 0
+  buffAttackDamage: 0
+  buffAbilityPower: 0
+  buffDefense: 0
+  buffCritChance: 0
+  buffCritDamage: 0
+  buffLuck: 0
+  buffSpeed: 0
 --- !u!114 &6817578523957917170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,7 +487,6 @@ MonoBehaviour:
   dungeonInventoryData: {fileID: 11400000, guid: 9563c9a8f6befc0418b7b48ef404a27d, type: 2}
   pickupableItemPrefab: {fileID: 2507520823584168888, guid: 51d1448ffc34f7a4ab1e0c113caf8ddf, type: 3}
   playerTransform: {fileID: 113293529403524740}
-  logInventorySwitches: 0
   initialItems: []
 --- !u!114 &3348738501711190917
 MonoBehaviour:
@@ -488,7 +502,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PickUpSystem
   inventoryController: {fileID: 0}
   inventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
---- !u!114 &2711826306058485091
+--- !u!114 &8703753072280480964
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -497,15 +511,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1918963932709273604}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9b2897142874be28493b7fd3862f183, type: 3}
+  m_Script: {fileID: 11500000, guid: e0e115c1ab0256c409efab43f7d6985e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EquipmentController
+  m_EditorClassIdentifier: Assembly-CSharp::ArmorController
   inventoryController: {fileID: 0}
-  armorRegistry: {fileID: 11400000, guid: fce9a27f1ab243138b1933713990a526, type: 2}
-  startingShield: {fileID: 0}
-  startingHelmet: {fileID: 0}
-  startingGreaves: {fileID: 0}
-  startingBoots: {fileID: 0}
 --- !u!1 &3247644244558153244
 GameObject:
   m_ObjectHideFlags: 0
