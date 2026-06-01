@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9a822f39a4010046b261904251cd39c, type: 3}
   m_Name: MaxHealthModifier
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatBuffMaxHealthModifierSO
-  modifierName: 
+  modifierName: Buff Max HP

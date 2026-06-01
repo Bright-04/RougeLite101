@@ -101,7 +101,7 @@ public class InventorySO : ScriptableObject
         return 0;
     }
 
-    private bool IsInventoryFull()
+    public bool IsInventoryFull()
             => inventoryItems.Where(item => item.IsEmpty).Any() == false;
 
     public Dictionary<int, InventoryItem> GetCurrentInventoryState()

@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd8e19a62f664af4cbff8c4ca65a7eb6, type: 3}
   m_Name: CritDamageModifier
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatCritDamageModifierSO
-  modifierName: 
+  modifierName: Buff Crit Damage

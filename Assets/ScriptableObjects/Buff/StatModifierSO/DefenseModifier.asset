@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37cdc94671a20ea40845a5436f4c4412, type: 3}
   m_Name: DefenseModifier
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatDefenseModifierSO
-  modifierName: 
+  modifierName: Buff Defense

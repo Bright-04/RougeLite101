@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6af65d60a342de24abb2eede6668934c, type: 3}
   m_Name: CritChanceModifier
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatCritChanceModifierSO
-  modifierName: 
+  modifierName: Buff Crit Chance

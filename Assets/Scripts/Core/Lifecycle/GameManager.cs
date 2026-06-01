@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,29 +11,17 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Scene activeScene = SceneManager.GetActiveScene();
-            bool thisIsInActiveScene = gameObject.scene == activeScene;
-            bool instanceIsInActiveScene = Instance.gameObject.scene == activeScene;
-
-            if (thisIsInActiveScene && !instanceIsInActiveScene)
-            {
-                Destroy(Instance.gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-                return;
-            }
+            //Destroy(gameObject);
+            CleanUpAndDestroy();  //TienHQ: i need this:))
+            return;
         }
-
-        Instance = this;
+        else
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            MarkPersistentObjects();
+        }
     }
-
-    private void Start()
-    {
-        EnforceSingleSceneRuntime();
-    }
-
     private void OnDestroy()
     {
         if (Instance == this)
@@ -43,33 +30,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void EnforceSingleSceneRuntime()
+    private void MarkPersistentObjects()
     {
-        if (SceneManager.sceneCount <= 1)
+        foreach (GameObject obj in persistentObject)
         {
-            return;
-        }
-
-        Scene activeScene = SceneManager.GetActiveScene();
-
-        for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
-        {
-            Scene loadedScene = SceneManager.GetSceneAt(i);
-            if (!loadedScene.isLoaded || loadedScene == activeScene)
+            if (obj != null)
             {
-                continue;
+                DontDestroyOnLoad(obj);
             }
-
-            Debug.Log($"GameManager: Unloading extra runtime scene '{loadedScene.name}' to keep a single gameplay scene active.");
-            SceneManager.UnloadSceneAsync(loadedScene);
         }
     }
 
     private void CleanUpAndDestroy()
     {
-        foreach(GameObject obj in persistentObject)
+        foreach (GameObject obj in persistentObject)
         {
-            if(obj != null)
+            if (obj != null)
             {
                 Destroy(obj);
             }

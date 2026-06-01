@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0c80d10f473aeb438f3f8f0876c12a8, type: 3}
   m_Name: AbilityPowerModifier
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatAbilityPowerModifierSO
-  modifierName: 
+  modifierName: Buff Ability Power

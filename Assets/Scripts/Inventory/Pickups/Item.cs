@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using TMPro;
 
-public class Item : MonoBehaviour
+public class Item : MonoBehaviour, IInteractable
 {
     [field: SerializeField]
     public ItemSO InventoryItem { get; set; }
@@ -19,36 +19,51 @@ public class Item : MonoBehaviour
     [SerializeField]
     private float targetSize = 1f;
 
-    [SerializeField]
-    private GameObject promptObject;
-
-    [SerializeField]
-    private TextMeshPro promptText;
-
     private SpriteRenderer spriteRenderer;
+
+    [SerializeField]
+    private InventoryController inventoryController;
 
     private void Start()
     {
+        if (inventoryController == null)
+        {
+            inventoryController = FindFirstObjectByType<InventoryController>();
+        }
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = InventoryItem.ItemImage;
         NormalizeSpriteSize();
-
-        promptObject.SetActive(false);
     }
 
-    public void ShowPrompt(bool show)
+    // ===== IINTERACTABLE =====
+    public void Interact(GameObject interactor)
     {
-        if (show)
+        if (inventoryController == null) return;
+
+        var inventoryData = inventoryController.CurrentInventoryData;
+
+        int reminder = inventoryData.AddItem(InventoryItem, Quantity);
+
+        if (reminder == 0)
         {
-            promptText.text = $"[F] Pick Up item";
+            DestroyItem();
         }
-
-        promptObject.SetActive(show);
+        else
+        {
+            Quantity = reminder;
+        }
     }
 
-    public void InformInventoryIsFull()
+    public string GetInteractionText()
     {
-        promptText.text = $"Inventory is Full";
+        if (inventoryController == null) return "";
+
+        if(inventoryController.CurrentInventoryData.IsInventoryFull() == false)
+        {
+            return $"[F] Pick up {InventoryItem.Name}";
+        }
+        return "Inventory Full";
+        
     }
 
 

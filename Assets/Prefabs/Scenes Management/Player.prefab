@@ -22,8 +22,9 @@ GameObject:
   - component: {fileID: 6449599854977480468}
   - component: {fileID: -4104276699102849048}
   - component: {fileID: 7707758155450303520}
-  - component: {fileID: 3348738501711190917}
   - component: {fileID: 8703753072280480964}
+  - component: {fileID: 7881785789551820743}
+  - component: {fileID: 4224413695501365352}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -242,7 +243,7 @@ MonoBehaviour:
   damageCooldown: 1
   damageTimer: 0
   isDead: 0
-  moveSpeed: 1
+  moveSpeed: 10
   currentExp: 0
   levelUpExp: 10
   level: 0
@@ -488,20 +489,6 @@ MonoBehaviour:
   pickupableItemPrefab: {fileID: 2507520823584168888, guid: 51d1448ffc34f7a4ab1e0c113caf8ddf, type: 3}
   playerTransform: {fileID: 113293529403524740}
   initialItems: []
---- !u!114 &3348738501711190917
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1918963932709273604}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f8eb08454c23d46bad58f2375e8b31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PickUpSystem
-  inventoryController: {fileID: 0}
-  inventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
 --- !u!114 &8703753072280480964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -515,6 +502,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArmorController
   inventoryController: {fileID: 0}
+--- !u!114 &7881785789551820743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e42c5f88c56df00419c93b600875b684, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMoney
+  startingGold: 500
+--- !u!114 &4224413695501365352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e116f06d9597949ab0b0d8a342aa46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+  interactRadius: 1.5
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &3247644244558153244
 GameObject:
   m_ObjectHideFlags: 0

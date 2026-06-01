@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cec09fa959418534688a55e1e4341469, type: 3}
   m_Name: AttackDamageModifier
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStatAttackDamageModifierSO
-  modifierName: 
+  modifierName: Buff Attack Damage
