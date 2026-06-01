@@ -12,31 +12,19 @@ public class InputManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if(Instance == null)
         {
-            Scene activeScene = SceneManager.GetActiveScene();
-            bool thisIsInActiveScene = gameObject.scene == activeScene;
-            bool instanceIsInActiveScene = Instance.gameObject.scene == activeScene;
-
-            if (thisIsInActiveScene && !instanceIsInActiveScene)
-            {
-                Destroy(Instance.gameObject);
-            }
-            else
-            {
-                Destroy(gameObject);
-                return;
-            }
-        }
-
-        Instance = this;
-
-        if (Controls == null)
-        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
             Controls = new PlayerControls();
+            EnableGameplayMaps();
+        }
+        else
+        {
+            Destroy(gameObject);
         }
 
-        EnableGameplayMaps();
+
     }
     private void OnDestroy()
     {

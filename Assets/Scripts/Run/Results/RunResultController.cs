@@ -198,13 +198,13 @@ public class RunResultController : MonoBehaviour
         RestoreGameplayState();
         Time.timeScale = 1f;
         AutoSaveManager.TrySaveActiveSceneState();
-
+        
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
             player.transform.position = hubSpawnPosition;
         }
-
+        Debug.Log("return to hub");
         SceneManager.LoadScene(hubSceneName);
     }
 

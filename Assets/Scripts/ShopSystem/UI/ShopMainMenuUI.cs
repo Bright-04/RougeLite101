@@ -17,6 +17,11 @@ public class ShopMainMenuUI : MonoBehaviour
     public event Action OnShopSellClicked;
     public event Action OnShopExitClicked;
 
+    public void Awake()
+    {
+        Hide();
+    }
+
     private void Start()
     {
         buyBtn.onClick.AddListener(() => { OnShopBuyClicked?.Invoke();});
@@ -31,4 +36,16 @@ public class ShopMainMenuUI : MonoBehaviour
         sellBtn.onClick.RemoveAllListeners();
         exitBtn.onClick.RemoveAllListeners();
     }   
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);      
+    }
+
+
 }

@@ -80,6 +80,10 @@ public class PlayerStats : MonoBehaviour
 
     private void Update()
     {
+        if (currentHP <= 0)
+        {
+            Die();
+        }
         if (isDead)
         {
             return;
@@ -527,7 +531,7 @@ public class PlayerStats : MonoBehaviour
             ResetTransientState(player);
 
             ResetStatsOnRespawn();
-            player.transform.position = Vector3.zero;
+            player.transform.position = new Vector3(0f, 9f, 0f);
 
             SceneManager.LoadScene(fallbackHubSceneName);
         }

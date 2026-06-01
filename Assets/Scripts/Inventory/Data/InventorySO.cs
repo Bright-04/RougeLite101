@@ -120,6 +120,17 @@ public class InventorySO : ScriptableObject
         return returnValue;
     }
 
+    public int GetListCount()
+    {
+        int count = 0;
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].IsEmpty) continue;
+            count++;
+        }
+        return count;
+    }
+
     public InventoryItem GetItemAt(int itemIndex)
     {
         EnsureInitialized();
