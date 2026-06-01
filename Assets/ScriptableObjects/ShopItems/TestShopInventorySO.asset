@@ -20,12 +20,12 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: e6bbc37ff158dc144adfe5113012489f, type: 2}
     buyPrice: 10
     sellPrice: 2
-    currentStock: 98
+    currentStock: 78
     maxStock: 99
   - item: {fileID: 11400000, guid: 0e8e731ca1b945e45a37e3ec00694de9, type: 2}
     buyPrice: 10
     sellPrice: 2
-    currentStock: 99
+    currentStock: 88
     maxStock: 99
   - item: {fileID: 0}
     buyPrice: 10

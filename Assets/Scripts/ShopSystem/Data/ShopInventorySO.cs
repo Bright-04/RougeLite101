@@ -53,4 +53,45 @@ public class ShopInventorySO : ScriptableObject
     {
         OnShopInventoryUpdated?.Invoke(GetCurrentShopInventoryState());
     }
+
+    //==========================
+    // BUY / SELL LOGIC
+    //==========================
+
+    public bool CanBuy(int index, int amount)
+    {
+        ShopItem item = items[index];
+
+        if (item.IsEmpty)
+            return false;
+
+        return item.currentStock >= amount;
+    }
+
+    public bool RemoveStock(int index, int amount)
+    {
+        ShopItem item = items[index];
+
+        if (item.IsEmpty) return false;
+
+        if (item.currentStock < amount) return false;
+
+        item.currentStock -= amount;
+        InformAboutChange();
+        return true;
+    }
+
+    public bool AddStock(int index, int amount)
+    {
+        ShopItem item = items[index];
+
+        if (item.IsEmpty) return false;
+        item.currentStock += amount;
+        if (item.currentStock > item.maxStock)
+        {
+            item.currentStock = item.maxStock;
+        }
+        InformAboutChange();
+        return true;
+    }
 }

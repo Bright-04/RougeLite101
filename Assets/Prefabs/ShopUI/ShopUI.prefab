@@ -3777,6 +3777,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d19d196036ad087479cb5b9064447e1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopSellPanelUI
+  sellControls: {fileID: 1317608654621141896}
   amountSlider: {fileID: 1364191744783429329}
   amountText: {fileID: 2390740279884456375}
   sellBtn: {fileID: 7381957261856811972}
@@ -4681,6 +4682,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShopUI
   itemPrefab: {fileID: 8708049152472655193, guid: 7f0d11082533c8e459058dcd38a01293, type: 3}
   contentPanel: {fileID: 1696294005722687697}
+  portraitImage: {fileID: 7941245646584699514}
   dialoguePanel: {fileID: 2543437385021742776}
   itemListPanel: {fileID: 5393649581062662969}
   mainMenuUI: {fileID: 4402359889027351559}
@@ -5141,6 +5143,7 @@ GameObject:
   - component: {fileID: 1414271428167334666}
   - component: {fileID: 6658059447027480810}
   - component: {fileID: 7941245646584699514}
+  - component: {fileID: 1965245449774233405}
   m_Layer: 0
   m_Name: TopPanel
   m_TagString: Untagged
@@ -5205,6 +5208,26 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1965245449774233405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7450101757827858454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: 600
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &7735198045937215933
 GameObject:
   m_ObjectHideFlags: 0
@@ -6054,6 +6077,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f7f645c65656cc4b9ef6b93d7eada50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShopBuyPanelUI
+  buyControls: {fileID: 2710073007671143568}
   amountSlider: {fileID: 541329972453170143}
   amountText: {fileID: 5831073020438584696}
   buyBtn: {fileID: 2658621200574664233}

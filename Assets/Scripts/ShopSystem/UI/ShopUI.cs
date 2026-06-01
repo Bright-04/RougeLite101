@@ -15,6 +15,8 @@ public class ShopUI : MonoBehaviour
 
     [SerializeField]
     private RectTransform contentPanel;
+    //top panel
+    [SerializeField] private Image portraitImage;
     //Bottom left
     [SerializeField] private DialogueUI dialoguePanel;
     [SerializeField] private GameObject itemListPanel;
@@ -28,13 +30,18 @@ public class ShopUI : MonoBehaviour
     [SerializeField] private ShopBuyPanelUI shopBuyPanelUI;
 
     private ShopState currentState;
+    public ShopState CurrentState => currentState;
     private string shopGreetingTxt;
 
     public List<ShopItemUI> itemsList = new List<ShopItemUI>();
+    private int selectedItemIndex = -1;
 
     public event Action<int> OnShopItemDescriptionRequested;
     public event Action<ShopState> OnInitiateShopItemList;
     public event Action OnClosingShop;
+
+    public event Action<int, int> OnBuyRequested;// itemIndex , amount
+    public event Action<int, int> OnSellRequested;// itemIndex , amount
 
     private void Awake()
     {
@@ -62,6 +69,27 @@ public class ShopUI : MonoBehaviour
 
         shopBuyPanelUI.OnShopBuyItemClicked -= OnBuyItemRequested;
         shopBuyPanelUI.OnShopBuyGoBackClicked -= OnShopGoBackRequested;
+    }
+
+    //tạm thời ko dùng, có thể phát triển sau này
+    //[SerializeField] private Animator portraitAnimator;
+    //public void SetPortraitAnimator(RuntimeAnimatorController controller)
+    //{
+    //    if (portraitAnimator == null)
+    //        return;
+
+    //    portraitAnimator.runtimeAnimatorController =
+    //        controller;
+    //}
+
+    public void SetPortrait(Sprite portrait)
+    {
+        if (portraitImage == null)
+            return;
+
+        portraitImage.sprite = portrait;
+
+        portraitImage.enabled = portrait != null;
     }
 
     public void ClearInventoryUI()
@@ -95,6 +123,7 @@ public class ShopUI : MonoBehaviour
         {
             return;
         }
+        selectedItemIndex = index;
         OnShopItemDescriptionRequested?.Invoke(index);
     }
 
@@ -113,6 +142,8 @@ public class ShopUI : MonoBehaviour
         {
             itemDescription.ResetDescription();
         }
+        shopBuyPanelUI.HideAmountControls();
+        shopSellPanelUI.HideAmountControls();
         DeselectAllItems();
     }
 
@@ -147,14 +178,20 @@ public class ShopUI : MonoBehaviour
         itemsList[itemIndex].Select();
     }
 
-    private void OnSellItemRequested()
+    private void OnBuyItemRequested(int amount)
     {
-        Debug.Log("OnSellItemRequested");
+        if (selectedItemIndex == -1)
+            return;
+        Debug.Log("OnBuyItemRequested");
+        OnBuyRequested?.Invoke(selectedItemIndex, amount);
     }
 
-    private void OnBuyItemRequested()
+    private void OnSellItemRequested(int amount)
     {
-        Debug.Log("OnBuyItemRequested");
+        if (selectedItemIndex == -1)
+            return;
+        Debug.Log("OnSellItemRequested");
+        OnSellRequested?.Invoke(selectedItemIndex, amount);
     }
 
     private void OnShopGoBackRequested()
@@ -184,7 +221,8 @@ public class ShopUI : MonoBehaviour
 
     public void ShowShop(ShopInventorySO shopData)
     {  
-        gameObject.SetActive(true);     
+        gameObject.SetActive(true);
+        SetPortrait(shopData.portraitSprite);
         shopGreetingTxt = shopData.greeting;
         SetState(ShopState.MainMenu);
     }
@@ -208,7 +246,11 @@ public class ShopUI : MonoBehaviour
                 if (itemListPanel != null) itemListPanel.SetActive(true);
                 if (itemDescriptionPanel != null) itemDescriptionPanel.SetActive(true);
                 if (itemDescription != null) itemDescription.ResetDescription();
-                if (shopBuyPanelUI != null) shopBuyPanelUI.Show();
+                if (shopBuyPanelUI != null) 
+                {
+                    shopBuyPanelUI.Show();
+                    shopBuyPanelUI.HideAmountControls();
+                }             
                 if (shopSellPanelUI != null) shopSellPanelUI.Hide();
                 if (mainMenuUI != null) mainMenuUI.Hide();
                 break;
@@ -219,7 +261,11 @@ public class ShopUI : MonoBehaviour
                 if (itemDescriptionPanel != null) itemDescriptionPanel.SetActive(true);
                 if (itemDescription != null) itemDescription.ResetDescription();
                 if (shopBuyPanelUI != null) shopBuyPanelUI.Hide();
-                if (shopSellPanelUI != null) shopSellPanelUI.Show();
+                if (shopSellPanelUI != null)
+                {
+                    shopSellPanelUI.Show();
+                    shopSellPanelUI.HideAmountControls();
+                }
                 if (mainMenuUI != null) mainMenuUI.Hide();
                 break;
 
@@ -231,5 +277,15 @@ public class ShopUI : MonoBehaviour
     {      
         gameObject.SetActive(false);
         ClearInventoryUI();
+    }
+
+    public void SetupBuyAmount(int maxStock)
+    {
+        shopBuyPanelUI.Setup(maxStock);
+    }
+
+    public void SetupSellAmount(int maxAmount)
+    {
+        shopSellPanelUI.Setup(maxAmount);
     }
 }

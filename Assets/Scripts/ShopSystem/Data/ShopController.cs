@@ -33,12 +33,16 @@ public class ShopController : MonoBehaviour
     {
         shopUI.OnClosingShop += CloseShop;
         shopUI.OnInitiateShopItemList += HandleShopItemList;
+        shopUI.OnBuyRequested += BuyItem;
+        shopUI.OnSellRequested += SellItem;
     }
 
     private void OnDisable()
     {
         shopUI.OnClosingShop -= CloseShop;
         shopUI.OnInitiateShopItemList -= HandleShopItemList;
+        shopUI.OnBuyRequested -= BuyItem;
+        shopUI.OnSellRequested -= SellItem;
     }
 
     void Start()
@@ -63,13 +67,11 @@ public class ShopController : MonoBehaviour
         if (currentState == ShopState.Buy)
         {
             shopUI.InitializedShopInventoryUI(CurrentShopData.GetListCount());
-            //shopUI.OnShopItemDescriptionRequested -= HandleBuyShopItemDescription;
             shopUI.OnShopItemDescriptionRequested += HandleBuyShopItemDescription;
         }
         else if (currentState == ShopState.Sell)
         {
-            shopUI.InitializedShopInventoryUI(inventoryController.CurrentInventoryData.GetListCount());
-            //shopUI.OnShopItemDescriptionRequested -= HandleSellShopItemDescription;
+            shopUI.InitializedShopInventoryUI(inventoryController.CurrentInventoryData.GetNonEmptyItems().Count);
             shopUI.OnShopItemDescriptionRequested += HandleSellShopItemDescription;
         }
         
@@ -77,10 +79,10 @@ public class ShopController : MonoBehaviour
 
     private void PrepareShopData(ShopState currentState)
     {
+        inventoryController.CurrentInventoryData.OnInventoryUpdated -= UpdateInventoryUI;
         CurrentShopData.OnShopInventoryUpdated -= UpdateShopInventoryUI;
         if (currentState == ShopState.Buy)
         {
-            CurrentShopData.OnShopInventoryUpdated -= UpdateShopInventoryUI;
             foreach (var item in CurrentShopData.GetCurrentShopInventoryState())
             {
                 shopUI.UpdateData(item.Key, item.Value.item.ItemImage, item.Value.currentStock, item.Value.maxStock);
@@ -89,10 +91,10 @@ public class ShopController : MonoBehaviour
         }
         else if (currentState == ShopState.Sell)
         {
-            inventoryController.CurrentInventoryData.OnInventoryUpdated -= UpdateInventoryUI;
-            foreach (var item in inventoryController.CurrentInventoryData.GetCurrentInventoryState())
+            var items =inventoryController.CurrentInventoryData.GetNonEmptyItems();
+            for (int i = 0; i < items.Count; i++)
             {
-                shopUI.UpdateData(item.Key, item.Value.item.ItemImage, item.Value.quantity);
+                shopUI.UpdateData(i, items[i].item.ItemImage, items[i].quantity);
             }
             inventoryController.CurrentInventoryData.OnInventoryUpdated += UpdateInventoryUI;
         }
@@ -117,7 +119,7 @@ public class ShopController : MonoBehaviour
         }
     }
 
-   private void HandleShopItemList(ShopState currentState)
+    private void HandleShopItemList(ShopState currentState)
     {
         shopUI.ClearInventoryUI();
         PrepareUI(currentState);
@@ -131,7 +133,8 @@ public class ShopController : MonoBehaviour
         {
             shopUI.ResetSelection();
             return;
-        }       
+        }
+        shopUI.SetupBuyAmount(shopItem.currentStock);
 
         ItemSO item = shopItem.item;
         string description = PrepareDescription(shopItem);
@@ -140,12 +143,13 @@ public class ShopController : MonoBehaviour
 
     private void HandleSellShopItemDescription(int itemIndex)
     {
-        InventoryItem shopItem = inventoryController.CurrentInventoryData.GetItemAt(itemIndex);
+        InventoryItem shopItem = inventoryController.CurrentInventoryData.GetNonEmptyItems()[itemIndex];
         if (shopItem.IsEmpty)
         {
             shopUI.ResetSelection();
             return;
         }
+        shopUI.SetupSellAmount(shopItem.quantity);
 
         ItemSO item = shopItem.item;
         string description = PrepareDescription(shopItem);
@@ -178,6 +182,44 @@ public class ShopController : MonoBehaviour
             sb.AppendLine();
         }
         return sb.ToString();
+    }
+
+    private void BuyItem(int itemIndex, int amount)
+    {
+        ShopItem shopItem = CurrentShopData.GetItemAt(itemIndex);
+        if (shopItem.IsEmpty) return;
+        if (!CurrentShopData.CanBuy(itemIndex, amount)) return;
+
+        inventoryController.CurrentInventoryData.AddItem(shopItem.item, amount);
+        CurrentShopData.RemoveStock(itemIndex, amount);
+        RefreshCurrentView();
+    }
+
+    private void SellItem(int itemIndex, int amount)
+    {
+        var items = inventoryController.CurrentInventoryData.GetNonEmptyItems();
+
+        InventoryItem invItem = items[itemIndex];
+
+        if (invItem.IsEmpty) return;
+        amount = Mathf.Min(amount, invItem.quantity);
+
+        // remove from player inventory
+        inventoryController.CurrentInventoryData.RemoveItem(invItem.item, amount);
+        RefreshCurrentView();
+        Debug.Log($"Sold {invItem.item.Name} x{amount}");
+    }
+
+    private void RefreshCurrentView()
+    {
+        if (shopUI.CurrentState == ShopState.Buy)
+        {
+            HandleShopItemList(ShopState.Buy);
+        }
+        else if (shopUI.CurrentState == ShopState.Sell)
+        {
+            HandleShopItemList(ShopState.Sell);
+        }
     }
 
     public void OpenShop(ShopInventorySO shopData,GameObject interactor)
