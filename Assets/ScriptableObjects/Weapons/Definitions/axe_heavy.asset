@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Heavy Axe
   <Description>k__BackingField: A slow axe with heavy impact.
-  <ItemImage>k__BackingField: {fileID: 712035800519618848, guid: c9218c59738d4a34f8c917303348dc7f, type: 3}
+  <ItemImage>k__BackingField: {fileID: 5955489899270848965, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: axe_heavy
   series: basic
-  tier: 1
   equipmentClass: axe
-  rarity: Common
   tags:
   - Melee
   - Heavy

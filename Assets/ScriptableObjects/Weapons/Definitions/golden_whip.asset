@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Golden Whip
   <Description>k__BackingField: A tier 6 golden whip.
-  <ItemImage>k__BackingField: {fileID: 1412018755475905882, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: 1412018755475905882, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: golden_whip
   series: golden
-  tier: 6
   equipmentClass: whip
-  rarity: Tier 6
   tags:
   - golden
   - whip

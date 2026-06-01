@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Darkness Sniper
   <Description>k__BackingField: A tier 13 darkness sniper.
-  <ItemImage>k__BackingField: {fileID: 5999282911430063552, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: 5999282911430063552, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: darkness_sniper
   series: darkness
-  tier: 13
   equipmentClass: sniper
-  rarity: Tier 13
   tags:
   - darkness
   - sniper

@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Darkness Sword
   <Description>k__BackingField: A tier 13 darkness sword.
-  <ItemImage>k__BackingField: {fileID: 5200008473879628154, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: 5200008473879628154, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: darkness_sword
   series: darkness
-  tier: 13
   equipmentClass: sword
-  rarity: Tier 13
   tags:
   - darkness
   - sword

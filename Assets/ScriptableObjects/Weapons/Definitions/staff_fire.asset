@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Fire Staff
   <Description>k__BackingField: A staff that launches fire projectiles.
-  <ItemImage>k__BackingField: {fileID: -7856493677412862020, guid: 027eb54082fb8e341bc8cb53aa1a337c, type: 3}
+  <ItemImage>k__BackingField: {fileID: 6146745670733231223, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: staff_fire
   series: basic
-  tier: 1
   equipmentClass: staff
-  rarity: Common
   tags:
   - Ranged
   - Fire

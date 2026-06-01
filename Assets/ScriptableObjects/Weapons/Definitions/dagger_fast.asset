@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Fast Dagger
   <Description>k__BackingField: A short blade built for quick strikes.
-  <ItemImage>k__BackingField: {fileID: 712035800519618848, guid: c9218c59738d4a34f8c917303348dc7f, type: 3}
+  <ItemImage>k__BackingField: {fileID: -7825317204285402402, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: dagger_fast
   series: basic
-  tier: 1
   equipmentClass: dagger
-  rarity: Common
   tags:
   - Melee
   - Fast

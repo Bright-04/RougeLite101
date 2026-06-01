@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Emerald Staff
   <Description>k__BackingField: A tier 9 emerald staff.
-  <ItemImage>k__BackingField: {fileID: -1738491802560757718, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: -1738491802560757718, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: emerald_staff
   series: emerald
-  tier: 9
   equipmentClass: staff
-  rarity: Tier 9
   tags:
   - emerald
   - staff

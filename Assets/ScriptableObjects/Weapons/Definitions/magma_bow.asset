@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Magma Bow
   <Description>k__BackingField: A tier 10 magma bow.
-  <ItemImage>k__BackingField: {fileID: -6714362139826379740, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: -6714362139826379740, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: magma_bow
   series: magma
-  tier: 10
   equipmentClass: bow
-  rarity: Tier 10
   tags:
   - magma
   - bow

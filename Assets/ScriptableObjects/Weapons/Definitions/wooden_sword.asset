@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Wooden Sword
   <Description>k__BackingField: A tier 1 wooden sword.
-  <ItemImage>k__BackingField: {fileID: -2262602574866384894, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: -2262602574866384894, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: wooden_sword
   series: wooden
-  tier: 1
   equipmentClass: sword
-  rarity: Tier 1
   tags:
   - wooden
   - sword
