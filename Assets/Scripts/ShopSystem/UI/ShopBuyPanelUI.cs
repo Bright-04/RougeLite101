@@ -44,7 +44,7 @@ public class ShopBuyPanelUI : MonoBehaviour
         ShowAmountControls();
         amountSlider.minValue = 1;
         amountSlider.maxValue = maxAmount;
-
+        amountSlider.wholeNumbers = true;
         amountSlider.value = 1;
 
         UpdateAmountText(1);

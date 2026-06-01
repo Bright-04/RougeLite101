@@ -34,6 +34,12 @@ public abstract class ItemSO : ScriptableObject
 
     public Rarity Rarity => rarity;
 
+    [field: SerializeField]
+    public int BuyPrice { get; private set; } = 100;
+
+    [field: SerializeField]
+    public int SellPrice { get; private set; } = 50;
+
 }
 
 [Serializable]

@@ -6,7 +6,8 @@ public class BnnyHealth : MonoBehaviour, IDamageable
 {
     [SerializeField] private string bossName = "Bnny";
     [SerializeField] private float maxHealth = 150f;
-    public float expReward = 12;
+    [SerializeField] private float expReward = 12;
+    [SerializeField] private int goldReward = 100;
     //[SerializeField] private EnemyHealthBar healthBar;
 
     private float currentHealth;
@@ -61,12 +62,23 @@ public class BnnyHealth : MonoBehaviour, IDamageable
         }
     }
 
+    private void GiveReward()
+    {
+        PlayerMoney playerMoney = FindFirstObjectByType<PlayerMoney>();
+
+        if (playerMoney != null)
+        {
+            playerMoney.AddGold(goldReward);
+        }
+        ExpManager.Instance.GainExperience(expReward);
+    }
+
     private void Die()
     {
         if (dead) return;
         dead = true;
 
-        ExpManager.Instance.GainExperience(expReward);
+        GiveReward();
 
         if (BossHealthBar.Instance != null)
         {

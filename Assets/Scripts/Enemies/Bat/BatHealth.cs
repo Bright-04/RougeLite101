@@ -5,7 +5,9 @@ using RougeLite.Combat.Damage;
 [RequireComponent(typeof(EnemyDeathNotifier))]
 public class BatHealth : MonoBehaviour, IDamageable
 {
-    public float expReward = 4;
+    [SerializeField] private float expReward = 4;
+    [SerializeField] private int goldReward = 25;
+
     [SerializeField] private int startingHealth = 5; // Lower health than slime
     [SerializeField] private EnemyHealthBar healthBar;
 
@@ -63,13 +65,23 @@ public class BatHealth : MonoBehaviour, IDamageable
         }
     }
 
+    private void GiveReward()
+    {
+        PlayerMoney playerMoney = FindFirstObjectByType<PlayerMoney>();
+
+        if (playerMoney != null)
+        {
+            playerMoney.AddGold(goldReward);
+        }
+        ExpManager.Instance.GainExperience(expReward);
+    }
+
     private void Die()
     {
         if (dead) return;
         dead = true;
 
-        ExpManager.Instance.GainExperience(expReward);
-
+        GiveReward();
         // Inform the DungeonManager
         notifier?.NotifyDied();
 

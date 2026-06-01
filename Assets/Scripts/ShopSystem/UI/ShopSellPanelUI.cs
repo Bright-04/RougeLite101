@@ -43,7 +43,7 @@ public class ShopSellPanelUI : MonoBehaviour
         ShowAmountControls();
         amountSlider.minValue = 1;
         amountSlider.maxValue = Mathf.Max(1, maxAmount);
-
+        amountSlider.wholeNumbers = true;
         amountSlider.value = 1;
 
         UpdateAmountText(1);

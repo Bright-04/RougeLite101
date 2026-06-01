@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: TestShopInventorySO
   m_EditorClassIdentifier: Assembly-CSharp::ShopInventorySO
   shopName: Test shop
+  shopId: Test_shop
+  restockMinutes: 30
   greeting: Welcome to test shop
   portraitSprite: {fileID: 8698222127874983672, guid: 28cb41adecbcc2541ad0c2f56ba43f62, type: 3}
   portraitAnimator: {fileID: 0}

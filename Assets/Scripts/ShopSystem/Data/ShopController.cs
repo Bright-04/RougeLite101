@@ -16,6 +16,7 @@ public class ShopController : MonoBehaviour
     public ShopInventorySO CurrentShopData { get; private set; }
 
     [SerializeField] private InventoryController inventoryController;
+    [SerializeField] private PlayerMoney playerMoney;
 
     //private void Awake()
     //{
@@ -57,6 +58,11 @@ public class ShopController : MonoBehaviour
         if (inventoryController == null)
         {
             inventoryController = FindFirstObjectByType<InventoryController>();
+        }
+
+        if (playerMoney == null)
+        {
+            playerMoney = FindFirstObjectByType<PlayerMoney>();
         }
     }
 
@@ -167,6 +173,8 @@ public class ShopController : MonoBehaviour
                 $": {shopItem.item.modifiersData[i].value}");
             sb.AppendLine();
         }
+        sb.AppendLine();
+        sb.Append("Selling Price: " + shopItem.item.SellPrice);
         return sb.ToString();
     }
 
@@ -181,6 +189,8 @@ public class ShopController : MonoBehaviour
                 $": {shopItem.item.modifiersData[i].value}");
             sb.AppendLine();
         }
+        sb.AppendLine();
+        sb.Append("Buying Price: " + shopItem.item.BuyPrice);
         return sb.ToString();
     }
 
@@ -189,6 +199,14 @@ public class ShopController : MonoBehaviour
         ShopItem shopItem = CurrentShopData.GetItemAt(itemIndex);
         if (shopItem.IsEmpty) return;
         if (!CurrentShopData.CanBuy(itemIndex, amount)) return;
+
+        int totalCost = shopItem.item.BuyPrice * amount;
+        if (!playerMoney.SpendGold(totalCost))
+        {
+            Debug.Log("Not enough gold!");
+            return;
+        }
+
 
         inventoryController.CurrentInventoryData.AddItem(shopItem.item, amount);
         CurrentShopData.RemoveStock(itemIndex, amount);
@@ -203,6 +221,10 @@ public class ShopController : MonoBehaviour
 
         if (invItem.IsEmpty) return;
         amount = Mathf.Min(amount, invItem.quantity);
+
+        int totalGain = invItem.item.SellPrice * amount;
+        playerMoney.AddGold(totalGain);
+        Debug.Log($"Gain {totalGain} gold!");
 
         // remove from player inventory
         inventoryController.CurrentInventoryData.RemoveItem(invItem.item, amount);

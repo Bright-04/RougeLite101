@@ -8,6 +8,18 @@ using System.Linq;
 public class ShopInventorySO : ScriptableObject
 {
     public string shopName;
+    [Header("Save")]
+    [SerializeField]
+    private string shopId;
+
+    public string ShopId => shopId;
+
+    [Header("Restock")]
+    [SerializeField] private int restockMinutes = 30;
+
+    private DateTime nextRestockTime;
+
+    public event Action<TimeSpan> OnRestockTimeChanged;
 
     [TextArea]
     public string greeting;
@@ -93,5 +105,55 @@ public class ShopInventorySO : ScriptableObject
         }
         InformAboutChange();
         return true;
+    }
+
+    //RESTOCK LOGIC
+    public void InitializeRestock()
+    {
+        if (nextRestockTime == default)
+        {
+            nextRestockTime = DateTime.UtcNow.AddMinutes(restockMinutes);
+        }
+    }
+
+    public void TickRestock()
+    {
+        TimeSpan remaining =
+            nextRestockTime - DateTime.UtcNow;
+
+        if (remaining <= TimeSpan.Zero)
+        {
+            RestockAllItems();
+
+            nextRestockTime =
+                DateTime.UtcNow.AddMinutes(restockMinutes);
+
+            remaining =
+                nextRestockTime - DateTime.UtcNow;
+        }
+
+        OnRestockTimeChanged?.Invoke(remaining);
+    }
+
+    private void RestockAllItems()
+    {
+        foreach (var item in items)
+        {
+            if (item.IsEmpty)
+                continue;
+            item.currentStock = item.maxStock;
+        }
+
+        InformAboutChange();
+    }
+
+    public DateTime NextRestockTime
+    {
+        get => nextRestockTime;
+    }
+
+    public void SetNextRestockTime(DateTime value)
+    {
+        nextRestockTime = value;
     }
 }
