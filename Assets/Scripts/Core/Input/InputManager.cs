@@ -30,6 +30,8 @@ public class InputManager : MonoBehaviour
         }
 
         Instance = this;
+        // Keep the input manager alive across scene loads so input maps remain active
+        DontDestroyOnLoad(gameObject);
 
         if (Controls == null)
         {
