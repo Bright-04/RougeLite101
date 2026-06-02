@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Silver Sword
   <Description>k__BackingField: A tier 4 silver sword.
-  <ItemImage>k__BackingField: {fileID: 8039459880111835733, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: 8039459880111835733, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: silver_sword
   series: silver
-  tier: 4
   equipmentClass: sword
-  rarity: Tier 4
   tags:
   - silver
   - sword

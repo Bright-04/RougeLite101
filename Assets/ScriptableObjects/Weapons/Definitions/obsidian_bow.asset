@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Obsidian Bow
   <Description>k__BackingField: A tier 5 obsidian bow.
-  <ItemImage>k__BackingField: {fileID: -8650259950766372697, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: -8650259950766372697, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: obsidian_bow
   series: obsidian
-  tier: 5
   equipmentClass: bow
-  rarity: Tier 5
   tags:
   - obsidian
   - bow

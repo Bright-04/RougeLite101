@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Magma Staff
   <Description>k__BackingField: A tier 10 magma staff.
-  <ItemImage>k__BackingField: {fileID: 6146745670733231223, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: 6146745670733231223, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: magma_staff
   series: magma
-  tier: 10
   equipmentClass: staff
-  rarity: Tier 10
   tags:
   - magma
   - staff

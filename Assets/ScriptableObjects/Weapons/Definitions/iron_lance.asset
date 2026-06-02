@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Iron Lance
   <Description>k__BackingField: A tier 3 iron spear.
-  <ItemImage>k__BackingField: {fileID: 8857052162179160324, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: 8857052162179160324, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: iron_lance
   series: iron
-  tier: 3
   equipmentClass: spear
-  rarity: Tier 3
   tags:
   - iron
   - spear

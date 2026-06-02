@@ -16,13 +16,12 @@ MonoBehaviour:
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Bronze Staff
   <Description>k__BackingField: A tier 2 bronze staff.
-  <ItemImage>k__BackingField: {fileID: -7810939053578656826, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  <ItemImage>k__BackingField: {fileID: -7810939053578656826, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
+  rarity: 0
   equipmentId: bronze_staff
   series: bronze
-  tier: 2
   equipmentClass: staff
-  rarity: Tier 2
   tags:
   - bronze
   - staff
