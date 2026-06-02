@@ -2,104 +2,138 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Handles death animation for enemies: knockback + fade out
-/// Attach this to any enemy that needs death animation
+/// Handles death animation for enemies: knockback + fade out.
 /// </summary>
 public class EnemyDeathAnimation : MonoBehaviour
 {
     [Header("Death Animation Settings")]
     [SerializeField] private float deathKnockbackForce = 20f;
     [SerializeField] private float fadeOutDuration = 0.5f;
-    [SerializeField] private float deathDelay = 0.1f; // Small delay before starting fade
-    
+    [SerializeField] private float deathDelay = 0.1f;
+    [SerializeField] private bool disableAnimatorOnDeath = true;
+    [SerializeField] private SpriteRenderer[] fadeRenderers;
+
     private SpriteRenderer spriteRenderer;
+    private SpriteRenderer[] resolvedFadeRenderers;
     private Rigidbody2D rb;
     private Collider2D[] colliders;
-    private bool isDying = false;
+    private bool isDying;
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        resolvedFadeRenderers = fadeRenderers != null && fadeRenderers.Length > 0
+            ? fadeRenderers
+            : (spriteRenderer != null ? new[] { spriteRenderer } : GetComponentsInChildren<SpriteRenderer>(true));
         rb = GetComponent<Rigidbody2D>();
         colliders = GetComponents<Collider2D>();
     }
 
-    /// <summary>
-    /// Plays the death animation: knockback + fade out, then destroys the game object
-    /// </summary>
-    /// <param name="damageSource">The transform that dealt the killing blow (for knockback direction)</param>
     public void PlayDeathAnimation(Transform damageSource)
     {
-        if (isDying) return; // Prevent multiple death animations
-        isDying = true;
+        if (isDying)
+        {
+            return;
+        }
 
-        // Disable AI and movement
+        isDying = true;
         DisableEnemyBehavior();
 
-        // Disable colliders so enemy doesn't block or interact anymore
-        foreach (var col in colliders)
+        foreach (Collider2D col in colliders)
         {
             col.enabled = false;
         }
 
-        // Start the death sequence
         StartCoroutine(DeathSequence(damageSource));
     }
 
     private IEnumerator DeathSequence(Transform damageSource)
     {
-        // Apply death knockback
         if (rb != null && damageSource != null)
         {
             Vector2 knockbackDirection = (transform.position - damageSource.position).normalized;
-            rb.linearVelocity = Vector2.zero; // Clear any existing velocity
+            rb.linearVelocity = Vector2.zero;
             rb.AddForce(knockbackDirection * deathKnockbackForce, ForceMode2D.Impulse);
         }
 
-        // Small delay before fading
         yield return new WaitForSeconds(deathDelay);
 
-        // Fade out
         float elapsedTime = 0f;
-        Color startColor = spriteRenderer.color;
-        Color targetColor = new Color(startColor.r, startColor.g, startColor.b, 0f);
+        Color[] startColors = new Color[resolvedFadeRenderers.Length];
+        Color[] targetColors = new Color[resolvedFadeRenderers.Length];
+        for (int i = 0; i < resolvedFadeRenderers.Length; i++)
+        {
+            SpriteRenderer fadeRenderer = resolvedFadeRenderers[i];
+            if (fadeRenderer == null)
+            {
+                continue;
+            }
+
+            startColors[i] = fadeRenderer.color;
+            targetColors[i] = new Color(startColors[i].r, startColors[i].g, startColors[i].b, 0f);
+        }
 
         while (elapsedTime < fadeOutDuration)
         {
             elapsedTime += Time.deltaTime;
             float t = elapsedTime / fadeOutDuration;
-            spriteRenderer.color = Color.Lerp(startColor, targetColor, t);
-            
-            // Optionally slow down the enemy as it fades
+            for (int i = 0; i < resolvedFadeRenderers.Length; i++)
+            {
+                SpriteRenderer fadeRenderer = resolvedFadeRenderers[i];
+                if (fadeRenderer == null)
+                {
+                    continue;
+                }
+
+                fadeRenderer.color = Color.Lerp(startColors[i], targetColors[i], t);
+            }
+
             if (rb != null)
             {
-                rb.linearVelocity *= 0.95f; // Gradually reduce velocity
+                rb.linearVelocity *= 0.95f;
             }
-            
+
             yield return null;
         }
 
-        // Ensure fully transparent
-        spriteRenderer.color = targetColor;
+        for (int i = 0; i < resolvedFadeRenderers.Length; i++)
+        {
+            SpriteRenderer fadeRenderer = resolvedFadeRenderers[i];
+            if (fadeRenderer == null)
+            {
+                continue;
+            }
 
-        // Destroy the game object
+            fadeRenderer.color = targetColors[i];
+        }
+
         Destroy(gameObject);
     }
 
     private void DisableEnemyBehavior()
     {
-        // Disable common enemy components
-        var slimeAI = GetComponent<SlimeAI>();
-        if (slimeAI) slimeAI.enabled = false;
+        SlimeAI slimeAI = GetComponent<SlimeAI>();
+        if (slimeAI)
+        {
+            slimeAI.enabled = false;
+        }
 
-        var slimePathFinding = GetComponent<SlimePathFinding>();
-        if (slimePathFinding) slimePathFinding.enabled = false;
+        SlimePathFinding slimePathFinding = GetComponent<SlimePathFinding>();
+        if (slimePathFinding)
+        {
+            slimePathFinding.enabled = false;
+        }
 
-        var enemyDamageSource = GetComponent<EnemyDamageSource>();
-        if (enemyDamageSource) enemyDamageSource.enabled = false;
+        EnemyDamageSource enemyDamageSource = GetComponent<EnemyDamageSource>();
+        if (enemyDamageSource)
+        {
+            enemyDamageSource.enabled = false;
+        }
 
-        // Disable animator to freeze the sprite
-        var animator = GetComponent<Animator>();
-        if (animator) animator.enabled = false;
+        Animator animator = GetComponent<Animator>();
+        if (animator && disableAnimatorOnDeath)
+        {
+            animator.enabled = false;
+        }
     }
 }
