@@ -1,34 +1,36 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Flash : MonoBehaviour
 {
-    [Header("Material Flash (Optional)")] 
-    [SerializeField] private Material whiteFlashMat; // Optional: can be null
-    [SerializeField] private Material defaultMat;    // Original material (assign in Inspector if using material swapping)
+    [Header("Material Flash (Optional)")]
+    [SerializeField] private Material whiteFlashMat;
+    [SerializeField] private Material defaultMat;
     [SerializeField] private float restoreDefaultMatTime = .2f;
 
-    [Header("Color Flash Fallback")] 
-    [SerializeField] private Color flashColor = Color.white; // Used if material not valid
-    [SerializeField] private bool forceColorFlash = false;   // Force using color-based flash even if materials exist
+    [Header("Color Flash Fallback")]
+    [SerializeField] private Color flashColor = Color.white;
+    [SerializeField] private bool forceColorFlash = false;
+    [SerializeField] private SpriteRenderer targetRenderer;
 
     private SpriteRenderer spriteRenderer;
     private MonoBehaviour healthComponent;
     private Color originalColor;
 
+    public event Action StartedFlashing;
+    public event Action FinishedFlashing;
+
     private void Awake()
     {
-        // Detect health component (extend as needed)
         healthComponent = GetComponent<SlimeHealth>();
-
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = targetRenderer != null ? targetRenderer : GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
         }
 
-        // Subscribe to scene loaded event
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -49,11 +51,13 @@ public class Flash : MonoBehaviour
 
     private void ResetVisualState()
     {
-        if (!spriteRenderer) return;
+        if (!spriteRenderer)
+        {
+            return;
+        }
 
         if (CanUseMaterialFlash())
         {
-            // Restore material
             if (defaultMat != null)
             {
                 spriteRenderer.material = defaultMat;
@@ -61,26 +65,38 @@ public class Flash : MonoBehaviour
         }
         else
         {
-            // Restore color
             spriteRenderer.color = originalColor;
         }
     }
 
     private bool CanUseMaterialFlash()
     {
-        if (forceColorFlash) return false;
-        if (!spriteRenderer) return false;
-        if (whiteFlashMat == null || defaultMat == null) return false;
-        if (whiteFlashMat.shader == null || defaultMat.shader == null) return false;
-        // Unity shows pink (error) when shader unsupported; guard against that
-        if (!whiteFlashMat.shader.isSupported || !defaultMat.shader.isSupported) return false;
-        return true;
+        if (forceColorFlash || !spriteRenderer)
+        {
+            return false;
+        }
+
+        if (whiteFlashMat == null || defaultMat == null)
+        {
+            return false;
+        }
+
+        if (whiteFlashMat.shader == null || defaultMat.shader == null)
+        {
+            return false;
+        }
+
+        return whiteFlashMat.shader.isSupported && defaultMat.shader.isSupported;
     }
 
     public IEnumerator FlashRoutine()
     {
         if (!spriteRenderer)
+        {
             yield break;
+        }
+
+        StartedFlashing?.Invoke();
 
         if (CanUseMaterialFlash())
         {
@@ -90,17 +106,17 @@ public class Flash : MonoBehaviour
         }
         else
         {
-            // Color flash fallback (no shader swap, avoids pink error material)
             spriteRenderer.color = flashColor;
             yield return new WaitForSeconds(restoreDefaultMatTime);
             spriteRenderer.color = originalColor;
         }
 
-        // Death detection (extend for other health types as needed)
         if (healthComponent is SlimeHealth slimeHealth)
         {
             slimeHealth.DetectDeath();
         }
+
+        FinishedFlashing?.Invoke();
     }
 
     public void ResetMaterial()
