@@ -1,33 +1,38 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SlimePathFinding : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2f;
-    
+    [SerializeField] private float arrivalDistance = 0.08f;
+
     [Header("Obstacle Avoidance")]
     [SerializeField] private float obstacleDetectionDistance = 0.8f;
     [SerializeField] private float avoidanceForce = 3f;
     [SerializeField] private LayerMask obstacleLayer;
-    [SerializeField] private int rayCount = 7; // Number of rays to cast
-    
+    [SerializeField] private int rayCount = 7;
+
     [Header("Debug")]
     [SerializeField] private bool showDebugRays = false;
 
     private Rigidbody2D rb;
     private Knockback knockback;
     private Vector2 currentTargetPosition;
-    private bool hasTarget = false;
-    private Vector2 avoidanceDirection = Vector2.zero;
+    private bool hasTarget;
+    private Vector2 currentMoveDirection;
+    private float currentMoveSpeed;
+
+    public bool HasTarget => hasTarget;
+    public Vector2 CurrentTargetPosition => currentTargetPosition;
+    public Vector2 CurrentMoveDirection => currentMoveDirection;
+    public float CurrentMoveSpeed => currentMoveSpeed;
+    public bool IsMoving => currentMoveSpeed > 0.01f && currentMoveDirection.sqrMagnitude > 0.0001f;
 
     private void Awake()
     {
         knockback = GetComponent<Knockback>();
         rb = GetComponent<Rigidbody2D>();
-        
-        // ENFORCE STABLE PHYSICS
+
         if (rb != null)
         {
             rb.bodyType = RigidbodyType2D.Dynamic;
@@ -37,7 +42,6 @@ public class SlimePathFinding : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
 
-        // Auto-detect obstacle layers if not set
         if (obstacleLayer == 0)
         {
             obstacleLayer = LayerMask.GetMask("Default", "Environment", "Obstacle");
@@ -50,114 +54,103 @@ public class SlimePathFinding : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if ((knockback != null && knockback.gettingKnockedBack) || !hasTarget)
-            return;
+        currentMoveDirection = Vector2.zero;
+        currentMoveSpeed = 0f;
 
-        // Calculate desired direction toward target
-        Vector2 desiredDirection = (currentTargetPosition - rb.position).normalized;
-        
-        // Check if we're currently stuck/overlapping an obstacle
+        if (rb == null || (knockback != null && knockback.gettingKnockedBack) || !hasTarget)
+        {
+            return;
+        }
+
+        Vector2 toTarget = currentTargetPosition - rb.position;
+        float distanceToTarget = toTarget.magnitude;
+        if (distanceToTarget <= arrivalDistance)
+        {
+            StopMoving();
+            return;
+        }
+
+        Vector2 desiredDirection = toTarget / Mathf.Max(distanceToTarget, 0.0001f);
         Vector2 unstuckDirection = CheckIfStuck();
-        
-        // Check for obstacles and calculate avoidance
         Vector2 avoidance = CalculateObstacleAvoidance(desiredDirection);
-        
-        // Combine all directions
+
         Vector2 finalDirection;
         if (unstuckDirection != Vector2.zero)
         {
-            // Priority: getting unstuck first
             finalDirection = (unstuckDirection * 2f + avoidance).normalized;
         }
         else
         {
-            // Normal movement with avoidance
             finalDirection = (desiredDirection + avoidance * 1.5f).normalized;
         }
-        
-        // Move in the final direction
+
+        currentMoveDirection = finalDirection;
+        currentMoveSpeed = moveSpeed;
+
         Vector2 newPosition = rb.position + finalDirection * (moveSpeed * Time.fixedDeltaTime);
         rb.MovePosition(newPosition);
     }
-    
+
     private Vector2 CheckIfStuck()
     {
-        // Kiểm tra đa điểm gần nhất để thoát khỏi tường
         Collider2D obstacle = Physics2D.OverlapCircle(rb.position, 0.3f, obstacleLayer);
-        
-        if (obstacle != null)
+        if (obstacle == null)
         {
-            Vector2 closestPoint = obstacle.ClosestPoint(rb.position);
-            
-            if (Vector2.Distance(closestPoint, rb.position) < 0.01f)
-            {
-                return (rb.position - (Vector2)obstacle.bounds.center).normalized;
-            }
-            
-            return (rb.position - closestPoint).normalized;
+            return Vector2.zero;
         }
-        
-        return Vector2.zero;
+
+        Vector2 closestPoint = obstacle.ClosestPoint(rb.position);
+        if (Vector2.Distance(closestPoint, rb.position) < 0.01f)
+        {
+            return (rb.position - (Vector2)obstacle.bounds.center).normalized;
+        }
+
+        return (rb.position - closestPoint).normalized;
     }
 
     private Vector2 CalculateObstacleAvoidance(Vector2 desiredDirection)
     {
         Vector2 avoidance = Vector2.zero;
         Vector2 currentPos = rb.position;
-        
-        // Cast rays in a wider cone for better detection
-        float spreadAngle = 90f; // Wider spread angle for better side detection
-        float angleStep = spreadAngle / (rayCount - 1);
+        float spreadAngle = 90f;
+        float angleStep = spreadAngle / Mathf.Max(rayCount - 1, 1);
         float startAngle = -spreadAngle / 2f;
-        
-        // Get the angle of desired direction
         float desiredAngle = Mathf.Atan2(desiredDirection.y, desiredDirection.x) * Mathf.Rad2Deg;
-        
         int obstaclesDetected = 0;
-        
+
         for (int i = 0; i < rayCount; i++)
         {
-            // Calculate ray angle
             float currentAngle = desiredAngle + startAngle + (angleStep * i);
             float rad = currentAngle * Mathf.Deg2Rad;
             Vector2 rayDirection = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
-            
-            // Cast ray
             RaycastHit2D hit = Physics2D.Raycast(currentPos, rayDirection, obstacleDetectionDistance, obstacleLayer);
-            
+
             if (showDebugRays)
             {
-                Color rayColor = hit.collider != null ? Color.red : Color.green;
-                Debug.DrawRay(currentPos, rayDirection * obstacleDetectionDistance, rayColor);
+                Debug.DrawRay(currentPos, rayDirection * obstacleDetectionDistance, hit.collider != null ? Color.red : Color.green);
             }
-            
-            if (hit.collider != null)
+
+            if (hit.collider == null)
             {
-                obstaclesDetected++;
-                
-                // Calculate avoidance direction (perpendicular to obstacle)
-                Vector2 awayFromObstacle = (currentPos - hit.point).normalized;
-                float distance = Mathf.Max(hit.distance, 0.01f); // Prevent division by zero
-                
-                // Much stronger weight for very close obstacles
-                float weight = Mathf.Pow(1f - (distance / obstacleDetectionDistance), 2f);
-                weight = Mathf.Clamp(weight, 0.5f, 3f); // Stronger minimum and maximum
-                
-                avoidance += awayFromObstacle * weight * avoidanceForce;
-                
-                // Add perpendicular steering to go around obstacle
-                Vector2 perpendicular = new Vector2(-rayDirection.y, rayDirection.x);
-                avoidance += perpendicular * weight * avoidanceForce * 0.5f;
+                continue;
             }
+
+            obstaclesDetected++;
+            Vector2 awayFromObstacle = (currentPos - hit.point).normalized;
+            float distance = Mathf.Max(hit.distance, 0.01f);
+            float weight = Mathf.Pow(1f - (distance / obstacleDetectionDistance), 2f);
+            weight = Mathf.Clamp(weight, 0.5f, 3f);
+
+            avoidance += awayFromObstacle * weight * avoidanceForce;
+            Vector2 perpendicular = new Vector2(-rayDirection.y, rayDirection.x);
+            avoidance += perpendicular * weight * avoidanceForce * 0.5f;
         }
-        
-        // If multiple obstacles detected, increase avoidance strength
+
         if (obstaclesDetected > 0)
         {
-            float obstacleMultiplier = 1f + (obstaclesDetected * 0.3f);
-            avoidance *= obstacleMultiplier;
+            avoidance *= 1f + (obstaclesDetected * 0.3f);
         }
-        
+
         return avoidance;
     }
 
@@ -170,22 +163,24 @@ public class SlimePathFinding : MonoBehaviour
     public void StopMoving()
     {
         hasTarget = false;
+        currentMoveDirection = Vector2.zero;
+        currentMoveSpeed = 0f;
     }
-    
-    // Draw gizmos to visualize detection range
+
     private void OnDrawGizmosSelected()
     {
-        if (!Application.isPlaying || rb == null) return;
-        
-        // Draw target position
+        if (!Application.isPlaying || rb == null)
+        {
+            return;
+        }
+
         if (hasTarget)
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(currentTargetPosition, 0.2f);
             Gizmos.DrawLine(transform.position, currentTargetPosition);
         }
-        
-        // Draw detection radius
+
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, obstacleDetectionDistance);
     }

@@ -17,6 +17,8 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
     private Rigidbody2D rb;
     private EnemyDeathNotifier deathNotifier;
     private Flash flash;
+    private SlimePathFinding slimePathFinding;
+    private Vector3 previousPosition;
     private int currentFacing;
     private bool isDead;
 
@@ -26,6 +28,8 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         deathNotifier = GetComponent<EnemyDeathNotifier>();
         flash = GetComponent<Flash>();
+        slimePathFinding = GetComponent<SlimePathFinding>();
+        previousPosition = transform.position;
     }
 
     private void OnEnable()
@@ -39,6 +43,8 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
         {
             flash.StartedFlashing += OnStartedFlashing;
         }
+
+        previousPosition = transform.position;
     }
 
     private void OnDisable()
@@ -56,21 +62,22 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
 
     private void Update()
     {
-        if (animator == null || rb == null)
+        if (animator == null)
         {
             return;
         }
 
-        Vector2 velocity = rb.linearVelocity;
-        float speed = velocity.magnitude;
+        Vector2 motion = GetMotionVector();
+        float speed = GetSpeedFromMotion(motion);
         if (speed > movementThreshold)
         {
-            currentFacing = ResolveFacing(velocity);
+            currentFacing = ResolveFacing(motion);
         }
 
         animator.SetFloat(SpeedParameter, speed);
         animator.SetInteger(FacingParameter, currentFacing);
         animator.SetBool(DeadParameter, isDead);
+        previousPosition = transform.position;
     }
 
     public void TriggerAttack()
@@ -106,6 +113,37 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
         animator.ResetTrigger(AttackParameter);
         animator.ResetTrigger(HurtParameter);
         animator.SetBool(DeadParameter, true);
+    }
+
+    private Vector2 GetMotionVector()
+    {
+        if (slimePathFinding != null && slimePathFinding.IsMoving)
+        {
+            return slimePathFinding.CurrentMoveDirection * slimePathFinding.CurrentMoveSpeed;
+        }
+
+        if (rb != null && rb.linearVelocity.sqrMagnitude > movementThreshold * movementThreshold)
+        {
+            return rb.linearVelocity;
+        }
+
+        Vector2 positionDelta = ((Vector2)transform.position - (Vector2)previousPosition) / Mathf.Max(Time.deltaTime, 0.0001f);
+        if (positionDelta.sqrMagnitude > movementThreshold * movementThreshold)
+        {
+            return positionDelta;
+        }
+
+        return Vector2.zero;
+    }
+
+    private float GetSpeedFromMotion(Vector2 motion)
+    {
+        if (slimePathFinding != null && slimePathFinding.IsMoving)
+        {
+            return slimePathFinding.CurrentMoveSpeed;
+        }
+
+        return motion.magnitude;
     }
 
     private static int ResolveFacing(Vector2 direction)
