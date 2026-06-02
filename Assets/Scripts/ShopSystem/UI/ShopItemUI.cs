@@ -36,11 +36,18 @@ public class ShopItemUI : MonoBehaviour, IPointerClickHandler
         borderImage.enabled = true;
     }
 
-    public void SetData(Sprite sprite, int quantity)
+    public void SetData(Sprite sprite, int currentStock, int maxStock)
     {
         itemImage.gameObject.SetActive(true);
         itemImage.sprite = sprite;
-        quantityTxt.text = quantity + "";     
+        quantityTxt.text = currentStock + "/" + maxStock;     
+    }
+
+    public void SetData(Sprite sprite, int itemQuantity)
+    {
+        itemImage.gameObject.SetActive(true);
+        itemImage.sprite = sprite;
+        quantityTxt.text = itemQuantity +"";
     }
 
     public void OnPointerClick(PointerEventData pointerData)

@@ -108,8 +108,7 @@ public class InventorySO : ScriptableObject
     {
         EnsureInitialized();
 
-        Dictionary<int, InventoryItem> returnValue =
-            new Dictionary<int, InventoryItem>();
+        Dictionary<int, InventoryItem> returnValue = new Dictionary<int, InventoryItem>();
 
         for (int i = 0; i < inventoryItems.Count; i++)
         {
@@ -118,6 +117,17 @@ public class InventorySO : ScriptableObject
             returnValue[i] = inventoryItems[i];
         }
         return returnValue;
+    }
+
+    public int GetListCount()
+    {
+        int count = 0;
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].IsEmpty) continue;
+            count++;
+        }
+        return count;
     }
 
     public InventoryItem GetItemAt(int itemIndex)
@@ -184,6 +194,20 @@ public class InventorySO : ScriptableObject
                 
 
             InformAboutChange();
+        }
+    }
+
+    public void RemoveItem(ItemSO item, int amount)
+    {
+        EnsureInitialized();
+
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].IsEmpty) continue;
+            if (inventoryItems[i].item.ID != item.ID)continue;
+
+            RemoveItem(i, amount);
+            return;
         }
     }
 
@@ -275,6 +299,13 @@ public class InventorySO : ScriptableObject
         {
             Initialize();
         }
+    }
+
+    //for shop
+    public List<InventoryItem> GetNonEmptyItems()
+    {
+        EnsureInitialized();
+        return inventoryItems.Where(x => !x.IsEmpty).ToList();
     }
 }
 

@@ -104,8 +104,7 @@ public class InventoryUI : MonoBehaviour
         itemsList[itemIndex].Select();
     }
 
-    public void UpdateData(int itemIndex,
-        Sprite itemImage, int itemQuantity)
+    public void UpdateData(int itemIndex, Sprite itemImage, int itemQuantity)
     {
         if (itemsList.Count > itemIndex)
         {

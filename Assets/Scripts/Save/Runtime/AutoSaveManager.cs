@@ -1,5 +1,11 @@
 ﻿using UnityEngine;
 
+public interface ISaveable
+{
+    void Save();
+    void Load();
+}
+
 public class AutoSaveManager : MonoBehaviour
 {
     [Header("Auto Save Settings")]

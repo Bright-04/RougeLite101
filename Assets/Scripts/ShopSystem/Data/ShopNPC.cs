@@ -14,12 +14,12 @@ public class ShopNPC : MonoBehaviour, IInteractable
 
     public void Interact(GameObject interactor)
     {
-        Debug.Log("INTERACT SHOP NPC");
+        Debug.Log("INTERACT SHOP NPC: " + shopData.greeting);
         shopController.OpenShop(shopData, interactor);
     }
 
     public string GetInteractionText()
     {
-        return "[F] Open Shop";
+        return $"[F] Open {shopData.shopName} Shop";
     }
 }

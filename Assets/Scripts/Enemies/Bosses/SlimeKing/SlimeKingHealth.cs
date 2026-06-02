@@ -8,7 +8,8 @@ public class SlimeKingHealth : MonoBehaviour, IDamageable
     [SerializeField] private string bossName = "Slime King";
     [SerializeField] private float maxHealth = 200f;
     private float currentHealth;
-    public float expReward = 10;
+    [SerializeField] private float expReward = 10;
+    [SerializeField] private int goldReward = 100;
 
     private EnemyDeathNotifier deathNotifier;
     private EnemyDeathAnimation deathAnimation;
@@ -85,12 +86,23 @@ public class SlimeKingHealth : MonoBehaviour, IDamageable
         }
     }
 
+    private void GiveReward()
+    {
+        PlayerMoney playerMoney = FindFirstObjectByType<PlayerMoney>();
+
+        if (playerMoney != null)
+        {
+            playerMoney.AddGold(goldReward);
+        }
+        ExpManager.Instance.GainExperience(expReward);
+    }
+
     private void Die(Transform damageSource)
     {
         if (isDead) return;
         isDead = true;
 
-        ExpManager.Instance.GainExperience(expReward);
+        GiveReward();
 
         CleanupSlimeKingProjectiles();
 

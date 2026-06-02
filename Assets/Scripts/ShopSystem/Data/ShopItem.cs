@@ -5,10 +5,9 @@ using UnityEngine;
 public class ShopItem
 {
     public ItemSO item;
+    public int currentStock = 99;
+    public int maxStock = 99;
 
-    public int buyPrice = 50;
+    public bool IsEmpty => item == null;
 
-    public int sellPrice = 25;
-
-    public int stock = -1;
 }
