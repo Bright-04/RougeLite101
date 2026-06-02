@@ -1,106 +1,148 @@
-﻿    using System.Collections;
-    using UnityEngine;
+using UnityEngine;
 
-    public class SlimeAI : MonoBehaviour
+public class SlimeAI : MonoBehaviour
+{
+    private enum State
     {
-        private enum State
+        Roaming,
+        Chasing,
+        AttackWindup
+    }
+
+    [Header("Detection")]
+    [SerializeField] private float detectionRange = 5f;
+    [SerializeField] private float loseInterestRange = 7f;
+    [SerializeField] private float attackRange = 0.9f;
+
+    [Header("Roaming")]
+    [SerializeField] private float roamRadius = 2.5f;
+    [SerializeField] private float roamDecisionIntervalMin = 1.5f;
+    [SerializeField] private float roamDecisionIntervalMax = 3f;
+
+    [Header("Attack")]
+    [SerializeField] private float attackWindupDuration = 0.35f;
+    [SerializeField] private float attackCooldown = 1.25f;
+
+    private State state;
+    private SlimePathFinding slimePathFinding;
+    private SlimeForestAnimatorDriver animatorDriver;
+    private Transform playerTransform;
+    private Vector2 roamAnchor;
+    private float nextStateDecisionTime;
+    private float attackWindupEndTime;
+    private float nextAttackTime;
+
+    private void Awake()
+    {
+        slimePathFinding = GetComponent<SlimePathFinding>();
+        animatorDriver = GetComponent<SlimeForestAnimatorDriver>();
+        roamAnchor = transform.position;
+        state = State.Roaming;
+    }
+
+    private void Start()
+    {
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
         {
-            Roaming,
-            Chasing
+            playerTransform = playerObj.transform;
         }
 
-        private State state;
-        private SlimePathFinding slimePathFinding;
-        private Transform playerTransform;
+        PickRoamTarget();
+    }
 
-        [SerializeField] private float detectionRange = .1f; // roughly 50 pixels assuming 100 px/unit
-
-        private void Awake()
+    private void Update()
+    {
+        if (slimePathFinding == null)
         {
-            slimePathFinding = GetComponent<SlimePathFinding>();
-            state = State.Roaming;
+            return;
         }
 
-        private void Start()
+        if (playerTransform == null)
         {
-            GameObject playerObj = GameObject.FindWithTag("Player");
-            if (playerObj != null)
-            {
-                playerTransform = playerObj.transform;
-            }
-
-            StartCoroutine(AIBehaviour());
+            TryFindPlayer();
+            HandleRoaming(true);
+            return;
         }
 
-        //private IEnumerator CheckForPlayerRoutine()
-        //{
-        //    while (true)
-        //    {
-        //        if (playerTransform != null)
-        //        {
-        //            float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
-        //            if (distanceToPlayer < detectionRange)
-        //            {
-        //                state = State.Chasing;
-        //                slimePathFinding.MoveTo((playerTransform.position - transform.position).normalized);
-        //            }
-        //            else
-        //            {
-        //                if (state != State.Roaming)
-        //                {
-        //                    StartCoroutine(RoamingRoutine());
-        //                }
-        //            }
-        //        }
-        //        else
-        //        {
-        //            Debug.LogWarning("SlimeAI: playerTransform is still null. Waiting for player to appear.");
-        //        }
-
-        //        yield return new WaitForSeconds(0.2f);
-        //    }
-        //}
-
-        private IEnumerator RoamingRoutine()
+        float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
+        switch (state)
         {
-            state = State.Roaming;
-            while (state == State.Roaming)
-            {
-                Vector2 roamPosition = GetRoamingPosition();
-                slimePathFinding.MoveTo(roamPosition);
-                yield return new WaitForSeconds(2f);
-            }
-        }
-
-        private Vector2 GetRoamingPosition()
-        {
-            return new Vector2(Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
-        }
-
-        private IEnumerator AIBehaviour()
-        {
-            while (true)
-            {
-                if (playerTransform != null)
+            case State.Roaming:
+                if (distanceToPlayer <= detectionRange)
                 {
-                    float distance = Vector2.Distance(transform.position, playerTransform.position);
-                    if (distance < detectionRange)
+                    state = State.Chasing;
+                }
+                else
+                {
+                    HandleRoaming(false);
+                }
+                break;
+
+            case State.Chasing:
+                if (distanceToPlayer > loseInterestRange)
+                {
+                    state = State.Roaming;
+                    roamAnchor = transform.position;
+                    PickRoamTarget();
+                }
+                else if (distanceToPlayer <= attackRange && Time.time >= nextAttackTime)
+                {
+                    state = State.AttackWindup;
+                    attackWindupEndTime = Time.time + attackWindupDuration;
+                    nextAttackTime = attackWindupEndTime + attackCooldown;
+                    slimePathFinding.StopMoving();
+                    animatorDriver?.TriggerAttack();
+                }
+                else
+                {
+                    slimePathFinding.MoveTo(playerTransform.position);
+                }
+                break;
+
+            case State.AttackWindup:
+                slimePathFinding.StopMoving();
+                if (distanceToPlayer > loseInterestRange)
+                {
+                    state = State.Roaming;
+                    roamAnchor = transform.position;
+                    PickRoamTarget();
+                }
+                else if (Time.time >= attackWindupEndTime)
+                {
+                    state = distanceToPlayer <= detectionRange ? State.Chasing : State.Roaming;
+                    if (state == State.Roaming)
                     {
-                        state = State.Chasing;
-                        slimePathFinding.MoveTo(playerTransform.position);
-                    }
-                    else
-                    {
-                        if (state != State.Roaming)
-                        {
-                            state = State.Roaming;
-                        }
-                        Vector2 roamPosition = GetRoamingPosition();
-                        slimePathFinding.MoveTo(roamPosition);
+                        roamAnchor = transform.position;
+                        PickRoamTarget();
                     }
                 }
-                yield return new WaitForSeconds(0.2f);
-            }
+                break;
         }
-
     }
+
+    private void HandleRoaming(bool forceUpdate)
+    {
+        if (forceUpdate || Time.time >= nextStateDecisionTime || !slimePathFinding.HasTarget)
+        {
+            PickRoamTarget();
+        }
+    }
+
+    private void PickRoamTarget()
+    {
+        Vector2 randomOffset = Random.insideUnitCircle * roamRadius;
+        Vector2 targetPosition = roamAnchor + randomOffset;
+        slimePathFinding.MoveTo(targetPosition);
+        nextStateDecisionTime = Time.time + Random.Range(roamDecisionIntervalMin, roamDecisionIntervalMax);
+    }
+
+    private void TryFindPlayer()
+    {
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            playerTransform = playerObj.transform;
+        }
+    }
+}
