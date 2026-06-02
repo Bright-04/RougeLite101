@@ -16,7 +16,7 @@ public class RunResultController : MonoBehaviour
     [Header("Scene Flow")]
     [SerializeField] private string hubSceneName = "GameHome";
     [SerializeField] private string runResultSceneName = "RunResultScene";
-    [SerializeField] private Vector3 hubSpawnPosition = new Vector3(0f, 9f, 0f);
+    [SerializeField] private Vector3 hubSpawnPosition = new Vector3(0f, 0f, 0f);
 
     public bool IsResultActive { get; private set; }
     public bool IsRunFinished { get; private set; }
