@@ -307,6 +307,23 @@ public class InventorySO : ScriptableObject
         EnsureInitialized();
         return inventoryItems.Where(x => !x.IsEmpty).ToList();
     }
+
+    public List<(int slotIndex, InventoryItem item)> GetNonEmptyItemsWithIndex()
+    {
+        EnsureInitialized();
+
+        List<(int, InventoryItem)> result = new();
+
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (!inventoryItems[i].IsEmpty)
+            {
+                result.Add((i, inventoryItems[i]));
+            }
+        }
+
+        return result;
+    }
 }
 
 [Serializable]

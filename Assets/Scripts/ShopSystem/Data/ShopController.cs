@@ -30,6 +30,16 @@ public class ShopController : MonoBehaviour
     //    shopUI.OnInitiateShopItemList -= HandleShopItemList;
     //}
 
+    private void Awake()
+    {
+        Debug.Log("InventoryController spawned");
+    }
+
+    private void OnDestroy()
+    {
+        Debug.Log("InventoryController destroyed");
+    }
+
     private void OnEnable()
     {
         shopUI.OnClosingShop += CloseShop;
@@ -207,7 +217,7 @@ public class ShopController : MonoBehaviour
             return;
         }
 
-
+        shopUI.ResetSelection(); // reset description
         inventoryController.CurrentInventoryData.AddItem(shopItem.item, amount);
         CurrentShopData.RemoveStock(itemIndex, amount);
         RefreshCurrentView();
@@ -215,19 +225,20 @@ public class ShopController : MonoBehaviour
 
     private void SellItem(int itemIndex, int amount)
     {
-        var items = inventoryController.CurrentInventoryData.GetNonEmptyItems();
+        var items = inventoryController.CurrentInventoryData.GetNonEmptyItemsWithIndex();
 
-        InventoryItem invItem = items[itemIndex];
+        var entry = items[itemIndex];
+
+        int realSlot = entry.slotIndex;
+        InventoryItem invItem = entry.item;
 
         if (invItem.IsEmpty) return;
         amount = Mathf.Min(amount, invItem.quantity);
-
         int totalGain = invItem.item.SellPrice * amount;
         playerMoney.AddGold(totalGain);
-        Debug.Log($"Gain {totalGain} gold!");
 
-        // remove from player inventory
-        inventoryController.CurrentInventoryData.RemoveItem(invItem.item, amount);
+        shopUI.ResetSelection(); // reset description
+        inventoryController.CurrentInventoryData.RemoveItem(realSlot, amount);
         RefreshCurrentView();
         Debug.Log($"Sold {invItem.item.Name} x{amount}");
     }
