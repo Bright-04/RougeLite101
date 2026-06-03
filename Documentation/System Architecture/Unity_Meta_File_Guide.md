@@ -1,5 +1,7 @@
 # Unity Meta File Management Guide
 
+_Branch documentation version: branch-neutral reference_
+
 ## Understanding .meta Files
 
 Unity creates `.meta` files for every asset and folder in your project. These files contain important metadata like GUIDs, import settings, and references.

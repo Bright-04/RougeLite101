@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41ef21c7b64600c4094212e816b2241d, type: 3}
+  m_Name: War
+  m_EditorClassIdentifier: Assembly-CSharp::BuffSO
+  buffName: 
+  modifiersData:
+  - StatModifier: {fileID: 11400000, guid: a383538e6c191484fb288c210e74a149, type: 2}
+    value: 20
+  - StatModifier: {fileID: 11400000, guid: 9c20b747caade794487bd1f202cb294e, type: 2}
+    value: 50
+  - StatModifier: {fileID: 11400000, guid: f1fa5a31f0a30e1418c6e63144e9b296, type: 2}
+    value: -50
+  - StatModifier: {fileID: 11400000, guid: 889ee5822107d38479bb48f31d70060a, type: 2}
+    value: 20
+  - StatModifier: {fileID: 11400000, guid: f6853c18de970e341a69030fc167869a, type: 2}
+    value: 20
+  - StatModifier: {fileID: 11400000, guid: e05a11d36dda7bd4e97a3134200f7cb4, type: 2}
+    value: 30
+  - StatModifier: {fileID: 11400000, guid: 34326e805d7f3cf4d80794fb1ee272ed, type: 2}
+    value: 30

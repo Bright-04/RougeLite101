@@ -159,3 +159,7 @@ UpgradeLog.htm
 /.temp
 /.github
 /.agent
+/.agents
+/.claude
+AGENTS.MD
+/.codegraph

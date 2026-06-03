@@ -1,169 +1,119 @@
 # RougeLite101
 
-A 2D roguelike game built with Unity featuring procedural dungeon generation and manual tilemap room design.
+RougeLite101 is a Unity 2D top-down roguelite prototype. The current project includes a playable combat loop, procedural dungeon flow, UI and inventory foundations, save-related systems, and early adaptive-difficulty telemetry, while the full AI Director feedback loop is still incomplete.
 
-## Project Overview
+## Project Status
 
-RougeLite101 is a Unity-based roguelike game that combines procedural dungeon generation with handcrafted room design. The game features a player controller, enemy AI systems, spell casting, and a modular room-based dungeon system.
+RougeLite101 is currently a playable prototype rather than a finished game.
 
-## Recent Updates
+The current priority is architecture cleanup, reducing redundancy, and stabilizing core systems that already exist in the project. The long-term adaptive-difficulty goal remains part of the design direction, but the full AI Director-driven enemy behavior loop is not complete yet.
 
-### v0.2 - Inventory & Progression Systems
+## Features
 
-- **Inventory System**: Complete item management with drag-and-drop UI
-- **Weapon Hub**: Centralized weapon pickup and equip system
-- **Stat Modifiers**: Items that modify player stats (health, mana, etc.)
-- **Skill Tree**: Character progression with unlockable skills
-- **Leveling System**: Experience gain and stat upgrades
-- **Structure Randomizer**: Enhanced dungeon generation with randomized layouts
-- **Improved Dungeon Manager**: Better room spawning and enemy management
+- Player movement and dash
+- Combat with melee and projectile weapon systems
+- Spell casting with multiple spell slots
+- Enemy and boss encounters
+- Procedural dungeon generation with themed room sets
+- Inventory and item pickup systems
+- Equipment, armor, and weapon loadout systems
+- Save and auto-save related systems
+- Run result and progression-related systems
+- Combat metrics and intensity tracking through the Director system
 
-### v0.1 - Core Systems
+## Architecture Overview
 
-- Basic dungeon generation with room templates
-- Player controller with movement and combat
-- Enemy AI with pathfinding
-- Spell casting system
-- Health and damage systems
+The project is organized around domain ownership rather than scene-specific or object-specific folders. The current documented ownership model is:
 
-## Documentation Structure
+- `Core`: lifecycle, input, camera, and scene-flow infrastructure
+- `Player`: player entity behavior and direct player state
+- `Combat`: shared damage, projectiles, spells, feedback, and combat helpers
+- `Weapons`: weapon runtime, weapon data, alignment, and weapon pickups
+- `Equipment`: armor and equipment loadout logic
+- `Inventory`: inventory data, item data, inventory UI, and generic pickups
+- `Enemies`: enemy AI, movement, health, and shared enemy helpers
+- `Dungeon`: procedural generation, room structure, themes, spawn profiles, exit flow, and boss encounter hooks
+- `Run`: run result flow, rules, and session state
+- `Director`: combat telemetry and intensity tracking
+- `Progression`: experience progression and progression-related data
+- `Save`: save/load runtime flow and save data transfer objects
+- `UI`: presentation-facing UI behavior
 
-This project's documentation is organized into the following categories:
+Legacy folders and older structure remnants still exist in the repository, but the domain-based layout above is the current source of truth for new work.
 
-### 📚 [Documentation/](./Documentation/)
+## System Breakdown
 
-- **[Level Design/](./Documentation/Level%20Design/)** - Room creation and level design guides
-- **[Quick References/](./Documentation/Quick%20References/)** - Quick reference cards and cheat sheets
-- **[System Architecture/](./Documentation/System%20Architecture/)** - Technical documentation and system overviews
+- `Core` manages bootstrapping, input setup, camera follow, and scene transitions.
+- `Player` contains movement, dash behavior, and player stats.
+- `Combat`, `Weapons`, and `Equipment` work together to drive attacking, spell usage, weapon switching, damage, and loadouts.
+- `Inventory` handles inventory data, inventory UI, and generic pickup flow.
+- `Dungeon` owns room templates, theme selection, spawn profiles, layout generation, and exit/boss progression hooks.
+- `Enemies` contains common enemy health/damage helpers plus slime, bat, and boss behaviors.
+- `Run` and `UI/RunResults` handle end-of-run state, star rating, result presentation, and run flow.
+- `Director` currently tracks combat runtime data and intensity bands, but it should be treated as an incomplete adaptive-difficulty foundation rather than a finished game director.
+- `Save` and `Progression` support persistence and stat/experience growth systems already present in the prototype.
 
-## Getting Started
+## Scene Overview
 
-### Prerequisites
+The current build settings include these main scenes:
 
-- Unity 2022.3 LTS or later
-- Basic knowledge of Unity 2D development
-- Understanding of tilemap systems
+- `MainMenu`: entry menu scene
+- `GameHome`: hub/home scene used by current scene flow
+- `Dungeon`: active gameplay scene for procedural dungeon runs
+- `RunResultScene`: result scene used by run completion flow
 
-### Quick Start
+Non-core scenes also exist in the repository, such as `WeaponAlignmentTest` and `Scene(b4maps)`, but they should not be treated as the main player flow.
 
-1. Open the project in Unity
-2. Load the main scene
-3. Press Play to test the dungeon generation system
-4. Use the Level Design documentation to create new rooms
+## Requirements
 
-## Key Features
+- Unity `6000.3.13f1`
+- Universal Render Pipeline (URP)
+- Unity Input System package
 
-### 🏰 Dungeon System
+## How to Run
 
-- **Procedural Generation**: Automatic room selection and progression
-- **Structure Randomizer**: Randomized room layouts and enemy placements
-- **Manual Room Design**: Create handcrafted rooms using tilemaps
-- **Theme-based Organization**: Group rooms by themes (Forest, Cave, etc.)
-- **Modular Architecture**: Easy to add new rooms and themes
+1. Open the project in Unity `6000.3.13f1`.
+2. Open `Assets/Scenes/MainMenu.unity` or `Assets/Scenes/GameHome.unity`.
+3. Press Play in the Unity Editor.
 
-### 🎮 Gameplay Systems
+## Controls
 
-- **Player Controller**: 2D movement with input system integration
-- **Enemy AI**: Multiple enemy types with different behaviors
-- **Spell System**: Casting system with cooldowns and UI
-- **Health & Combat**: Damage system with knockback effects
-- **Weapon System**: Bows, swords, and weapon pickup mechanics
-- **Inventory System**: Item management, equipping, and stat modifiers
-- **Skill Tree & Leveling**: Character progression with skill unlocks
-- **Player Dash**: Dash ability with input and visual effects
+Verified keyboard and mouse controls from the current input actions asset:
 
-### 🎯 Progression Systems
+- `W`, `A`, `S`, `D`: move
+- `Space`: dash
+- `Left Mouse Button`: attack
+- `1`, `2`, `3`: cast spells
+- `E`: interact
+- `Q`: swap weapon
+- `Esc`: open pause menu
+- `Tab`: open or close stats
+- `I`: open or close inventory
 
-- **AI Director**: Dynamic combat pacing and difficulty scaling
-- **Meta Progression**: Persistent upgrades across runs
-- **Run State Management**: Track run progress and rewards
-- **Save System**: Auto-save and manual save functionality
+Some gamepad bindings also exist in the input actions asset, but they are not fully documented here.
 
-### 🛠️ Development Tools
+## Documentation
 
-- **Room Creation Helper**: Automated room structure setup
-- **Room Template Validator**: Validation tools for room prefabs
-- **Error Detection**: Comprehensive error checking and auto-fixing
-- **Inventory UI**: Drag-and-drop item management
-- **Weapon HUD**: Real-time weapon status display
-- **Cursor Manager**: Custom cursor system
+- [Documentation Overview](./Documentation/README.md)
+- [Current Project Organization](./Documentation/System%20Architecture/Current_Project_Organization.md)
+- [System Overview](./Documentation/System%20Architecture/System_Overview.md)
+- [Manual Tilemap Room Guide](./Documentation/Level%20Design/Manual_Tilemap_Room_Guide.md)
 
-## Room Creation Workflow
+## Known Issues / Work In Progress
 
-For detailed room creation instructions, see:
+- The AI Director currently provides telemetry and intensity tracking, but the full adaptive feedback loop is still incomplete.
+- Architecture cleanup and responsibility refactoring are ongoing.
+- Some legacy folders, scripts, and older documentation references still exist alongside the current ownership model.
+- System stabilization is still in progress across dungeon, inventory, save, and run-result flows.
 
-- [Manual Tilemap Room Guide](./Documentation/Level%20Design/Manual_Tilemap_Room_Guide.md) - Complete step-by-step guide
-- [Tilemap Quick Reference](./Documentation/Quick%20References/Tilemap_Quick_Reference.md) - Quick reference for experienced users
+## Roadmap
 
-### Quick Room Creation
-
-1. Open `Tools → Dungeon → Room Creation Helper`
-2. Enter room name and configure settings
-3. Click "Create Room Structure"
-4. Paint tiles using the Tile Palette
-5. Save as prefab and add to theme
-
-## Project Structure
-
-```text
-RougeLite101/
-├── Assets/
-│   ├── Scripts/
-│   │   ├── Dungeon/          # Dungeon generation system
-│   │   ├── Player/           # Player controller and systems
-│   │   ├── Enemies/          # Enemy AI and behaviors
-│   │   ├── UI/               # User interface systems
-│   │   ├── Director/         # AI Director and progression systems
-│   │   ├── SaveSystem/       # Save/load functionality
-│   │   ├── PickUpSystem/     # Item pickup mechanics
-│   │   ├── Model(ScriptableObject)/  # Data models and configurations
-│   │   ├── Modifiers/        # Stat modifiers and rewards
-│   │   ├── Misc/             # Utility scripts
-│   │   └── Editor/           # Development tools
-│   ├── Prefabs/
-│   │   └── Rooms/            # Room prefabs organized by theme
-│   ├── ScriptableObjects/
-│   │   ├── Themes/           # Theme configurations
-│   │   ├── Inventory/        # Item definitions
-│   │   └── PlayerStatsModifier/  # Stat modifier configurations
-│   └── Sprites/
-│       └── Tilemap/          # Tilemap assets and tiles
-└── Documentation/            # Project documentation
-    ├── Level Design/         # Room creation guides
-    ├── Quick References/     # Quick reference materials
-    └── System Architecture/  # Technical documentation
-```
-
-## Contributing
-
-When adding new features or rooms:
-
-1. Follow the existing code structure and naming conventions
-2. Update relevant documentation
-3. Test integration with the existing dungeon system
-4. Use the provided validation tools
-
-## Development Team
-
-- Level Design: Room creation and tilemap design
-- Programming: System architecture and gameplay mechanics
-- Art: Sprite creation and visual design
+- Complete the adaptive difficulty feedback loop
+- Continue architecture cleanup and responsibility alignment
+- Reduce redundant systems and legacy folder overlap
+- Stabilize save, inventory, and run-result integration
+- Expand content and continue combat tuning
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-### Third-Party Assets
-
-This project may include third-party assets and libraries. Please refer to their respective licenses:
-
-- **Unity Engine**: [Unity Terms of Service](https://unity3d.com/legal/terms-of-service)
-- **Tilemap Assets**: Please check individual asset licenses in the project
-
-### Contributing
-
-By contributing to this project, you agree that your contributions will be licensed under the same MIT License.
-
----
-
-For detailed information on specific systems, please refer to the documentation in the respective folders.
+This project is licensed under the [MIT License](./LICENSE).

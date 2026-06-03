@@ -180,7 +180,7 @@ MonoBehaviour:
   center: {fileID: 6145058250317747221}
   playerSpawn: {fileID: 0}
   exitAnchor: {fileID: 0}
-  spawnProfile: {fileID: 11400000, guid: f57f5f98e33d8ba49a65f9cece2999a5, type: 2}
+  spawnProfile: {fileID: 11400000, guid: 02f0abb86e60432d84f03cfded7345cf, type: 2}
   northSocket: {fileID: 4514168389315602798}
   southSocket: {fileID: 4485590131555525349}
   eastSocket: {fileID: 7121299958918177454}

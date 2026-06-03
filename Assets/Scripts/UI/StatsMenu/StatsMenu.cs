@@ -5,6 +5,8 @@ public class StatsMenu : MonoBehaviour
 {
     [Header("UI References")]
     public GameObject statsMenu;
+    [Header("Debug")]
+    [SerializeField] private bool logStatsMenuState = false;
     private PlayerControls playerControls;
 
 
@@ -43,7 +45,10 @@ public class StatsMenu : MonoBehaviour
             statsMenu.SetActive(true);
             // Disable gameplay inputs
             InputManager.Instance.EnableUIMap();
-            Debug.Log("OPEN Stats Menu");
+            if (logStatsMenuState)
+            {
+                Debug.Log("OPEN Stats Menu");
+            }
         }
     }
 
@@ -54,7 +59,10 @@ public class StatsMenu : MonoBehaviour
             statsMenu.SetActive(false);
             // Enable gameplay inputs
             InputManager.Instance.DisableUIMap();
-            Debug.Log("CLOSE Stats Menu");
+            if (logStatsMenuState)
+            {
+                Debug.Log("CLOSE Stats Menu");
+            }
         }
     }
 

@@ -1,10 +1,12 @@
 using UnityEngine;
 using System.Collections;
+using RougeLite.Combat.Damage;
 
 [RequireComponent(typeof(EnemyDeathNotifier))]
 public class SlimeHealth : MonoBehaviour, IDamageable
 {
-    public float expReward = 3;
+    [SerializeField] private float expReward = 3;
+    [SerializeField] private int goldReward = 25;
 
     [SerializeField] private int startingHealth = 10;
     [SerializeField] private EnemyHealthBar healthBar;
@@ -63,12 +65,23 @@ public class SlimeHealth : MonoBehaviour, IDamageable
         }
     }
 
+    private void GiveReward()
+    {
+        PlayerMoney playerMoney = FindFirstObjectByType<PlayerMoney>();
+
+        if (playerMoney != null)
+        {
+            playerMoney.AddGold(goldReward);
+        }
+        ExpManager.Instance.GainExperience(expReward);
+    }
+
     private void Die()
     {
         if (dead) return;
         dead = true;
 
-        ExpManager.Instance.GainExperience(expReward);
+        GiveReward();
 
         // Inform the DungeonManager
         notifier?.NotifyDied();
