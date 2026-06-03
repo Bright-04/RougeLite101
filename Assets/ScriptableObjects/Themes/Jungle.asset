@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5382e6a434761446974a86f4712d5cb, type: 3}
+  m_Name: Jungle
+  m_EditorClassIdentifier: Assembly-CSharp::ThemeSO
+  themeName: Jungle
+  spawnRoomPrefab: {fileID: 6345569638906873465, guid: 14c2742032d043347b431800877987c0, type: 3}
+  exitRoomPrefab: {fileID: 7314215907124097613, guid: 162d01595b429fc4ab93383e5cdb3b15, type: 3}
+  enemyRoomPrefabs:
+  - {fileID: 5961914373149934227, guid: 2a37b59d759dd5b4a833bb49a7979b7c, type: 3}
+  specialRoomPrefabs:
+  - {fileID: 8541427450340644458, guid: 06ff91300ef4d0e4ea8bb58ee5159fa2, type: 3}
+  buffRoomPrefabs:
+  - {fileID: 8541427450340644458, guid: 8b69a2ba7941dd84e8e1ee459609778b, type: 3}
+  bossRoomPrefabs:
+  - {fileID: 5961914373149934227, guid: 8a325d3a8e19e7b43a871ebecb356f69, type: 3}
+  mapColor: {r: 0, g: 1, b: 0, a: 1}
+  corridorPrefab: {fileID: 7870203632754900758, guid: 6f91ba4238fcec44db127c8a957b96ed, type: 3}
+  spawnPacks: []
