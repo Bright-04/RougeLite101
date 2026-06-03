@@ -18,6 +18,7 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
     private EnemyDeathNotifier deathNotifier;
     private Flash flash;
     private SlimePathFinding slimePathFinding;
+    private SlimeAI slimeAI;
     private Vector3 previousPosition;
     private int currentFacing;
     private bool isDead;
@@ -29,6 +30,7 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
         deathNotifier = GetComponent<EnemyDeathNotifier>();
         flash = GetComponent<Flash>();
         slimePathFinding = GetComponent<SlimePathFinding>();
+        slimeAI = GetComponent<SlimeAI>();
         previousPosition = transform.position;
     }
 
@@ -69,7 +71,11 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
 
         Vector2 motion = GetMotionVector();
         float speed = GetSpeedFromMotion(motion);
-        if (speed > movementThreshold)
+        if (slimeAI != null && slimeAI.HasStableFacing)
+        {
+            currentFacing = slimeAI.FacingIndex;
+        }
+        else if (speed > movementThreshold)
         {
             currentFacing = ResolveFacing(motion);
         }
@@ -117,6 +123,19 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
 
     private Vector2 GetMotionVector()
     {
+        if (slimeAI != null)
+        {
+            if (slimeAI.FacingDirection.sqrMagnitude > 0.0001f)
+            {
+                return slimeAI.FacingDirection;
+            }
+
+            if (slimeAI.MoveIntentDirection.sqrMagnitude > 0.0001f)
+            {
+                return slimeAI.MoveIntentDirection;
+            }
+        }
+
         if (slimePathFinding != null && slimePathFinding.IsMoving)
         {
             return slimePathFinding.CurrentMoveDirection * slimePathFinding.CurrentMoveSpeed;
@@ -138,6 +157,11 @@ public class SlimeForestAnimatorDriver : MonoBehaviour
 
     private float GetSpeedFromMotion(Vector2 motion)
     {
+        if (slimeAI != null)
+        {
+            return slimeAI.AnimationSpeed;
+        }
+
         if (slimePathFinding != null && slimePathFinding.IsMoving)
         {
             return slimePathFinding.CurrentMoveSpeed;

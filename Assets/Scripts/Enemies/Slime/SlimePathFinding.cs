@@ -21,11 +21,14 @@ public class SlimePathFinding : MonoBehaviour
     private bool hasTarget;
     private Vector2 currentMoveDirection;
     private float currentMoveSpeed;
+    private float speedMultiplier = 1f;
 
     public bool HasTarget => hasTarget;
     public Vector2 CurrentTargetPosition => currentTargetPosition;
     public Vector2 CurrentMoveDirection => currentMoveDirection;
     public float CurrentMoveSpeed => currentMoveSpeed;
+    public float BaseMoveSpeed => moveSpeed;
+    public float SpeedMultiplier => speedMultiplier;
     public bool IsMoving => currentMoveSpeed > 0.01f && currentMoveDirection.sqrMagnitude > 0.0001f;
 
     private void Awake()
@@ -85,9 +88,9 @@ public class SlimePathFinding : MonoBehaviour
         }
 
         currentMoveDirection = finalDirection;
-        currentMoveSpeed = moveSpeed;
+        currentMoveSpeed = moveSpeed * Mathf.Max(0f, speedMultiplier);
 
-        Vector2 newPosition = rb.position + finalDirection * (moveSpeed * Time.fixedDeltaTime);
+        Vector2 newPosition = rb.position + finalDirection * (currentMoveSpeed * Time.fixedDeltaTime);
         rb.MovePosition(newPosition);
     }
 
@@ -158,6 +161,11 @@ public class SlimePathFinding : MonoBehaviour
     {
         currentTargetPosition = targetPosition;
         hasTarget = true;
+    }
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        speedMultiplier = Mathf.Max(0f, multiplier);
     }
 
     public void StopMoving()
