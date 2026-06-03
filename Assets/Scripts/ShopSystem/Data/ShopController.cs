@@ -101,7 +101,7 @@ public class ShopController : MonoBehaviour
         {
             foreach (var item in CurrentShopData.GetCurrentShopInventoryState())
             {
-                shopUI.UpdateData(item.Key, item.Value.item.ItemImage, item.Value.currentStock, item.Value.maxStock);
+                shopUI.UpdateData(item.Key, item.Value.item.ItemImage, item.Value.CurrentStock, item.Value.MaxStock);
             }
             CurrentShopData.OnShopInventoryUpdated += UpdateShopInventoryUI;
         }
@@ -131,7 +131,7 @@ public class ShopController : MonoBehaviour
         shopUI.ResetAllItems();
         foreach (var item in inventoryState)
         {
-            shopUI.UpdateData(item.Key, item.Value.item.ItemImage, item.Value.currentStock, item.Value.maxStock);
+            shopUI.UpdateData(item.Key, item.Value.item.ItemImage, item.Value.CurrentStock, item.Value.MaxStock);
         }
     }
 
@@ -150,7 +150,7 @@ public class ShopController : MonoBehaviour
             shopUI.ResetSelection();
             return;
         }
-        shopUI.SetupBuyAmount(shopItem.currentStock);
+        shopUI.SetupBuyAmount(shopItem.CurrentStock);
 
         ItemSO item = shopItem.item;
         string description = PrepareDescription(shopItem);
@@ -260,6 +260,7 @@ public class ShopController : MonoBehaviour
         if (!InputManager.Instance.IsUIActive())
         {
             CurrentShopData = shopData;
+            CurrentShopData.RestockAllItems();
             shopUI.ShowShop(CurrentShopData);          
             // Disable gameplay inputs
             InputManager.Instance.EnableUIMap();

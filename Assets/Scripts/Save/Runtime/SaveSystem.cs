@@ -73,52 +73,52 @@ public static class SaveSystem
     }
 
     //============================= ShopData ================================================
-    private static string GetShopPath()
-    {
-        string root =Path.Combine(Application.persistentDataPath, saveFolderName);
-        string folder = Path.Combine(root, shopFolder);
+    //private static string GetShopPath()
+    //{
+    //    string root =Path.Combine(Application.persistentDataPath, saveFolderName);
+    //    string folder = Path.Combine(root, shopFolder);
 
-        if (!Directory.Exists(folder))
-        {
-            Directory.CreateDirectory(folder);
-        }
+    //    if (!Directory.Exists(folder))
+    //    {
+    //        Directory.CreateDirectory(folder);
+    //    }
 
-        return Path.Combine(folder, "shopRestock.sav");
-    }
+    //    return Path.Combine(folder, "shopRestock.sav");
+    //}
 
-    public static void SaveShopRestock(
-    List<ShopInventorySO> shops)
-    {
-        BinaryFormatter formatter = new BinaryFormatter();
-        string path = GetShopPath();
+    //public static void SaveShopRestock(
+    //List<ShopInventorySO> shops)
+    //{
+    //    BinaryFormatter formatter = new BinaryFormatter();
+    //    string path = GetShopPath();
 
-        FileStream stream = new FileStream(path, FileMode.Create);
+    //    FileStream stream = new FileStream(path, FileMode.Create);
 
-        ShopRestockData data = new ShopRestockData();
+    //    ShopRestockData data = new ShopRestockData();
 
-        foreach (var shop in shops)
-        {
-            data.shops.Add(
-                new ShopSaveEntry
-                {
-                    shopId = shop.ShopId,
-                    nextRestockTicks = shop.NextRestockTime.Ticks
-                });
-        }
-        formatter.Serialize(stream, data);
-        stream.Close();
-    }
+    //    foreach (var shop in shops)
+    //    {
+    //        data.shops.Add(
+    //            new ShopSaveEntry
+    //            {
+    //                shopId = shop.ShopId,
+    //                nextRestockTicks = shop.NextRestockTime.Ticks
+    //            });
+    //    }
+    //    formatter.Serialize(stream, data);
+    //    stream.Close();
+    //}
 
-    public static ShopRestockData LoadShopRestock()
-    {
-        string path = GetShopPath();
+    //public static ShopRestockData LoadShopRestock()
+    //{
+    //    string path = GetShopPath();
 
-        if (!File.Exists(path)) return null;
+    //    if (!File.Exists(path)) return null;
 
-        BinaryFormatter formatter = new BinaryFormatter();
-        FileStream stream = new FileStream(path, FileMode.Open);
-        ShopRestockData data = formatter.Deserialize(stream) as ShopRestockData;
-        stream.Close();
-        return data;
-    }
+    //    BinaryFormatter formatter = new BinaryFormatter();
+    //    FileStream stream = new FileStream(path, FileMode.Open);
+    //    ShopRestockData data = formatter.Deserialize(stream) as ShopRestockData;
+    //    stream.Close();
+    //    return data;
+    //}
 }
