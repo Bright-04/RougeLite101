@@ -80,10 +80,10 @@ public class PlayerStats : MonoBehaviour
 
     private void Update()
     {
-        if (currentHP <= 0)
-        {
-            Die();
-        }
+        //if (currentHP <= 0)
+        //{
+        //    Die();
+        //}
         if (isDead)
         {
             return;
@@ -486,7 +486,7 @@ public class PlayerStats : MonoBehaviour
 
         damageTimer = damageCooldown;
 
-        if (currentHP <= 0)
+        if (currentHP <= 0 && isDead == false)
         {
             Die();
         }
@@ -496,18 +496,13 @@ public class PlayerStats : MonoBehaviour
 
     private void Die()
     {
-        if (isDead)
-        {
-            return;
-        }
-
+        Debug.Log("Player is dead");
+        ResetStatsOnRespawn();
         isDead = true;
         if (inventoryController != null)
         {
             inventoryController.OnPlayerDeath();
         }
-
-        Debug.Log("Player is dead");
 
         RunResultController runResultController = RunResultController.Instance != null
             ? RunResultController.Instance
@@ -542,15 +537,17 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    private void ResetStatsOnRespawn()
+    public void ResetStatsOnRespawn()
     {
+        Debug.Log("RESET STATS CALLED");
         isDead = false;
-        currentHP = maxHP;
-        currentMana = maxMana;
-        currentStamina = maxStamina;
+        //ResetAllBuffs();
+        currentHP = GetMaxHP();
+        currentMana = GetMaxMana();
+        currentStamina = GetMaxStamina();
         damageTimer = 0;
         // reset buffs
-        ResetAllBuffs();
+       // ResetAllBuffs();
     }
 
     public void ResetTransientState()
