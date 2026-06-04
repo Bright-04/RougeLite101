@@ -477,6 +477,11 @@ public class PlayerStats : MonoBehaviour
         float reducedDamage = Mathf.Max(0, damage - GetDefense());
         currentHP -= reducedDamage;
 
+        if (reducedDamage > 0f)
+        {
+            DdaTelemetryService.Instance?.RecordDamageTaken(reducedDamage);
+        }
+
         Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{maxHP}");
 
         damageTimer = damageCooldown;

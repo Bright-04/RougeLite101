@@ -227,20 +227,20 @@ MonoBehaviour:
   fallbackHubSceneName: GameHome
   maxHP: 100
   currentHP: 0
-  hpRegen: 1
+  hpRegen: 0
   maxMana: 100
   currentMana: 0
   manaRegen: 1
   maxStamina: 50
   currentStamina: 0
   staminaRegen: 2
-  attackDamage: 10
+  attackDamage: 4
   abilityPower: 5
-  defense: 2
+  defense: 1
   critChance: 0.1
   critDamage: 1.5
   luck: 0
-  damageCooldown: 1
+  damageCooldown: 0.75
   damageTimer: 0
   isDead: 0
   moveSpeed: 10

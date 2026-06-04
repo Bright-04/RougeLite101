@@ -17,9 +17,9 @@ public class ShopInventorySO : ScriptableObject
     [Header("Restock")]
     [SerializeField] private int restockMinutes = 30;
 
-    private DateTime nextRestockTime;
+    //private DateTime nextRestockTime;
 
-    public event Action<TimeSpan> OnRestockTimeChanged;
+    //public event Action<TimeSpan> OnRestockTimeChanged;
 
     [TextArea]
     public string greeting;
@@ -77,7 +77,7 @@ public class ShopInventorySO : ScriptableObject
         if (item.IsEmpty)
             return false;
 
-        return item.currentStock >= amount;
+        return item.CurrentStock >= amount;
     }
 
     public bool RemoveStock(int index, int amount)
@@ -86,72 +86,72 @@ public class ShopInventorySO : ScriptableObject
 
         if (item.IsEmpty) return false;
 
-        if (item.currentStock < amount) return false;
+        if (item.CurrentStock < amount) return false;
 
-        item.currentStock -= amount;
+        item.CurrentStock -= amount;
         InformAboutChange();
         return true;
     }
 
-    public bool AddStock(int index, int amount)
-    {
-        ShopItem item = items[index];
+    //public bool AddStock(int index, int amount)
+    //{
+    //    ShopItem item = items[index];
 
-        if (item.IsEmpty) return false;
-        item.currentStock += amount;
-        if (item.currentStock > item.maxStock)
-        {
-            item.currentStock = item.maxStock;
-        }
-        InformAboutChange();
-        return true;
-    }
+    //    if (item.IsEmpty) return false;
+    //    item.currentStock += amount;
+    //    if (item.currentStock > item.maxStock)
+    //    {
+    //        item.currentStock = item.maxStock;
+    //    }
+    //    InformAboutChange();
+    //    return true;
+    //}
 
     //RESTOCK LOGIC
-    public void InitializeRestock()
-    {
-        if (nextRestockTime == default)
-        {
-            nextRestockTime = DateTime.UtcNow.AddMinutes(restockMinutes);
-        }
-    }
+    //public void InitializeRestock()
+    //{
+    //    if (nextRestockTime == default)
+    //    {
+    //        nextRestockTime = DateTime.UtcNow.AddMinutes(restockMinutes);
+    //    }
+    //}
 
-    public void TickRestock()
-    {
-        TimeSpan remaining =
-            nextRestockTime - DateTime.UtcNow;
+    //public void TickRestock()
+    //{
+    //    TimeSpan remaining = nextRestockTime - DateTime.UtcNow;
 
-        if (remaining <= TimeSpan.Zero)
-        {
-            RestockAllItems();
+    //    if (remaining <= TimeSpan.Zero)
+    //    {
+    //        RestockAllItems();
 
-            nextRestockTime =
-                DateTime.UtcNow.AddMinutes(restockMinutes);
+    //        nextRestockTime =
+    //            DateTime.UtcNow.AddMinutes(restockMinutes);
 
-            remaining =
-                nextRestockTime - DateTime.UtcNow;
-        }
+    //        remaining =
+    //            nextRestockTime - DateTime.UtcNow;
+    //    }
 
-        OnRestockTimeChanged?.Invoke(remaining);
-    }
+    //    OnRestockTimeChanged?.Invoke(remaining);
+    //}
 
-    private void RestockAllItems()
+    public void RestockAllItems()
     {
         foreach (var item in items)
         {
             if (item.IsEmpty)
                 continue;
-            item.currentStock = item.maxStock;
+            item.CurrentStock = item.MaxStock;
         }
 
         InformAboutChange();
     }
 
-    public DateTime NextRestockTime
-    {
-        get => nextRestockTime;
-    }
-
+    //public DateTime NextRestockTime
+    //{
+    //    get => nextRestockTime;
+    //}
+    
+    // Temporary SetNextRestockTime function, will be replace later
     public void SetNextRestockTime(DateTime value)
     {
         nextRestockTime = value;

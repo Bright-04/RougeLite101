@@ -196,6 +196,7 @@ public class RoomTemplate : MonoBehaviour
             }
         }
         invisibleWalls.Clear();
+        DdaTelemetryService.Instance?.EndRoom(this);
 
         Debug.Log($"[RoomTemplate] Phòng {gameObject.name} đã được dọn sạch! Vô hiệu hoá tường tàng hình.");
     }
@@ -204,6 +205,7 @@ public class RoomTemplate : MonoBehaviour
     {
         if (spawnProfile == null || spawnProfile.entries == null || spawnProfile.entries.Length == 0)
         {
+            DdaTelemetryService.Instance?.AdjustRoomSpawnTotal(0, isBossRoom, gameObject.name, false);
             // If it's a safe room (no profile), or profile has no entries, just stop quietly.
             yield break;
         }
@@ -237,13 +239,52 @@ public class RoomTemplate : MonoBehaviour
             }
         }
 
-        List<GameObject> enemiesToSpawn = new List<GameObject>();
+        List<int> entryCounts = new List<int>(spawnProfile.entries.Length);
+        int baseTotal = 0;
         foreach (var entry in spawnProfile.entries)
         {
             int count = Random.Range(entry.minCount, entry.maxCount + 1);
+            entryCounts.Add(count);
+            baseTotal += count;
+        }
+
+        int finalTotal = DdaTelemetryService.Instance != null
+            ? DdaTelemetryService.Instance.AdjustRoomSpawnTotal(baseTotal, isBossRoom, gameObject.name)
+            : baseTotal;
+        int remainingDelta = finalTotal - baseTotal;
+
+        while (remainingDelta > 0)
+        {
+            int entryIndex = GetExpandableEntryIndex(entryCounts);
+            if (entryIndex < 0)
+            {
+                break;
+            }
+
+            entryCounts[entryIndex] += 1;
+            remainingDelta -= 1;
+        }
+
+        while (remainingDelta < 0)
+        {
+            int entryIndex = GetReducibleEntryIndex(entryCounts);
+            if (entryIndex < 0)
+            {
+                break;
+            }
+
+            entryCounts[entryIndex] -= 1;
+            remainingDelta += 1;
+        }
+
+        List<GameObject> enemiesToSpawn = new List<GameObject>(finalTotal);
+        for (int entryIndex = 0; entryIndex < spawnProfile.entries.Length; entryIndex++)
+        {
+            GameObject prefab = spawnProfile.entries[entryIndex].prefab;
+            int count = entryCounts[entryIndex];
             for (int i = 0; i < count; i++)
             {
-                enemiesToSpawn.Add(entry.prefab);
+                enemiesToSpawn.Add(prefab);
             }
         }
 
@@ -253,6 +294,7 @@ public class RoomTemplate : MonoBehaviour
         }
 
         // KHÓA CỬA NGAY LẬP TỨC TRƯỚC KHI DELAY CHỜ QUÁI ĐẺ
+        DdaTelemetryService.Instance?.BeginRoom(this);
         LockDoors();
 
         yield return new WaitForSeconds(spawnProfile.initialDelay);
@@ -301,6 +343,48 @@ public class RoomTemplate : MonoBehaviour
         // Đánh dấu là đã spawn đủ số lượng
         isSpawningFinished = true;
         Debug.Log($"[RoomTemplate] Đã spawn và nạp khoá cửa hoàn tất! Tổng số quái phải giết: {activeEnemies.Count}");
+    }
+
+    private int GetExpandableEntryIndex(List<int> entryCounts)
+    {
+        if (entryCounts == null || entryCounts.Count == 0)
+        {
+            return -1;
+        }
+
+        return Random.Range(0, entryCounts.Count);
+    }
+
+    private int GetReducibleEntryIndex(List<int> entryCounts)
+    {
+        if (entryCounts == null || entryCounts.Count == 0)
+        {
+            return -1;
+        }
+
+        List<int> preferredIndices = new List<int>();
+        for (int i = 0; i < entryCounts.Count; i++)
+        {
+            if (entryCounts[i] > 1)
+            {
+                preferredIndices.Add(i);
+            }
+        }
+
+        if (preferredIndices.Count > 0)
+        {
+            return preferredIndices[Random.Range(0, preferredIndices.Count)];
+        }
+
+        for (int i = 0; i < entryCounts.Count; i++)
+        {
+            if (entryCounts[i] > 0)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     private void Start()

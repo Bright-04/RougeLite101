@@ -53,6 +53,7 @@ public class FireballSpell : MonoBehaviour
         if (other.TryGetComponent(out IDamageable damageable))
         {
             damageable.TakeDamage((int)damage);
+            DdaTelemetryService.Instance?.RecordDamageDealt(damage, nameof(FireballSpell));
             Release();
         }
     }

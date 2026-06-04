@@ -177,10 +177,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee257c6fa44c094cab63d0a5fd656e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossRoom: 0
   center: {fileID: 6145058250317747221}
   playerSpawn: {fileID: 0}
   exitAnchor: {fileID: 0}
-  spawnProfile: {fileID: 0}
+  spawnProfile: {fileID: 11400000, guid: 971f3652044ba8140b737a9c1f3518ee, type: 2}
   northSocket: {fileID: 4514168389315602798}
   southSocket: {fileID: 4485590131555525349}
   eastSocket: {fileID: 7121299958918177454}

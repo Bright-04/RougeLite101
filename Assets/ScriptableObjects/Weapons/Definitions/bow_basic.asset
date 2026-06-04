@@ -18,11 +18,12 @@ MonoBehaviour:
   <Description>k__BackingField: just a normal wooden bow
   <ItemImage>k__BackingField: {fileID: -7856493677412862020, guid: 027eb54082fb8e341bc8cb53aa1a337c, type: 3}
   modifiersData: []
+  rarity: 0
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   equipmentId: bow_basic
   series: basic
-  tier: 1
   equipmentClass: bow
-  rarity: Common
   tags:
   - Ranged
   - 
@@ -32,8 +33,8 @@ MonoBehaviour:
   gripPointOffset: {x: 0.24, y: 0, z: 0}
   visualScale: 1
   rotationOffsetDegrees: 0
-  damage: 50
-  cooldown: 0.5
+  damage: 12
+  cooldown: 0.6
   knockback: 1
   anticipationDuration: 0.05
   activeDuration: 0.08
