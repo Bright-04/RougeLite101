@@ -17,7 +17,7 @@ public class ShopInventorySO : ScriptableObject
     [Header("Restock")]
     [SerializeField] private int restockMinutes = 30;
 
-    //private DateTime nextRestockTime;
+    [NonSerialized] private DateTime nextRestockTime;
 
     //public event Action<TimeSpan> OnRestockTimeChanged;
 
@@ -146,6 +146,16 @@ public class ShopInventorySO : ScriptableObject
         InformAboutChange();
     }
 
+    private void EnsureNextRestockTimeInitialized()
+    {
+        if (nextRestockTime != default)
+        {
+            return;
+        }
+
+        nextRestockTime = DateTime.UtcNow.AddMinutes(restockMinutes);
+    }
+
     //public DateTime NextRestockTime
     //{
     //    get => nextRestockTime;
@@ -154,11 +164,15 @@ public class ShopInventorySO : ScriptableObject
     // Temporary SetNextRestockTime function, will be replace later
     public void SetNextRestockTime(DateTime value)
     {
-        nextRestockTime = value;
+        nextRestockTime = value.Kind == DateTimeKind.Utc
+            ? value
+            : value.ToUniversalTime();
     }
 
     public ShopSaveEntry CreateSaveEntry()
     {
+        EnsureNextRestockTimeInitialized();
+
         ShopSaveEntry entry = new ShopSaveEntry
         {
             shopId = shopId,
@@ -176,7 +190,7 @@ public class ShopInventorySO : ScriptableObject
             entry.stockEntries.Add(new ShopStockEntry
             {
                 slotIndex = i,
-                currentStock = item.currentStock,
+                currentStock = item.CurrentStock,
                 debugItemName = item.item != null ? item.item.Name : string.Empty
             });
         }
@@ -198,7 +212,14 @@ public class ShopInventorySO : ScriptableObject
             return;
         }
 
-        SetNextRestockTime(new DateTime(entry.nextRestockTicks, DateTimeKind.Utc));
+        if (entry.nextRestockTicks > 0)
+        {
+            SetNextRestockTime(new DateTime(entry.nextRestockTicks, DateTimeKind.Utc));
+        }
+        else
+        {
+            EnsureNextRestockTimeInitialized();
+        }
 
         for (int i = 0; i < entry.stockEntries.Count; i++)
         {
@@ -226,7 +247,7 @@ public class ShopInventorySO : ScriptableObject
                 continue;
             }
 
-            shopItem.currentStock = Mathf.Clamp(stockEntry.currentStock, 0, shopItem.maxStock);
+            shopItem.CurrentStock = Mathf.Clamp(stockEntry.currentStock, 0, shopItem.MaxStock);
         }
 
         InformAboutChange();
