@@ -45,6 +45,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5368193881460728516
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -63,6 +64,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -84,9 +87,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: -8746530135958040549, guid: adfa1005ea76b6e4b859bcbeb14b177d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -96,7 +101,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!70 &5869335851408265401
 CapsuleCollider2D:
@@ -158,7 +162,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -175,13 +179,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 2
+  arrivalDistance: 0.08
   obstacleDetectionDistance: 0.8
   avoidanceForce: 3
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   rayCount: 7
+  enableDebugLogs: 0
   showDebugRays: 0
+  navigationProbeRadius: 0.16
 --- !u!114 &6591106432729160525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,7 +201,105 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e5212c20634bb649b5dbfd4d4d499ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionRange: 10
+  behaviorProfile:
+    preset: 0
+    detectionRange: 6
+    loseInterestRange: 9
+    aggroMemoryDuration: 3.5
+    lostSightGraceTime: 0.8
+    requireLineOfSight: 1
+    chaseSpeedMultiplier: 1
+    wanderSpeedMultiplier: 0.62
+    wanderRadius: 2.5
+    attackRange: 1.2
+    attackExitRange: 1.55
+    meleeHoldExitBuffer: 0.25
+    meleeHoldSpeedMultiplier: 0.55
+    attackDamage: 6
+    attackCooldown: 1.1
+    attackHitRadius: 0.7
+    attackHitOffset: {x: 0, y: 0.45}
+    attackKnockbackForce: 10
+    reactionDelayMin: 0.35
+    reactionDelayMax: 0.8
+    recoverDuration: 0.65
+    hurtDuration: 0.3
+    minThinkInterval: 0.35
+    maxThinkInterval: 0.7
+    pathRefreshIntervalMin: 0.25
+    pathRefreshIntervalMax: 0.45
+    facingLockDuration: 0.22
+    moveIntentLockDuration: 0.28
+    walkablePointAttempts: 8
+    attackWindupDuration: 0.35
+    attackCommitDuration: 0.2
+    idleDurationMin: 1
+    idleDurationMax: 3
+    wanderDurationMin: 1.5
+    wanderDurationMax: 4
+    spawnSnapRadius: 1.5
+    targetSnapRadius: 1.2
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  enableDebugLogs: 0
+  debugStateTransitions: 1
+  debugPerception: 0
+  debugAttack: 0
+  debugChaseZones: 0
+  drawGizmos: 1
+  preset: 0
+  detectionRange: 6
+  loseInterestRange: 9
+  aggroMemoryDuration: 3.5
+  requireLineOfSight: 1
+  lostSightGraceTime: 0.8
+  minThinkInterval: 0.35
+  maxThinkInterval: 0.7
+  pathRefreshIntervalMin: 0.25
+  pathRefreshIntervalMax: 0.45
+  facingLockDuration: 0.22
+  moveIntentLockDuration: 0.28
+  wanderRadius: 2.5
+  walkablePointAttempts: 8
+  idleDurationMin: 1
+  idleDurationMax: 3
+  wanderDurationMin: 1.5
+  wanderDurationMax: 4
+  wanderSpeedMultiplier: 0.62
+  minAggroReactionDelay: 0.35
+  maxAggroReactionDelay: 0.8
+  chaseSpeedMultiplier: 1
+  attackRange: 1.2
+  attackExitRange: 1.55
+  meleeHoldExitBuffer: 0.25
+  meleeHoldSpeedMultiplier: 0.55
+  attackDamage: 6
+  attackHitRadius: 0.7
+  attackHitOffset: {x: 0, y: 0.45}
+  attackKnockbackForce: 10
+  attackWindupDuration: 0.35
+  attackCommitDuration: 0.2
+  attackRecoverDuration: 0.65
+  attackCooldown: 1.1
+  hurtStunDuration: 0.3
+  spawnSnapRadius: 1.5
+  targetSnapRadius: 1.2
+  blockedDuration: 1
+  blockedMoveThreshold: 0.01
+  minCombatMoveBeforeStuck: 0.6
+  stuckDuration: 0.5
+  stuckCooldown: 1.5
+  stuckResolveRadius: 0.9
+  stuckSpeedMultiplier: 0.68
+  repositionDurationMin: 0.55
+  repositionDurationMax: 1.1
+  repositionDistanceMin: 0.75
+  repositionDistanceMax: 1.65
+  repositionSpeedMultiplier: 0.72
+  crowdingRange: 0.7
+  chaseRepositionChance: 0.18
+  hurtRepositionChance: 0.7
 --- !u!114 &4038883712172045914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,6 +317,7 @@ MonoBehaviour:
   restoreDefaultMatTime: 0.2
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   forceColorFlash: 0
+  targetRenderer: {fileID: 0}
 --- !u!95 &8641304617333191631
 Animator:
   serializedVersion: 7
@@ -247,7 +353,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   expReward: 3
-  startingHealth: 30
+  goldReward: 25
+  startingHealth: 32
   healthBar: {fileID: 0}
 --- !u!114 &6547125303889819846
 MonoBehaviour:
@@ -269,7 +376,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 875806337206470879}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edcada1bbd80a5148ac64d67d86f1b9d, type: 3}
   m_Name: 
@@ -304,3 +411,5 @@ MonoBehaviour:
   deathKnockbackForce: 20
   fadeOutDuration: 0.5
   deathDelay: 0.1
+  disableAnimatorOnDeath: 1
+  fadeRenderers: []

@@ -401,7 +401,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
@@ -423,7 +423,7 @@ MonoBehaviour:
   avoidanceForce: 3
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   rayCount: 7
   enableDebugLogs: 0
   showDebugRays: 0
@@ -440,9 +440,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e5212c20634bb649b5dbfd4d4d499ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  behaviorProfile:
+    preset: 1
+    detectionRange: 5.5
+    loseInterestRange: 8.5
+    aggroMemoryDuration: 3.5
+    lostSightGraceTime: 0.8
+    requireLineOfSight: 1
+    chaseSpeedMultiplier: 0.9
+    wanderSpeedMultiplier: 0.62
+    wanderRadius: 2.5
+    attackRange: 1.2
+    attackExitRange: 1.55
+    meleeHoldExitBuffer: 0.25
+    meleeHoldSpeedMultiplier: 0.55
+    attackDamage: 5
+    attackCooldown: 1.35
+    attackHitRadius: 0.7
+    attackHitOffset: {x: 0, y: 0.45}
+    attackKnockbackForce: 10
+    reactionDelayMin: 0.35
+    reactionDelayMax: 0.8
+    recoverDuration: 0.65
+    hurtDuration: 0.3
+    minThinkInterval: 0.35
+    maxThinkInterval: 0.7
+    pathRefreshIntervalMin: 0.25
+    pathRefreshIntervalMax: 0.45
+    facingLockDuration: 0.22
+    moveIntentLockDuration: 0.28
+    walkablePointAttempts: 8
+    attackWindupDuration: 0.35
+    attackCommitDuration: 0.2
+    idleDurationMin: 1
+    idleDurationMax: 3
+    wanderDurationMin: 1.5
+    wanderDurationMax: 4
+    spawnSnapRadius: 1.5
+    targetSnapRadius: 1.2
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  enableDebugLogs: 0
+  debugStateTransitions: 1
+  debugPerception: 0
+  debugAttack: 0
+  debugChaseZones: 0
+  drawGizmos: 1
   preset: 1
-  detectionRange: 10
-  loseInterestRange: 10.5
+  detectionRange: 5.5
+  loseInterestRange: 8.5
   aggroMemoryDuration: 3.5
   requireLineOfSight: 1
   lostSightGraceTime: 0.8
@@ -461,20 +508,22 @@ MonoBehaviour:
   wanderSpeedMultiplier: 0.62
   minAggroReactionDelay: 0.35
   maxAggroReactionDelay: 0.8
-  chaseSpeedMultiplier: 0.82
-  attackRange: 0.9
-  attackExitRange: 1.3
-  attackDamage: 10
+  chaseSpeedMultiplier: 0.9
+  attackRange: 1.2
+  attackExitRange: 1.55
+  meleeHoldExitBuffer: 0.25
+  meleeHoldSpeedMultiplier: 0.55
+  attackDamage: 5
   attackHitRadius: 0.7
   attackHitOffset: {x: 0, y: 0.45}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 0
   attackKnockbackForce: 10
   attackWindupDuration: 0.35
   attackCommitDuration: 0.2
   attackRecoverDuration: 0.65
-  attackCooldown: 1.25
+  attackCooldown: 1.35
+  hurtStunDuration: 0.3
+  spawnSnapRadius: 1.5
+  targetSnapRadius: 1.2
   blockedDuration: 0.35
   blockedMoveThreshold: 0.025
   minCombatMoveBeforeStuck: 0.6
@@ -482,15 +531,14 @@ MonoBehaviour:
   stuckCooldown: 1.5
   stuckResolveRadius: 0.9
   stuckSpeedMultiplier: 0.68
-  hurtStunDuration: 0.3
-  enableDebugLogs: 0
-  debugStateTransitions: 1
-  debugPerception: 0
-  debugStuck: 0
-  debugAttack: 0
-  drawGizmos: 1
-  spawnSnapRadius: 1.5
-  targetSnapRadius: 1.2
+  repositionDurationMin: 0.55
+  repositionDurationMax: 1.1
+  repositionDistanceMin: 0.75
+  repositionDistanceMax: 1.65
+  repositionSpeedMultiplier: 0.72
+  crowdingRange: 0.7
+  chaseRepositionChance: 0.18
+  hurtRepositionChance: 0.7
 --- !u!114 &6108476653847564283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -517,7 +565,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   expReward: 3
   goldReward: 25
-  startingHealth: 30
+  startingHealth: 34
   healthBar: {fileID: 0}
 --- !u!114 &5777189423867992261
 MonoBehaviour:
