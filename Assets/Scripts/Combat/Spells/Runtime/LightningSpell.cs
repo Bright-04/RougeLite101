@@ -16,6 +16,7 @@ public class LightningSpell : MonoBehaviour
             if (hit.TryGetComponent<IDamageable>(out var damageable))
             {
                 damageable.TakeDamage((int)damage);
+                DdaTelemetryService.Instance?.RecordDamageDealt(damage, nameof(LightningSpell));
             }
         }
 

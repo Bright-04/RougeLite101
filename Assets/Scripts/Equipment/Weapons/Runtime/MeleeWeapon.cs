@@ -437,7 +437,9 @@ public class MeleeWeapon : Weapon
         }
 
         proceduralHitTargets.Add(damageableComponent.gameObject.GetInstanceID());
-        damageable.TakeDamage(ComputeFinalDamage());
+        int finalDamage = ComputeFinalDamage();
+        damageable.TakeDamage(finalDamage);
+        DdaTelemetryService.Instance?.RecordDamageDealt(finalDamage, nameof(MeleeWeapon));
 
         if (weaponDefinition != null && weaponDefinition.Knockback > 0f)
         {

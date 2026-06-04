@@ -196,6 +196,7 @@ public class RoomTemplate : MonoBehaviour
             }
         }
         invisibleWalls.Clear();
+        DdaTelemetryService.Instance?.EndRoom(this);
 
         Debug.Log($"[RoomTemplate] Phòng {gameObject.name} đã được dọn sạch! Vô hiệu hoá tường tàng hình.");
     }
@@ -253,6 +254,7 @@ public class RoomTemplate : MonoBehaviour
         }
 
         // KHÓA CỬA NGAY LẬP TỨC TRƯỚC KHI DELAY CHỜ QUÁI ĐẺ
+        DdaTelemetryService.Instance?.BeginRoom(this);
         LockDoors();
 
         yield return new WaitForSeconds(spawnProfile.initialDelay);

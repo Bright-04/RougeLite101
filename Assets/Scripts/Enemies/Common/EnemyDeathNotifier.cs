@@ -12,6 +12,7 @@ public class EnemyDeathNotifier : MonoBehaviour
     {
         if (_sent) return;
         _sent = true;
+        DdaTelemetryService.Instance?.RecordEnemyKilled(gameObject.name);
         Died?.Invoke(this);
     }
 
