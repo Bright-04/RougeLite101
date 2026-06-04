@@ -13,15 +13,23 @@ public class SlimePathFinding : MonoBehaviour
     [SerializeField] private int rayCount = 7;
 
     [Header("Debug")]
+    [SerializeField] private bool enableDebugLogs = false;
     [SerializeField] private bool showDebugRays = false;
+    [SerializeField] private float navigationProbeRadius = 0.16f;
 
     private Rigidbody2D rb;
+    private Collider2D selfCollider;
     private Knockback knockback;
+    private DungeonNavigationProvider navigationProvider;
     private Vector2 currentTargetPosition;
     private bool hasTarget;
     private Vector2 currentMoveDirection;
     private float currentMoveSpeed;
     private float speedMultiplier = 1f;
+    private bool wasBlockedByNavigation;
+    private string lastStopReason;
+    private float nextMovementDebugLogTime;
+    private float nextOpposingMoveLogTime;
 
     public bool HasTarget => hasTarget;
     public Vector2 CurrentTargetPosition => currentTargetPosition;
@@ -29,12 +37,19 @@ public class SlimePathFinding : MonoBehaviour
     public float CurrentMoveSpeed => currentMoveSpeed;
     public float BaseMoveSpeed => moveSpeed;
     public float SpeedMultiplier => speedMultiplier;
+    public bool WasBlockedByNavigation => wasBlockedByNavigation;
     public bool IsMoving => currentMoveSpeed > 0.01f && currentMoveDirection.sqrMagnitude > 0.0001f;
 
     private void Awake()
     {
         knockback = GetComponent<Knockback>();
         rb = GetComponent<Rigidbody2D>();
+        selfCollider = GetComponent<Collider2D>();
+        navigationProvider = GetComponent<DungeonNavigationProvider>();
+        if (navigationProvider == null)
+        {
+            navigationProvider = FindFirstObjectByType<DungeonNavigationProvider>();
+        }
 
         if (rb != null)
         {
@@ -47,18 +62,25 @@ public class SlimePathFinding : MonoBehaviour
 
         if (obstacleLayer == 0)
         {
-            obstacleLayer = LayerMask.GetMask("Default", "Environment", "Obstacle");
+            obstacleLayer = LayerMask.GetMask("InvisibleWall", "Obstacle", "Environment");
         }
-        else
-        {
-            obstacleLayer |= LayerMask.GetMask("Default", "Environment", "Obstacle");
-        }
+
+        LogObstacleMask();
     }
 
     private void FixedUpdate()
     {
         currentMoveDirection = Vector2.zero;
         currentMoveSpeed = 0f;
+        wasBlockedByNavigation = false;
+        if (navigationProvider == null)
+        {
+            navigationProvider = GetComponent<DungeonNavigationProvider>();
+            if (navigationProvider == null)
+            {
+                navigationProvider = FindFirstObjectByType<DungeonNavigationProvider>();
+            }
+        }
 
         if (rb == null || (knockback != null && knockback.gettingKnockedBack) || !hasTarget)
         {
@@ -69,7 +91,7 @@ public class SlimePathFinding : MonoBehaviour
         float distanceToTarget = toTarget.magnitude;
         if (distanceToTarget <= arrivalDistance)
         {
-            StopMoving();
+            StopMoving("ReachedTarget");
             return;
         }
 
@@ -77,20 +99,42 @@ public class SlimePathFinding : MonoBehaviour
         Vector2 unstuckDirection = CheckIfStuck();
         Vector2 avoidance = CalculateObstacleAvoidance(desiredDirection);
 
+        Vector2 adjustedAvoidance = AdjustAvoidance(desiredDirection, avoidance);
         Vector2 finalDirection;
         if (unstuckDirection != Vector2.zero)
         {
-            finalDirection = (unstuckDirection * 2f + avoidance).normalized;
+            finalDirection = (desiredDirection + unstuckDirection * 0.6f + adjustedAvoidance * 0.25f).normalized;
         }
         else
         {
-            finalDirection = (desiredDirection + avoidance * 1.5f).normalized;
+            finalDirection = (desiredDirection + adjustedAvoidance * 0.4f).normalized;
+        }
+
+        float directionDot = Vector2.Dot(finalDirection, desiredDirection);
+        if (directionDot < 0.2f)
+        {
+            LogOpposingMove(desiredDirection, adjustedAvoidance, finalDirection, directionDot);
+            finalDirection = desiredDirection;
+            directionDot = 1f;
         }
 
         currentMoveDirection = finalDirection;
         currentMoveSpeed = moveSpeed * Mathf.Max(0f, speedMultiplier);
 
         Vector2 newPosition = rb.position + finalDirection * (currentMoveSpeed * Time.fixedDeltaTime);
+        float movedDistance = Vector2.Distance(rb.position, newPosition);
+        if (navigationProvider != null && !navigationProvider.IsWalkable(newPosition, selfCollider, navigationProbeRadius))
+        {
+            wasBlockedByNavigation = true;
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[SlimePathFinding] {name} nav blocked nextPos={newPosition:F2} target={currentTargetPosition:F2}", this);
+            }
+            StopMoving("NavigationBlocked");
+            return;
+        }
+
+        LogMovementDiagnostic(desiredDirection, adjustedAvoidance, finalDirection, directionDot, movedDistance);
         rb.MovePosition(newPosition);
     }
 
@@ -157,10 +201,31 @@ public class SlimePathFinding : MonoBehaviour
         return avoidance;
     }
 
+    private Vector2 AdjustAvoidance(Vector2 desiredDirection, Vector2 avoidance)
+    {
+        if (avoidance.sqrMagnitude <= 0.0001f)
+        {
+            return Vector2.zero;
+        }
+
+        Vector2 avoidanceDirection = avoidance.normalized;
+        float oppositeDot = Vector2.Dot(avoidanceDirection, desiredDirection);
+        if (oppositeDot < -0.25f)
+        {
+            avoidance *= 0.2f;
+        }
+
+        return Vector2.ClampMagnitude(avoidance, avoidanceForce);
+    }
+
     public void MoveTo(Vector2 targetPosition)
     {
         currentTargetPosition = targetPosition;
         hasTarget = true;
+        if (enableDebugLogs)
+        {
+            Debug.Log($"[SlimePathFinding] {name} MoveTo target={targetPosition:F2}", this);
+        }
     }
 
     public void SetSpeedMultiplier(float multiplier)
@@ -168,11 +233,80 @@ public class SlimePathFinding : MonoBehaviour
         speedMultiplier = Mathf.Max(0f, multiplier);
     }
 
-    public void StopMoving()
+    public void StopMoving(string reason = null)
     {
+        if (enableDebugLogs && hasTarget && !string.Equals(lastStopReason, reason))
+        {
+            Debug.Log($"[SlimePathFinding] {name} StopMoving reason={reason ?? "None"} target={currentTargetPosition:F2}", this);
+        }
+
         hasTarget = false;
         currentMoveDirection = Vector2.zero;
         currentMoveSpeed = 0f;
+        lastStopReason = reason;
+    }
+
+    private void LogObstacleMask()
+    {
+        if (!enableDebugLogs && !showDebugRays)
+        {
+            return;
+        }
+
+        Debug.Log($"[SlimePathFinding] {name} obstacleLayer={DescribeMask(obstacleLayer)}", this);
+    }
+
+    private void LogMovementDiagnostic(Vector2 desiredDirection, Vector2 avoidance, Vector2 finalDirection, float directionDot, float movedDistance)
+    {
+        if (!enableDebugLogs || Time.time < nextMovementDebugLogTime)
+        {
+            return;
+        }
+
+        nextMovementDebugLogTime = Time.time + 0.5f;
+        Debug.Log(
+            $"[SlimePathFinding] {name} move target={currentTargetPosition:F2} desired={desiredDirection:F2} avoidMag={avoidance.magnitude:F2} final={finalDirection:F2} dot={directionDot:F2} moved={movedDistance:F3} navBlocked={wasBlockedByNavigation}",
+            this);
+    }
+
+    private void LogOpposingMove(Vector2 desiredDirection, Vector2 avoidance, Vector2 finalDirection, float directionDot)
+    {
+        if (!enableDebugLogs || Time.time < nextOpposingMoveLogTime)
+        {
+            return;
+        }
+
+        nextOpposingMoveLogTime = Time.time + 1f;
+        Debug.LogWarning(
+            $"[SlimePathFinding] {name} opposing move desired={desiredDirection:F2} avoidMag={avoidance.magnitude:F2} final={finalDirection:F2} dot={directionDot:F2} target={currentTargetPosition:F2}",
+            this);
+    }
+
+    private static string DescribeMask(LayerMask mask)
+    {
+        if (mask.value == 0)
+        {
+            return "None";
+        }
+
+        string names = string.Empty;
+        for (int i = 0; i < 32; i++)
+        {
+            if ((mask.value & (1 << i)) == 0)
+            {
+                continue;
+            }
+
+            string layerName = LayerMask.LayerToName(i);
+            if (string.IsNullOrEmpty(layerName))
+            {
+                layerName = i.ToString();
+            }
+
+            names = string.IsNullOrEmpty(names) ? layerName : $"{names}|{layerName}";
+        }
+
+        return names;
     }
 
     private void OnDrawGizmosSelected()
