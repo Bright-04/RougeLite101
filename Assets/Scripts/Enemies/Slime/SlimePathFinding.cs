@@ -2,6 +2,15 @@ using UnityEngine;
 
 public class SlimePathFinding : MonoBehaviour
 {
+    public enum MovementStatus
+    {
+        Idle,
+        Moving,
+        Reached,
+        Blocked,
+        Failed
+    }
+
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private float arrivalDistance = 0.08f;
@@ -30,6 +39,7 @@ public class SlimePathFinding : MonoBehaviour
     private string lastStopReason;
     private float nextMovementDebugLogTime;
     private float nextOpposingMoveLogTime;
+    private MovementStatus currentStatus = MovementStatus.Idle;
 
     public bool HasTarget => hasTarget;
     public Vector2 CurrentTargetPosition => currentTargetPosition;
@@ -39,6 +49,7 @@ public class SlimePathFinding : MonoBehaviour
     public float SpeedMultiplier => speedMultiplier;
     public bool WasBlockedByNavigation => wasBlockedByNavigation;
     public bool IsMoving => currentMoveSpeed > 0.01f && currentMoveDirection.sqrMagnitude > 0.0001f;
+    public MovementStatus CurrentStatus => currentStatus;
 
     private void Awake()
     {
@@ -120,12 +131,14 @@ public class SlimePathFinding : MonoBehaviour
 
         currentMoveDirection = finalDirection;
         currentMoveSpeed = moveSpeed * Mathf.Max(0f, speedMultiplier);
+        currentStatus = MovementStatus.Moving;
 
         Vector2 newPosition = rb.position + finalDirection * (currentMoveSpeed * Time.fixedDeltaTime);
         float movedDistance = Vector2.Distance(rb.position, newPosition);
         if (navigationProvider != null && !navigationProvider.IsWalkable(newPosition, selfCollider, navigationProbeRadius))
         {
             wasBlockedByNavigation = true;
+            currentStatus = MovementStatus.Blocked;
             if (enableDebugLogs)
             {
                 Debug.Log($"[SlimePathFinding] {name} nav blocked nextPos={newPosition:F2} target={currentTargetPosition:F2}", this);
@@ -222,6 +235,7 @@ public class SlimePathFinding : MonoBehaviour
     {
         currentTargetPosition = targetPosition;
         hasTarget = true;
+        currentStatus = MovementStatus.Moving;
         if (enableDebugLogs)
         {
             Debug.Log($"[SlimePathFinding] {name} MoveTo target={targetPosition:F2}", this);
@@ -239,6 +253,16 @@ public class SlimePathFinding : MonoBehaviour
         {
             Debug.Log($"[SlimePathFinding] {name} StopMoving reason={reason ?? "None"} target={currentTargetPosition:F2}", this);
         }
+
+        currentStatus = reason switch
+        {
+            "ReachedTarget" => MovementStatus.Reached,
+            "NavigationBlocked" => MovementStatus.Blocked,
+            "TargetNotWalkable" => MovementStatus.Failed,
+            "NoWalkableTarget" => MovementStatus.Failed,
+            "StuckNoWalkableTarget" => MovementStatus.Failed,
+            _ => MovementStatus.Idle
+        };
 
         hasTarget = false;
         currentMoveDirection = Vector2.zero;
