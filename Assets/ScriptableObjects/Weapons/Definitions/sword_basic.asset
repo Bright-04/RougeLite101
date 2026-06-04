@@ -18,11 +18,12 @@ MonoBehaviour:
   <Description>k__BackingField: A normal iron sword
   <ItemImage>k__BackingField: {fileID: 712035800519618848, guid: c9218c59738d4a34f8c917303348dc7f, type: 3}
   modifiersData: []
+  rarity: 0
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   equipmentId: sword_basic
   series: basic
-  tier: 1
   equipmentClass: sword
-  rarity: Common
   tags:
   - Melee
   - 
@@ -32,14 +33,14 @@ MonoBehaviour:
   gripPointOffset: {x: -0.09, y: 0, z: 0}
   visualScale: 1
   rotationOffsetDegrees: 0
-  damage: 50
+  damage: 8
   cooldown: 0.5
   knockback: 6
   anticipationDuration: 0.03
   activeDuration: 0.055
   recoveryDuration: 0.1
   slashArcDegrees: 100
-  slashRange: 15
+  slashRange: 2
   thrustDistance: 1
   thrustWidth: 0.35
   slashVisualExtraAnticipationDegrees: 6
