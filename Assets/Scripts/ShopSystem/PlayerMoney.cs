@@ -22,6 +22,12 @@ public class PlayerMoney : MonoBehaviour
         OnGoldChanged?.Invoke(Gold);
     }
 
+    public void SetGold(int amount)
+    {
+        Gold = Mathf.Max(0, amount);
+        OnGoldChanged?.Invoke(Gold);
+    }
+
     public bool SpendGold(int amount)
     {
         if (Gold < amount)

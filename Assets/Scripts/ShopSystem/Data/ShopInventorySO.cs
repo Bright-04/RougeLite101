@@ -17,7 +17,7 @@ public class ShopInventorySO : ScriptableObject
     [Header("Restock")]
     [SerializeField] private int restockMinutes = 30;
 
-    //private DateTime nextRestockTime;
+    [NonSerialized] private DateTime nextRestockTime;
 
     //public event Action<TimeSpan> OnRestockTimeChanged;
 
@@ -146,13 +146,110 @@ public class ShopInventorySO : ScriptableObject
         InformAboutChange();
     }
 
+    private void EnsureNextRestockTimeInitialized()
+    {
+        if (nextRestockTime != default)
+        {
+            return;
+        }
+
+        nextRestockTime = DateTime.UtcNow.AddMinutes(restockMinutes);
+    }
+
     //public DateTime NextRestockTime
     //{
     //    get => nextRestockTime;
     //}
+    
+    // Temporary SetNextRestockTime function, will be replace later
+    public void SetNextRestockTime(DateTime value)
+    {
+        nextRestockTime = value.Kind == DateTimeKind.Utc
+            ? value
+            : value.ToUniversalTime();
+    }
 
-    //public void SetNextRestockTime(DateTime value)
-    //{
-    //    nextRestockTime = value;
-    //}
+    public ShopSaveEntry CreateSaveEntry()
+    {
+        EnsureNextRestockTimeInitialized();
+
+        ShopSaveEntry entry = new ShopSaveEntry
+        {
+            shopId = shopId,
+            nextRestockTicks = nextRestockTime.Ticks
+        };
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            ShopItem item = items[i];
+            if (item == null || item.IsEmpty)
+            {
+                continue;
+            }
+
+            entry.stockEntries.Add(new ShopStockEntry
+            {
+                slotIndex = i,
+                currentStock = item.CurrentStock,
+                debugItemName = item.item != null ? item.item.Name : string.Empty
+            });
+        }
+
+        return entry;
+    }
+
+    public void ApplySaveEntry(ShopSaveEntry entry)
+    {
+        if (entry == null)
+        {
+            Debug.LogWarning($"ShopInventorySO '{name}': Cannot apply null save entry.", this);
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(entry.shopId) && !string.Equals(entry.shopId, shopId, StringComparison.Ordinal))
+        {
+            Debug.LogWarning($"ShopInventorySO '{name}': Save entry shopId '{entry.shopId}' does not match '{shopId}'.", this);
+            return;
+        }
+
+        if (entry.nextRestockTicks > 0)
+        {
+            SetNextRestockTime(new DateTime(entry.nextRestockTicks, DateTimeKind.Utc));
+        }
+        else
+        {
+            EnsureNextRestockTimeInitialized();
+        }
+
+        for (int i = 0; i < entry.stockEntries.Count; i++)
+        {
+            ShopStockEntry stockEntry = entry.stockEntries[i];
+            if (stockEntry.slotIndex < 0 || stockEntry.slotIndex >= items.Count)
+            {
+                Debug.LogWarning($"ShopInventorySO '{name}': Stock entry index {stockEntry.slotIndex} is out of range.", this);
+                continue;
+            }
+
+            ShopItem shopItem = items[stockEntry.slotIndex];
+            if (shopItem == null || shopItem.IsEmpty)
+            {
+                Debug.LogWarning($"ShopInventorySO '{name}': Stock entry index {stockEntry.slotIndex} points to an empty slot.", this);
+                continue;
+            }
+
+            string actualName = shopItem.item != null ? shopItem.item.Name : string.Empty;
+            if (!string.IsNullOrWhiteSpace(stockEntry.debugItemName)
+                && !string.Equals(stockEntry.debugItemName, actualName, StringComparison.Ordinal))
+            {
+                Debug.LogWarning(
+                    $"ShopInventorySO '{name}': Stock entry index {stockEntry.slotIndex} expected '{stockEntry.debugItemName}' but found '{actualName}'. Skipping this stock entry.",
+                    this);
+                continue;
+            }
+
+            shopItem.CurrentStock = Mathf.Clamp(stockEntry.currentStock, 0, shopItem.MaxStock);
+        }
+
+        InformAboutChange();
+    }
 }

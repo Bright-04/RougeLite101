@@ -51,6 +51,7 @@ public class DamageSource : MonoBehaviour
             }
 
             damageable.TakeDamage(Mathf.RoundToInt(finalDamage));
+            DdaTelemetryService.Instance?.RecordDamageDealt(finalDamage, nameof(DamageSource));
         }
     }
 

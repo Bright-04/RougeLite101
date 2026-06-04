@@ -477,6 +477,11 @@ public class PlayerStats : MonoBehaviour
         float reducedDamage = Mathf.Max(0, damage - GetDefense());
         currentHP -= reducedDamage;
 
+        if (reducedDamage > 0f)
+        {
+            DdaTelemetryService.Instance?.RecordDamageTaken(reducedDamage);
+        }
+
         Debug.Log($"Player took {reducedDamage} damage (from {damage}). HP: {currentHP}/{maxHP}");
 
         damageTimer = damageCooldown;
@@ -597,8 +602,14 @@ public class PlayerStats : MonoBehaviour
     /// <summary>
     /// Load data từ PlayerStatsData vào PlayerStats
     /// </summary>
-    public void LoadFromData(PlayerStatsData data)
+    public void LoadFromData(PlayerStatsSaveData data)
     {
+        if (data == null)
+        {
+            Debug.LogWarning("PlayerStats: LoadFromData called with null data.", this);
+            return;
+        }
+
         // reset buffs
         ResetAllBuffs();
 
@@ -630,34 +641,6 @@ public class PlayerStats : MonoBehaviour
         currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
-
-        if (equipmentManager == null)
-        {
-            equipmentManager = FindAnyObjectByType<EquipmentManager>();
-        }
-
-        //if (equipmentController == null)
-        //{
-        //    equipmentController = GetComponent<EquipmentController>();
-        //}
-
-        //if (equipmentController != null)
-        //{
-        //    equipmentController.LoadArmor(data.shieldArmorId, data.helmetArmorId, data.greavesArmorId, data.bootsArmorId);
-        //}
-
-        if (equipmentManager != null)
-        {
-            EquipmentManager.WeaponSlot loadedSlot = data.activeSlot == (int)EquipmentManager.WeaponSlot.Sub
-                ? EquipmentManager.WeaponSlot.Sub
-                : EquipmentManager.WeaponSlot.Main;
-
-            equipmentManager.LoadWeapons(data.mainWeaponId, data.subWeaponId, loadedSlot);
-        }
-        else
-        {
-            Debug.LogWarning("PlayerStats: EquipmentManager not found while loading weapon data.");
-        }
 
         Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
     }
