@@ -22,7 +22,9 @@ GameObject:
   - component: {fileID: 6449599854977480468}
   - component: {fileID: -4104276699102849048}
   - component: {fileID: 7707758155450303520}
-  - component: {fileID: 3348738501711190917}
+  - component: {fileID: 8703753072280480964}
+  - component: {fileID: 7881785789551820743}
+  - component: {fileID: 4224413695501365352}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -221,24 +223,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   equipmentManager: {fileID: 0}
+  inventoryController: {fileID: 0}
+  fallbackHubSceneName: GameHome
   maxHP: 100
   currentHP: 0
-  hpRegen: 1
+  hpRegen: 0
   maxMana: 100
   currentMana: 0
   manaRegen: 1
   maxStamina: 50
   currentStamina: 0
   staminaRegen: 2
-  attackDamage: 10
+  attackDamage: 4
   abilityPower: 5
-  defense: 2
+  defense: 1
   critChance: 0.1
   critDamage: 1.5
   luck: 0
+  damageCooldown: 0.75
+  damageTimer: 0
+  isDead: 0
+  moveSpeed: 10
   currentExp: 0
   levelUpExp: 10
   level: 0
+  buffMaxHP: 0
+  buffHpRegen: 0
+  buffMaxMana: 0
+  buffManaRegen: 0
+  buffMaxStamina: 0
+  buffStaminaRegen: 0
+  buffAttackDamage: 0
+  buffAbilityPower: 0
+  buffDefense: 0
+  buffCritChance: 0
+  buffCritDamage: 0
+  buffLuck: 0
+  buffSpeed: 0
 --- !u!114 &6817578523957917170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,15 +290,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponHolder: {fileID: 1156744918522932290}
   aimPivot: {fileID: 0}
-  weaponPickupModalUI: {fileID: 0}
+  weaponController: {fileID: 0}
   rightHandLocalOffset: {x: 0.08, y: -0.01, z: 0}
   leftHandLocalOffset: {x: -0.08, y: -0.01, z: 0}
   handSwitchDeadZoneX: 0.02
   frontOrderOffset: 1
-  backOrderOffset: -1
   weaponRegistry: {fileID: 11400000, guid: 33e69cf0b17abfb418c7456f649d3b95, type: 2}
   startingMainWeapon: {fileID: 11400000, guid: af94eceb075870343ba0b8d9310339f0, type: 2}
   startingSubWeapon: {fileID: 11400000, guid: 68a110418a3886947ba22ae1e05fe483, type: 2}
+  inventoryController: {fileID: 0}
 --- !u!114 &4215567663166107315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -465,8 +486,10 @@ MonoBehaviour:
   inventoryUI: {fileID: 0}
   safeInventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
   dungeonInventoryData: {fileID: 11400000, guid: 9563c9a8f6befc0418b7b48ef404a27d, type: 2}
+  pickupableItemPrefab: {fileID: 2507520823584168888, guid: 51d1448ffc34f7a4ab1e0c113caf8ddf, type: 3}
+  playerTransform: {fileID: 113293529403524740}
   initialItems: []
---- !u!114 &3348738501711190917
+--- !u!114 &8703753072280480964
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -475,10 +498,39 @@ MonoBehaviour:
   m_GameObject: {fileID: 1918963932709273604}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 29f8eb08454c23d46bad58f2375e8b31, type: 3}
+  m_Script: {fileID: 11500000, guid: e0e115c1ab0256c409efab43f7d6985e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PickUpSystem
-  inventoryData: {fileID: 11400000, guid: e65a96a75de4f864ca809926670297dc, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::ArmorController
+  inventoryController: {fileID: 0}
+--- !u!114 &7881785789551820743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e42c5f88c56df00419c93b600875b684, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMoney
+  startingGold: 500
+--- !u!114 &4224413695501365352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918963932709273604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e116f06d9597949ab0b0d8a342aa46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+  interactRadius: 1.5
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &3247644244558153244
 GameObject:
   m_ObjectHideFlags: 0
@@ -504,7 +556,7 @@ Transform:
   m_GameObject: {fileID: 3247644244558153244}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.01, y: -0.01, z: 0}
+  m_LocalPosition: {x: 0.0538, y: -0.0553, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

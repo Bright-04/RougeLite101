@@ -1,5 +1,7 @@
 # License Information for RougeLite101
 
+_Branch documentation version: branch-neutral reference_
+
 ## Chosen License: MIT License
 
 ### Why MIT License?

@@ -307,5 +307,12 @@ public class BatAI : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawRay(transform.position, chargeDirection * 3f);
         }
+
+        // Visual indicator when charging (also marks field as used)
+        if (isCharging)
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(transform.position, 0.25f);
+        }
     }
 }

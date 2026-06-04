@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62b0026f3a049f9baeabacf1a0e0af7, type: 3}
+  m_Name: iron_shield_upgraded
+  m_EditorClassIdentifier: Assembly-CSharp::ArmorDefinitionSO
+  <IsStackable>k__BackingField: 0
+  <MaxStackSize>k__BackingField: 1
+  <Name>k__BackingField: Iron Shield Upgraded
+  <Description>k__BackingField: A tier 3 iron upgraded.
+  <ItemImage>k__BackingField: {fileID: 5684091495263412165, guid: 51eb8db74842a8d43b76895a5d9f365b, type: 3}
+  modifiersData: []
+  equipmentId: iron_shield_upgraded
+  series: iron
+  tier: 3
+  equipmentClass: shield
+  rarity: Tier 3
+  tags:
+  - iron
+  - upgraded
+  armorType: 0
+  defense: 3
+  maxHealthBonus: 6
+  moveSpeedBonus: -0.03
+  blockCooldown: 0.7
+  blockDuration: 0.25
+

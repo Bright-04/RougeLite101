@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96abb60cbe28dff43acb2819e41a489b, type: 3}
+  m_Name: TestShopInventorySO
+  m_EditorClassIdentifier: Assembly-CSharp::ShopInventorySO
+  shopName: Test shop
+  shopId: Test_shop
+  restockMinutes: 30
+  greeting: Welcome to test shop
+  portraitSprite: {fileID: 8698222127874983672, guid: 28cb41adecbcc2541ad0c2f56ba43f62, type: 3}
+  portraitAnimator: {fileID: 0}
+  items:
+  - item: {fileID: 11400000, guid: e6bbc37ff158dc144adfe5113012489f, type: 2}
+    buyPrice: 10
+    sellPrice: 2
+    currentStock: 78
+    maxStock: 99
+  - item: {fileID: 11400000, guid: 0e8e731ca1b945e45a37e3ec00694de9, type: 2}
+    buyPrice: 10
+    sellPrice: 2
+    currentStock: 88
+    maxStock: 99
+  - item: {fileID: 0}
+    buyPrice: 10
+    sellPrice: 2
+    currentStock: 99
+    maxStock: 99

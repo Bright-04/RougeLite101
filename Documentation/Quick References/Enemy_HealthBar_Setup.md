@@ -1,3 +1,7 @@
+# Enemy HealthBar Setup
+
+_Branch documentation version: branch-neutral reference_
+
 ## Overview
 
 The healthbar system consists of:

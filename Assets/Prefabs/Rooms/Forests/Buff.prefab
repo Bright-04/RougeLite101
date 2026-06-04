@@ -168,8 +168,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StructureRandomizer
   structurePrefab:
-  - {fileID: 8771521562973808768, guid: 61d004395e52e674fb5001b04eb89999, type: 3}
-  - {fileID: 8174633738437757284, guid: 2c322266e06719e4a93cf5257b16fe0e, type: 3}
+  - {fileID: 1687495062873266796, guid: 871996ab7b3a40c498508c99eac10e89, type: 3}
+  - {fileID: 4794678055312684187, guid: b3b8749204632794da737eb3e6ba4a75, type: 3}
 --- !u!1 &3436814769019911595
 GameObject:
   m_ObjectHideFlags: 0
