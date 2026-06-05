@@ -12,10 +12,6 @@ The latest thesis prototype release is:
 
 [RL28 – Latest Capstone Prototype Build](https://github.com/Bright-04/RougeLite101/releases/latest)
 
-Recommended GitHub release tag:
-
-`RL28`
-
 This release represents the latest stabilized prototype build prepared for thesis demonstration, documentation, and evaluation.
 
 ## Thesis Information
