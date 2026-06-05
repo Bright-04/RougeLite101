@@ -1,12 +1,40 @@
 # RougeLite101
 
-RougeLite101 is a Unity 2D top-down roguelite prototype. The current project includes a playable combat loop, procedural dungeon flow, UI and inventory foundations, save-related systems, and early adaptive-difficulty telemetry, while the full AI Director feedback loop is still incomplete.
+RougeLite101 is a Unity 2D top-down roguelite prototype developed for the graduation thesis project:
+
+**Top-Down Roguelite Game Featuring AI-Driven Adaptive Difficulty Scaling**
+
+The project includes a playable combat loop, procedural dungeon flow, UI and inventory foundations, save-related systems, and early adaptive-difficulty telemetry. The full AI Director feedback loop is still incomplete, so the project should be understood as a playable research prototype rather than a finished commercial game.
+
+## Latest Release
+
+The latest thesis prototype release is:
+
+[RL28 – Latest Capstone Prototype Build](https://github.com/Bright-04/RougeLite101/releases/latest)
+
+Recommended GitHub release tag:
+
+`RL28`
+
+This release represents the latest stabilized prototype build prepared for thesis demonstration, documentation, and evaluation.
+
+## Thesis Information
+
+- **Thesis Title:** Top-Down Roguelite Game Featuring AI-Driven Adaptive Difficulty Scaling
+- **Project Name:** RougeLite101
+- **Project Type:** Graduation thesis / capstone prototype
+- **Development Platform:** Unity 2D
+- **Main Research Direction:** Adaptive difficulty in roguelite gameplay using runtime player-performance telemetry
+- **Current Academic Status:** Playable prototype
+- **Instructor:** Prof. Hoàng Văn Dũng
+
+The thesis focuses on designing and implementing a top-down roguelite prototype with procedural dungeon generation, combat encounters, player progression, and a foundation for dynamic difficulty adjustment. The implemented Director system currently collects and evaluates gameplay-related metrics, but the complete feedback loop where enemy behavior dynamically reacts to those metrics remains a future improvement.
 
 ## Project Status
 
 RougeLite101 is currently a playable prototype rather than a finished game.
 
-The current priority is architecture cleanup, reducing redundancy, and stabilizing core systems that already exist in the project. The long-term adaptive-difficulty goal remains part of the design direction, but the full AI Director-driven enemy behavior loop is not complete yet.
+The current priority is stabilizing the systems that already exist, documenting the implemented architecture, and preparing the project for thesis submission and demonstration. The long-term adaptive-difficulty goal remains part of the design direction, but the full AI Director-driven enemy behavior loop is not complete yet.
 
 ## Features
 
@@ -20,6 +48,7 @@ The current priority is architecture cleanup, reducing redundancy, and stabilizi
 - Save and auto-save related systems
 - Run result and progression-related systems
 - Combat metrics and intensity tracking through the Director system
+- Early adaptive-difficulty telemetry foundation
 
 ## Architecture Overview
 
@@ -67,7 +96,7 @@ Non-core scenes also exist in the repository, such as `WeaponAlignmentTest` and 
 ## Requirements
 
 - Unity `6000.3.13f1`
-- Universal Render Pipeline (URP)
+- Universal Render Pipeline, or URP
 - Unity Input System package
 
 ## How to Run
@@ -102,17 +131,27 @@ Some gamepad bindings also exist in the input actions asset, but they are not fu
 ## Known Issues / Work In Progress
 
 - The AI Director currently provides telemetry and intensity tracking, but the full adaptive feedback loop is still incomplete.
+- Enemy behavior does not yet fully react to collected player-performance metrics.
 - Architecture cleanup and responsibility refactoring are ongoing.
 - Some legacy folders, scripts, and older documentation references still exist alongside the current ownership model.
 - System stabilization is still in progress across dungeon, inventory, save, and run-result flows.
+- Some UI, balancing, formatting, and content polish remain prototype-level.
 
 ## Roadmap
 
 - Complete the adaptive difficulty feedback loop
+- Connect Director scoring to runtime enemy, spawn, or encounter adjustment
 - Continue architecture cleanup and responsibility alignment
 - Reduce redundant systems and legacy folder overlap
 - Stabilize save, inventory, and run-result integration
 - Expand content and continue combat tuning
+- Improve thesis-oriented documentation and diagrams
+
+## Academic Note
+
+This repository is maintained primarily as part of a graduation thesis prototype. The goal is to demonstrate system design, implementation, procedural generation, combat gameplay, telemetry collection, and the foundation of adaptive difficulty in a Unity roguelite game.
+
+The project is not intended to represent a fully polished commercial release.
 
 ## License
 
