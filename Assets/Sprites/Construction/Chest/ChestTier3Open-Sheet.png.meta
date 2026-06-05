@@ -1,0 +1,903 @@
+fileFormatVersion: 2
+guid: 08d1221694ddb2b4a9ec5c0c373b666e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 3446107410726493409
+    second: ChestTier3Open-Sheet_0
+  - first:
+      213: -924135148653369128
+    second: ChestTier3Open-Sheet_1
+  - first:
+      213: 4089741018504694119
+    second: ChestTier3Open-Sheet_2
+  - first:
+      213: 5483238547196827192
+    second: ChestTier3Open-Sheet_3
+  - first:
+      213: -8345651420237579967
+    second: ChestTier3Open-Sheet_4
+  - first:
+      213: -4379876755020882629
+    second: ChestTier3Open-Sheet_5
+  - first:
+      213: 3444676908705136879
+    second: ChestTier3Open-Sheet_6
+  - first:
+      213: -3661968973560961463
+    second: ChestTier3Open-Sheet_7
+  - first:
+      213: 898534110644640445
+    second: ChestTier3Open-Sheet_8
+  - first:
+      213: 2808228833282112682
+    second: ChestTier3Open-Sheet_9
+  - first:
+      213: 221131869415765994
+    second: ChestTier3Open-Sheet_10
+  - first:
+      213: -8184065567180986418
+    second: ChestTier3Open-Sheet_11
+  - first:
+      213: -3731939953462631382
+    second: ChestTier3Open-Sheet_12
+  - first:
+      213: 7177216583073363053
+    second: ChestTier3Open-Sheet_13
+  - first:
+      213: 1114666998570257580
+    second: ChestTier3Open-Sheet_14
+  - first:
+      213: 416509554384969133
+    second: ChestTier3Open-Sheet_15
+  - first:
+      213: -4616150957759440703
+    second: ChestTier3Open-Sheet_16
+  - first:
+      213: -4991926286287715020
+    second: ChestTier3Open-Sheet_17
+  - first:
+      213: -793299744397206074
+    second: ChestTier3Open-Sheet_18
+  - first:
+      213: -4460668625500712814
+    second: ChestTier3Open-Sheet_19
+  - first:
+      213: 378746135313702589
+    second: ChestTier3Open-Sheet_20
+  - first:
+      213: 5382234338173787018
+    second: ChestTier3Open-Sheet_21
+  - first:
+      213: 7145178443042318197
+    second: ChestTier3Open-Sheet_22
+  - first:
+      213: -983857321942854963
+    second: ChestTier3Open-Sheet_23
+  - first:
+      213: 1527164943790188555
+    second: ChestTier3Open-Sheet_24
+  - first:
+      213: -6424879526896197297
+    second: ChestTier3Open-Sheet_25
+  - first:
+      213: 781886249651057240
+    second: ChestTier3Open-Sheet_26
+  - first:
+      213: 8479999329128178029
+    second: ChestTier3Open-Sheet_27
+  - first:
+      213: 7524921416312082591
+    second: ChestTier3Open-Sheet_28
+  - first:
+      213: -1876102089465442930
+    second: ChestTier3Open-Sheet_29
+  - first:
+      213: 1951893058876780094
+    second: ChestTier3Open-Sheet_30
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 866
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ec913a8e6803df20800000000000000
+      internalID: 3446107410726493409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 866
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d820148affcc23f0800000000000000
+      internalID: -924135148653369128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 461
+        y: 866
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7690157b9cda1c830800000000000000
+      internalID: 4089741018504694119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 661
+        y: 866
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83655604860681c40800000000000000
+      internalID: 5483238547196827192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 861
+        y: 866
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 149318d104a4e2c80800000000000000
+      internalID: -8345651420237579967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 1061
+        y: 866
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b3d5df00c4d8733c0800000000000000
+      internalID: -4379876755020882629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 61
+        y: 666
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe04c55d563fdcf20800000000000000
+      internalID: 3444676908705136879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 261
+        y: 666
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 946a568de921e2dc0800000000000000
+      internalID: -3661968973560961463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 461
+        y: 666
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dba9b83530c387c00800000000000000
+      internalID: 898534110644640445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 661
+        y: 666
+        width: 78
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aac3ac7ce35d8f620800000000000000
+      internalID: 2808228833282112682
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 861
+        y: 666
+        width: 78
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae77b0d734e911300800000000000000
+      internalID: 221131869415765994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 666
+        width: 80
+        height: 47
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec7eba94abb5c6e80800000000000000
+      internalID: -8184065567180986418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 466
+        width: 80
+        height: 48
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a24a5ce826c753cc0800000000000000
+      internalID: -3731939953462631382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 466
+        width: 80
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d64712ea4789a9360800000000000000
+      internalID: 7177216583073363053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 466
+        width: 80
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cac81acbab7187f00800000000000000
+      internalID: 1114666998570257580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_15
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 466
+        width: 80
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dad1ca2ab3db7c500800000000000000
+      internalID: 416509554384969133
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 860
+        y: 466
+        width: 81
+        height: 69
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c85b2d492320ffb0800000000000000
+      internalID: -4616150957759440703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 1056
+        y: 466
+        width: 86
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 435c2e0bd7d19bab0800000000000000
+      internalID: -4991926286287715020
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 246
+        y: 266
+        width: 102
+        height: 96
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 290dc4cc4858812c0800000000000000
+      internalID: -4460668625500712814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 444
+        y: 266
+        width: 105
+        height: 101
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8b12c04d9981ba40800000000000000
+      internalID: 5382234338173787018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 261
+        width: 94
+        height: 99
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 577e05aefe5c82360800000000000000
+      internalID: 7145178443042318197
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 266
+        width: 81
+        height: 63
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b082b04dc64913510800000000000000
+      internalID: 1527164943790188555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 860
+        y: 266
+        width: 81
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f412caa5c1e36d6a0800000000000000
+      internalID: -6424879526896197297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_26
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 266
+        width: 81
+        height: 63
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 852b635c661d9da00800000000000000
+      internalID: 781886249651057240
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_27
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 66
+        width: 81
+        height: 63
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d616c3cf5720fa570800000000000000
+      internalID: 8479999329128178029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_28
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 66
+        width: 81
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f90d20ec824ed6860800000000000000
+      internalID: 7524921416312082591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_29
+      rect:
+        serializedVersion: 2
+        x: 460
+        y: 66
+        width: 81
+        height: 63
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8d4b03f61fb6f5e0800000000000000
+      internalID: -1876102089465442930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_30
+      rect:
+        serializedVersion: 2
+        x: 660
+        y: 66
+        width: 81
+        height: 63
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3ea6ed3564861b10800000000000000
+      internalID: 1951893058876780094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 329
+        width: 4
+        height: 10
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d386073b9782cc14ca010e644b328a80
+      internalID: 378746135313702589
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier3Open-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 329
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f237da9617941a844b60f17bf24d0fff
+      internalID: -983857321942854963
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 3afd5702309afa4448e1884ab7b200f2
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      ChestTier3Open-Sheet_0: 3446107410726493409
+      ChestTier3Open-Sheet_1: -924135148653369128
+      ChestTier3Open-Sheet_10: 221131869415765994
+      ChestTier3Open-Sheet_11: -8184065567180986418
+      ChestTier3Open-Sheet_12: -3731939953462631382
+      ChestTier3Open-Sheet_13: 7177216583073363053
+      ChestTier3Open-Sheet_14: 1114666998570257580
+      ChestTier3Open-Sheet_15: 416509554384969133
+      ChestTier3Open-Sheet_16: -4616150957759440703
+      ChestTier3Open-Sheet_17: -4991926286287715020
+      ChestTier3Open-Sheet_18: -793299744397206074
+      ChestTier3Open-Sheet_19: -4460668625500712814
+      ChestTier3Open-Sheet_2: 4089741018504694119
+      ChestTier3Open-Sheet_20: 378746135313702589
+      ChestTier3Open-Sheet_21: 5382234338173787018
+      ChestTier3Open-Sheet_22: 7145178443042318197
+      ChestTier3Open-Sheet_23: -983857321942854963
+      ChestTier3Open-Sheet_24: 1527164943790188555
+      ChestTier3Open-Sheet_25: -6424879526896197297
+      ChestTier3Open-Sheet_26: 781886249651057240
+      ChestTier3Open-Sheet_27: 8479999329128178029
+      ChestTier3Open-Sheet_28: 7524921416312082591
+      ChestTier3Open-Sheet_29: -1876102089465442930
+      ChestTier3Open-Sheet_3: 5483238547196827192
+      ChestTier3Open-Sheet_30: 1951893058876780094
+      ChestTier3Open-Sheet_4: -8345651420237579967
+      ChestTier3Open-Sheet_5: -4379876755020882629
+      ChestTier3Open-Sheet_6: 3444676908705136879
+      ChestTier3Open-Sheet_7: -3661968973560961463
+      ChestTier3Open-Sheet_8: 898534110644640445
+      ChestTier3Open-Sheet_9: 2808228833282112682
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

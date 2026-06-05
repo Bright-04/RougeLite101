@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class Chest : MonoBehaviour
 {
@@ -8,15 +9,30 @@ public class Chest : MonoBehaviour
     [SerializeField] private GameObject pickableItemPrefab;
     [SerializeField] private ItemSO[] possibleItems;
 
+    [Header("Chest Tier")]
+    [SerializeField] private ChestTier chestTier = ChestTier.Tier1;
+
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string openTriggerName = "Open";
+    [SerializeField] private float dropDelay = 0.4f;
+
     private bool playerInRange;
     private bool opened;
     private PlayerControls playerControls;
     private GameObject player;
 
+
     private void Start()
     {
         playerControls = InputManager.Instance.Controls;
         playerControls.Combat.Interact.performed += OnInteract;
+        if (animator == null)
+        {
+            animator = GetComponent<Animator>();
+        }
+
+        Debug.Log("Chest animator = " + animator);
     }
 
     private void OnDestroy()
@@ -50,7 +66,7 @@ public class Chest : MonoBehaviour
         if (!playerInRange || opened)
             return;
 
-        OpenChest();
+        StartCoroutine(OpenChestRoutine());
     }
 
     private void OpenChest()
@@ -58,7 +74,6 @@ public class Chest : MonoBehaviour
         if (pickableItemPrefab == null || possibleItems == null || possibleItems.Length == 0)
             return;
 
-        opened = true;
 
         ItemSO chosenItem = GetRandomItemByRarity(player);
 
@@ -130,18 +145,47 @@ public class Chest : MonoBehaviour
     {
         float roll = Random.Range(0f, 100f);
 
-        if (roll < 1f)
-            return Rarity.Legendary;
+        switch (chestTier)
+        {
+            case ChestTier.Tier1:
+                // Legendary 0.5%, Epic 4.5%, Rare 15%, Uncommon 30%, Common 50%
+                if (roll < 0.5f) return Rarity.Legendary;
+                if (roll < 5f) return Rarity.Epic;
+                if (roll < 20f) return Rarity.Rare;
+                if (roll < 50f) return Rarity.Uncommon;
+                return Rarity.Common;
 
-        if (roll < 10f)
-            return Rarity.Epic;
+            case ChestTier.Tier2:
+                // Legendary 1%, Epic 9%, Rare 20%, Uncommon 30%, Common 40%
+                if (roll < 1f) return Rarity.Legendary;
+                if (roll < 10f) return Rarity.Epic;
+                if (roll < 30f) return Rarity.Rare;
+                if (roll < 60f) return Rarity.Uncommon;
+                return Rarity.Common;
 
-        if (roll < 30f)
-            return Rarity.Rare;
-
-        if (roll < 60f)
-            return Rarity.Uncommon;
+            case ChestTier.Tier3:
+                // Legendary 3%, Epic 17%, Rare 30%, Uncommon 30%, Common 20%
+                if (roll < 3f) return Rarity.Legendary;
+                if (roll < 20f) return Rarity.Epic;
+                if (roll < 50f) return Rarity.Rare;
+                if (roll < 80f) return Rarity.Uncommon;
+                return Rarity.Common;
+        }
 
         return Rarity.Common;
+    }
+
+    private IEnumerator OpenChestRoutine()
+    {
+        opened = true;
+
+        if (animator != null)
+        {
+            animator.SetTrigger(openTriggerName);
+        }
+
+        yield return new WaitForSeconds(dropDelay);
+
+        OpenChest();
     }
 }

@@ -2726,3 +2726,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StructureRandomizer
   structurePrefab:
   - {fileID: 251155834864777876, guid: 08fe4c7e0634d36478a516b2bb6dc20d, type: 3}
+  - {fileID: 251155834864777876, guid: 68aa47ce4a39eb44c866ec7ab6ede1fa, type: 3}
+  - {fileID: 251155834864777876, guid: 97686104b677fb64d9e05d55672912ec, type: 3}
