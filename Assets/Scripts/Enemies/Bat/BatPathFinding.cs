@@ -26,6 +26,9 @@ public class BatPathFinding : MonoBehaviour
     private bool hasTarget = false;
     private Vector2 avoidanceDirection = Vector2.zero;
     private float hoverOffset = 0f;
+    private float baseMoveSpeed;
+    private float currentMoveSpeed;
+    private Collider2D[] ownColliders;
     
     // Charge mode
     private bool isCharging = false;
@@ -35,6 +38,9 @@ public class BatPathFinding : MonoBehaviour
     {
         knockback = GetComponent<Knockback>();
         rb = GetComponent<Rigidbody2D>();
+        ownColliders = GetComponentsInChildren<Collider2D>();
+        baseMoveSpeed = moveSpeed;
+        currentMoveSpeed = baseMoveSpeed;
 
         // ENFORCE STABLE PHYSICS: Đảm bảo quái vật là object vật lý thực thụ
         if (rb != null)
@@ -87,7 +93,7 @@ public class BatPathFinding : MonoBehaviour
             {
                 // Stuck in wall, stop charge
                 finalDirection = unstuckDirection;
-                currentSpeed = moveSpeed;
+                currentSpeed = currentMoveSpeed;
             }
             else
             {
@@ -100,18 +106,17 @@ public class BatPathFinding : MonoBehaviour
         {
             // Priority: getting unstuck first
             finalDirection = (unstuckDirection * 2f + avoidance).normalized;
-            currentSpeed = moveSpeed;
+            currentSpeed = currentMoveSpeed;
         }
         else
         {
             // Normal movement with avoidance and hover
             finalDirection = (desiredDirection + avoidance * 1.8f + hoverMotion).normalized;
-            currentSpeed = moveSpeed;
+            currentSpeed = currentMoveSpeed;
         }
         
-        // Move in the final direction
-        Vector2 newPosition = rb.position + finalDirection * (currentSpeed * Time.fixedDeltaTime);
-        rb.MovePosition(newPosition);
+        Vector2 movement = finalDirection * (currentSpeed * Time.fixedDeltaTime);
+        rb.MovePosition(GetWallBlockedPosition(movement));
     }
     
     private Vector2 GetHoverMotion()
@@ -124,7 +129,7 @@ public class BatPathFinding : MonoBehaviour
     private Vector2 CheckIfStuck()
     {
         // Kiểm tra xem ta có đang nằm đè lên tường không
-        Collider2D obstacle = Physics2D.OverlapCircle(rb.position, 0.25f, obstacleLayer);
+        Collider2D obstacle = FindOverlappingObstacle(rb.position, 0.25f);
         
         if (obstacle != null)
         {
@@ -144,6 +149,65 @@ public class BatPathFinding : MonoBehaviour
         }
         
         return Vector2.zero;
+    }
+
+    private Vector2 GetWallBlockedPosition(Vector2 movement)
+    {
+        if (movement.sqrMagnitude <= 0.000001f)
+        {
+            return rb.position;
+        }
+
+        const float castRadius = 0.28f;
+        const float skinWidth = 0.03f;
+        Vector2 direction = movement.normalized;
+        float distance = movement.magnitude;
+        RaycastHit2D[] hits = Physics2D.CircleCastAll(rb.position, castRadius, direction, distance, obstacleLayer);
+
+        foreach (RaycastHit2D hit in hits)
+        {
+            if (hit.collider == null || hit.collider.isTrigger || IsOwnCollider(hit.collider))
+            {
+                continue;
+            }
+
+            float safeDistance = Mathf.Max(0f, hit.distance - skinWidth);
+            return rb.position + direction * safeDistance;
+        }
+
+        return rb.position + movement;
+    }
+
+    private Collider2D FindOverlappingObstacle(Vector2 position, float radius)
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(position, radius, obstacleLayer);
+        foreach (Collider2D hit in hits)
+        {
+            if (hit != null && !hit.isTrigger && !IsOwnCollider(hit))
+            {
+                return hit;
+            }
+        }
+
+        return null;
+    }
+
+    private bool IsOwnCollider(Collider2D candidate)
+    {
+        if (candidate == null || ownColliders == null)
+        {
+            return false;
+        }
+
+        foreach (Collider2D ownCollider in ownColliders)
+        {
+            if (candidate == ownCollider)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Vector2 CalculateObstacleAvoidance(Vector2 desiredDirection)
@@ -211,6 +275,11 @@ public class BatPathFinding : MonoBehaviour
     {
         currentTargetPosition = targetPosition;
         hasTarget = true;
+    }
+
+    public void SetMoveSpeed(float speed)
+    {
+        currentMoveSpeed = Mathf.Max(0f, speed);
     }
 
     public void StopMoving()

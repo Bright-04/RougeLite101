@@ -1,318 +1,400 @@
 using System.Collections;
 using UnityEngine;
 
-public class BatAI : MonoBehaviour
+public enum BatAIState
 {
-    private enum State
-    {
-        IdleRoaming,      // Circle around current position
-        PrepareCharge,    // Detected player, standing still before charge
-        Charging,         // Fast charge toward player
-        Cooldown          // Standing still after charge
-    }
+    Idle,
+    Repositioning,
+    Aiming,
+    Firing,
+    Recovering,
+    Dead
+}
 
-    private State state;
-    private BatPathFinding batPathFinding;
-    private Transform playerTransform;
+public class BatAI : MonoBehaviour, IDdaAdaptiveEnemy
+{
+    private const float ThinkInterval = 0.05f;
 
     [Header("Detection")]
-    [SerializeField] private float detectionRange = 8f; // Detection range
+    [SerializeField] private float detectionRange = 8f;
 
-    [Header("Charge Attack")]
-    [SerializeField] private float prepareTime = 0.6f; // Time to stand still before charging
-    [SerializeField] private float chargeSpeed = 12f; // Speed during charge (much faster than normal)
-    [SerializeField] private float chargeDuration = 0.5f; // How long the charge lasts
-    [SerializeField] private float cooldownTime = 1.0f; // Time to wait after charge before next one
-    
+    [Header("Ranged Attack")]
+    [SerializeField] private float preferredAttackRange = 5f;
+    [SerializeField] private float minimumDistanceFromPlayer = 2.5f;
+    [SerializeField] private float repositionSpeed = 3.5f;
+    [SerializeField] private float shootCooldown = 1.5f;
+    [SerializeField] private float aimWindupTime = 0.45f;
+    [SerializeField] private float postShotRecoveryTime = 0.5f;
+    [SerializeField] private float projectileSpeed = 6f;
+    [SerializeField] private float projectileDamage = 8f;
+    [SerializeField] private float projectileSpawnOffset = 0.9f;
+    [SerializeField] private GameObject fireballProjectilePrefab;
+    [SerializeField] private Transform firePoint;
+
+    [Header("Legacy Charge Tuning")]
+    [SerializeField] private float prepareTime = 0.6f;
+    [SerializeField] private float chargeSpeed = 12f;
+    [SerializeField] private float chargeDuration = 0.5f;
+    [SerializeField] private float cooldownTime = 1.0f;
+
     [Header("Visual Effects")]
-    [SerializeField] private float prepareFlashSpeed = 10f; // How fast to flash when preparing
-    [SerializeField] private Color prepareColor = new Color(1f, 0.3f, 0.3f, 1f); // Red tint when preparing
-    [SerializeField] private Color chargeColor = new Color(1f, 0f, 0f, 1f); // Bright red when charging
+    [SerializeField] private float prepareFlashSpeed = 10f;
+    [SerializeField] private Color prepareColor = new Color(1f, 0.3f, 0.3f, 1f);
+    [SerializeField] private Color chargeColor = new Color(1f, 0f, 0f, 1f);
 
     [Header("Roaming")]
-    [SerializeField] private float roamRadius = 2f; // Radius to circle around
-    [SerializeField] private float roamSpeed = 1.5f; // Speed while idly roaming
+    [SerializeField] private float roamRadius = 2f;
+    [SerializeField] private float roamSpeed = 1.5f;
 
-    private Vector2 roamCenter; // Center point for circling
-    private float roamAngle = 0f; // Current angle in circle
-    private Vector2 chargeDirection; // Direction to charge
-    private Vector2 chargeTargetPosition; // Exact position to charge to
-    private float stateTimer = 0f; // Timer for current state
-    private bool isCharging = false;
-    private float chargeDistance = 0f; // How far to charge
-    
-    // Visual components
+    private BatAIState state;
+    private BatPathFinding batPathFinding;
+    private Transform playerTransform;
     private SpriteRenderer spriteRenderer;
+    private EnemyDamageSource contactDamageSource;
     private Color originalColor;
     private Vector3 originalScale;
+    private Vector2 roamCenter;
+    private float roamAngle;
+    private float nextShootTime;
+
+    private float baseDetectionRange;
+    private float basePreferredAttackRange;
+    private float baseMinimumDistanceFromPlayer;
+    private float baseRepositionSpeed;
+    private float baseShootCooldown;
+    private float baseAimWindupTime;
+    private float basePostShotRecoveryTime;
+    private float baseProjectileSpeed;
+    private float baseProjectileDamage;
+
+    private float currentDetectionRange;
+    private float currentPreferredAttackRange;
+    private float currentMinimumDistanceFromPlayer;
+    private float currentRepositionSpeed;
+    private float currentShootCooldown;
+    private float currentAimWindupTime;
+    private float currentPostShotRecoveryTime;
+    private float currentProjectileSpeed;
+    private float currentProjectileDamage;
 
     private void Awake()
     {
         batPathFinding = GetComponent<BatPathFinding>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        state = State.IdleRoaming;
+        contactDamageSource = GetComponent<EnemyDamageSource>();
+        state = BatAIState.Idle;
+
+        CacheBaseValues();
+        ResetCurrentValues();
+
+        if (contactDamageSource != null)
+        {
+            contactDamageSource.enabled = false;
+        }
     }
 
     private void Start()
     {
-        GameObject playerObj = GameObject.FindWithTag("Player");
-        if (playerObj != null)
-        {
-            playerTransform = playerObj.transform;
-        }
+        TryFindPlayer();
 
-        // Set initial roam center to starting position
         roamCenter = transform.position;
         roamAngle = Random.Range(0f, 360f);
-        
-        // Store original visuals
+
         if (spriteRenderer != null)
         {
             originalColor = spriteRenderer.color;
         }
-        originalScale = transform.localScale;
 
+        originalScale = transform.localScale;
         StartCoroutine(AIBehaviour());
     }
 
     private IEnumerator AIBehaviour()
     {
-        while (true)
+        while (state != BatAIState.Dead)
         {
             if (playerTransform == null)
             {
-                // Search for player if lost
-                GameObject playerObj = GameObject.FindWithTag("Player");
-                if (playerObj != null)
-                {
-                    playerTransform = playerObj.transform;
-                }
+                TryFindPlayer();
+                HandleIdleRoaming();
                 yield return new WaitForSeconds(0.5f);
                 continue;
             }
 
             float distance = Vector2.Distance(transform.position, playerTransform.position);
 
-            switch (state)
+            if (distance > currentDetectionRange)
             {
-                case State.IdleRoaming:
-                    HandleIdleRoaming(distance);
-                    break;
-
-                case State.PrepareCharge:
-                    HandlePrepareCharge();
-                    break;
-
-                case State.Charging:
-                    HandleCharging();
-                    break;
-
-                case State.Cooldown:
-                    HandleCooldown(distance);
-                    break;
+                state = BatAIState.Idle;
+                RestoreVisuals();
+                HandleIdleRoaming();
+                yield return new WaitForSeconds(ThinkInterval);
+                continue;
             }
 
-            yield return new WaitForSeconds(0.05f); // Faster update for smooth charging
+            if (ShouldReposition(distance))
+            {
+                state = BatAIState.Repositioning;
+                RestoreVisuals();
+                Reposition(distance);
+                yield return new WaitForSeconds(ThinkInterval);
+                continue;
+            }
+
+            if (Time.time >= nextShootTime)
+            {
+                yield return AimAndFire();
+                continue;
+            }
+
+            state = BatAIState.Recovering;
+            RestoreVisuals();
+            batPathFinding?.StopMoving();
+            yield return new WaitForSeconds(ThinkInterval);
         }
     }
 
-    private void HandleIdleRoaming(float distanceToPlayer)
+    private void HandleIdleRoaming()
     {
-        // Ensure normal visuals during roaming
-        if (spriteRenderer != null && spriteRenderer.color != originalColor)
+        if (batPathFinding == null)
         {
-            spriteRenderer.color = originalColor;
-        }
-        if (transform.localScale != originalScale)
-        {
-            transform.localScale = originalScale;
-        }
-        
-        // Check if player is in range
-        if (distanceToPlayer < detectionRange)
-        {
-            // Player detected! Prepare to charge
-            state = State.PrepareCharge;
-            stateTimer = prepareTime;
-            batPathFinding.StopMoving();
-            
-            // Calculate charge direction
-            chargeDirection = (playerTransform.position - transform.position).normalized;
             return;
         }
 
-        // Circle around the roam center
-        roamAngle += roamSpeed * 0.05f * 50f; // 50 degrees per second (0.05 = update interval)
-        if (roamAngle > 360f) roamAngle -= 360f;
+        roamAngle += roamSpeed * ThinkInterval * 50f;
+        if (roamAngle > 360f)
+        {
+            roamAngle -= 360f;
+        }
 
         float rad = roamAngle * Mathf.Deg2Rad;
         Vector2 offset = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * roamRadius;
-        Vector2 targetPos = roamCenter + offset;
-
-        batPathFinding.MoveTo(targetPos);
+        batPathFinding.SetMoveSpeed(currentRepositionSpeed);
+        batPathFinding.MoveTo(roamCenter + offset);
     }
 
-    private void HandlePrepareCharge()
+    private bool ShouldReposition(float distance)
     {
-        // Stand completely still, preparing to charge
-        batPathFinding.StopMoving();
-        
-        // Keep updating direction to player during prepare phase
-        if (playerTransform != null)
+        return distance > currentPreferredAttackRange + 0.35f ||
+               distance < currentMinimumDistanceFromPlayer;
+    }
+
+    private void Reposition(float distance)
+    {
+        if (batPathFinding == null || playerTransform == null)
         {
-            chargeDirection = (playerTransform.position - transform.position).normalized;
+            return;
         }
-        
-        // Visual feedback: Flash red and shake
+
+        Vector2 batPosition = transform.position;
+        Vector2 playerPosition = playerTransform.position;
+        Vector2 fromPlayer = (batPosition - playerPosition).normalized;
+
+        if (fromPlayer == Vector2.zero)
+        {
+            fromPlayer = Random.insideUnitCircle.normalized;
+        }
+
+        Vector2 targetPosition = distance < currentMinimumDistanceFromPlayer
+            ? batPosition + fromPlayer * currentMinimumDistanceFromPlayer
+            : playerPosition + fromPlayer * currentPreferredAttackRange;
+
+        batPathFinding.SetMoveSpeed(currentRepositionSpeed);
+        batPathFinding.MoveTo(targetPosition);
+        FacePlayer();
+    }
+
+    private IEnumerator AimAndFire()
+    {
+        state = BatAIState.Aiming;
+        batPathFinding?.StopMoving();
+
+        float timer = currentAimWindupTime;
+        while (timer > 0f && playerTransform != null)
+        {
+            FacePlayer();
+            ShowAimingVisual();
+            timer -= ThinkInterval;
+            yield return new WaitForSeconds(ThinkInterval);
+        }
+
+        state = BatAIState.Firing;
+        FireProjectile();
+        RestoreVisuals();
+
+        state = BatAIState.Recovering;
+        nextShootTime = Time.time + currentShootCooldown + currentPostShotRecoveryTime;
+        yield return new WaitForSeconds(currentPostShotRecoveryTime);
+    }
+
+    private void FireProjectile()
+    {
+        if (playerTransform == null)
+        {
+            return;
+        }
+
+        Vector2 aimOrigin = firePoint != null ? firePoint.position : transform.position;
+        Vector2 direction = ((Vector2)playerTransform.position - aimOrigin).normalized;
+        if (direction == Vector2.zero)
+        {
+            direction = Vector2.right;
+        }
+
+        Vector3 spawnPosition = firePoint != null
+            ? firePoint.position
+            : (Vector3)(aimOrigin + direction * projectileSpawnOffset);
+
+        GameObject projectileObject = fireballProjectilePrefab != null
+            ? Instantiate(fireballProjectilePrefab, spawnPosition, GetProjectileRotation(direction))
+            : CreateFallbackProjectile(spawnPosition);
+
+        DisablePlayerFireballBehaviour(projectileObject);
+        BatFireballProjectile projectile = projectileObject.GetComponent<BatFireballProjectile>();
+        if (projectile == null)
+        {
+            projectile = projectileObject.AddComponent<BatFireballProjectile>();
+        }
+
+        projectile.Initialize(gameObject, direction, currentProjectileSpeed, currentProjectileDamage);
+    }
+
+    private Quaternion GetProjectileRotation(Vector2 direction)
+    {
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        return Quaternion.Euler(0f, 0f, angle);
+    }
+
+    private GameObject CreateFallbackProjectile(Vector3 spawnPosition)
+    {
+        GameObject projectileObject = new GameObject("BatFireball");
+        projectileObject.transform.position = spawnPosition;
+        CircleCollider2D collider = projectileObject.AddComponent<CircleCollider2D>();
+        collider.isTrigger = true;
+        collider.radius = 0.25f;
+        return projectileObject;
+    }
+
+    private void DisablePlayerFireballBehaviour(GameObject projectileObject)
+    {
+        if (projectileObject == null)
+        {
+            return;
+        }
+
+        FireballSpell playerFireball = projectileObject.GetComponent<FireballSpell>();
+        if (playerFireball != null)
+        {
+            playerFireball.enabled = false;
+        }
+    }
+
+    private void TryFindPlayer()
+    {
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null)
+        {
+            playerTransform = playerObj.transform;
+        }
+    }
+
+    private void FacePlayer()
+    {
+        if (playerTransform == null)
+        {
+            return;
+        }
+
+        Vector3 scale = originalScale;
+        scale.x = Mathf.Abs(scale.x) * (playerTransform.position.x < transform.position.x ? -1f : 1f);
+        transform.localScale = scale;
+    }
+
+    private void ShowAimingVisual()
+    {
         if (spriteRenderer != null)
         {
             float flashValue = Mathf.PingPong(Time.time * prepareFlashSpeed, 1f);
             spriteRenderer.color = Color.Lerp(originalColor, prepareColor, flashValue);
         }
-        
-        // Shake effect during prepare
-        float shakeAmount = 0.05f;
-        transform.localScale = originalScale + new Vector3(
-            Mathf.Sin(Time.time * 30f) * shakeAmount,
-            Mathf.Sin(Time.time * 25f) * shakeAmount,
-            0f
-        );
-        
-        // Decrement timer (using fixed 0.05 from coroutine wait time)
-        stateTimer -= 0.05f;
-
-        if (stateTimer <= 0f)
-        {
-            // Time to charge! Lock in the target position
-            state = State.Charging;
-            isCharging = true;
-            
-            // Calculate fixed charge distance and target
-            chargeDistance = chargeSpeed * chargeDuration;
-            
-            // CIRCLECAST CHECK: Dùng vòng tròn (body quái) thay vì tia laser để check tường cực chuẩn
-            int mask = LayerMask.GetMask("Default", "Environment", "Obstacle");
-            RaycastHit2D hit = Physics2D.CircleCast(transform.position, 0.3f, chargeDirection, chargeDistance, mask);
-            
-            if (hit.collider != null && !hit.collider.isTrigger)
-            {
-                // Dừng lại cách tường một khoảng an toàn
-                chargeDistance = Mathf.Max(hit.distance - 0.2f, 0f);
-            }
-
-            chargeTargetPosition = (Vector2)transform.position + chargeDirection * chargeDistance;
-            
-            // Use distance-based tracking instead of time
-            stateTimer = chargeDuration * 1.5f; // Safety timeout
-            
-            // Set charging visuals
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.color = chargeColor;
-            }
-            transform.localScale = originalScale * 1.2f; // Slightly bigger when charging
-        }
     }
 
-    private void HandleCharging()
+    private void RestoreVisuals()
     {
-        // Check if we've reached the target or hit something
-        float distanceToTarget = Vector2.Distance(transform.position, chargeTargetPosition);
-        
-        // Add motion trail effect (stretch sprite in direction of movement)
-        Vector2 velocity = ((Vector2)transform.position - chargeTargetPosition).normalized;
-        transform.localScale = new Vector3(
-            originalScale.x * 1.2f,
-            originalScale.y * 0.9f, // Squish vertically
-            originalScale.z
-        );
-        
-        // Stop if we're close to target or timeout
-        stateTimer -= 0.05f;
-        if (distanceToTarget < 0.3f || stateTimer <= 0f)
-        {
-            // Charge complete, enter cooldown
-            state = State.Cooldown;
-            stateTimer = cooldownTime;
-            isCharging = false;
-            batPathFinding.SetChargeMode(false, 0f);
-            batPathFinding.StopMoving();
-            
-            // Reset visuals
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.color = originalColor;
-            }
-            transform.localScale = originalScale;
-            return;
-        }
-        
-        // Continue charging toward target
-        batPathFinding.SetChargeMode(true, chargeSpeed);
-        batPathFinding.MoveTo(chargeTargetPosition);
-    }
-
-    private void HandleCooldown(float distanceToPlayer)
-    {
-        // Stand still after charge
-        batPathFinding.StopMoving();
-        
-        // Ensure visuals are reset
         if (spriteRenderer != null && spriteRenderer.color != originalColor)
         {
             spriteRenderer.color = originalColor;
         }
-        if (transform.localScale != originalScale)
-        {
-            transform.localScale = originalScale;
-        }
-        
-        stateTimer -= 0.05f;
+    }
 
-        if (stateTimer <= 0f)
+    private void CacheBaseValues()
+    {
+        baseDetectionRange = detectionRange;
+        basePreferredAttackRange = preferredAttackRange;
+        baseMinimumDistanceFromPlayer = minimumDistanceFromPlayer;
+        baseRepositionSpeed = repositionSpeed;
+        baseShootCooldown = shootCooldown;
+        baseAimWindupTime = aimWindupTime;
+        basePostShotRecoveryTime = postShotRecoveryTime;
+        baseProjectileSpeed = projectileSpeed;
+        baseProjectileDamage = projectileDamage;
+    }
+
+    private void ResetCurrentValues()
+    {
+        currentDetectionRange = baseDetectionRange;
+        currentPreferredAttackRange = basePreferredAttackRange;
+        currentMinimumDistanceFromPlayer = baseMinimumDistanceFromPlayer;
+        currentRepositionSpeed = baseRepositionSpeed;
+        currentShootCooldown = baseShootCooldown;
+        currentAimWindupTime = baseAimWindupTime;
+        currentPostShotRecoveryTime = basePostShotRecoveryTime;
+        currentProjectileSpeed = baseProjectileSpeed;
+        currentProjectileDamage = baseProjectileDamage;
+    }
+
+    public void ApplyDdaProfile(DdaDifficultyProfile profile)
+    {
+        if (profile == null)
         {
-            // Cooldown complete, decide next action
-            if (distanceToPlayer < detectionRange)
-            {
-                // Still in range, prepare another charge
-                state = State.PrepareCharge;
-                stateTimer = prepareTime;
-                chargeDirection = (playerTransform.position - transform.position).normalized;
-            }
-            else
-            {
-                // Player out of range, return to roaming
-                state = State.IdleRoaming;
-                roamCenter = transform.position; // New roam center
-            }
+            profile = DdaDifficultyProfile.Balanced();
         }
+
+        currentDetectionRange = baseDetectionRange * DdaDifficultyProfile.ClampDetectionRange(profile.detectionRangeMultiplier);
+        currentPreferredAttackRange = basePreferredAttackRange * DdaDifficultyProfile.ClampDetectionRange(profile.detectionRangeMultiplier);
+        currentMinimumDistanceFromPlayer = baseMinimumDistanceFromPlayer;
+        currentRepositionSpeed = baseRepositionSpeed * DdaDifficultyProfile.ClampChaseSpeed(profile.chaseSpeedMultiplier);
+        currentShootCooldown = baseShootCooldown * DdaDifficultyProfile.ClampAttackCooldown(profile.attackCooldownMultiplier);
+        currentAimWindupTime = baseAimWindupTime;
+        currentPostShotRecoveryTime = basePostShotRecoveryTime * DdaDifficultyProfile.ClampRecoveryTime(profile.recoveryTimeMultiplier);
+        currentProjectileSpeed = baseProjectileSpeed;
+        currentProjectileDamage = baseProjectileDamage * DdaDifficultyProfile.ClampDamage(profile.damageMultiplier);
+
+        Debug.Log(
+            $"[DDA] BatAI profile={profile.profileName} " +
+            $"detection={baseDetectionRange:0.##}->{currentDetectionRange:0.##} " +
+            $"reposition={baseRepositionSpeed:0.##}->{currentRepositionSpeed:0.##} " +
+            $"shootCooldown={baseShootCooldown:0.##}->{currentShootCooldown:0.##} " +
+            $"recovery={basePostShotRecoveryTime:0.##}->{currentPostShotRecoveryTime:0.##} " +
+            $"projectileDamage={baseProjectileDamage:0.##}->{currentProjectileDamage:0.##}",
+            this);
+    }
+
+    private void OnDisable()
+    {
+        state = BatAIState.Dead;
+        batPathFinding?.StopMoving();
     }
 
     private void OnDrawGizmosSelected()
     {
-        // Detection range
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        Gizmos.DrawWireSphere(transform.position, Application.isPlaying ? currentDetectionRange : detectionRange);
 
-        // Roam radius
-        if (state == State.IdleRoaming && Application.isPlaying)
-        {
-            Gizmos.color = new Color(0f, 1f, 1f, 0.3f);
-            Gizmos.DrawWireSphere(roamCenter, roamRadius);
-        }
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, Application.isPlaying ? currentPreferredAttackRange : preferredAttackRange);
 
-        // Charge direction
-        if (state == State.PrepareCharge || state == State.Charging)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawRay(transform.position, chargeDirection * 3f);
-        }
-
-        // Visual indicator when charging (also marks field as used)
-        if (isCharging)
-        {
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(transform.position, 0.25f);
-        }
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, Application.isPlaying ? currentMinimumDistanceFromPlayer : minimumDistanceFromPlayer);
     }
 }

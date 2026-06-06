@@ -220,6 +220,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   detectionRange: 7
+  preferredAttackRange: 5
+  minimumDistanceFromPlayer: 2.5
+  repositionSpeed: 3.5
+  shootCooldown: 1.5
+  aimWindupTime: 0.45
+  postShotRecoveryTime: 0.5
+  projectileSpeed: 6
+  projectileDamage: 8
+  projectileSpawnOffset: 0.9
+  fireballProjectilePrefab: {fileID: 7383606399532893072, guid: 38b3e1eee89443847ba5bd7e68425dae, type: 3}
+  firePoint: {fileID: 0}
   prepareTime: 0.6
   chargeSpeed: 12
   chargeDuration: 0.5
@@ -236,7 +247,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1416822661671252518}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ddd53aa8743128c45a22c2568ad2b7ab, type: 3}
   m_Name: 
