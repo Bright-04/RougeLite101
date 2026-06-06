@@ -1,0 +1,391 @@
+fileFormatVersion: 2
+guid: 4258fde2bc4bf3b49a78eb23aa550559
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1357397239416279021
+    second: ChestTier1Open-Sheet_0
+  - first:
+      213: -8965774447574018789
+    second: ChestTier1Open-Sheet_1
+  - first:
+      213: 808967787939882650
+    second: ChestTier1Open-Sheet_2
+  - first:
+      213: -2545820892960959064
+    second: ChestTier1Open-Sheet_3
+  - first:
+      213: -9147180888409107744
+    second: ChestTier1Open-Sheet_4
+  - first:
+      213: 5462088689993114203
+    second: ChestTier1Open-Sheet_5
+  - first:
+      213: 4164747449897762039
+    second: ChestTier1Open-Sheet_6
+  - first:
+      213: 8321523659590808952
+    second: ChestTier1Open-Sheet_7
+  - first:
+      213: -629380875807409168
+    second: ChestTier1Open-Sheet_8
+  - first:
+      213: 1117483481297989739
+    second: ChestTier1Open-Sheet_9
+  - first:
+      213: 3569595585615913856
+    second: ChestTier1Open-Sheet_10
+  - first:
+      213: -7506159292272445445
+    second: ChestTier1Open-Sheet_11
+  - first:
+      213: -8553464611702257930
+    second: ChestTier1Open-Sheet_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 270
+        width: 62
+        height: 43
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3103f7d076e892de0800000000000000
+      internalID: -1357397239416279021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 270
+        width: 62
+        height: 43
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b15931484ab239380800000000000000
+      internalID: -8965774447574018789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 469
+        y: 270
+        width: 62
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a96e3e2cae70a3b00800000000000000
+      internalID: 808967787939882650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 669
+        y: 270
+        width: 62
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8a55b4dd26d6bacd0800000000000000
+      internalID: -2545820892960959064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 869
+        y: 270
+        width: 62
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0e21222227fae0180800000000000000
+      internalID: -9147180888409107744
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 1068
+        y: 271
+        width: 64
+        height: 62
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b52e7b269bc3dcb40800000000000000
+      internalID: 5462088689993114203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 70
+        width: 64
+        height: 62
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fcbe5a6db72cc930800000000000000
+      internalID: 4164747449897762039
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 70
+        width: 64
+        height: 63
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fb33159d6df347f0800000000000000
+      internalID: -629380875807409168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 468
+        y: 70
+        width: 64
+        height: 62
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6032293e49128f00800000000000000
+      internalID: 1117483481297989739
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChestTier1Open-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 668
+        y: 70
+        width: 64
+        height: 62
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf77a9c94e3c4d790800000000000000
+      internalID: -7506159292272445445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: f51dc640e09c22a4d97cfc0e815de660
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":256.0,"y":256.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      =: 8321523659590808952
+      ChestTier1Open-Sheet_0: -1357397239416279021
+      ChestTier1Open-Sheet_1: -8965774447574018789
+      ChestTier1Open-Sheet_10: 3569595585615913856
+      ChestTier1Open-Sheet_11: -7506159292272445445
+      ChestTier1Open-Sheet_12: -8553464611702257930
+      ChestTier1Open-Sheet_2: 808967787939882650
+      ChestTier1Open-Sheet_3: -2545820892960959064
+      ChestTier1Open-Sheet_4: -9147180888409107744
+      ChestTier1Open-Sheet_5: 5462088689993114203
+      ChestTier1Open-Sheet_6: 4164747449897762039
+      ChestTier1Open-Sheet_8: -629380875807409168
+      ChestTier1Open-Sheet_9: 1117483481297989739
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
