@@ -37,6 +37,6 @@ public class BuffStatue : MonoBehaviour, IInteractable
     {
         if (used) return "";
 
-        return "[E] Receive Blessing";
+        return $"[F] Receive {buff.buffName} Blessing";
     }
 }

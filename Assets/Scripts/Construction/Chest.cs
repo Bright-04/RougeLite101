@@ -44,7 +44,7 @@ public class Chest : MonoBehaviour, IInteractable
     {
         if (opened) return "";
 
-        return "[E] Open Chest";
+        return "[F] Open Chest";
     }
 
     private void OpenChest()
