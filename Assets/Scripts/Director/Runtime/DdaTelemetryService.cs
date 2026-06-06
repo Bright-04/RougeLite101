@@ -57,11 +57,30 @@ public sealed class DdaTelemetryService : MonoBehaviour
     [Header("Scoring")]
     [SerializeField] private DdaScoreCalculator scoreCalculator = new DdaScoreCalculator();
 
+    [Header("Behavior Profiles")]
+    [SerializeField] private bool enableDdaBehaviorProfiles = true;
+    [SerializeField] private DdaProfileType currentProfileType = DdaProfileType.Balanced;
+    [SerializeField] private bool forceDebugProfile = false;
+    [SerializeField] private DdaProfileType forcedProfileType = DdaProfileType.Balanced;
+
+    [Header("Behavior Profile Thresholds")]
+    [SerializeField] private float assistEnterScore = 45f;
+    [SerializeField] private float assistExitScore = 55f;
+    [SerializeField] private float challengeEnterScore = 86f;
+    [SerializeField] private float challengeExitScore = 78f;
+    [SerializeField] private float lowHpAssistRatio = 0.35f;
+    [SerializeField] private float highDamageAssistRatio = 0.45f;
+    [SerializeField] private float challengeMinHpRatio = 0.75f;
+    [SerializeField] private float challengeMaxDamageRatio = 0.20f;
+    [SerializeField] private float challengeMinClearTimeScore = 0.65f;
+
     [SerializeField] private RoomTelemetrySample activeRoom;
     [SerializeField] private RoomTelemetrySample lastCompletedRoom;
+    [SerializeField] private DdaDifficultyProfile currentProfile = DdaDifficultyProfile.Balanced();
 
     public RoomTelemetrySample ActiveRoom => activeRoom;
     public RoomTelemetrySample LastCompletedRoom => lastCompletedRoom;
+    public DdaDifficultyProfile CurrentProfile => currentProfile;
 
     private void Awake()
     {
@@ -72,6 +91,7 @@ public sealed class DdaTelemetryService : MonoBehaviour
         }
 
         _instance = this;
+        currentProfile = GetProfile(currentProfileType);
 
         if (persistAcrossScenes)
         {
@@ -121,7 +141,8 @@ public sealed class DdaTelemetryService : MonoBehaviour
 
         Log(
             $"[DDA] RoomStart room={activeRoom.roomName} boss={activeRoom.isBossRoom} " +
-            $"hpStart={activeRoom.playerHpStart:0.##}/{activeRoom.playerMaxHp:0.##}");
+            $"hpStart={activeRoom.playerHpStart:0.##}/{activeRoom.playerMaxHp:0.##} " +
+            $"profile={currentProfile.profileName}");
     }
 
     public void EndRoom(RoomTemplate roomTemplate)
@@ -148,6 +169,8 @@ public sealed class DdaTelemetryService : MonoBehaviour
         activeRoom.score = breakdown.finalScore;
         activeRoom.tier = breakdown.tier;
         lastCompletedRoom = activeRoom;
+        DdaDifficultyProfile resolvedProfile = ResolveProfile(activeRoom, breakdown);
+        SetCurrentProfile(resolvedProfile, activeRoom, breakdown);
 
         Log(
             $"[DDA] RoomClear room={activeRoom.roomName} boss={activeRoom.isBossRoom} " +
@@ -221,6 +244,65 @@ public sealed class DdaTelemetryService : MonoBehaviour
         return DdaDifficultyTier.Normal;
     }
 
+    public DdaDifficultyProfile GetCurrentProfile()
+    {
+        if (!enableDdaBehaviorProfiles)
+        {
+            return DdaDifficultyProfile.Balanced();
+        }
+
+        if (forceDebugProfile)
+        {
+            currentProfile = GetProfile(forcedProfileType, "Debug forced profile.", currentProfile != null ? currentProfile.sourceScore : 0f);
+            currentProfileType = currentProfile.profileType;
+            return currentProfile;
+        }
+
+        if (currentProfile == null)
+        {
+            currentProfile = GetProfile(currentProfileType);
+        }
+
+        return currentProfile;
+    }
+
+    public void ForceCurrentProfile(DdaProfileType profileType)
+    {
+        forceDebugProfile = true;
+        forcedProfileType = profileType;
+        currentProfile = GetProfile(profileType, "Debug forced profile.", currentProfile != null ? currentProfile.sourceScore : 0f);
+        currentProfileType = currentProfile.profileType;
+        Log($"[DDA] ForceProfile profile={currentProfile.profileName}");
+    }
+
+    public void ClearForcedProfile()
+    {
+        forceDebugProfile = false;
+        Log($"[DDA] ForceProfile cleared current={GetCurrentProfile().profileName}");
+    }
+
+    public void ApplyCurrentProfileToEnemy(GameObject enemyRoot)
+    {
+        if (enemyRoot == null || !enableDdaBehaviorProfiles)
+        {
+            return;
+        }
+
+        DdaDifficultyProfile profile = GetCurrentProfile();
+        IDdaAdaptiveEnemy[] adaptiveEnemies = enemyRoot.GetComponentsInChildren<IDdaAdaptiveEnemy>(true);
+        foreach (IDdaAdaptiveEnemy adaptiveEnemy in adaptiveEnemies)
+        {
+            adaptiveEnemy.ApplyDdaProfile(profile);
+        }
+
+        if (adaptiveEnemies.Length > 0)
+        {
+            Log(
+                $"[DDA] ApplyEnemyProfile enemy={enemyRoot.name} profile={profile.profileName} " +
+                $"adaptiveComponents={adaptiveEnemies.Length}");
+        }
+    }
+
     public int GetSpawnCountDelta()
     {
         return GetSpawnCountDelta(GetCurrentTier());
@@ -282,6 +364,92 @@ public sealed class DdaTelemetryService : MonoBehaviour
             case DdaDifficultyTier.Normal:
             default:
                 return normalSpawnDelta;
+        }
+    }
+
+    private void SetCurrentProfile(
+        DdaDifficultyProfile profile,
+        RoomTelemetrySample sample,
+        DdaScoreCalculator.ScoreBreakdown breakdown)
+    {
+        currentProfile = (profile ?? DdaDifficultyProfile.Balanced()).ClampedCopy();
+        currentProfileType = currentProfile.profileType;
+
+        float hpRatio = sample.playerMaxHp > 0f ? Mathf.Clamp01(sample.playerHpEnd / sample.playerMaxHp) : 0f;
+        Log(
+            $"[DDA] ProfileResolved: {currentProfile.profileName} " +
+            $"score={breakdown.finalScore:0.##} tier={breakdown.tier} " +
+            $"damageTaken={sample.damageTaken:0.##} hpRatio={hpRatio:0.##} " +
+            $"clearTime={sample.clearTime:0.##} reason={currentProfile.reason}");
+        Log(currentProfile.ToDebugString());
+    }
+
+    private DdaDifficultyProfile ResolveProfile(
+        RoomTelemetrySample sample,
+        DdaScoreCalculator.ScoreBreakdown breakdown)
+    {
+        if (sample == null)
+        {
+            return DdaDifficultyProfile.Balanced();
+        }
+
+        float maxHp = Mathf.Max(1f, sample.playerMaxHp);
+        float hpRatio = Mathf.Clamp01(sample.playerHpEnd / maxHp);
+        float damageRatio = Mathf.Clamp01(sample.damageTaken / maxHp);
+        float score = breakdown.finalScore;
+        DdaProfileType previousProfile = currentProfileType;
+
+        bool hardAssist =
+            hpRatio <= lowHpAssistRatio ||
+            damageRatio >= highDamageAssistRatio ||
+            breakdown.tier == DdaDifficultyTier.Recovery;
+        bool scoreAssist =
+            score <= assistEnterScore ||
+            (previousProfile == DdaProfileType.Assist && score < assistExitScore);
+        bool challengeReady =
+            score >= challengeEnterScore &&
+            hpRatio >= challengeMinHpRatio &&
+            damageRatio <= challengeMaxDamageRatio &&
+            breakdown.clearTimeScore >= challengeMinClearTimeScore &&
+            breakdown.killScore >= 0.75f;
+        bool keepChallenge =
+            previousProfile == DdaProfileType.Challenge &&
+            score >= challengeExitScore &&
+            hpRatio >= challengeMinHpRatio &&
+            damageRatio <= challengeMaxDamageRatio;
+
+        if (hardAssist || scoreAssist)
+        {
+            string reason = hardAssist
+                ? $"High pressure: hpRatio={hpRatio:0.##}, damageRatio={damageRatio:0.##}, hits={sample.hitsTaken}."
+                : $"Performance score below Assist band with hysteresis: score={score:0.##}, previous={previousProfile}.";
+            return DdaDifficultyProfile.Assist(reason, score);
+        }
+
+        if (challengeReady || keepChallenge)
+        {
+            string reason = challengeReady
+                ? $"Strong clear: high HP, low damage taken, fast clear, kills={sample.enemiesKilled}."
+                : $"Maintaining Challenge via hysteresis: score={score:0.##}, previous={previousProfile}.";
+            return DdaDifficultyProfile.Challenge(reason, score);
+        }
+
+        return DdaDifficultyProfile.Balanced(
+            $"Performance stayed in target band: score={score:0.##}, hpRatio={hpRatio:0.##}, damageRatio={damageRatio:0.##}.",
+            score);
+    }
+
+    private DdaDifficultyProfile GetProfile(DdaProfileType profileType, string reason = null, float sourceScore = 0f)
+    {
+        switch (profileType)
+        {
+            case DdaProfileType.Assist:
+                return DdaDifficultyProfile.Assist(reason, sourceScore);
+            case DdaProfileType.Challenge:
+                return DdaDifficultyProfile.Challenge(reason, sourceScore);
+            case DdaProfileType.Balanced:
+            default:
+                return DdaDifficultyProfile.Balanced(reason, sourceScore);
         }
     }
 

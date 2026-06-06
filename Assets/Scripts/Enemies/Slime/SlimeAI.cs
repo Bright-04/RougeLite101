@@ -2,7 +2,17 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class SlimeAI : MonoBehaviour
+public enum EnemyAIState
+{
+    Idle,
+    Chasing,
+    Attacking,
+    Recovering,
+    Hurt,
+    Dead
+}
+
+public class SlimeAI : MonoBehaviour, IDdaAdaptiveEnemy
 {
     private enum BehaviorPreset
     {
@@ -319,6 +329,15 @@ public class SlimeAI : MonoBehaviour
     private int attackAttemptCount;
     private int attackHitCount;
     private int lostTargetCount;
+    private bool ddaRuntimeValuesInitialized;
+    private float baseChaseSpeedMultiplier;
+    private float currentChaseSpeedMultiplier;
+    private float baseAttackCooldown;
+    private float currentAttackCooldown;
+    private float baseAttackRecoverDuration;
+    private float currentAttackRecoverDuration;
+    private float baseDetectionRange;
+    private float currentDetectionRange;
 
     public Vector2 MoveIntentDirection => moveIntentDirection;
     public Vector2 FacingDirection => facingDirection;
@@ -326,6 +345,7 @@ public class SlimeAI : MonoBehaviour
     public float AnimationSpeed => GetAnimationSpeed();
     public bool HasStableFacing => facingDirection.sqrMagnitude > 0.0001f;
     public bool IsDead => state == State.Dead;
+    public EnemyAIState CurrentAIState => ToEnemyAIState(state);
 
     private void Reset()
     {
@@ -358,6 +378,7 @@ public class SlimeAI : MonoBehaviour
         state = State.Idle;
         attackPhase = AttackPhase.None;
         chaseZone = ChaseZone.None;
+        InitializeDdaRuntimeValues();
     }
 
     private void OnValidate()
@@ -730,7 +751,7 @@ public class SlimeAI : MonoBehaviour
         FaceTarget(true, attackWindupDuration + attackCommitDuration);
         stateEndTime = Time.time + attackWindupDuration;
         attackHitTime = stateEndTime + attackCommitDuration * 0.35f;
-        nextAttackTime = Time.time + attackWindupDuration + attackCommitDuration + attackRecoverDuration + attackCooldown;
+        nextAttackTime = Time.time + attackWindupDuration + attackCommitDuration + currentAttackRecoverDuration + currentAttackCooldown;
         animatorDriver?.TriggerAttack();
         LogAttack("attempt");
     }
@@ -741,7 +762,7 @@ public class SlimeAI : MonoBehaviour
         attackPhase = AttackPhase.None;
         StopMoving(reason);
         RefreshAggroMemory("RecoverEnter", true);
-        stateEndTime = Time.time + attackRecoverDuration;
+        stateEndTime = Time.time + currentAttackRecoverDuration;
     }
 
     private void EnterHurt()
@@ -836,7 +857,7 @@ public class SlimeAI : MonoBehaviour
         Vector3 pursuitPosition = GetPursuitTarget();
         if (TryGetNearestWalkablePoint(pursuitPosition, targetSnapRadius, out Vector3 targetPosition))
         {
-            SetMoveTarget(targetPosition, chaseSpeedMultiplier, targetPosition - transform.position, forceIntentUpdate);
+            SetMoveTarget(targetPosition, currentChaseSpeedMultiplier, targetPosition - transform.position, forceIntentUpdate);
             return;
         }
 
@@ -981,7 +1002,7 @@ public class SlimeAI : MonoBehaviour
 
     private bool CanDetectPlayer(float distanceToPlayer)
     {
-        if (playerTransform == null || distanceToPlayer > detectionRange)
+        if (playerTransform == null || distanceToPlayer > currentDetectionRange)
         {
             return false;
         }
@@ -1290,6 +1311,46 @@ public class SlimeAI : MonoBehaviour
         EnterDead();
     }
 
+    public void ApplyDdaProfile(DdaDifficultyProfile profile)
+    {
+        if (!ddaRuntimeValuesInitialized)
+        {
+            InitializeDdaRuntimeValues();
+        }
+
+        if (profile == null)
+        {
+            profile = DdaDifficultyProfile.Balanced();
+        }
+
+        currentChaseSpeedMultiplier = baseChaseSpeedMultiplier * DdaDifficultyProfile.ClampChaseSpeed(profile.chaseSpeedMultiplier);
+        currentAttackCooldown = baseAttackCooldown * DdaDifficultyProfile.ClampAttackCooldown(profile.attackCooldownMultiplier);
+        currentAttackRecoverDuration = baseAttackRecoverDuration * DdaDifficultyProfile.ClampRecoveryTime(profile.recoveryTimeMultiplier);
+        currentDetectionRange = baseDetectionRange * DdaDifficultyProfile.ClampDetectionRange(profile.detectionRangeMultiplier);
+
+        Debug.Log(
+            $"[DDA] SlimeAI {name} profile={profile.profileName} " +
+            $"chase={baseChaseSpeedMultiplier:0.##}->{currentChaseSpeedMultiplier:0.##} " +
+            $"cooldown={baseAttackCooldown:0.##}->{currentAttackCooldown:0.##} " +
+            $"recovery={baseAttackRecoverDuration:0.##}->{currentAttackRecoverDuration:0.##} " +
+            $"detection={baseDetectionRange:0.##}->{currentDetectionRange:0.##}",
+            this);
+    }
+
+    private void InitializeDdaRuntimeValues()
+    {
+        baseChaseSpeedMultiplier = chaseSpeedMultiplier;
+        baseAttackCooldown = attackCooldown;
+        baseAttackRecoverDuration = attackRecoverDuration;
+        baseDetectionRange = detectionRange;
+
+        currentChaseSpeedMultiplier = baseChaseSpeedMultiplier;
+        currentAttackCooldown = baseAttackCooldown;
+        currentAttackRecoverDuration = baseAttackRecoverDuration;
+        currentDetectionRange = baseDetectionRange;
+        ddaRuntimeValuesInitialized = true;
+    }
+
     private void LogStateChange(State previousState, State newState, string reason, float stateAge)
     {
         if (!enableDebugLogs || !debugStateTransitions)
@@ -1338,7 +1399,7 @@ public class SlimeAI : MonoBehaviour
         }
 
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
+        Gizmos.DrawWireSphere(transform.position, Application.isPlaying ? currentDetectionRange : detectionRange);
 
         Gizmos.color = Color.gray;
         Gizmos.DrawWireSphere(transform.position, loseInterestRange);
@@ -1463,6 +1524,28 @@ public class SlimeAI : MonoBehaviour
         wanderDurationMax = behaviorProfile.WanderDurationMax;
         spawnSnapRadius = behaviorProfile.SpawnSnapRadius;
         targetSnapRadius = behaviorProfile.TargetSnapRadius;
+    }
+
+    private static EnemyAIState ToEnemyAIState(State slimeState)
+    {
+        switch (slimeState)
+        {
+            case State.Chase:
+            case State.Alert:
+                return EnemyAIState.Chasing;
+            case State.Attack:
+                return EnemyAIState.Attacking;
+            case State.Recover:
+                return EnemyAIState.Recovering;
+            case State.Hurt:
+                return EnemyAIState.Hurt;
+            case State.Dead:
+                return EnemyAIState.Dead;
+            case State.Idle:
+            case State.Wander:
+            default:
+                return EnemyAIState.Idle;
+        }
     }
 
     private static Vector2 QuantizeCardinal(Vector2 direction)
