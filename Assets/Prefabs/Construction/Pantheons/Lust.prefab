@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 659868915152633279}
   - component: {fileID: 2264698353978253099}
   - component: {fileID: 8381182475362024376}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Lust
   m_TagString: Untagged
   m_Icon: {fileID: 0}

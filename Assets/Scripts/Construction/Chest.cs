@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-public class Chest : MonoBehaviour
+public class Chest : MonoBehaviour, IInteractable
 {
     [Header("Chest Settings")]
     [SerializeField] private GameObject pickableItemPrefab;
@@ -17,16 +17,12 @@ public class Chest : MonoBehaviour
     [SerializeField] private string openTriggerName = "Open";
     [SerializeField] private float dropDelay = 0.4f;
 
-    private bool playerInRange;
     private bool opened;
-    private PlayerControls playerControls;
     private GameObject player;
 
 
     private void Start()
-    {
-        playerControls = InputManager.Instance.Controls;
-        playerControls.Combat.Interact.performed += OnInteract;
+    {       
         if (animator == null)
         {
             animator = GetComponent<Animator>();
@@ -35,38 +31,20 @@ public class Chest : MonoBehaviour
         Debug.Log("Chest animator = " + animator);
     }
 
-    private void OnDestroy()
+    public void Interact(GameObject interactor)
     {
-        if (playerControls != null)
-        {
-            playerControls.Combat.Interact.performed -= OnInteract;
-        }
-    }
+        if (opened) return;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            playerInRange = true;
-            player = collision.gameObject;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Player"))
-        {
-            playerInRange = false;
-            player = null;
-        }
-    }
-
-    private void OnInteract(InputAction.CallbackContext ctx)
-    {
-        if (!playerInRange || opened)
-            return;
+        player = interactor;
 
         StartCoroutine(OpenChestRoutine());
+    }
+
+    public string GetInteractionText()
+    {
+        if (opened) return "";
+
+        return "[E] Open Chest";
     }
 
     private void OpenChest()
