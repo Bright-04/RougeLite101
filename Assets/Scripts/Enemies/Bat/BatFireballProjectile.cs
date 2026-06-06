@@ -9,20 +9,26 @@ public class BatFireballProjectile : MonoBehaviour
 
     private float speed = 6f;
     private float damage = 8f;
+    private Vector2 moveDirection = Vector2.right;
     private GameObject owner;
     private Collider2D[] projectileColliders;
     private float lifeTimer;
 
-    public void Initialize(GameObject projectileOwner, Vector2 fireDirection, float projectileSpeed, float projectileDamage)
+    public void Initialize(
+        GameObject projectileOwner,
+        Vector2 fireDirection,
+        float projectileSpeed,
+        float projectileDamage,
+        float visualRotationOffset)
     {
-        Vector2 direction = fireDirection.sqrMagnitude > 0f ? fireDirection.normalized : Vector2.right;
+        moveDirection = fireDirection.sqrMagnitude > 0f ? fireDirection.normalized : Vector2.right;
         speed = Mathf.Max(0f, projectileSpeed);
         damage = Mathf.Max(0f, projectileDamage);
         owner = projectileOwner;
         lifeTimer = lifetime;
 
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle + visualRotationOffset);
         IgnoreOwnerColliders();
     }
 
@@ -46,7 +52,7 @@ public class BatFireballProjectile : MonoBehaviour
 
         if (wallLayer == 0)
         {
-            wallLayer = LayerMask.GetMask("Default", "Environment", "Obstacle");
+            wallLayer = LayerMask.GetMask("InvisibleWall", "Environment", "Obstacle");
         }
 
         lifeTimer = lifetime;
@@ -54,7 +60,7 @@ public class BatFireballProjectile : MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(Vector3.right * speed * Time.deltaTime, Space.Self);
+        transform.position += (Vector3)(moveDirection * speed * Time.deltaTime);
 
         lifeTimer -= Time.deltaTime;
         if (lifeTimer <= 0f)

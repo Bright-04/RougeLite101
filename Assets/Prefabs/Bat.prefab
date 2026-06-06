@@ -207,6 +207,7 @@ MonoBehaviour:
   hoverAmplitude: 0.15
   hoverFrequency: 2
   showDebugRays: 1
+  navigationProbeRadius: 0.16
 --- !u!114 &8051272718715690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -229,6 +230,7 @@ MonoBehaviour:
   projectileSpeed: 6
   projectileDamage: 8
   projectileSpawnOffset: 0.9
+  projectileVisualRotationOffset: 180
   fireballProjectilePrefab: {fileID: 7383606399532893072, guid: 38b3e1eee89443847ba5bd7e68425dae, type: 3}
   firePoint: {fileID: 0}
   prepareTime: 0.6

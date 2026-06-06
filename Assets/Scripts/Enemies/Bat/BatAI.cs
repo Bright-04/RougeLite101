@@ -28,6 +28,7 @@ public class BatAI : MonoBehaviour, IDdaAdaptiveEnemy
     [SerializeField] private float projectileSpeed = 6f;
     [SerializeField] private float projectileDamage = 8f;
     [SerializeField] private float projectileSpawnOffset = 0.9f;
+    [SerializeField] private float projectileVisualRotationOffset = 180f;
     [SerializeField] private GameObject fireballProjectilePrefab;
     [SerializeField] private Transform firePoint;
 
@@ -256,13 +257,13 @@ public class BatAI : MonoBehaviour, IDdaAdaptiveEnemy
             projectile = projectileObject.AddComponent<BatFireballProjectile>();
         }
 
-        projectile.Initialize(gameObject, direction, currentProjectileSpeed, currentProjectileDamage);
+        projectile.Initialize(gameObject, direction, currentProjectileSpeed, currentProjectileDamage, projectileVisualRotationOffset);
     }
 
     private Quaternion GetProjectileRotation(Vector2 direction)
     {
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        return Quaternion.Euler(0f, 0f, angle);
+        return Quaternion.Euler(0f, 0f, angle + projectileVisualRotationOffset);
     }
 
     private GameObject CreateFallbackProjectile(Vector3 spawnPosition)

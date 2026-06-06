@@ -19,9 +19,12 @@ public class BatPathFinding : MonoBehaviour
     
     [Header("Debug")]
     [SerializeField] private bool showDebugRays = false;
+    [SerializeField] private float navigationProbeRadius = 0.16f;
 
     private Rigidbody2D rb;
+    private Collider2D selfCollider;
     private Knockback knockback;
+    private DungeonNavigationProvider navigationProvider;
     private Vector2 currentTargetPosition;
     private bool hasTarget = false;
     private Vector2 avoidanceDirection = Vector2.zero;
@@ -38,6 +41,13 @@ public class BatPathFinding : MonoBehaviour
     {
         knockback = GetComponent<Knockback>();
         rb = GetComponent<Rigidbody2D>();
+        selfCollider = GetComponent<Collider2D>();
+        navigationProvider = GetComponent<DungeonNavigationProvider>();
+        if (navigationProvider == null)
+        {
+            navigationProvider = FindFirstObjectByType<DungeonNavigationProvider>();
+        }
+
         ownColliders = GetComponentsInChildren<Collider2D>();
         baseMoveSpeed = moveSpeed;
         currentMoveSpeed = baseMoveSpeed;
@@ -55,11 +65,11 @@ public class BatPathFinding : MonoBehaviour
         // Auto-detect obstacle layers
         if (obstacleLayer == 0)
         {
-            obstacleLayer = LayerMask.GetMask("Default", "Environment", "Obstacle");
+            obstacleLayer = LayerMask.GetMask("InvisibleWall", "Environment", "Obstacle");
         }
         else
         {
-            obstacleLayer |= LayerMask.GetMask("Default", "Environment", "Obstacle");
+            obstacleLayer |= LayerMask.GetMask("InvisibleWall", "Environment", "Obstacle");
         }
         
         hoverOffset = Random.Range(0f, Mathf.PI * 2f);
@@ -67,8 +77,17 @@ public class BatPathFinding : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if ((knockback != null && knockback.gettingKnockedBack) || !hasTarget)
+        if (rb == null || (knockback != null && knockback.gettingKnockedBack) || !hasTarget)
             return;
+
+        if (navigationProvider == null)
+        {
+            navigationProvider = GetComponent<DungeonNavigationProvider>();
+            if (navigationProvider == null)
+            {
+                navigationProvider = FindFirstObjectByType<DungeonNavigationProvider>();
+            }
+        }
 
         // Calculate desired direction toward target
         Vector2 desiredDirection = (currentTargetPosition - rb.position).normalized;
@@ -116,7 +135,14 @@ public class BatPathFinding : MonoBehaviour
         }
         
         Vector2 movement = finalDirection * (currentSpeed * Time.fixedDeltaTime);
-        rb.MovePosition(GetWallBlockedPosition(movement));
+        Vector2 nextPosition = GetWallBlockedPosition(movement);
+        if (navigationProvider != null && !navigationProvider.IsWalkable(nextPosition, selfCollider, navigationProbeRadius))
+        {
+            StopMoving();
+            return;
+        }
+
+        rb.MovePosition(nextPosition);
     }
     
     private Vector2 GetHoverMotion()
