@@ -1,70 +1,42 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BuffStatue : MonoBehaviour
+public class BuffStatue : MonoBehaviour, IInteractable
 {
     [SerializeField] private BuffSO buff;
 
-    private bool playerInRange;
     private bool used = false;
-    private GameObject player;
-    private PlayerControls playerControls;
 
-    private void Start()
-    {
-        playerControls = InputManager.Instance.Controls;
-        playerControls.Combat.Interact.performed += OnInteract;
-    }
-
-    private void OnDestroy()
-    {
-        if (playerControls != null)
-        {
-            playerControls.Combat.Interact.performed -= OnInteract;
-        }
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!collision.CompareTag("Player"))
-            return;
-
-        playerInRange = true;
-        player = collision.gameObject;
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (!collision.CompareTag("Player"))
-            return;
-
-        playerInRange = false;
-        player = null;
-    }
-
-    private void OnInteract(InputAction.CallbackContext ctx)
+    public void Interact(GameObject interactor)
     {
         Debug.Log("Tương tác được");
-        Debug.Log("playerInRange: " + playerInRange);
-        Debug.Log("used: " + used);
-        Debug.Log("player null: " + (player));
-        Debug.Log("buff null: " + (buff));
 
-        if (!playerInRange || used == true || player == null || buff == null)
+        if (used || buff == null)
         {
-            Debug.Log("Không cộng chi số được");
+            Debug.Log("Không cộng chỉ số được");
             return;
         }
+
         foreach (BuffModifierData modifier in buff.modifiersData)
         {
             if (modifier.StatModifier != null)
             {
-                modifier.StatModifier.AffectCharacter(player, modifier.value);
-
+                modifier.StatModifier.AffectCharacter(
+                    interactor,
+                    modifier.value
+                );
             }
         }
 
         used = true;
 
+        Debug.Log("Đã nhận buff");
+    }
+
+    public string GetInteractionText()
+    {
+        if (used) return "";
+
+        return $"[F] Receive {buff.buffName} Blessing";
     }
 }

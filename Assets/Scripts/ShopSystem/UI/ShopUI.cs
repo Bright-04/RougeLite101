@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.U2D;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 
 public class ShopUI : MonoBehaviour
 {

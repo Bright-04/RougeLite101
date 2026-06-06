@@ -1,56 +1,50 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
-public class Chest : MonoBehaviour
+public class Chest : MonoBehaviour, IInteractable
 {
     [Header("Chest Settings")]
     [SerializeField] private GameObject pickableItemPrefab;
     [SerializeField] private ItemSO[] possibleItems;
 
-    private bool playerInRange;
+    [Header("Chest Tier")]
+    [SerializeField] private ChestTier chestTier = ChestTier.Tier1;
+
+    [Header("Animation")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string openTriggerName = "Open";
+    [SerializeField] private float dropDelay = 0.4f;
+
     private bool opened;
-    private PlayerControls playerControls;
     private GameObject player;
 
+
     private void Start()
-    {
-        playerControls = InputManager.Instance.Controls;
-        playerControls.Combat.Interact.performed += OnInteract;
-    }
-
-    private void OnDestroy()
-    {
-        if (playerControls != null)
+    {       
+        if (animator == null)
         {
-            playerControls.Combat.Interact.performed -= OnInteract;
+            animator = GetComponent<Animator>();
         }
+
+        Debug.Log("Chest animator = " + animator);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void Interact(GameObject interactor)
     {
-        if (collision.CompareTag("Player"))
-        {
-            playerInRange = true;
-            player = collision.gameObject;
-        }
+        if (opened) return;
+
+        player = interactor;
+
+        StartCoroutine(OpenChestRoutine());
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    public string GetInteractionText()
     {
-        if (collision.CompareTag("Player"))
-        {
-            playerInRange = false;
-            player = null;
-        }
-    }
+        if (opened) return "";
 
-    private void OnInteract(InputAction.CallbackContext ctx)
-    {
-        if (!playerInRange || opened)
-            return;
-
-        OpenChest();
+        return "[F] Open Chest";
     }
 
     private void OpenChest()
@@ -58,7 +52,6 @@ public class Chest : MonoBehaviour
         if (pickableItemPrefab == null || possibleItems == null || possibleItems.Length == 0)
             return;
 
-        opened = true;
 
         ItemSO chosenItem = GetRandomItemByRarity(player);
 
@@ -130,18 +123,47 @@ public class Chest : MonoBehaviour
     {
         float roll = Random.Range(0f, 100f);
 
-        if (roll < 1f)
-            return Rarity.Legendary;
+        switch (chestTier)
+        {
+            case ChestTier.Tier1:
+                // Legendary 0.5%, Epic 4.5%, Rare 15%, Uncommon 30%, Common 50%
+                if (roll < 0.5f) return Rarity.Legendary;
+                if (roll < 5f) return Rarity.Epic;
+                if (roll < 20f) return Rarity.Rare;
+                if (roll < 50f) return Rarity.Uncommon;
+                return Rarity.Common;
 
-        if (roll < 10f)
-            return Rarity.Epic;
+            case ChestTier.Tier2:
+                // Legendary 1%, Epic 9%, Rare 20%, Uncommon 30%, Common 40%
+                if (roll < 1f) return Rarity.Legendary;
+                if (roll < 10f) return Rarity.Epic;
+                if (roll < 30f) return Rarity.Rare;
+                if (roll < 60f) return Rarity.Uncommon;
+                return Rarity.Common;
 
-        if (roll < 30f)
-            return Rarity.Rare;
-
-        if (roll < 60f)
-            return Rarity.Uncommon;
+            case ChestTier.Tier3:
+                // Legendary 3%, Epic 17%, Rare 30%, Uncommon 30%, Common 20%
+                if (roll < 3f) return Rarity.Legendary;
+                if (roll < 20f) return Rarity.Epic;
+                if (roll < 50f) return Rarity.Rare;
+                if (roll < 80f) return Rarity.Uncommon;
+                return Rarity.Common;
+        }
 
         return Rarity.Common;
+    }
+
+    private IEnumerator OpenChestRoutine()
+    {
+        opened = true;
+
+        if (animator != null)
+        {
+            animator.SetTrigger(openTriggerName);
+        }
+
+        yield return new WaitForSeconds(dropDelay);
+
+        OpenChest();
     }
 }

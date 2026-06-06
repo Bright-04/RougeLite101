@@ -87,7 +87,6 @@ public class Item : MonoBehaviour, IInteractable
     {
         GetComponent<Collider2D>().enabled = false;
         StartCoroutine(AnimateItemPickup());
-
     }
 
     private IEnumerator AnimateItemPickup()

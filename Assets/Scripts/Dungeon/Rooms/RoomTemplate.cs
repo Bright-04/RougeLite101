@@ -318,6 +318,7 @@ public class RoomTemplate : MonoBehaviour
             );
 
             GameObject spawnedEn = Instantiate(enemyPrefab, randomPosition, Quaternion.identity);
+            DdaTelemetryService.Instance?.ApplyCurrentProfileToEnemy(spawnedEn);
             
             // Ghi nhận trực tiếp GameObject vào danh sách. Khi nó chết (bị Destroy), list sẽ tự cập nhật thành null.
             activeEnemies.Add(spawnedEn);
