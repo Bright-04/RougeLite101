@@ -9,6 +9,7 @@ public class AutoSaveManager : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private PlayerStats playerStats;
+    [SerializeField] private PlayerMoney playerMoney;
     [SerializeField] private EquipmentManager equipmentManager;
 
     private float autoSaveTimer = 0f;
@@ -22,6 +23,15 @@ public class AutoSaveManager : MonoBehaviour
             if (playerStats == null)
             {
                 Debug.LogError("AutoSaveManager: PlayerStats not found! Please assign it in the inspector.");
+            }
+        }
+
+        if (playerMoney == null)
+        {
+            playerMoney = FindAnyObjectByType<PlayerMoney>();
+            if (playerMoney == null)
+            {
+                Debug.LogError("AutoSaveManager: PlayerMoney not found! Please assign it in the inspector.");
             }
         }
 
@@ -72,11 +82,22 @@ public class AutoSaveManager : MonoBehaviour
         if (playerStats != null)
         {
             SaveSystem.SavePlayerStats(playerStats);
-            Debug.Log($"Game saved at {System.DateTime.Now:HH:mm:ss}");
+            
         }
         else
         {
             Debug.LogError("PlayerStats không tìm thấy!");
+        }
+
+        //save money
+        if (playerMoney != null)
+        {
+            SaveSystem.SavePlayerMoney(playerMoney);
+
+        }
+        else
+        {
+            Debug.LogError("PlayerMoney không tìm thấy!");
         }
 
         //save player
@@ -89,24 +110,39 @@ public class AutoSaveManager : MonoBehaviour
                 SaveSystem.SavePlayerPositionInGameHome(player);
             }              
         }
+
+        Debug.Log($"Game saved at {System.DateTime.Now:HH:mm:ss}");
     }
 
     public void LoadGame()
     {
-        //player stats
         PlayerStatsData playerStatsData = SaveSystem.LoadPlayerStats();
+        PlayerMoneySaveData playerMoneySaveData = SaveSystem.LoadPlayerMoney();
 
-        if (playerStatsData != null)
+        if (playerStatsData != null && playerMoneySaveData != null)
         {
+            //player stats
             if (playerStats != null)
             {
                 playerStats.LoadFromData(playerStatsData);
-                Debug.Log("Game loaded successfully!");
+                Debug.Log("player stats loaded successfully!");
             }
             else
             {
                 Debug.LogError("PlayerStats không tìm thấy!");
             }
+
+            //player money
+            if (playerMoney != null)
+            {
+                playerMoney.LoadFromData(playerMoneySaveData);
+                Debug.Log("PlayerMoney loaded successfully!");
+            }
+            else
+            {
+                Debug.LogError("PlayerMoney không tìm thấy!");
+            }
+
         }
         else
         {
@@ -128,7 +164,7 @@ public class AutoSaveManager : MonoBehaviour
                 player.transform.position = position;
             }
 
-        }
+        }        
     }
 
     public void ManualSave()

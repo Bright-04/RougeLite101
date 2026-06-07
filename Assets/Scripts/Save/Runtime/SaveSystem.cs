@@ -110,5 +110,53 @@ public static class SaveSystem
             return null;
         }
     }
+
+    //========================== PlayerMoney ===============================
+    // Helper method to get the full path with folder structure
+    private static string GetPlayerMoneyPath()
+    {
+        string rootPath = Path.Combine(Application.persistentDataPath, saveFolderName);
+        string playerPath = Path.Combine(rootPath, playerDataFolder);
+
+        // Ensure directories exist
+        if (!Directory.Exists(playerPath))
+        {
+            Directory.CreateDirectory(playerPath);
+        }
+
+        return Path.Combine(playerPath, "playerMoney.sav");
+    }
+
+    public static void SavePlayerMoney(PlayerMoney gold)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        string path = GetPlayerMoneyPath();
+        FileStream stream = new FileStream(path, FileMode.Create);
+
+        PlayerMoneySaveData playerMoney = new PlayerMoneySaveData(gold);
+
+        formatter.Serialize(stream, playerMoney);
+        stream.Close();
+    }
+
+    public static PlayerMoneySaveData LoadPlayerMoney()
+    {
+        string path = GetPlayerMoneyPath();
+
+        if (File.Exists(path))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            PlayerMoneySaveData data = formatter.Deserialize(stream) as PlayerMoneySaveData;
+            stream.Close();
+            return data;
+        }
+        else
+        {
+            Debug.LogWarning("Save file not found at: " + path);
+            return null;
+        }
+    }
 }
 
