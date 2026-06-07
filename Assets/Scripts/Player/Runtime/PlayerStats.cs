@@ -116,6 +116,9 @@ public class PlayerStats : MonoBehaviour
 
     public float GetMaxHP()
     {
+        if ((maxHP + buffMaxHP) <= 0){
+            return 1;
+        }
         return maxHP + buffMaxHP;
     }
 
@@ -131,6 +134,9 @@ public class PlayerStats : MonoBehaviour
 
     public float GetRegenHP()
     {
+        if((hpRegen + buffHpRegen) <= 0){
+            return 1;
+        }
         return hpRegen + buffHpRegen;
     }
 
@@ -141,6 +147,9 @@ public class PlayerStats : MonoBehaviour
 
     public float GetMaxMana()
     {
+        if((maxMana + buffMaxMana) <= 0){
+            return 1;
+        }
         return maxMana + buffMaxMana;
     }
 
@@ -156,6 +165,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetRegenMana()
     {
+        if ((manaRegen + buffManaRegen) <= 0)
+        {
+            return 1;
+        }
         return manaRegen + buffManaRegen;
     }
 
@@ -166,6 +179,9 @@ public class PlayerStats : MonoBehaviour
 
     public float GetMaxStamina()
     {
+        if((maxStamina + buffMaxStamina) <= 0){
+            return 1;
+        }
         return maxStamina + buffMaxStamina;
     }
 
@@ -181,6 +197,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetRegenStamina()
     {
+        if ((staminaRegen + buffStaminaRegen) <= 0)
+        {
+            return 1;
+        }
         return staminaRegen + buffStaminaRegen;
     }
 
@@ -201,6 +221,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetAttackDamage()
     {
+        if((attackDamage + buffAttackDamage) <= 0)
+        {
+            return 1;
+        }
         return attackDamage + buffAttackDamage;
     }
 
@@ -211,6 +235,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetAbilityPower()
     {
+        if((abilityPower + buffAbilityPower) <= 0)
+        {
+            return 1;
+        }
         return abilityPower + buffAbilityPower;
     }
 
@@ -221,6 +249,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetCritChance()
     {
+        if((critChance + buffCritChance) <= 0)
+        {
+            return 1;
+        }
         return critChance + buffCritChance;
     }
 
@@ -231,12 +263,16 @@ public class PlayerStats : MonoBehaviour
 
     public float GetCritDamage()
     {
+        if((critDamage + buffCritDamage) <= 0)
+        {
+            return 1;
+        }
         return critDamage + buffCritDamage;
     }
 
     public float GetNoBuffCritDamage()
     {
-        return critDamage + buffCritDamage;
+        return critDamage;
     }
 
     public float GetLuck()
@@ -541,7 +577,7 @@ public class PlayerStats : MonoBehaviour
     {
         Debug.Log("RESET STATS CALLED");
         isDead = false;
-        //ResetAllBuffs();
+        ResetAllBuffs();
         currentHP = GetMaxHP();
         currentMana = GetMaxMana();
         currentStamina = GetMaxStamina();

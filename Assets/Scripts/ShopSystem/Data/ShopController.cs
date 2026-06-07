@@ -30,16 +30,6 @@ public class ShopController : MonoBehaviour
     //    shopUI.OnInitiateShopItemList -= HandleShopItemList;
     //}
 
-    private void Awake()
-    {
-        Debug.Log("InventoryController spawned");
-    }
-
-    private void OnDestroy()
-    {
-        Debug.Log("InventoryController destroyed");
-    }
-
     private void OnEnable()
     {
         shopUI.OnClosingShop += CloseShop;
@@ -64,16 +54,7 @@ public class ShopController : MonoBehaviour
             Debug.LogError("InputManager.Instance is null! Make sure InputManager prefab exists in the scene.");
             return;
         }
-        //playerControls = InputManager.Instance.Controls;
-        if (inventoryController == null)
-        {
-            inventoryController = FindFirstObjectByType<InventoryController>();
-        }
-
-        if (playerMoney == null)
-        {
-            playerMoney = FindFirstObjectByType<PlayerMoney>();
-        }
+        //playerControls = InputManager.Instance.Controls;       
     }
 
     private void PrepareUI(ShopState currentState)
@@ -260,8 +241,16 @@ public class ShopController : MonoBehaviour
         if (!InputManager.Instance.IsUIActive())
         {
             CurrentShopData = shopData;
+            inventoryController = interactor.GetComponent<InventoryController>();
+            playerMoney = interactor.GetComponent<PlayerMoney>();
+            if (inventoryController == null || playerMoney == null)
+            {
+                Debug.LogError("Interactor missing InventoryController or PlayerMoney");
+                return;
+            }
             CurrentShopData.RestockAllItems();
-            shopUI.ShowShop(CurrentShopData);          
+            shopUI.ShowShop(CurrentShopData);    
+            
             // Disable gameplay inputs
             InputManager.Instance.EnableUIMap();
             Debug.Log("OPEN Shop");
@@ -273,6 +262,8 @@ public class ShopController : MonoBehaviour
         if (InputManager.Instance.IsUIActive())
         {
             shopUI.HideShop();
+            inventoryController = null;
+            playerMoney = null;
             // Enable gameplay inputs
             InputManager.Instance.DisableUIMap();
             Debug.Log("CLOSE Shop");
