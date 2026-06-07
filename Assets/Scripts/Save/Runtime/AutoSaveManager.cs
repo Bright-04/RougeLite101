@@ -10,6 +10,7 @@ public class AutoSaveManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerStats playerStats;
     [SerializeField] private PlayerMoney playerMoney;
+    [SerializeField] private InventoryController inventoryController;
     [SerializeField] private EquipmentManager equipmentManager;
 
     private float autoSaveTimer = 0f;
@@ -32,6 +33,15 @@ public class AutoSaveManager : MonoBehaviour
             if (playerMoney == null)
             {
                 Debug.LogError("AutoSaveManager: PlayerMoney not found! Please assign it in the inspector.");
+            }
+        }
+
+        if (inventoryController == null)
+        {
+            inventoryController = FindAnyObjectByType<InventoryController>();
+            if (inventoryController == null)
+            {
+                Debug.LogWarning("AutoSaveManager: InventoryController not found. Weapon loadout will not be saved.");
             }
         }
 
@@ -100,7 +110,18 @@ public class AutoSaveManager : MonoBehaviour
             Debug.LogError("PlayerMoney không tìm thấy!");
         }
 
-        //save player
+        //save safe inventory
+        if (inventoryController != null)
+        {
+            SaveSystem.SavePlayerSafeInventory(inventoryController.SafeInventory);
+
+        }
+        else
+        {
+            Debug.LogError("InventoryController không tìm thấy!");
+        }
+
+        //save player position
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name == "GameHome")
         {
@@ -118,8 +139,9 @@ public class AutoSaveManager : MonoBehaviour
     {
         PlayerStatsData playerStatsData = SaveSystem.LoadPlayerStats();
         PlayerMoneySaveData playerMoneySaveData = SaveSystem.LoadPlayerMoney();
+        SafeInventorySaveData safeInventorySaveData = SaveSystem.LoadPlayerSafeInventory();
 
-        if (playerStatsData != null && playerMoneySaveData != null)
+        if (playerStatsData != null)
         {
             //player stats
             if (playerStats != null)
@@ -130,8 +152,12 @@ public class AutoSaveManager : MonoBehaviour
             else
             {
                 Debug.LogError("PlayerStats không tìm thấy!");
-            }
+            }           
 
+        }
+
+        if(playerMoneySaveData != null)
+        {
             //player money
             if (playerMoney != null)
             {
@@ -142,11 +168,20 @@ public class AutoSaveManager : MonoBehaviour
             {
                 Debug.LogError("PlayerMoney không tìm thấy!");
             }
-
         }
-        else
+
+        if(safeInventorySaveData != null)
         {
-            Debug.Log("Không có save file. Starting new game...");
+            //player safe inventory
+            if (inventoryController != null)
+            {
+                inventoryController.LoadSafeInventory(safeInventorySaveData);
+                Debug.Log("player safe inventory loaded successfully!");
+            }
+            else
+            {
+                Debug.LogError("InventoryController không tìm thấy!");
+            }
         }
 
         //GameHome position

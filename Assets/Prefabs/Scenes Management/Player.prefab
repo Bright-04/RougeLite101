@@ -275,7 +275,7 @@ MonoBehaviour:
   spellSlots:
   - {fileID: 11400000, guid: 1d46500fa33843c498a3b4c49f710b5d, type: 2}
   - {fileID: 11400000, guid: 7ba1a5d4b89e65147a3abdc8ab62d3c5, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 1d46500fa33843c498a3b4c49f710b5d, type: 2}
 --- !u!114 &1339241568981859123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -489,6 +489,7 @@ MonoBehaviour:
   dungeonInventoryData: {fileID: 11400000, guid: 9563c9a8f6befc0418b7b48ef404a27d, type: 2}
   pickupableItemPrefab: {fileID: 2507520823584168888, guid: 51d1448ffc34f7a4ab1e0c113caf8ddf, type: 3}
   playerTransform: {fileID: 113293529403524740}
+  itemDatabase: {fileID: 11400000, guid: ee0a8e177282a6647bc508d05f5bb4a5, type: 2}
   initialItems: []
 --- !u!114 &8703753072280480964
 MonoBehaviour:

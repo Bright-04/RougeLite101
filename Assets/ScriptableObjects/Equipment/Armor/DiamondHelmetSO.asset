@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: DiamondHelmetSO
   m_EditorClassIdentifier: Assembly-CSharp::ArmorDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: Diamond_Helmet
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Diamond Helmet
   <Description>k__BackingField: Diamond Helmet
@@ -23,7 +24,8 @@ MonoBehaviour:
   - statModifier: {fileID: 11400000, guid: 889ee5822107d38479bb48f31d70060a, type: 2}
     value: 69
   rarity: 3
-  equipmentId: Diamond_Helmet
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: 
   equipmentClass: 
   tags: []

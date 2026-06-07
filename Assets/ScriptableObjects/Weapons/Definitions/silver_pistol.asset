@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: silver_pistol
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: silver_pistol
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Silver Pistol
   <Description>k__BackingField: A tier 4 silver pistol.
   <ItemImage>k__BackingField: {fileID: 575697558848083804, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: silver_pistol
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: silver
   equipmentClass: pistol
   tags:

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: ManaPotion
   m_EditorClassIdentifier: Assembly-CSharp::ConsumableItemSO
   <IsStackable>k__BackingField: 1
+  <ItemId>k__BackingField: mana_potion
   <MaxStackSize>k__BackingField: 99
   <Name>k__BackingField: Mana Potion
   <Description>k__BackingField: 'A magic potion that restored your mana  '
@@ -20,3 +21,6 @@ MonoBehaviour:
   modifiersData:
   - statModifier: {fileID: 11400000, guid: e05a11d36dda7bd4e97a3134200f7cb4, type: 2}
     value: 10
+  rarity: 0
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50

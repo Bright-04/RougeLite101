@@ -19,8 +19,12 @@ public class InventoryController : MonoBehaviour
     private GameObject pickupableItemPrefab;
     [SerializeField]
     private Transform playerTransform;
+    [SerializeField]
+    private ItemDatabase itemDatabase;
 
     public InventorySO CurrentInventoryData { get; private set;}
+    public InventorySO SafeInventory => safeInventoryData;
+    public InventorySO DungeonInventory => dungeonInventoryData;
 
     public List<InventoryItem> initialItems = new List<InventoryItem>();
 
@@ -371,4 +375,31 @@ public class InventoryController : MonoBehaviour
         isPlayerDead = true;
         dungeonInventoryData.Clear();
     }
+
+    //========== LOAD SAFE INVENTORY =============
+    //=======LOAD DATA===========
+    public void LoadSafeInventory(SafeInventorySaveData inventoryData)
+    {
+        if (inventoryData == null)
+        {
+            Debug.LogWarning("InventoryController: LoadSafeInventory called with null data.", this);
+            return;
+        }
+
+        safeInventoryData.Clear();
+
+        foreach (var savedItem in inventoryData.items)
+        {
+            ItemSO item = itemDatabase.GetItem(savedItem.itemId);
+
+            if (item == null)
+            {
+                Debug.LogWarning($"Missing item: {savedItem.itemId}");
+                continue;
+            }
+
+            safeInventoryData.AddItem(item, savedItem.quantity);
+        }
+    }
+
 }

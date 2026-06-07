@@ -324,6 +324,7 @@ public class InventorySO : ScriptableObject
 
         return result;
     }
+
 }
 
 [Serializable]

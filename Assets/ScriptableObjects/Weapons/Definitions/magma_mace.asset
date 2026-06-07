@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: magma_mace
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: magma_mace
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Magma Mace
   <Description>k__BackingField: A tier 10 magma mace.
   <ItemImage>k__BackingField: {fileID: 4539396030733196101, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: magma_mace
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: magma
   equipmentClass: mace
   tags:

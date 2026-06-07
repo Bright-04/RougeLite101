@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: bow_basic
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: bow_basic
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Wooden Bow
   <Description>k__BackingField: just a normal wooden bow
@@ -21,7 +22,6 @@ MonoBehaviour:
   rarity: 0
   <BuyPrice>k__BackingField: 100
   <SellPrice>k__BackingField: 50
-  equipmentId: bow_basic
   series: basic
   equipmentClass: bow
   tags:

@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: bronze_hammer
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: bronze_hammer
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Bronze Hammer
   <Description>k__BackingField: A tier 2 bronze hammer.
   <ItemImage>k__BackingField: {fileID: -6152008636666078500, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: bronze_hammer
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: bronze
   equipmentClass: hammer
   tags:

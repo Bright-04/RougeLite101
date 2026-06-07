@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: LeatherHelmetSO
   m_EditorClassIdentifier: Assembly-CSharp::ArmorDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: Leather_helmet
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Leather helmet
   <Description>k__BackingField: Leather helmet
@@ -21,7 +22,8 @@ MonoBehaviour:
   - statModifier: {fileID: 11400000, guid: f1fa5a31f0a30e1418c6e63144e9b296, type: 2}
     value: 67
   rarity: 0
-  equipmentId: Leather_helmet
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: 
   equipmentClass: 
   tags: []

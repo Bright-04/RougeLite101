@@ -158,5 +158,52 @@ public static class SaveSystem
             return null;
         }
     }
+
+    //========================== Safe Inventory ===============================
+    private static string GetPlayerSafeInventoryPath()
+    {
+        string rootPath = Path.Combine(Application.persistentDataPath, saveFolderName);
+        string playerPath = Path.Combine(rootPath, playerDataFolder);
+
+        // Ensure directories exist
+        if (!Directory.Exists(playerPath))
+        {
+            Directory.CreateDirectory(playerPath);
+        }
+
+        return Path.Combine(playerPath, "playerSafeInventory.sav");
+    }
+
+    public static void SavePlayerSafeInventory(InventorySO inventory)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        string path = GetPlayerSafeInventoryPath();
+        FileStream stream = new FileStream(path, FileMode.Create);
+
+        SafeInventorySaveData playerSafeInventory = new SafeInventorySaveData(inventory);
+
+        formatter.Serialize(stream, playerSafeInventory);
+        stream.Close();
+    }
+
+    public static SafeInventorySaveData LoadPlayerSafeInventory()
+    {
+        string path = GetPlayerSafeInventoryPath();
+
+        if (File.Exists(path))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            SafeInventorySaveData data = formatter.Deserialize(stream) as SafeInventorySaveData;
+            stream.Close();
+            return data;
+        }
+        else
+        {
+            Debug.LogWarning("Save file not found at: " + path);
+            return null;
+        }
+    }
 }
 

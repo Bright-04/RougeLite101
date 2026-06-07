@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: staff_fire
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: fire_staff
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Fire Staff
   <Description>k__BackingField: A staff that launches fire projectiles.
   <ItemImage>k__BackingField: {fileID: 6146745670733231223, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: staff_fire
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: basic
   equipmentClass: staff
   tags:

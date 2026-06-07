@@ -14,6 +14,9 @@ public abstract class ItemSO : ScriptableObject
     public int ID => GetInstanceID();
 
     [field: SerializeField]
+    public string ItemId { get; set; }
+
+    [field: SerializeField]
     public int MaxStackSize { get; set; } = 1;
 
     [field: SerializeField]

@@ -5,6 +5,20 @@ using System.Collections.Generic;
 public class SafeInventorySaveData
 {
     public List<InventoryItemSaveData> items = new List<InventoryItemSaveData>();
+
+    public SafeInventorySaveData(InventorySO inventory)
+    {
+        foreach (var pair in inventory.GetCurrentInventoryState())
+        {
+            InventoryItem item = pair.Value;
+
+            items.Add(new InventoryItemSaveData
+            {
+                itemId = item.item.ItemId,
+                quantity = item.quantity
+            });
+        }
+    }
 }
 
 [Serializable]
@@ -16,7 +30,6 @@ public class DungeonInventorySaveData
 [Serializable]
 public class InventoryItemSaveData
 {
-    public string stableItemId;
+    public string itemId;
     public int quantity;
-    public string debugItemName;
 }
