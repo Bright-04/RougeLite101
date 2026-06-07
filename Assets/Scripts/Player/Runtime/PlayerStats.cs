@@ -635,7 +635,7 @@ public class PlayerStats : MonoBehaviour
     /// <summary>
     /// Load data từ PlayerStatsData vào PlayerStats
     /// </summary>
-    public void LoadFromData(PlayerStatsSaveData data)
+    public void LoadFromData(PlayerStatsData data)
     {
         if (data == null)
         {
@@ -674,7 +674,6 @@ public class PlayerStats : MonoBehaviour
         currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
-
         Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
     }
 }

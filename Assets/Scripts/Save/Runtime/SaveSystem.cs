@@ -1,205 +1,114 @@
-using System;
-using System.IO;
 using UnityEngine;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public static class SaveSystem
 {
-    public const int CurrentSaveVersion = 1;
+    // Root save folder
+    private static string saveFolderName = "GameSaves";
 
-    private const string SaveFolderName = "GameSaves";
-    private const string SaveVersionFolderName = "v1";
-    private const string ProfileFileName = "profile.json";
-    private const string RunSnapshotFileName = "runSnapshot.json";
-    private const string ShopRestockFileName = "shopRestock.json";
+    // Sub-folders
+    private static string playerDataFolder = "PlayerData";
 
-    private static string RootDirectoryPath => Path.Combine(Application.persistentDataPath, SaveFolderName, SaveVersionFolderName);
-    private static string ProfilePath => Path.Combine(RootDirectoryPath, ProfileFileName);
-    private static string RunSnapshotPath => Path.Combine(RootDirectoryPath, RunSnapshotFileName);
-    private static string ShopRestockPath => Path.Combine(RootDirectoryPath, ShopRestockFileName);
-
-    public static bool HasProfileSave()
+    //========================== PlayerStats ==============================================
+    // Helper method to get the full path with folder structure
+    private static string GetPlayerStatsPath()
     {
-        return File.Exists(ProfilePath);
-    }
+        string rootPath = Path.Combine(Application.persistentDataPath, saveFolderName);
+        string playerPath = Path.Combine(rootPath, playerDataFolder);
 
-    public static ProfileSaveFile LoadProfile()
-    {
-        return ReadJson<ProfileSaveFile>(ProfilePath);
-    }
-
-    public static void SaveProfile(ProfileSaveFile profile)
-    {
-        WriteJson(ProfilePath, profile, "profile");
-    }
-
-    public static void DeleteProfile()
-    {
-        DeleteSaveFile(ProfilePath, "profile");
-    }
-
-    public static bool HasRunSnapshot()
-    {
-        return File.Exists(RunSnapshotPath);
-    }
-
-    public static RunSnapshotFile LoadRunSnapshot()
-    {
-        return ReadJson<RunSnapshotFile>(RunSnapshotPath);
-    }
-
-    public static void SaveRunSnapshot(RunSnapshotFile snapshot)
-    {
-        WriteJson(RunSnapshotPath, snapshot, "run snapshot");
-    }
-
-    public static void DeleteRunSnapshot()
-    {
-        DeleteSaveFile(RunSnapshotPath, "run snapshot");
-    }
-
-    public static ShopRestockSaveFile LoadShopRestock()
-    {
-        return ReadJson<ShopRestockSaveFile>(ShopRestockPath);
-    }
-
-    public static void SaveShopRestock(ShopRestockSaveFile shop)
-    {
-        WriteJson(ShopRestockPath, shop, "shop restock");
-    }
-
-    public static ProfileSaveFile CreateDefaultProfile()
-    {
-        return new ProfileSaveFile
+        // Ensure directories exist
+        if (!Directory.Exists(playerPath))
         {
-            version = CurrentSaveVersion,
-            playerStats = new PlayerStatsSaveData(),
-            equipment = new EquipmentSaveData(),
-            playerMoney = new PlayerMoneySaveData(),
-            safeInventory = new SafeInventorySaveData(),
-            hub = new HubSaveData()
-        };
-    }
-
-    private static void EnsureRootDirectoryExists()
-    {
-        if (!Directory.Exists(RootDirectoryPath))
-        {
-            Directory.CreateDirectory(RootDirectoryPath);
-        }
-    }
-
-    private static void CleanupTempFile(string targetPath)
-    {
-        string tempPath = targetPath + ".tmp";
-        try
-        {
-            if (File.Exists(tempPath))
-            {
-                File.Delete(tempPath);
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning($"SaveSystem: Failed to clean temp file '{tempPath}'. {ex.Message}");
-        }
-    }
-
-    private static void DeleteSaveFile(string path, string label)
-    {
-        CleanupTempFile(path);
-
-        try
-        {
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning($"SaveSystem: Failed to delete {label} file '{path}'. {ex.Message}");
-        }
-    }
-
-    private static T ReadJson<T>(string path) where T : class
-    {
-        CleanupTempFile(path);
-
-        if (!File.Exists(path))
-        {
-            return null;
+            Directory.CreateDirectory(playerPath);
         }
 
-        try
+        return Path.Combine(playerPath, "playerStats.sav");
+    }
+
+    public static void SavePlayerStats(PlayerStats playerStats)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        string path = GetPlayerStatsPath();
+        FileStream stream = new FileStream(path, FileMode.Create);
+
+        PlayerStatsData playerStatsData = new PlayerStatsData(playerStats);
+
+        formatter.Serialize(stream, playerStatsData);
+        stream.Close();
+
+        Debug.Log("Player stats saved to: " + path);
+    }
+
+    public static PlayerStatsData LoadPlayerStats()
+    {
+        string path = GetPlayerStatsPath();
+
+        if (File.Exists(path))
         {
-            string json = File.ReadAllText(path);
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                Debug.LogWarning($"SaveSystem: Save file '{path}' is empty.");
-                return null;
-            }
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
 
-            T data = JsonUtility.FromJson<T>(json);
-            if (data == null)
-            {
-                Debug.LogWarning($"SaveSystem: Save file '{path}' is invalid or corrupt.");
-            }
+            PlayerStatsData data = formatter.Deserialize(stream) as PlayerStatsData;
+            stream.Close();
 
+            Debug.Log("Player stats loaded from: " + path);
             return data;
         }
-        catch (Exception ex)
+        else
         {
-            Debug.LogWarning($"SaveSystem: Failed to read save file '{path}'. {ex.Message}");
+            Debug.LogWarning("Save file not found at: " + path);
             return null;
         }
     }
 
-    private static void WriteJson<T>(string path, T data, string label)
+
+    //========================== Player Position in GameHome ===============================
+    // Helper method to get the full path with folder structure
+    private static string GetPositionInGameHomePath()
     {
-        if (data == null)
+        string rootPath = Path.Combine(Application.persistentDataPath, saveFolderName);
+        string playerPath = Path.Combine(rootPath, playerDataFolder);
+
+        // Ensure directories exist
+        if (!Directory.Exists(playerPath))
         {
-            Debug.LogWarning($"SaveSystem: Ignoring null {label} save payload.");
-            return;
+            Directory.CreateDirectory(playerPath);
         }
 
-        EnsureRootDirectoryExists();
-        CleanupTempFile(path);
+        return Path.Combine(playerPath, "playerPositionInGameHome.sav");
+    }
 
-        string tempPath = path + ".tmp";
+    public static void SavePlayerPositionInGameHome(GameObject player)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        string path = GetPositionInGameHomePath();
+        FileStream stream = new FileStream(path, FileMode.Create);
 
-        try
+        GameHomePositionData playerPositionInGameHomeData = new GameHomePositionData(player);
+
+        formatter.Serialize(stream, playerPositionInGameHomeData);
+        stream.Close();        
+    }
+
+    public static GameHomePositionData LoadPlayerPositionInGameHome()
+    {
+        string path = GetPositionInGameHomePath();
+
+        if (File.Exists(path))
         {
-            string json = JsonUtility.ToJson(data, true);
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
 
-            using (FileStream stream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None))
-            using (StreamWriter writer = new StreamWriter(stream))
-            {
-                writer.Write(json);
-                writer.Flush();
-                stream.Flush(true);
-            }
-
-            if (File.Exists(path))
-            {
-                try
-                {
-                    File.Replace(tempPath, path, null);
-                }
-                catch (Exception)
-                {
-                    File.Delete(path);
-                    File.Move(tempPath, path);
-                }
-            }
-            else
-            {
-                File.Move(tempPath, path);
-            }
+            GameHomePositionData data = formatter.Deserialize(stream) as GameHomePositionData;
+            stream.Close();          
+            return data;
         }
-        catch (Exception ex)
+        else
         {
-            Debug.LogWarning($"SaveSystem: Failed to write {label} file '{path}'. {ex.Message}");
-            CleanupTempFile(path);
+            Debug.LogWarning("Save file not found at: " + path);
+            return null;
         }
     }
 }
+

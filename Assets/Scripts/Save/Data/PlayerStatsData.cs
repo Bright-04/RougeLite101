@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Class chứa data cần save - PHẢI có [Serializable]
@@ -29,21 +30,10 @@ public class PlayerStatsData
     public float critDamage;
     public float luck;
 
-    // Weapon Loadout
-    public string mainWeaponId;
-    public string subWeaponId;
-    public int activeSlot;
-
-    // Armor Loadout
-    public string shieldArmorId;
-    public string helmetArmorId;
-    public string greavesArmorId;
-    public string bootsArmorId;
-
     // <summary>
     /// Constructor từ PlayerStats
     /// </summary>
-    public PlayerStatsData(PlayerStats stats, EquipmentManager equipment)
+    public PlayerStatsData(PlayerStats stats)
     {
         // Level
         level = stats.GetLevel();
@@ -67,17 +57,5 @@ public class PlayerStatsData
         critChance = stats.GetNoBuffCritChance();
         critDamage = stats.GetNoBuffCritDamage();
         luck = stats.GetNoBuffLuck();
-
-        mainWeaponId = equipment != null ? equipment.GetMainWeaponId() : string.Empty;
-        subWeaponId = equipment != null ? equipment.GetSubWeaponId() : string.Empty;
-        activeSlot = equipment != null ? (int)equipment.GetActiveSlot() : 0;
-
-        //if (equipmentController != null)
-        //{
-        //    shieldArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Shield);
-        //    helmetArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Helmet);
-        //    greavesArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Greaves);
-        //    bootsArmorId = equipmentController.GetArmorId(EquipmentController.ArmorSlot.Boots);
-        //}
     }
 }
