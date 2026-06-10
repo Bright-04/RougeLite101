@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class PlayerStats : MonoBehaviour
 {
     [SerializeField] private EquipmentManager equipmentManager;
+    [SerializeField] private ArmorController armorController;
     [SerializeField] private InventoryController inventoryController;
     [SerializeField] private string fallbackHubSceneName = "GameHome";
 
@@ -58,11 +59,18 @@ public class PlayerStats : MonoBehaviour
 
     [SerializeField] private float buffSpeed = 0;
 
+    private bool hasLoadedSave;
+
     private void Start()
     {
         if (equipmentManager == null)
         {
-            equipmentManager = FindAnyObjectByType<EquipmentManager>();
+            equipmentManager = GetComponent<EquipmentManager>();
+        }
+
+        if (armorController == null)
+        {
+            armorController = GetComponent<ArmorController>();
         }
 
         if (inventoryController == null)
@@ -70,7 +78,7 @@ public class PlayerStats : MonoBehaviour
             inventoryController = GetComponent<InventoryController>();
         }
 
-
+        if (hasLoadedSave) return;
         currentHP = GetMaxHP();
         currentMana = GetMaxMana();
         currentStamina = GetMaxStamina();
@@ -577,13 +585,15 @@ public class PlayerStats : MonoBehaviour
     {
         Debug.Log("RESET STATS CALLED");
         isDead = false;
+        //reset buffs
         ResetAllBuffs();
+        equipmentManager?.ReapplyWeaponBuffs();
+        armorController?.ReapplyArmorBuffs();
+
         currentHP = GetMaxHP();
         currentMana = GetMaxMana();
         currentStamina = GetMaxStamina();
-        damageTimer = 0;
-        // reset buffs
-       // ResetAllBuffs();
+        damageTimer = 0;        
     }
 
     public void ResetTransientState()
@@ -642,7 +652,7 @@ public class PlayerStats : MonoBehaviour
             Debug.LogWarning("PlayerStats: LoadFromData called with null data.", this);
             return;
         }
-
+        hasLoadedSave = true;
         // reset buffs
         ResetAllBuffs();
 
@@ -653,6 +663,9 @@ public class PlayerStats : MonoBehaviour
         levelUpExp = data.levelUpExp;
 
         // Core Stats
+        currentHP = data.currentHP;
+        currentMana = data.currentMana;
+        currentStamina = data.currentStamina;
         maxHP = data.maxHP;
         maxMana = data.maxMana;
         maxStamina = data.maxStamina;
@@ -675,5 +688,24 @@ public class PlayerStats : MonoBehaviour
         currentMana = maxMana;
         currentStamina = maxStamina;
         Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
+    }
+
+    public void RefreshAfterEquipmentLoad()
+    {
+        currentHP = Mathf.Min(currentHP, GetMaxHP());
+        currentMana = Mathf.Min(currentMana, GetMaxMana());
+        currentStamina = Mathf.Min(currentStamina, GetMaxStamina());
+    }
+
+    public void RebuildAllBuffs()
+    {
+        ResetAllBuffs();
+
+        equipmentManager?.ReapplyWeaponBuffs();
+        armorController?.ReapplyArmorBuffs();
+        
+        currentHP = Mathf.Min(currentHP, GetMaxHP());
+        currentMana = Mathf.Min(currentMana, GetMaxMana());
+        currentStamina = Mathf.Min(currentStamina, GetMaxStamina());
     }
 }

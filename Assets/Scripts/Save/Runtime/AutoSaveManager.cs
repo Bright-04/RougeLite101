@@ -12,6 +12,8 @@ public class AutoSaveManager : MonoBehaviour
     [SerializeField] private PlayerMoney playerMoney;
     [SerializeField] private InventoryController inventoryController;
     [SerializeField] private EquipmentManager equipmentManager;
+    [SerializeField] private ArmorController armorController;
+
 
     private float autoSaveTimer = 0f;
 
@@ -51,6 +53,15 @@ public class AutoSaveManager : MonoBehaviour
             if (equipmentManager == null)
             {
                 Debug.LogWarning("AutoSaveManager: EquipmentManager not found. Weapon loadout will not be saved.");
+            }
+        }
+
+        if (armorController == null)
+        {
+            armorController = FindAnyObjectByType<ArmorController>();
+            if (armorController == null)
+            {
+                Debug.LogWarning("AutoSaveManager: ArmorController not found. Weapon loadout will not be saved.");
             }
         }
 
@@ -121,6 +132,9 @@ public class AutoSaveManager : MonoBehaviour
             Debug.LogError("InventoryController không tìm thấy!");
         }
 
+        //save equipment
+        SaveSystem.SavePlayerEquipment(equipmentManager, armorController);
+
         //save player position
         Scene activeScene = SceneManager.GetActiveScene();
         if (activeScene.name == "GameHome")
@@ -140,6 +154,7 @@ public class AutoSaveManager : MonoBehaviour
         PlayerStatsData playerStatsData = SaveSystem.LoadPlayerStats();
         PlayerMoneySaveData playerMoneySaveData = SaveSystem.LoadPlayerMoney();
         SafeInventorySaveData safeInventorySaveData = SaveSystem.LoadPlayerSafeInventory();
+        EquipmentSaveData equipmentSaveData = SaveSystem.LoadPlayerEquipment();
 
         if (playerStatsData != null)
         {
@@ -148,6 +163,14 @@ public class AutoSaveManager : MonoBehaviour
             {
                 playerStats.LoadFromData(playerStatsData);
                 Debug.Log("player stats loaded successfully!");
+
+                //EQUIPMENT
+                if (equipmentSaveData != null)
+                {
+                    armorController.LoadArmour(equipmentSaveData);
+                    equipmentManager.LoadWeapons(equipmentSaveData);
+                    playerStats.RefreshAfterEquipmentLoad();
+                }
             }
             else
             {
@@ -156,7 +179,7 @@ public class AutoSaveManager : MonoBehaviour
 
         }
 
-        if(playerMoneySaveData != null)
+        if (playerMoneySaveData != null)
         {
             //player money
             if (playerMoney != null)

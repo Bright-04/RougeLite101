@@ -38,4 +38,18 @@ public class ArmorDefinitionSO : EquipmentDefinitionSO
         armorController.Equip(this);
         return true;
     }
+
+    public override bool ResetModifierData(GameObject character)
+    {
+        ArmorController armorController = character.GetComponent<ArmorController>();
+        if (armorController != null)
+        {
+            foreach (ModifierData data in modifiersData)
+            {
+                data.statModifier.AffectCharacter(character, -data.value);
+            }
+            return true;
+        }
+        return false;
+    }
 }

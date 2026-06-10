@@ -223,6 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   equipmentManager: {fileID: 0}
+  armorController: {fileID: 0}
   inventoryController: {fileID: 0}
   fallbackHubSceneName: GameHome
   maxHP: 100
@@ -504,6 +505,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArmorController
   inventoryController: {fileID: 0}
+  registry: {fileID: 11400000, guid: fce9a27f1ab243138b1933713990a526, type: 2}
 --- !u!114 &7881785789551820743
 MonoBehaviour:
   m_ObjectHideFlags: 0

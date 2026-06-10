@@ -113,7 +113,7 @@ public class PauseMenu : MonoBehaviour
             {
                 player.transform.position = new Vector3(0f, 9f, 0f);
                 PlayerStats playerStats = player.GetComponent<PlayerStats>();
-                playerStats.ResetStatsOnRespawn();
+                playerStats.RebuildAllBuffs();
                 SceneManager.LoadScene("GameHome");
             }
         }

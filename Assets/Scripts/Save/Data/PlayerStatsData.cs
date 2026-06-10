@@ -13,6 +13,9 @@ public class PlayerStatsData
     public float levelUpExp;
 
     // Core Stats
+    public float currentHP;
+    public float currentMana;
+    public float currentStamina;
     public float maxHP;
     public float maxMana;
     public float maxStamina;
@@ -41,6 +44,9 @@ public class PlayerStatsData
         levelUpExp = stats.GetLevelUpExp();
 
         // Core Stats
+        currentHP = stats.GetCurrentHP();
+        currentMana = stats.GetCurrentMana();
+        currentStamina = stats.GetCurrentStamina();
         maxHP = stats.GetNoBuffMaxHP();
         maxMana = stats.GetNoBuffMaxMana();
         maxStamina = stats.GetNoBuffMaxStamina();

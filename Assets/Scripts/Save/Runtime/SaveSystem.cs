@@ -4,206 +4,109 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public static class SaveSystem
 {
-    // Root save folder
-    private static string saveFolderName = "GameSaves";
+    private const string SAVE_FOLDER = "GameSaves";
+    private const string PLAYER_FOLDER = "PlayerData";
 
-    // Sub-folders
-    private static string playerDataFolder = "PlayerData";
+    private const string PLAYER_STATS_FILE = "playerStats.sav";
+    private const string PLAYER_MONEY_FILE = "playerMoney.sav";
+    private const string PLAYER_POSITION_FILE = "playerPositionInGameHome.sav";
+    private const string SAFE_INVENTORY_FILE = "playerSafeInventory.sav";
+    private const string PLAYER_EQUIPMENT_FILE = "playerEquipment.sav";
 
-    //========================== PlayerStats ==============================================
     // Helper method to get the full path with folder structure
-    private static string GetPlayerStatsPath()
+    private static string GetPath(string fileName)
     {
-        string rootPath = Path.Combine(Application.persistentDataPath, saveFolderName);
-        string playerPath = Path.Combine(rootPath, playerDataFolder);
+        string path = Path.Combine(Application.persistentDataPath, SAVE_FOLDER, PLAYER_FOLDER);
 
         // Ensure directories exist
-        if (!Directory.Exists(playerPath))
+        if (!Directory.Exists(path))
         {
-            Directory.CreateDirectory(playerPath);
+            Directory.CreateDirectory(path);
         }
 
-        return Path.Combine(playerPath, "playerStats.sav");
+        return Path.Combine(path, fileName);
     }
 
+    private static void Save<T>(T data, string fileName)
+    {
+        string path = GetPath(fileName);
+
+        BinaryFormatter formatter = new BinaryFormatter();
+        using FileStream stream = new FileStream(path, FileMode.Create);
+        formatter.Serialize(stream, data);
+        stream.Close();
+        Debug.Log("saved to: " + path);
+    }
+
+    private static T Load<T>(string fileName) where T : class
+    {
+        string path = GetPath(fileName);
+
+        if (!File.Exists(path))
+        {
+            Debug.LogWarning($"Save file not found: {path}");
+            return null;
+        }
+        BinaryFormatter formatter = new BinaryFormatter();
+        using FileStream stream = new FileStream(path, FileMode.Open);
+        Debug.Log("loaded from: " + path);
+        return formatter.Deserialize(stream) as T;
+    }
+
+    //========================== PlayerStats ============================================== 
     public static void SavePlayerStats(PlayerStats playerStats)
     {
-        BinaryFormatter formatter = new BinaryFormatter();
-        string path = GetPlayerStatsPath();
-        FileStream stream = new FileStream(path, FileMode.Create);
-
-        PlayerStatsData playerStatsData = new PlayerStatsData(playerStats);
-
-        formatter.Serialize(stream, playerStatsData);
-        stream.Close();
-
-        Debug.Log("Player stats saved to: " + path);
+        Save(new PlayerStatsData(playerStats), PLAYER_STATS_FILE);
     }
 
     public static PlayerStatsData LoadPlayerStats()
     {
-        string path = GetPlayerStatsPath();
-
-        if (File.Exists(path))
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream stream = new FileStream(path, FileMode.Open);
-
-            PlayerStatsData data = formatter.Deserialize(stream) as PlayerStatsData;
-            stream.Close();
-
-            Debug.Log("Player stats loaded from: " + path);
-            return data;
-        }
-        else
-        {
-            Debug.LogWarning("Save file not found at: " + path);
-            return null;
-        }
+        return Load<PlayerStatsData>(PLAYER_STATS_FILE);
     }
 
 
     //========================== Player Position in GameHome ===============================
-    // Helper method to get the full path with folder structure
-    private static string GetPositionInGameHomePath()
-    {
-        string rootPath = Path.Combine(Application.persistentDataPath, saveFolderName);
-        string playerPath = Path.Combine(rootPath, playerDataFolder);
-
-        // Ensure directories exist
-        if (!Directory.Exists(playerPath))
-        {
-            Directory.CreateDirectory(playerPath);
-        }
-
-        return Path.Combine(playerPath, "playerPositionInGameHome.sav");
-    }
-
     public static void SavePlayerPositionInGameHome(GameObject player)
     {
-        BinaryFormatter formatter = new BinaryFormatter();
-        string path = GetPositionInGameHomePath();
-        FileStream stream = new FileStream(path, FileMode.Create);
-
-        GameHomePositionData playerPositionInGameHomeData = new GameHomePositionData(player);
-
-        formatter.Serialize(stream, playerPositionInGameHomeData);
-        stream.Close();        
+        Save(new GameHomePositionData(player), PLAYER_POSITION_FILE);
     }
 
     public static GameHomePositionData LoadPlayerPositionInGameHome()
     {
-        string path = GetPositionInGameHomePath();
-
-        if (File.Exists(path))
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream stream = new FileStream(path, FileMode.Open);
-
-            GameHomePositionData data = formatter.Deserialize(stream) as GameHomePositionData;
-            stream.Close();          
-            return data;
-        }
-        else
-        {
-            Debug.LogWarning("Save file not found at: " + path);
-            return null;
-        }
+        return Load<GameHomePositionData>(PLAYER_POSITION_FILE);
     }
 
     //========================== PlayerMoney ===============================
-    // Helper method to get the full path with folder structure
-    private static string GetPlayerMoneyPath()
-    {
-        string rootPath = Path.Combine(Application.persistentDataPath, saveFolderName);
-        string playerPath = Path.Combine(rootPath, playerDataFolder);
-
-        // Ensure directories exist
-        if (!Directory.Exists(playerPath))
-        {
-            Directory.CreateDirectory(playerPath);
-        }
-
-        return Path.Combine(playerPath, "playerMoney.sav");
-    }
-
     public static void SavePlayerMoney(PlayerMoney gold)
     {
-        BinaryFormatter formatter = new BinaryFormatter();
-        string path = GetPlayerMoneyPath();
-        FileStream stream = new FileStream(path, FileMode.Create);
-
-        PlayerMoneySaveData playerMoney = new PlayerMoneySaveData(gold);
-
-        formatter.Serialize(stream, playerMoney);
-        stream.Close();
+        Save(new PlayerMoneySaveData(gold), PLAYER_MONEY_FILE);
     }
 
     public static PlayerMoneySaveData LoadPlayerMoney()
     {
-        string path = GetPlayerMoneyPath();
-
-        if (File.Exists(path))
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream stream = new FileStream(path, FileMode.Open);
-
-            PlayerMoneySaveData data = formatter.Deserialize(stream) as PlayerMoneySaveData;
-            stream.Close();
-            return data;
-        }
-        else
-        {
-            Debug.LogWarning("Save file not found at: " + path);
-            return null;
-        }
+        return Load<PlayerMoneySaveData>(PLAYER_MONEY_FILE);
     }
 
-    //========================== Safe Inventory ===============================
-    private static string GetPlayerSafeInventoryPath()
-    {
-        string rootPath = Path.Combine(Application.persistentDataPath, saveFolderName);
-        string playerPath = Path.Combine(rootPath, playerDataFolder);
-
-        // Ensure directories exist
-        if (!Directory.Exists(playerPath))
-        {
-            Directory.CreateDirectory(playerPath);
-        }
-
-        return Path.Combine(playerPath, "playerSafeInventory.sav");
-    }
-
+    //========================== Safe Inventory ===============================  
     public static void SavePlayerSafeInventory(InventorySO inventory)
     {
-        BinaryFormatter formatter = new BinaryFormatter();
-        string path = GetPlayerSafeInventoryPath();
-        FileStream stream = new FileStream(path, FileMode.Create);
-
-        SafeInventorySaveData playerSafeInventory = new SafeInventorySaveData(inventory);
-
-        formatter.Serialize(stream, playerSafeInventory);
-        stream.Close();
+        Save(new SafeInventorySaveData(inventory), SAFE_INVENTORY_FILE);
     }
 
     public static SafeInventorySaveData LoadPlayerSafeInventory()
     {
-        string path = GetPlayerSafeInventoryPath();
+        return Load<SafeInventorySaveData>(SAFE_INVENTORY_FILE);
+    }
 
-        if (File.Exists(path))
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            FileStream stream = new FileStream(path, FileMode.Open);
+    //========================== Equipment (weapon and armor) ===============================  
+    public static void SavePlayerEquipment(EquipmentManager equipment, ArmorController armorController)
+    {
+        Save(new EquipmentSaveData(equipment, armorController), PLAYER_EQUIPMENT_FILE);
+    }
 
-            SafeInventorySaveData data = formatter.Deserialize(stream) as SafeInventorySaveData;
-            stream.Close();
-            return data;
-        }
-        else
-        {
-            Debug.LogWarning("Save file not found at: " + path);
-            return null;
-        }
+    public static EquipmentSaveData LoadPlayerEquipment()
+    {
+        return Load<EquipmentSaveData>(PLAYER_EQUIPMENT_FILE);
     }
 }
 
