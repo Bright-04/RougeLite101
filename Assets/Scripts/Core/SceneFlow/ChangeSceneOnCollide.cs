@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class ChangeSceneOnCollide : MonoBehaviour
 {
@@ -10,7 +9,7 @@ public class ChangeSceneOnCollide : MonoBehaviour
         {
             AutoSaveManager.TrySaveActiveSceneState();
             Debug.Log("Change to " + changeSceneName);
-            SceneManager.LoadScene(changeSceneName);
+            SceneLoadingRequest.LoadSceneWithLoading(changeSceneName);
         }
     }
 }

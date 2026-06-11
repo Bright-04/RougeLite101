@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class DungeonEnter : MonoBehaviour, IInteractable
 {
@@ -10,7 +9,7 @@ public class DungeonEnter : MonoBehaviour, IInteractable
     {
         AutoSaveManager.TrySaveActiveSceneState();
         Debug.Log("Change to " + changeSceneName);
-        SceneManager.LoadScene(changeSceneName);
+        SceneLoadingRequest.LoadSceneWithLoading(changeSceneName);
     }
 
     public string GetInteractionText(GameObject interactor)
