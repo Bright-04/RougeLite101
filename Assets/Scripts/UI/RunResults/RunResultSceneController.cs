@@ -73,6 +73,12 @@ public class RunResultSceneController : MonoBehaviour
 
         player.transform.position = hubSpawnPosition;
 
+        PlayerStats playerStats = player.GetComponent<PlayerStats>();
+        if (playerStats != null)
+        {
+            playerStats.RebuildAllBuffs();
+        }
+
         if (logRunResultSummary)
         {
             Debug.Log($"RunResultSceneController: Moved Player to hub spawn {hubSpawnPosition}.", this);

@@ -203,6 +203,12 @@ public class RunResultController : MonoBehaviour
         if (player != null)
         {
             player.transform.position = hubSpawnPosition;
+
+            PlayerStats playerStats = player.GetComponent<PlayerStats>();
+            if (playerStats != null)
+            {
+                playerStats.RebuildAllBuffs();
+            }
         }
         Debug.Log("return to hub");
         SceneManager.LoadScene(hubSceneName);
