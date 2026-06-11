@@ -127,12 +127,14 @@ public class WeaponHUDUI : MonoBehaviour
     {
         if (equipmentManager == null || slotUI == null)
         {
+            Debug.Log("HandleSlotRightClick weapon failed");
             return;
         }
 
         EquipmentManager.WeaponSlot targetSlot = ResolveTargetSlot(slotUI);
         if (equipmentManager.GetWeaponDefinition(targetSlot) == null)
         {
+            Debug.Log("HandleSlotRightClick GetWeaponDefinition failed");
             return;
         }
 

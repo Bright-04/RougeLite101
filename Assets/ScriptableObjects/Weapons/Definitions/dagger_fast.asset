@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: dagger_fast
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: dagger_fast
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Fast Dagger
   <Description>k__BackingField: A short blade built for quick strikes.
   <ItemImage>k__BackingField: {fileID: -7825317204285402402, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: dagger_fast
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: basic
   equipmentClass: dagger
   tags:

@@ -21,15 +21,8 @@ public class Item : MonoBehaviour, IInteractable
 
     private SpriteRenderer spriteRenderer;
 
-    [SerializeField]
-    private InventoryController inventoryController;
-
     private void Start()
-    {
-        if (inventoryController == null)
-        {
-            inventoryController = FindFirstObjectByType<InventoryController>();
-        }
+    {      
         spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = InventoryItem.ItemImage;
         NormalizeSpriteSize();
@@ -38,6 +31,7 @@ public class Item : MonoBehaviour, IInteractable
     // ===== IINTERACTABLE =====
     public void Interact(GameObject interactor)
     {
+        InventoryController inventoryController = interactor.GetComponent<InventoryController>();
         if (inventoryController == null) return;
 
         var inventoryData = inventoryController.CurrentInventoryData;
@@ -54,8 +48,10 @@ public class Item : MonoBehaviour, IInteractable
         }
     }
 
-    public string GetInteractionText()
+    public string GetInteractionText(GameObject interactor)
     {
+        InventoryController inventoryController = interactor.GetComponent<InventoryController>();
+
         if (inventoryController == null) return "";
 
         if(inventoryController.CurrentInventoryData.IsInventoryFull() == false)

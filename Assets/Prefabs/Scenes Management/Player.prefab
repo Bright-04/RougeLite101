@@ -223,6 +223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   equipmentManager: {fileID: 0}
+  armorController: {fileID: 0}
   inventoryController: {fileID: 0}
   fallbackHubSceneName: GameHome
   maxHP: 100
@@ -275,7 +276,7 @@ MonoBehaviour:
   spellSlots:
   - {fileID: 11400000, guid: 1d46500fa33843c498a3b4c49f710b5d, type: 2}
   - {fileID: 11400000, guid: 7ba1a5d4b89e65147a3abdc8ab62d3c5, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 1d46500fa33843c498a3b4c49f710b5d, type: 2}
 --- !u!114 &1339241568981859123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,6 +330,7 @@ MonoBehaviour:
   restoreDefaultMatTime: 0.2
   flashColor: {r: 1, g: 1, b: 1, a: 1}
   forceColorFlash: 0
+  targetRenderer: {fileID: 0}
 --- !u!114 &6449599854977480468
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -488,6 +490,7 @@ MonoBehaviour:
   dungeonInventoryData: {fileID: 11400000, guid: 9563c9a8f6befc0418b7b48ef404a27d, type: 2}
   pickupableItemPrefab: {fileID: 2507520823584168888, guid: 51d1448ffc34f7a4ab1e0c113caf8ddf, type: 3}
   playerTransform: {fileID: 113293529403524740}
+  itemDatabase: {fileID: 11400000, guid: ee0a8e177282a6647bc508d05f5bb4a5, type: 2}
   initialItems: []
 --- !u!114 &8703753072280480964
 MonoBehaviour:
@@ -502,6 +505,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArmorController
   inventoryController: {fileID: 0}
+  registry: {fileID: 11400000, guid: fce9a27f1ab243138b1933713990a526, type: 2}
 --- !u!114 &7881785789551820743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,7 +531,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16e116f06d9597949ab0b0d8a342aa46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
-  interactRadius: 1.5
+  interactRadius: 2.5
   interactableLayer:
     serializedVersion: 2
     m_Bits: 1

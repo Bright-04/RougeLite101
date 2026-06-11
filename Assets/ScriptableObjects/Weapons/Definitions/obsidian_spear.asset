@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: obsidian_spear
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: obsidian_spear
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Obsidian Spear
   <Description>k__BackingField: A tier 5 obsidian spear.
   <ItemImage>k__BackingField: {fileID: 5684170730773482154, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: obsidian_spear
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: obsidian
   equipmentClass: spear
   tags:

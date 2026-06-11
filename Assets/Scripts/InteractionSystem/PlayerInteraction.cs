@@ -8,7 +8,7 @@ public interface IInteractable
 {
     void Interact(GameObject interactor);
 
-    string GetInteractionText();
+    string GetInteractionText(GameObject interactor);
 }
 
 public class PlayerInteraction : MonoBehaviour
@@ -29,21 +29,6 @@ public class PlayerInteraction : MonoBehaviour
         promptUI = FindObjectsByType<InteractionPromptUI>(FindObjectsInactive.Include,FindObjectsSortMode.None).FirstOrDefault();
     }
 
-    private void OnEnable()
-    {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    private void OnDisable()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        FindPromptUI();
-    }
-
     private void Start()
     {
         if (InputManager.Instance == null)
@@ -53,8 +38,8 @@ public class PlayerInteraction : MonoBehaviour
         }
 
         playerControls = InputManager.Instance.Controls;
-
         playerControls.Combat.Interact.performed += TryInteract;
+        FindPromptUI();
     }
 
     private void Update()
@@ -94,7 +79,7 @@ public class PlayerInteraction : MonoBehaviour
             return;
         }
 
-        string text = currentInteractable.GetInteractionText();
+        string text = currentInteractable.GetInteractionText(gameObject);
 
         if (string.IsNullOrEmpty(text))
         {

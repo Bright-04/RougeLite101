@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: darkness_bow
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: darkness_bow
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Darkness Bow
   <Description>k__BackingField: A tier 13 darkness bow.
   <ItemImage>k__BackingField: {fileID: -3180680126344169746, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: darkness_bow
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: darkness
   equipmentClass: bow
   tags:

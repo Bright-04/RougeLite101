@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: crystal_staff
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: crystal_staff
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Crystal Staff
   <Description>k__BackingField: A tier 7 crystal staff.
   <ItemImage>k__BackingField: {fileID: -579030519115563886, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: crystal_staff
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: crystal
   equipmentClass: staff
   tags:

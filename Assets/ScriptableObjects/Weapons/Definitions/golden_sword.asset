@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: golden_sword
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: golden_sword
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Golden Sword
   <Description>k__BackingField: A tier 6 golden sword.
   <ItemImage>k__BackingField: {fileID: 8717667839405764611, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: golden_sword
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: golden
   equipmentClass: sword
   tags:

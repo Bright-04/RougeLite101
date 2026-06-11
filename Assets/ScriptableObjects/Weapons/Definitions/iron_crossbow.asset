@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: iron_crossbow
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: iron_crossbow
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Iron Crossbow
   <Description>k__BackingField: A tier 3 iron bow.
   <ItemImage>k__BackingField: {fileID: 2821532204539925756, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: iron_crossbow
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: iron
   equipmentClass: bow
   tags:

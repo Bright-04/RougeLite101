@@ -16,19 +16,9 @@ public enum ArmorType
 public class ArmorDefinitionSO : EquipmentDefinitionSO
 {
     [Header("Armor")]
-    [SerializeField] private ArmorType armorType;
-    //[SerializeField] private int defense;
-    //[SerializeField] private float maxHealthBonus;
-    //[SerializeField] private float moveSpeedBonus;
-    //[SerializeField] private float blockCooldown = 0.5f;
-    //[SerializeField] private float blockDuration = 0.25f;
+    [SerializeField] private ArmorType armorType; 
 
-    public ArmorType ArmorType => armorType;
-    //public int Defense => defense;
-    //public float MaxHealthBonus => maxHealthBonus;
-    //public float MoveSpeedBonus => moveSpeedBonus;
-    //public float BlockCooldown => blockCooldown;
-    //public float BlockDuration => blockDuration;
+    public ArmorType ArmorType => armorType;  
 
     //[field: SerializeField]
     //public AudioClip actionSFX { get; private set; }
@@ -47,5 +37,19 @@ public class ArmorDefinitionSO : EquipmentDefinitionSO
         }
         armorController.Equip(this);
         return true;
+    }
+
+    public override bool ResetModifierData(GameObject character)
+    {
+        ArmorController armorController = character.GetComponent<ArmorController>();
+        if (armorController != null)
+        {
+            foreach (ModifierData data in modifiersData)
+            {
+                data.statModifier.AffectCharacter(character, -data.value);
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: golden_whip
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: golden_whip
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Golden Whip
   <Description>k__BackingField: A tier 6 golden whip.
   <ItemImage>k__BackingField: {fileID: 1412018755475905882, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: golden_whip
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: golden
   equipmentClass: whip
   tags:

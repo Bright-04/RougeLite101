@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: iron_spear
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: iron_spear
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Iron Spear
   <Description>k__BackingField: A tier 3 iron spear.
   <ItemImage>k__BackingField: {fileID: 8824793825499218426, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: iron_spear
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: iron
   equipmentClass: spear
   tags:

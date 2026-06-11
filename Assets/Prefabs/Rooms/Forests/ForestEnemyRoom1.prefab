@@ -181,7 +181,7 @@ MonoBehaviour:
   center: {fileID: 6145058250317747221}
   playerSpawn: {fileID: 0}
   exitAnchor: {fileID: 0}
-  spawnProfile: {fileID: 11400000, guid: 971f3652044ba8140b737a9c1f3518ee, type: 2}
+  spawnProfile: {fileID: 11400000, guid: c06f1792fef546c384c903d26c0fc29c, type: 2}
   northSocket: {fileID: 4514168389315602798}
   southSocket: {fileID: 4485590131555525349}
   eastSocket: {fileID: 7121299958918177454}

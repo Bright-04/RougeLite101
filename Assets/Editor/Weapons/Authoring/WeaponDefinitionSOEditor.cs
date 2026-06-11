@@ -44,9 +44,9 @@ public class WeaponDefinitionSOEditor : Editor
         EditorGUILayout.LabelField("Normal Workflow", EditorStyles.boldLabel);
 
         DrawProperty("<Name>k__BackingField");
+        DrawProperty("<ItemId>k__BackingField", "Item ID");
         DrawProperty("<Description>k__BackingField");
         DrawProperty("<ItemImage>k__BackingField", "Weapon Sprite");
-        DrawProperty("equipmentId");
         DrawProperty("equipmentClass");
         DrawProperty("archetype");
         DrawProperty("alignmentPreset");

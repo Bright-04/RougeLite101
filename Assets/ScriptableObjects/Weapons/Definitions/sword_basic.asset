@@ -13,15 +13,17 @@ MonoBehaviour:
   m_Name: sword_basic
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: sword_basic
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Iron Sword
   <Description>k__BackingField: A normal iron sword
   <ItemImage>k__BackingField: {fileID: 712035800519618848, guid: c9218c59738d4a34f8c917303348dc7f, type: 3}
-  modifiersData: []
+  modifiersData:
+  - statModifier: {fileID: 11400000, guid: f6853c18de970e341a69030fc167869a, type: 2}
+    value: 10
   rarity: 0
   <BuyPrice>k__BackingField: 100
   <SellPrice>k__BackingField: 50
-  equipmentId: sword_basic
   series: basic
   equipmentClass: sword
   tags:

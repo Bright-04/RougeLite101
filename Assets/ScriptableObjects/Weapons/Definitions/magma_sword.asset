@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: magma_sword
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: magma_sword
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Magma Sword
   <Description>k__BackingField: A tier 10 magma sword.
   <ItemImage>k__BackingField: {fileID: -8195133023750462792, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: magma_sword
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: magma
   equipmentClass: sword
   tags:

@@ -188,7 +188,21 @@ public class WeaponDefinitionSO : EquipmentDefinitionSO
             return equipmentManager.EquipWeapon(this);          
         }
         return false;
-    }  
+    }
+
+    public override bool ResetModifierData(GameObject character)
+    {
+        EquipmentManager equipmentManager = character.GetComponent<EquipmentManager>();
+        if (equipmentManager != null)
+        {
+            foreach (ModifierData data in modifiersData)
+            {
+                data.statModifier.AffectCharacter(character, -data.value);
+            }
+            return true;
+        }
+        return false;
+    }
 
     public float GetUsePresetRigRuntimeScaleCompensation()
     {

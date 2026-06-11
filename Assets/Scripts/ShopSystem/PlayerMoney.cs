@@ -39,4 +39,15 @@ public class PlayerMoney : MonoBehaviour
 
         return true;
     }
+
+    // ============ SAVE/LOAD METHODS ============
+    public void LoadFromData(PlayerMoneySaveData data)
+    {
+        if (data == null)
+        {
+            Debug.LogWarning("PlayerMoney: LoadFromData called with null data.", this);
+            return;
+        }
+        Gold = data.goldData; 
+    }
 }
