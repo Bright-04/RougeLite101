@@ -394,11 +394,35 @@ public class InventoryController : MonoBehaviour
 
             if (item == null)
             {
-                Debug.LogWarning($"Missing item: {savedItem.itemId}");
+                Debug.LogWarning($"LoadSafeInventory Missing item: {savedItem.itemId}");
                 continue;
             }
 
-            safeInventoryData.AddItem(item, savedItem.quantity);
+            safeInventoryData.SetItemAt(savedItem.slotIndex, item, savedItem.quantity);
+        }
+    }
+
+    public void LoadDungeonInventory(DungeonInventorySaveData inventoryData)
+    {
+        if (inventoryData == null)
+        {
+            Debug.LogWarning("InventoryController: LoadDungeonInventory called with null data.", this);
+            return;
+        }
+
+        dungeonInventoryData.Clear();
+
+        foreach (var savedItem in inventoryData.items)
+        {
+            ItemSO item = itemDatabase.GetItem(savedItem.itemId);
+
+            if (item == null)
+            {
+                Debug.LogWarning($"LoadDungeonInventory Missing item: {savedItem.itemId}");
+                continue;
+            }
+
+            dungeonInventoryData.SetItemAt(savedItem.slotIndex, item, savedItem.quantity);
         }
     }
 

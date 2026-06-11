@@ -201,6 +201,7 @@ public class ShopController : MonoBehaviour
         shopUI.ResetSelection(); // reset description
         inventoryController.CurrentInventoryData.AddItem(shopItem.item, amount);
         CurrentShopData.RemoveStock(itemIndex, amount);
+        SaveSystem.SaveShop(CurrentShopData);
         RefreshCurrentView();
     }
 
@@ -248,7 +249,8 @@ public class ShopController : MonoBehaviour
                 Debug.LogError("Interactor missing InventoryController or PlayerMoney");
                 return;
             }
-            CurrentShopData.RestockAllItems();
+            //CurrentShopData.RestockAllItems();
+            //CurrentShopData.CheckRestock();
             shopUI.ShowShop(CurrentShopData);    
             
             // Disable gameplay inputs

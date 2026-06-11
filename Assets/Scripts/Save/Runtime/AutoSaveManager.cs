@@ -14,7 +14,6 @@ public class AutoSaveManager : MonoBehaviour
     [SerializeField] private EquipmentManager equipmentManager;
     [SerializeField] private ArmorController armorController;
 
-
     private float autoSaveTimer = 0f;
 
     private void Start()
@@ -64,7 +63,6 @@ public class AutoSaveManager : MonoBehaviour
                 Debug.LogWarning("AutoSaveManager: ArmorController not found. Weapon loadout will not be saved.");
             }
         }
-
         LoadGame();
     }
 
@@ -121,11 +119,11 @@ public class AutoSaveManager : MonoBehaviour
             Debug.LogError("PlayerMoney không tìm thấy!");
         }
 
-        //save safe inventory
+        //save inventory
         if (inventoryController != null)
         {
             SaveSystem.SavePlayerSafeInventory(inventoryController.SafeInventory);
-
+            SaveSystem.SavePlayerDungeonInventory(inventoryController.DungeonInventory);
         }
         else
         {
@@ -154,6 +152,7 @@ public class AutoSaveManager : MonoBehaviour
         PlayerStatsData playerStatsData = SaveSystem.LoadPlayerStats();
         PlayerMoneySaveData playerMoneySaveData = SaveSystem.LoadPlayerMoney();
         SafeInventorySaveData safeInventorySaveData = SaveSystem.LoadPlayerSafeInventory();
+        DungeonInventorySaveData dungeonInventorySaveData = SaveSystem.LoadPlayerDungeonInventory();
         EquipmentSaveData equipmentSaveData = SaveSystem.LoadPlayerEquipment();
 
         if (playerStatsData != null)
@@ -195,11 +194,25 @@ public class AutoSaveManager : MonoBehaviour
 
         if(safeInventorySaveData != null)
         {
-            //player safe inventory
+            //player inventory
             if (inventoryController != null)
             {
                 inventoryController.LoadSafeInventory(safeInventorySaveData);
-                Debug.Log("player safe inventory loaded successfully!");
+                Debug.Log("player safe inventory loaded successfully!");               
+            }
+            else
+            {
+                Debug.LogError("InventoryController không tìm thấy!");
+            }
+        }
+
+        if (dungeonInventorySaveData != null)
+        {
+            //player inventory
+            if (inventoryController != null)
+            {             
+                inventoryController.LoadDungeonInventory(dungeonInventorySaveData);
+                Debug.Log("player dungeon inventory loaded successfully!");
             }
             else
             {

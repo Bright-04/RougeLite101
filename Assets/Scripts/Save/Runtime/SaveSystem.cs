@@ -11,7 +11,9 @@ public static class SaveSystem
     private const string PLAYER_MONEY_FILE = "playerMoney.sav";
     private const string PLAYER_POSITION_FILE = "playerPositionInGameHome.sav";
     private const string SAFE_INVENTORY_FILE = "playerSafeInventory.sav";
+    private const string DUNGEON_INVENTORY_FILE = "playerDungeonInventory.sav";
     private const string PLAYER_EQUIPMENT_FILE = "playerEquipment.sav";
+    private const string SHOP_FILE_PREFIX = "shop_";
 
     // Helper method to get the full path with folder structure
     private static string GetPath(string fileName)
@@ -98,6 +100,17 @@ public static class SaveSystem
         return Load<SafeInventorySaveData>(SAFE_INVENTORY_FILE);
     }
 
+    //========================== Dungeon Inventory ===============================  
+    public static void SavePlayerDungeonInventory(InventorySO inventory)
+    {
+        Save(new DungeonInventorySaveData(inventory), DUNGEON_INVENTORY_FILE);
+    }
+
+    public static DungeonInventorySaveData LoadPlayerDungeonInventory()
+    {
+        return Load<DungeonInventorySaveData>(DUNGEON_INVENTORY_FILE);
+    }
+
     //========================== Equipment (weapon and armor) ===============================  
     public static void SavePlayerEquipment(EquipmentManager equipment, ArmorController armorController)
     {
@@ -107,6 +120,17 @@ public static class SaveSystem
     public static EquipmentSaveData LoadPlayerEquipment()
     {
         return Load<EquipmentSaveData>(PLAYER_EQUIPMENT_FILE);
+    }
+
+    //========================== Save Shops ===============================  
+    public static void SaveShop(ShopInventorySO shop)
+    {
+        Save(shop.GetSaveData(), $"{SHOP_FILE_PREFIX}{shop.ShopId}.sav");
+    }
+
+    public static ShopSaveData LoadShop(string shopId)
+    {
+        return Load<ShopSaveData>($"{SHOP_FILE_PREFIX}{shopId}.sav");
     }
 }
 

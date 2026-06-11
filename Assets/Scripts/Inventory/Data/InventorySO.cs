@@ -301,6 +301,20 @@ public class InventorySO : ScriptableObject
         }
     }
 
+    public void SetItemAt(int slotIndex, ItemSO item, int quantity)
+    {
+        EnsureInitialized();
+
+        if (slotIndex < 0 || slotIndex >= inventoryItems.Count) return;
+
+        inventoryItems[slotIndex] = new InventoryItem
+        {
+            item = item,
+            quantity = quantity
+        };
+        InformAboutChange();
+    }
+
     //for shop
     public List<InventoryItem> GetNonEmptyItems()
     {
