@@ -1,0 +1,575 @@
+fileFormatVersion: 2
+guid: e1746e337a7e239469037fa5d36c5094
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7963606335035999910
+    second: ArrowNormal_0
+  - first:
+      213: -8823224667593129478
+    second: ArrowNormal_1
+  - first:
+      213: -8683553501385660069
+    second: ArrowNormal_2
+  - first:
+      213: 6089223407470599182
+    second: ArrowNormal_3
+  - first:
+      213: -2485611869012889834
+    second: ArrowNormal_4
+  - first:
+      213: 2279316360256023822
+    second: ArrowNormal_5
+  - first:
+      213: -1800704068648213577
+    second: ArrowNormal_6
+  - first:
+      213: 1399397307518398902
+    second: ArrowNormal_7
+  - first:
+      213: -7780567694928471428
+    second: ArrowNormal_8
+  - first:
+      213: 2190774852289357479
+    second: ArrowNormal_9
+  - first:
+      213: 2433539036179619430
+    second: ArrowNormal_10
+  - first:
+      213: 7315144988191246570
+    second: ArrowNormal_11
+  - first:
+      213: -4457537510400485941
+    second: ArrowNormal_12
+  - first:
+      213: 1211976600552039158
+    second: ArrowNormal_13
+  - first:
+      213: -4595027173357736187
+    second: ArrowNormal_14
+  - first:
+      213: -1373011257054584104
+    second: ArrowNormal_15
+  - first:
+      213: 6454799064027005584
+    second: ArrowNormal_16
+  - first:
+      213: -4265127846020422787
+    second: ArrowNormal_17
+  - first:
+      213: -4239692826675888828
+    second: ArrowNormal_18
+  - first:
+      213: 4309119751310573802
+    second: ArrowNormal_19
+  - first:
+      213: -7220792549617540680
+    second: ArrowNormal_20
+  - first:
+      213: 1175220948971641725
+    second: ArrowNormal_21
+  - first:
+      213: 178116174090528493
+    second: ArrowNormal_22
+  - first:
+      213: -2195234908016863355
+    second: ArrowNormal_23
+  - first:
+      213: -6377120020046840459
+    second: ArrowNormal_24
+  - first:
+      213: -5032901312734020620
+    second: ArrowNormal_25
+  - first:
+      213: -7192717799646936671
+    second: ArrowNormal_26
+  - first:
+      213: -7474126082406744769
+    second: ArrowNormal_27
+  - first:
+      213: -6299019400321884826
+    second: ArrowNormal_28
+  - first:
+      213: 2435475178936441553
+    second: ArrowNormal_29
+  - first:
+      213: 3488022866361268490
+    second: ArrowNormal_30
+  - first:
+      213: -7852711083131927661
+    second: ArrowNormal_31
+  - first:
+      213: 6053259061289740014
+    second: ArrowNormal_32
+  - first:
+      213: 3572005856725309886
+    second: ArrowNormal_33
+  - first:
+      213: 8985721805527692917
+    second: ArrowNormal_34
+  - first:
+      213: -8839237313665941387
+    second: ArrowNormal_35
+  - first:
+      213: 2420293594662590348
+    second: ArrowNormal_36
+  - first:
+      213: 5112519343556326981
+    second: ArrowNormal_37
+  - first:
+      213: 2557663926389408975
+    second: ArrowNormal_38
+  - first:
+      213: -3452153246737060936
+    second: ArrowNormal_39
+  - first:
+      213: 2538760137209466601
+    second: ArrowNormal_40
+  - first:
+      213: 4647120224613027870
+    second: ArrowNormal_41
+  - first:
+      213: -2677729118329998834
+    second: ArrowNormal_42
+  - first:
+      213: -8908243030288454694
+    second: ArrowNormal_43
+  - first:
+      213: 3229939563154489080
+    second: ArrowNormal_44
+  - first:
+      213: 1881588710889844950
+    second: ArrowNormal_45
+  - first:
+      213: 5261276901506903161
+    second: ArrowNormal_46
+  - first:
+      213: -4127012393422699351
+    second: ArrowNormal_47
+  - first:
+      213: 901699848163607250
+    second: ArrowNormal_48
+  - first:
+      213: 3868555812867617181
+    second: ArrowNormal_49
+  - first:
+      213: -8030952191839783797
+    second: ArrowNormal_50
+  - first:
+      213: 3583124953609503340
+    second: ArrowNormal_51
+  - first:
+      213: -2257554507000788717
+    second: ArrowNormal_52
+  - first:
+      213: -3483413517325731753
+    second: ArrowNormal_53
+  - first:
+      213: 5747518257101952345
+    second: ArrowNormal_54
+  - first:
+      213: 8552910033083170639
+    second: ArrowNormal_55
+  - first:
+      213: -5971543246881502960
+    second: ArrowNormal_56
+  - first:
+      213: -1107273973351228960
+    second: ArrowNormal_57
+  - first:
+      213: 2821238759766474631
+    second: ArrowNormal_58
+  - first:
+      213: 2636054082384111067
+    second: ArrowNormal_59
+  - first:
+      213: -3932533534358373523
+    second: ArrowNormal_60
+  - first:
+      213: -4379026291597870810
+    second: ArrowNormal_61
+  - first:
+      213: -1373342580452792316
+    second: ArrowNormal_62
+  - first:
+      213: -8683496253642792614
+    second: ArrowNormal_63
+  - first:
+      213: -7791084946461763907
+    second: ArrowNormal_64
+  - first:
+      213: 7682498439850166553
+    second: ArrowNormal_65
+  - first:
+      213: -7493577803510865193
+    second: ArrowNormal_66
+  - first:
+      213: -8281832596938149436
+    second: ArrowNormal_67
+  - first:
+      213: 323129169202103606
+    second: ArrowNormal_68
+  - first:
+      213: -1171069700554043688
+    second: ArrowNormal_69
+  - first:
+      213: 8627145093784572252
+    second: ArrowNormal_70
+  - first:
+      213: 9062120182816378945
+    second: ArrowNormal_71
+  - first:
+      213: -6486164027704505104
+    second: ArrowNormal_72
+  - first:
+      213: -4871456916754372760
+    second: ArrowNormal_73
+  - first:
+      213: 9217627656768415624
+    second: ArrowNormal_74
+  - first:
+      213: -583946970572495424
+    second: ArrowNormal_75
+  - first:
+      213: 8916227226711380937
+    second: ArrowNormal_76
+  - first:
+      213: 5192534385850089256
+    second: ArrowNormal_77
+  - first:
+      213: -7227501177802624397
+    second: ArrowNormal_78
+  - first:
+      213: 3393611147746813705
+    second: ArrowNormal_79
+  - first:
+      213: 8748151018024209688
+    second: ArrowNormal_80
+  - first:
+      213: -1754664360993306397
+    second: ArrowNormal_81
+  - first:
+      213: -1714295445693854158
+    second: ArrowNormal_82
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ArrowNormal_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 240
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a59f0253b369b7190800000000000000
+      internalID: -7963606335035999910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArrowNormal_1
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 0
+        width: 240
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af1c5aa89eb9d8580800000000000000
+      internalID: -8823224667593129478
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArrowNormal_2
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 240
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b59eec11912dd7780800000000000000
+      internalID: -8683553501385660069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArrowNormal_3
+      rect:
+        serializedVersion: 2
+        x: 720
+        y: 0
+        width: 240
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0c57405d64418450800000000000000
+      internalID: 6089223407470599182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArrowNormal_4
+      rect:
+        serializedVersion: 2
+        x: 960
+        y: 0
+        width: 240
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61fedf9ac25518dd0800000000000000
+      internalID: -2485611869012889834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArrowNormal_5
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 0
+        width: 240
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0debcf3722c1af10800000000000000
+      internalID: 2279316360256023822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArrowNormal_6
+      rect:
+        serializedVersion: 2
+        x: 1440
+        y: 0
+        width: 240
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b36f9aa03d9207e0800000000000000
+      internalID: -1800704068648213577
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArrowNormal_7
+      rect:
+        serializedVersion: 2
+        x: 1680
+        y: 0
+        width: 240
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b1b546df68ab6310800000000000000
+      internalID: 1399397307518398902
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ArrowNormal_8
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 240
+        height: 512
+      alignment: 9
+      pivot: {x: 0.5, y: 0.08}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7a98e897eed50490800000000000000
+      internalID: -7780567694928471428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6196e13150d290d49b517a8ff53c5c8a
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":9.0,"y":1.0},"gridSpriteSize":{"x":240.0,"y":512.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      ArrowNormal_0: -7963606335035999910
+      ArrowNormal_1: -8823224667593129478
+      ArrowNormal_2: -8683553501385660069
+      ArrowNormal_3: 6089223407470599182
+      ArrowNormal_4: -2485611869012889834
+      ArrowNormal_5: 2279316360256023822
+      ArrowNormal_6: -1800704068648213577
+      ArrowNormal_7: 1399397307518398902
+      ArrowNormal_8: -7780567694928471428
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
