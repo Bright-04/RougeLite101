@@ -3,5 +3,10 @@ using System;
 [Serializable]
 public class PlayerMoneySaveData
 {
-    public int gold;
+    public int goldData;
+
+    public PlayerMoneySaveData(PlayerMoney gold)
+    {
+        goldData = gold.Gold;
+    }
 }

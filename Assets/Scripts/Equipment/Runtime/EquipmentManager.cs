@@ -170,8 +170,12 @@ public class EquipmentManager : MonoBehaviour
         ReplaceWeaponAndActivateInternal(targetSlot, newWeaponDef, bypassTestingOverride: true);
     }
 
+    //EQUIP WEAPON
     public bool EquipWeapon(WeaponDefinitionSO newWeaponDef)
     {
+        Debug.Log($"EquipWeapon: {newWeaponDef.name}");
+        Debug.Log($"Testing Override: {testingWeaponOverrideActive}");
+
         if (!WeaponLoadoutRules.CanAcceptPickup(newWeaponDef, testingWeaponOverrideActive))
         {
             return false;
@@ -195,7 +199,7 @@ public class EquipmentManager : MonoBehaviour
         {
             return false;
         }
-
+        previousWeapon.ResetModifierData(gameObject); //RESET BUFF CŨ
         ReplaceWeapon(activeSlot, newWeaponDef);
         SetActiveSlot(activeSlot, true);
         return true;
@@ -299,35 +303,6 @@ public class EquipmentManager : MonoBehaviour
         SetActiveSlot(targetSlot, false);
     }
 
-    public void LoadWeapons(string mainWeaponId, string subWeaponId, WeaponSlot loadedActiveSlot)
-    {
-        ClearSlot(WeaponSlot.Main);
-        ClearSlot(WeaponSlot.Sub);
-
-        WeaponDefinitionSO loadedMain = weaponRegistry != null ? weaponRegistry.GetById(mainWeaponId) : null;
-        WeaponDefinitionSO loadedSub = weaponRegistry != null ? weaponRegistry.GetById(subWeaponId) : null;
-
-        if (loadedMain != null)
-        {
-            EquipIntoSlot(WeaponSlot.Main, loadedMain);
-        }
-
-        if (loadedSub != null)
-        {
-            EquipIntoSlot(WeaponSlot.Sub, loadedSub);
-        }
-
-        if (mainWeaponDef == null && subWeaponDef == null)
-        {
-            if (startingMainWeapon != null) EquipIntoSlot(WeaponSlot.Main, startingMainWeapon);
-            if (startingSubWeapon != null) EquipIntoSlot(WeaponSlot.Sub, startingSubWeapon);
-        }
-
-        WeaponSlot finalActiveSlot = WeaponLoadoutRules.ResolveLoadedActiveSlot(loadedActiveSlot, mainWeaponDef, subWeaponDef);
-
-        SetActiveSlot(finalActiveSlot, true);
-    }
-
     public string GetMainWeaponId()
     {
         return WeaponLoadoutRules.GetStableWeaponId(mainWeaponDef);
@@ -348,6 +323,7 @@ public class EquipmentManager : MonoBehaviour
         return slot == WeaponSlot.Main ? mainWeaponDef : subWeaponDef;
     }
 
+    //UNEQUIP WEAPON
     public bool UnequipWeapon(WeaponSlot slot)
     {
         WeaponDefinitionSO removedWeapon = GetWeaponDefinition(slot);
@@ -684,5 +660,65 @@ public class EquipmentManager : MonoBehaviour
         }
 
         return targetInventory.AddItem(weapon, 1) == 0;
+    }
+
+    //LOAD WEAPON
+    public void LoadWeapons(EquipmentSaveData data)
+    {
+        ClearLoadedWeapons();
+
+        ApplyLoadedWeapon(WeaponSlot.Main, weaponRegistry.GetById(data.mainWeaponId));
+        ApplyLoadedWeapon(WeaponSlot.Sub, weaponRegistry.GetById(data.subWeaponId));
+
+        WeaponSlot loadedSlot = (WeaponSlot)data.activeSlot;
+        SetActiveSlot(loadedSlot, true);
+    }
+
+    private void ApplyLoadedWeapon(WeaponSlot slot, WeaponDefinitionSO weapon)
+    {
+        if (weapon == null) return;
+
+        EquipIntoSlot(slot, weapon);
+
+        foreach (ModifierData data in weapon.modifiersData)
+        {
+            data.statModifier.AffectCharacter(gameObject, data.value);
+        }
+    }
+
+    private void ClearLoadedWeapons()
+    {
+        RemoveWeaponStats(mainWeaponDef);
+        RemoveWeaponStats(subWeaponDef);
+
+        ClearSlot(WeaponSlot.Main);
+        ClearSlot(WeaponSlot.Sub);
+    }
+
+    private void RemoveWeaponStats(WeaponDefinitionSO weapon)
+    {
+        if (weapon == null) return;
+
+        foreach (ModifierData data in weapon.modifiersData)
+        {
+            data.statModifier.AffectCharacter(gameObject, -data.value);
+        }
+    }
+
+    public void ReapplyWeaponBuffs()
+    {
+        ReapplyWeapon(mainWeaponDef);
+        ReapplyWeapon(subWeaponDef);
+    }
+
+    private void ReapplyWeapon(WeaponDefinitionSO weapon)
+    {
+        if (weapon == null)
+            return;
+
+        foreach (ModifierData data in weapon.modifiersData)
+        {
+            data.statModifier.AffectCharacter(gameObject, data.value);
+        }
     }
 }

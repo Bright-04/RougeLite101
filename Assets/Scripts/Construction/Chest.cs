@@ -40,7 +40,7 @@ public class Chest : MonoBehaviour, IInteractable
         StartCoroutine(OpenChestRoutine());
     }
 
-    public string GetInteractionText()
+    public string GetInteractionText(GameObject interactor)
     {
         if (opened) return "";
 

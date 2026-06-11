@@ -33,7 +33,7 @@ public class BuffStatue : MonoBehaviour, IInteractable
         Debug.Log("Đã nhận buff");
     }
 
-    public string GetInteractionText()
+    public string GetInteractionText(GameObject interactor)
     {
         if (used) return "";
 

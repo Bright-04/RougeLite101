@@ -15,6 +15,7 @@ public class WeaponSlotUI : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        Debug.Log($"Clicked {name} - {eventData.button}");
         if (eventData.button == PointerEventData.InputButton.Right)
         {
             OnRightClick?.Invoke(this);

@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: bronze_bow
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: bronze_bow
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Bronze Bow
   <Description>k__BackingField: A tier 2 bronze bow.
   <ItemImage>k__BackingField: {fileID: 3448129384076546144, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: bronze_bow
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: bronze
   equipmentClass: bow
   tags:

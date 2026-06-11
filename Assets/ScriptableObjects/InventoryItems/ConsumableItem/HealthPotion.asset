@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: HealthPotion
   m_EditorClassIdentifier: Assembly-CSharp::ConsumableItemSO
   <IsStackable>k__BackingField: 1
+  <ItemId>k__BackingField: health_potion
   <MaxStackSize>k__BackingField: 99
   <Name>k__BackingField: Health Potion
   <Description>k__BackingField: A magic potion that restored your health
@@ -20,3 +21,6 @@ MonoBehaviour:
   modifiersData:
   - statModifier: {fileID: 11400000, guid: ea52f68857758b2438c606069dac8421, type: 2}
     value: 10
+  rarity: 0
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50

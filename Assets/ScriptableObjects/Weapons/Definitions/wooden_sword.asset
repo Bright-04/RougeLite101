@@ -13,13 +13,15 @@ MonoBehaviour:
   m_Name: wooden_sword
   m_EditorClassIdentifier: Assembly-CSharp::WeaponDefinitionSO
   <IsStackable>k__BackingField: 0
+  <ItemId>k__BackingField: wooden_sword
   <MaxStackSize>k__BackingField: 1
   <Name>k__BackingField: Wooden Sword
   <Description>k__BackingField: A tier 1 wooden sword.
   <ItemImage>k__BackingField: {fileID: -2262602574866384894, guid: 2bee79544a0a1bf418b0c7cab8c84384, type: 3}
   modifiersData: []
   rarity: 0
-  equipmentId: wooden_sword
+  <BuyPrice>k__BackingField: 100
+  <SellPrice>k__BackingField: 50
   series: wooden
   equipmentClass: sword
   tags:

@@ -10,11 +10,10 @@ public class DungeonEnter : MonoBehaviour, IInteractable
     {
         AutoSaveManager.TrySaveActiveSceneState();
         Debug.Log("Change to " + changeSceneName);
-        GetComponent<Collider2D>().enabled = false;
         SceneManager.LoadScene(changeSceneName);
     }
 
-    public string GetInteractionText()
+    public string GetInteractionText(GameObject interactor)
     {
         return $"[F] Enter Dungeon";
     }

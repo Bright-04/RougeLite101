@@ -3,7 +3,7 @@ using UnityEngine;
 public abstract class EquipmentDefinitionSO : ItemSO, IDestroyableItem, IItemAction
 {
     [Header("Identity")]
-    [SerializeField] private string equipmentId;
+    //[SerializeField] private string equipmentId;
     [SerializeField] private string series;
 
     [SerializeField] private string equipmentClass;
@@ -16,7 +16,7 @@ public abstract class EquipmentDefinitionSO : ItemSO, IDestroyableItem, IItemAct
     /// Stable authored equipment identity used by registries, save/load, and other serialized lookups.
     /// Keep this string-based and do not treat ItemSO.ID as a substitute.
     /// </summary>
-    public string EquipmentId => equipmentId;
+    public string EquipmentId => ItemId;
     public string Series => series;
 
     public string EquipmentClass => equipmentClass;
@@ -32,15 +32,6 @@ public abstract class EquipmentDefinitionSO : ItemSO, IDestroyableItem, IItemAct
 
     public virtual bool ResetModifierData(GameObject character)
     {
-        EquipmentManager equipmentManager = character.GetComponent<EquipmentManager>();
-        if (equipmentManager != null)
-        {
-            foreach (ModifierData data in modifiersData)
-            {
-                data.statModifier.AffectCharacter(character, -data.value);
-            }
-            return true;
-        }
         return false;
     }
 }

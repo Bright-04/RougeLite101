@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 public class PlayerStats : MonoBehaviour
 {
     [SerializeField] private EquipmentManager equipmentManager;
+    [SerializeField] private ArmorController armorController;
     [SerializeField] private InventoryController inventoryController;
     [SerializeField] private string fallbackHubSceneName = "GameHome";
 
@@ -58,11 +59,18 @@ public class PlayerStats : MonoBehaviour
 
     [SerializeField] private float buffSpeed = 0;
 
+    private bool hasLoadedSave;
+
     private void Start()
     {
         if (equipmentManager == null)
         {
-            equipmentManager = FindAnyObjectByType<EquipmentManager>();
+            equipmentManager = GetComponent<EquipmentManager>();
+        }
+
+        if (armorController == null)
+        {
+            armorController = GetComponent<ArmorController>();
         }
 
         if (inventoryController == null)
@@ -70,7 +78,7 @@ public class PlayerStats : MonoBehaviour
             inventoryController = GetComponent<InventoryController>();
         }
 
-
+        if (hasLoadedSave) return;
         currentHP = GetMaxHP();
         currentMana = GetMaxMana();
         currentStamina = GetMaxStamina();
@@ -116,6 +124,9 @@ public class PlayerStats : MonoBehaviour
 
     public float GetMaxHP()
     {
+        if ((maxHP + buffMaxHP) <= 0){
+            return 1;
+        }
         return maxHP + buffMaxHP;
     }
 
@@ -131,6 +142,9 @@ public class PlayerStats : MonoBehaviour
 
     public float GetRegenHP()
     {
+        if((hpRegen + buffHpRegen) <= 0){
+            return 1;
+        }
         return hpRegen + buffHpRegen;
     }
 
@@ -141,6 +155,9 @@ public class PlayerStats : MonoBehaviour
 
     public float GetMaxMana()
     {
+        if((maxMana + buffMaxMana) <= 0){
+            return 1;
+        }
         return maxMana + buffMaxMana;
     }
 
@@ -156,6 +173,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetRegenMana()
     {
+        if ((manaRegen + buffManaRegen) <= 0)
+        {
+            return 1;
+        }
         return manaRegen + buffManaRegen;
     }
 
@@ -166,6 +187,9 @@ public class PlayerStats : MonoBehaviour
 
     public float GetMaxStamina()
     {
+        if((maxStamina + buffMaxStamina) <= 0){
+            return 1;
+        }
         return maxStamina + buffMaxStamina;
     }
 
@@ -181,6 +205,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetRegenStamina()
     {
+        if ((staminaRegen + buffStaminaRegen) <= 0)
+        {
+            return 1;
+        }
         return staminaRegen + buffStaminaRegen;
     }
 
@@ -201,6 +229,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetAttackDamage()
     {
+        if((attackDamage + buffAttackDamage) <= 0)
+        {
+            return 1;
+        }
         return attackDamage + buffAttackDamage;
     }
 
@@ -211,6 +243,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetAbilityPower()
     {
+        if((abilityPower + buffAbilityPower) <= 0)
+        {
+            return 1;
+        }
         return abilityPower + buffAbilityPower;
     }
 
@@ -221,6 +257,10 @@ public class PlayerStats : MonoBehaviour
 
     public float GetCritChance()
     {
+        if((critChance + buffCritChance) <= 0)
+        {
+            return 1;
+        }
         return critChance + buffCritChance;
     }
 
@@ -231,12 +271,16 @@ public class PlayerStats : MonoBehaviour
 
     public float GetCritDamage()
     {
+        if((critDamage + buffCritDamage) <= 0)
+        {
+            return 1;
+        }
         return critDamage + buffCritDamage;
     }
 
     public float GetNoBuffCritDamage()
     {
-        return critDamage + buffCritDamage;
+        return critDamage;
     }
 
     public float GetLuck()
@@ -541,13 +585,15 @@ public class PlayerStats : MonoBehaviour
     {
         Debug.Log("RESET STATS CALLED");
         isDead = false;
-        //ResetAllBuffs();
+        //reset buffs
+        ResetAllBuffs();
+        equipmentManager?.ReapplyWeaponBuffs();
+        armorController?.ReapplyArmorBuffs();
+
         currentHP = GetMaxHP();
         currentMana = GetMaxMana();
         currentStamina = GetMaxStamina();
-        damageTimer = 0;
-        // reset buffs
-       // ResetAllBuffs();
+        damageTimer = 0;        
     }
 
     public void ResetTransientState()
@@ -599,14 +645,14 @@ public class PlayerStats : MonoBehaviour
     /// <summary>
     /// Load data từ PlayerStatsData vào PlayerStats
     /// </summary>
-    public void LoadFromData(PlayerStatsSaveData data)
+    public void LoadFromData(PlayerStatsData data)
     {
         if (data == null)
         {
             Debug.LogWarning("PlayerStats: LoadFromData called with null data.", this);
             return;
         }
-
+        hasLoadedSave = true;
         // reset buffs
         ResetAllBuffs();
 
@@ -617,6 +663,9 @@ public class PlayerStats : MonoBehaviour
         levelUpExp = data.levelUpExp;
 
         // Core Stats
+        currentHP = data.currentHP;
+        currentMana = data.currentMana;
+        currentStamina = data.currentStamina;
         maxHP = data.maxHP;
         maxMana = data.maxMana;
         maxStamina = data.maxStamina;
@@ -638,7 +687,25 @@ public class PlayerStats : MonoBehaviour
         currentHP = maxHP;
         currentMana = maxMana;
         currentStamina = maxStamina;
-
         Debug.Log($"Loaded Player Stats: Level {level}, HP {maxHP}, ATK {attackDamage}");
+    }
+
+    public void RefreshAfterEquipmentLoad()
+    {
+        currentHP = Mathf.Min(currentHP, GetMaxHP());
+        currentMana = Mathf.Min(currentMana, GetMaxMana());
+        currentStamina = Mathf.Min(currentStamina, GetMaxStamina());
+    }
+
+    public void RebuildAllBuffs()
+    {
+        ResetAllBuffs();
+
+        equipmentManager?.ReapplyWeaponBuffs();
+        armorController?.ReapplyArmorBuffs();
+        
+        currentHP = Mathf.Min(currentHP, GetMaxHP());
+        currentMana = Mathf.Min(currentMana, GetMaxMana());
+        currentStamina = Mathf.Min(currentStamina, GetMaxStamina());
     }
 }
