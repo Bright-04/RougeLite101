@@ -33,6 +33,16 @@ public class SkeletonHealth : MonoBehaviour, IDamageable
         if (dead) return;
         dead = true;
 
+        EnemyDeathNotifier deathNotifier = GetComponent<EnemyDeathNotifier>();
+        if (deathNotifier != null)
+        {
+            deathNotifier.NotifyDied();
+        }
+        else
+        {
+            DdaTelemetryService.Instance?.RecordEnemyKilled(gameObject.name);
+        }
+
         PlayerMoney money = FindFirstObjectByType<PlayerMoney>();
 
         if (money != null)
