@@ -14,9 +14,7 @@ This repository should be understood as an academic game prototype rather than a
 
 ## Latest Release
 
-The latest thesis prototype release is available here:
-
-[RL28 – Latest Capstone Prototype Build](https://github.com/Bright-04/RougeLite101/releases/latest)
+The latest thesis prototype release is available [here.](https://github.com/Bright-04/RougeLite101/releases/latest)
 
 This release represents the latest stabilized prototype build prepared for thesis demonstration, documentation, and evaluation.
 
